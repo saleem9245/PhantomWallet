@@ -10,7 +10,8 @@ namespace Phantom.Wallet
     class Backend
     {
         public static IServiceProvider AppServices => _app.Services;
-        private static Application _app;
+        private static IServiceCollection serviceCollection = new ServiceCollection();
+        private static Application _app = new Application(serviceCollection);
 
         static void Main(string[] args)
         {

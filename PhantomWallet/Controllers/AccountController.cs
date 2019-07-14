@@ -339,15 +339,8 @@ namespace Phantom.Wallet.Controllers
                         .CallContract(contract, method, keyPair.Address)
                         .SpendGas(keyPair.Address)
                         .EndScript();
-
-                // TODO this should be a dropdown in the wallet settings!!
-                var nexusName = "simnet";
-                var tx = new Phantasma.Blockchain.Transaction(nexusName, "main", script, DateTime.UtcNow + TimeSpan.FromHours(1));
-
-                tx.Sign(keyPair);
-
-                var txResult = await _phantasmaRpcService.SendRawTx.SendRequestAsync(tx.ToByteArray(true).Encode());
-                return txResult;
+                var result = await _phantasmaRpcService.InvokeRawScript.SendRequestAsync("main", script.Encode());
+                return (string)result.GetValue("result");
             }
             catch (RpcResponseException rpcEx)
             {

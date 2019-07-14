@@ -462,20 +462,14 @@ namespace Phantom.Wallet
                 if (soulBalance.Amount > 0.1m)
                 {
                     var keyPair = GetLoginKey(request);
-                    var contractTx = AccountController.InvokeContractGeneric(keyPair, contract, method).Result;
-                    if (SendUtils.IsTxHashValid(contractTx))
-                    {
-                        return contractTx;
-                    }
-
-                    PushError(request, contractTx);
+                    return AccountController.InvokeContractGeneric(keyPair, contract, method).Result;
                 }
                 else
                 {
                     PushError(request, "You need a small drop of SOUL (+0.1) to call a contract.");
                 }
             }
-            return "";
+            return null;
         }
 
         private object RouteRegisterName(HTTPRequest request)
