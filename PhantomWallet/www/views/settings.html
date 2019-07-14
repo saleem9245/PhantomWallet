@@ -1,0 +1,11 @@
+
+<h4 class="tab-title">Settings</h4>
+{{#if networks}}
+<div class="form-group">
+    <select class="bootstrap-select">
+        {{#each networks}}
+        <option value="{{Value}}" {{#if IsEnabled}} selected="selected" {{#else}} disabled {{/if}}>{{Name}}</option>
+        {{/each}}
+    </select>
+</div>
+{{/if}}

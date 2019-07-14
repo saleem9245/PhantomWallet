@@ -1,0 +1,39 @@
+
+<div class="row" style="padding-top: 50px;">
+
+
+    <div id="qrcode" class="qrbox"></div>
+
+    <h4 class="public-address-label">Your public Phantasma address:</h4>
+
+    <div style="overflow: auto;">
+        <p class="public-address">
+            <em>{{address}}</em>
+        </p>
+    </div>
+    <div style="text-align: center">
+        <span class="copy-pad" style="font-size: 20px;">
+            <a href="#" onclick="copyText('{{address}}', 'Address')">
+                <i class="fas fa-copy"></i>
+            </a>
+        </span>
+    </div>
+
+    <input type="hidden" value="{{address}}" id="myAddress">
+</div>
+
+
+
+<script type="text/javascript">
+
+var target = document.getElementById("qrcode");
+var qrcode = new QRCode(target, {
+    text: "phantasma://{{address}}",
+    width: 272,
+    height: 272,
+    colorDark : "#000000",
+    colorLight: "#ffffff",
+    correctLevel : QRCode.CorrectLevel.H
+});
+
+</script>
