@@ -1,0 +1,14 @@
+.vs/
+packages/
+PhantomWallet/publish
+PhantomWallet/bin
+PhantomWallet/obj
+PhantomWallet/www/bin
+PhantomCli/bin
+PhantomCli/obj
+Published/
+www/bin
+www/session
+
+PhantomWallet/www/session
+

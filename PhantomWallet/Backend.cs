@@ -39,7 +39,7 @@ namespace Phantom.Wallet
 
         private void ConfigureServices(IServiceCollection serviceCollection)
         {
-            serviceCollection.AddScoped<IPhantasmaRpcService>(provider => new PhantasmaRpcService(new RpcClient.Client.RpcClient(new Uri("http://localhost:7077/rpc"), httpClientHandler: new HttpClientHandler
+            serviceCollection.AddScoped<IPhantasmaRpcService>(provider => new PhantasmaRpcService(new Phantasma.RpcClient.Client.RpcClient(new Uri("http://localhost:7077/rpc"), httpClientHandler: new HttpClientHandler
             {
                 AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
             })));

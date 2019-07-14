@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LunarLabs.WebServer.Core;
 using Phantasma.Blockchain.Contracts;
+using Phantasma.Blockchain;
 using Phantasma.Core.Types;
 using Phantasma.Cryptography;
 using Phantasma.Numerics;
@@ -169,7 +170,7 @@ namespace Phantom.Wallet.Controllers
                     .SpendGas(keyPair.Address)
                     .EndScript();
 
-                var settleTx = new Blockchain.Transaction(nexusName, destinationChainName, settleTxScript, DateTime.UtcNow + TimeSpan.FromHours(1));
+                var settleTx = new Phantasma.Blockchain.Transaction(nexusName, destinationChainName, settleTxScript, DateTime.UtcNow + TimeSpan.FromHours(1));
                 settleTx.Sign(keyPair);
 
                 var settleResult =
@@ -218,7 +219,7 @@ namespace Phantom.Wallet.Controllers
 
                 var nexusName = "simnet";
 
-                var tx = new Blockchain.Transaction(nexusName, chainName, script, DateTime.UtcNow + TimeSpan.FromHours(1));
+                var tx = new Phantasma.Blockchain.Transaction(nexusName, chainName, script, DateTime.UtcNow + TimeSpan.FromHours(1));
                 tx.Sign(keyPair);
 
                 var txResult = await _phantasmaRpcService.SendRawTx.SendRequestAsync(tx.ToByteArray(true).Encode());
@@ -259,7 +260,7 @@ namespace Phantom.Wallet.Controllers
                 // TODO this should be a dropdown in the wallet settings!!
                 var nexusName = "simnet";
 
-                var tx = new Blockchain.Transaction(nexusName, chainName, script,
+                var tx = new Phantasma.Blockchain.Transaction(nexusName, chainName, script,
                     DateTime.UtcNow + TimeSpan.FromHours(1));
                 tx.Sign(keyPair);
 
@@ -309,7 +310,7 @@ namespace Phantom.Wallet.Controllers
 
                 // TODO this should be a dropdown in the wallet settings!!
                 var nexusName = "simnet";
-                var tx = new Blockchain.Transaction(nexusName, "main", script, DateTime.UtcNow + TimeSpan.FromHours(1));
+                var tx = new Phantasma.Blockchain.Transaction(nexusName, "main", script, DateTime.UtcNow + TimeSpan.FromHours(1));
 
                 tx.Sign(keyPair);
 
@@ -341,7 +342,7 @@ namespace Phantom.Wallet.Controllers
 
                 // TODO this should be a dropdown in the wallet settings!!
                 var nexusName = "simnet";
-                var tx = new Blockchain.Transaction(nexusName, "main", script, DateTime.UtcNow + TimeSpan.FromHours(1));
+                var tx = new Phantasma.Blockchain.Transaction(nexusName, "main", script, DateTime.UtcNow + TimeSpan.FromHours(1));
 
                 tx.Sign(keyPair);
 

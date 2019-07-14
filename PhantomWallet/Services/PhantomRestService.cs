@@ -6,7 +6,7 @@ using Phantom.Wallet.Interfaces;
 
 namespace Phantom.Wallet.Services
 {
-    public class PhantasmaRestService : IPhantasmaRestService
+    public class PhantomRestService : IPhantasmaRestService
     {
         private readonly HttpClient _restClient;
 
