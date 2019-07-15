@@ -52,7 +52,6 @@ namespace PhantomCli
                     }
                     else
                         Console.WriteLine("Command '" + command_main + "' not found");
-
                     return null;
                 }), prompt, startupMsg, completionList);
         }
@@ -65,7 +64,8 @@ namespace PhantomCli
             { "clear",  new Tuple<Action<string[]>, string>(Clear,          "test")},
             { "wallet", new Tuple<Action<string[]>, string>(CopyFunc,       "test")},
             { "tx",     new Tuple<Action<string[]>, string>(Transaction,    "test")},
-            { "invoke", new Tuple<Action<string[]>, string>(InvokeFunc,          "test")}
+            { "invoke", new Tuple<Action<string[]>, string>(InvokeFunc,     "test")},
+            { "history", new Tuple<Action<string[]>, string>(HistoryFunc,   "test")}
         };
 
         private static void Transaction(string[] obj)
@@ -74,6 +74,16 @@ namespace PhantomCli
             string json = Newtonsoft.Json.JsonConvert.SerializeObject(AccountController
                     .GetTxConfirmations(txHash).Result, Formatting.Indented);
             Console.WriteLine(json);
+        }
+
+        private static void HistoryFunc(string[] obj)
+        {
+            Console.WriteLine();
+            foreach (List<char> item in Prompt.GetHistory()) 
+            {
+                Console.WriteLine(new string(item.ToArray()));
+            }
+            Console.WriteLine();
         }
 
         private static void InvokeFunc(string[] obj)

@@ -1,9 +1,11 @@
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace PhantomCli
 {
@@ -13,6 +15,9 @@ namespace PhantomCli
         private static int startingCursorLeft;
         private static int startingCursorTop;
         private static ConsoleKeyInfo key, lastKey;
+        private static XmlSerializer xmls = new XmlSerializer(typeof(List<List<char>>));
+        private static List<string> historyList = new List<string>(); 
+        private static List<List<char>> inputHistory = new List<List<char>>();
 
         private static bool InputIsOnNewLine(List<char> input, int inputPosition)
         {
@@ -29,6 +34,43 @@ namespace PhantomCli
                     break;
             }
             return currentLine;
+        }
+
+        public static List<List<char>> GetHistory() 
+        {
+            return inputHistory;
+        }
+
+        private static void PersistHistory(string path = null) 
+        {
+            using (FileStream fs = new FileStream(path == null ? ".history" : path, FileMode.OpenOrCreate))
+            {
+                xmls.Serialize(fs, inputHistory);
+            }
+        }
+
+        private static void LoadHistory(string path = null) 
+        {
+            try 
+            {
+                using (FileStream fs = new FileStream(path == null ? ".history" : path, FileMode.Open))
+                {
+                    try 
+                    {
+                        inputHistory = xmls.Deserialize(fs) as List<List<char>>;
+                        fs.SetLength(0);
+                    } 
+                    catch (InvalidOperationException e) 
+                    {
+
+                    }
+                }
+
+            }
+            catch (FileNotFoundException e)
+            {
+
+            }
         }
         /// <summary>
         /// Gets the cursor position relative to the current line it is on
@@ -186,8 +228,8 @@ namespace PhantomCli
         {
             _prompt = prompt;
             Console.WriteLine(startupMsg);
-            List<List<char>> inputHistory = new List<List<char>>();
             IEnumerator<string> wordIterator = null;
+            LoadHistory();
 
             while (true)
             {
@@ -393,8 +435,8 @@ namespace PhantomCli
                 if (String.IsNullOrWhiteSpace(cmd))
                     continue;
 
-                if (!inputHistory.Contains(input))
-                    inputHistory.Add(input);
+                inputHistory.Add(input);
+                PersistHistory();
 
                 lambda(cmd, input, completionList);
 
