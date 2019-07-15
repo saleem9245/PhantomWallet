@@ -10,6 +10,7 @@ using Phantasma.RpcClient.DTOs;
 using Phantom.Wallet.Controllers;
 using Phantom.Wallet.Helpers;
 using Phantom.Wallet.Models;
+using Newtonsoft.Json;
 
 namespace Phantom.Wallet
 {
@@ -197,6 +198,8 @@ namespace Phantom.Wallet
             TemplateEngine.Server.Post("/register", RouteRegisterName);
 
             TemplateEngine.Server.Post("/contract", RouteInvokeContract);
+
+            TemplateEngine.Server.Get("/chains", RouteChains);
 
             foreach (var entry in MenuEntries)
             {
@@ -470,6 +473,13 @@ namespace Phantom.Wallet
                 }
             }
             return null;
+        }
+
+        private object RouteChains(HTTPRequest request)
+        {
+            string json = Newtonsoft.Json.JsonConvert.SerializeObject(AccountController
+                            .PhantasmaChains, Formatting.Indented);
+            return json;
         }
 
         private object RouteRegisterName(HTTPRequest request)
