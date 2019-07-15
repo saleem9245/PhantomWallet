@@ -301,7 +301,13 @@ namespace PhantomCli
                                 input.RemoveAt(--inputPosition);
                             }
                             RewriteLine(input, inputPosition);
-                            wordIterator = GetMatch(completionList, string.Concat(word)).GetEnumerator();
+
+                            List<string> hist = (from item in inputHistory select new String(item.ToArray())).ToList();
+
+                            List<string> wordList = completionList.Concat(hist).ToList();
+
+                            wordIterator = GetMatch(wordList, string.Concat(word)).GetEnumerator();
+
                             while (wordIterator.Current == null)
                                 wordIterator.MoveNext();
                         }
