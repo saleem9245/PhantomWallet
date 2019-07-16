@@ -21,13 +21,15 @@
         </tbody>
     </table>
 </div>
-+<div id="wrapper" style="display:flex;">
-<div id="container-pie" style="margin: 0 auto;flex: 0 0 45%;"></div>
-<div id="container-historical-value" style="margin: 0 auto 1em;flex: 1;"></div>
+<div id="wrapper">
+<div id="container-pie" class="col-md-6" style="margin: 0 auto;"></div>
+<div id="container-historical-value" class="cold-md-6" style="margin: 0 auto 1em;"></div>
 </div>
 <script>
 
-    $(document).ready(getContainerPie());
+    $(document).ready(
+      getContainerPie()
+    );
 
     function getContainerPie() {
 

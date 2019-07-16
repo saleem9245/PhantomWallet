@@ -647,12 +647,15 @@ ul.nav.nav-pills {
   text-align: center;
   color: white;
   margin: 0.5em 0;
+  font-size: 1.2em;
 }
 
 .blockheight {
   text-align: center;
   color: darkslategrey;
   margin: 0.5em 0;
+  font-size: 1.2em;
+  display:inline-block;
 }
 
 .flash {
@@ -660,32 +663,31 @@ ul.nav.nav-pills {
 }
 
 .wrapper-settings {
-  width: 500px;
+  width: 40%;
   margin: 0 auto;
-  font-size: 1.2em;
+  font-size: 1.3em;
+  margin-top: 4em;
 }
 
 .settings-row {
   display: flex;
-  align-items: center;
   border-bottom: 1px solid #17B0E7;
-  padding: 5px 0;
+  padding-bottom: 1em;
   height: 45px;
-  margin: 10px 0;
+  margin: 1em;
 }
 
 .settings-row-icon {
   margin-right: 10px;
-  display: flex;
+  margin-left: 1em;
   align-items: center;
-  width: 80px;
+  width: 20%;
   justify-content: center;
-  float: left;
 }
 
 .settings-row-name {
   display: flex;
-  max-width: 200px;
+  width: 40%;
   flex: 1;
 }
 
@@ -712,6 +714,7 @@ ul.nav.nav-pills {
      -moz-user-select: none;
       -ms-user-select: none;
           user-select: none;
+  margin-top: -.4em;
 }
 .tgl + .tgl-btn:after, .tgl + .tgl-btn:before {
   position: relative;

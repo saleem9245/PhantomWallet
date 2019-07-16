@@ -36,14 +36,14 @@
                     </div>
                 </div>
                 <br />
-                <h6 style="text-align:center;"><em>Wallet connected</em></h6>
+                <h6 style="text-align:center;font-size: 1.2em;"><em>Wallet connected</em></h6>
                 {{#if name == 'anonymous'}}
-                <h5 style="color: darkslategrey;text-align:center;">
+                <h5 style="color: darkslategrey;text-align:center;font-size: 1.2em;">
                     {{name}}
                     <a href="#" class="editbutton" id="editPencil"><i class="fa fa-pencil-alt" aria-hidden="true"></i></a>
                 </h5>
                 {{#else}}
-                <h5 style="color: darkslategrey;text-align:center;"><em>{{name}}</em></h5>
+                <h5 style="color: darkslategrey;text-align:center;font-size: 1.2em;"><em>{{name}}</em></h5>
                 {{/if}}
 
                 <ul class="nav nav-pills nav-stacked">
@@ -67,7 +67,7 @@
                     {{/each}}
                 </ul>
                 <div class="version">version 0.1.0</div>
-                <div class="blockheight" id="blockheightparent"></div><div class="blockheight" id="blockheight"></div>
+                <div style="text-align:center;"><div class="blockheight" id="blockheightparent"></div><div class="blockheight" id="blockheight" style="margin-left:.5em;"></div></div>
             </div>
             <nav class="navbar navbar-collapse visible-xs" role="navigation">
                 <div class="container">
@@ -88,14 +88,14 @@
                     <!-- Collect the nav links, forms, and other content for toggling -->
                     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 
-                        <h6 style="text-align:center;"><em>Wallet connected</em></h6>
+                        <h6 style="text-align:center;font-size: 1.2em;"><em>Wallet connected</em></h6>
                         {{#if name == 'anonymous'}}
-                        <h5 style="color: darkslategrey;text-align:center;">
+                        <h5 style="color: darkslategrey;text-align:center;font-size: 1.2em;">
                             {{name}}
                             <a href="#" class="editbutton" id="editPencil2"><i class="fa fa-pencil-alt" aria-hidden="true"></i></a>
                         </h5>
                         {{#else}}
-                        <h5 style="color: darkslategrey;text-align:center;"><em>{{name}}</em></h5>
+                        <h5 style="color: darkslategrey;text-align:center;font-size: 1.2em;"><em>{{name}}</em></h5>
                         {{/if}}
                         <ul class="nav navbar-nav">
                             {{#each menu}}
@@ -117,7 +117,7 @@
                             {{/each}}
                         </ul>
                         <div class="version">version 0.1.0</div>
-                        <div class="blockheight" id="blockheightparent"></div><div class="blockheight" id="blockheight"></div>
+                        <div style="text-align:center;"><div class="blockheight" id="blockheightparent"></div><div class="blockheight" id="blockheight" style="margin-left:.5em;"></div></div>
                     </div>
                     <!-- /.navbar-collapse -->
                 </div>

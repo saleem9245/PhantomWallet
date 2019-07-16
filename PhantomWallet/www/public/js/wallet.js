@@ -81,26 +81,22 @@ setInterval(function() {
 }, 1000);
 
 function getChains() {
-  $.ajax({
-         url : "http://45.77.48.103:7077/rpc",
-         type : "POST",
-         data : '{"jsonrpc":"2.0","method":"getBlockHeight","params":["main"],"id":1}',
-         dataType: "json",
-         success : function (datarpcnode) {
-           datamain = datarpcnode;
-           heightmain = '#' + numberWithCommas(datamain.result);
-           if (document.getElementById("blockheight").innerHTML != heightmain) {
-             document.getElementById("blockheight").innerHTML = heightmain;
-             $(document.getElementById("blockheight")).addClass('flash').delay(150).queue(function(next){
-                  $(this).removeClass('flash');
-                  next();
-             });
-           }
-           if (document.getElementById("blockheightparent").innerHTML != 'Main Chain Height') {
-             document.getElementById("blockheightparent").innerHTML = 'Main Chain Height';
-           }
+   $.get('/chains',
+       function (returnedData) {
+         heightmain = '#' + numberWithCommas(JSON.parse(returnedData)[0].height);
+         if (document.getElementById("blockheight").innerHTML != heightmain) {
+           document.getElementById("blockheight").innerHTML = heightmain;
+           $(document.getElementById("blockheight")).addClass('flash').delay(150).queue(function(next){
+                $(this).removeClass('flash');
+                next();
+           });
          }
-   })
+         if (document.getElementById("blockheightparent").innerHTML != 'MAIN CHAIN BLOCK ') {
+           document.getElementById("blockheightparent").innerHTML = 'MAIN CHAIN BLOCK ';
+         }
+       }).fail(function() {
+          console.log("error");
+   });
 }
 
 function numberWithCommas(x) {

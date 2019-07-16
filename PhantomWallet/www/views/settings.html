@@ -18,18 +18,27 @@
     <span class="settings-row-name">CURRENCY</span>
     <div class="settings-row-item">
       <select class="bootstrap-select">
-          {{#each networks}}
-          <option value="{{Value}}" {{#if IsEnabled}} selected="selected" {{#else}} disabled {{/if}}>{{Name}}</option>
-          {{/each}}
+          <option value="USD">USD</option>
+          <option value="EUR" disabled>EUR</option>
+          <option value="CAD" disabled>CAD</option>
       </select>
     </div>
   </div>
   <div class="settings-row">
     <div class="settings-row-icon"><i class="fas fa-adjust"></i></div>
-    <span class="settings-row-name">THEME</span>
+    <span class="settings-row-name">DARK THEME</span>
     <div>
-      <input class="tgl tgl-flat" id="cb4" type="checkbox">
+      <input class="tgl tgl-flat" id="cb4" type="checkbox" disabled>
       <label class="tgl-btn" for="cb4"></label>
     </div>
+  </div>
+</div>
+<br>
+<br>
+<hr style="width:50%">
+<div class="wrapper-settings">
+  <div class="settings-row" style="display:block;text-align:center;border:0">
+    <span>Support Phantom Wallet</span><br>
+    <span><a href="/send">P2f7ZFuj6NfZ76ymNMnG3xRBT5hAMicDrQRHE4S7SoxEr</a></span>
   </div>
 </div>
