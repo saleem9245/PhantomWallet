@@ -1,3 +1,4 @@
+<script src="https://code.highcharts.com/stock/highstock.js"></script>
 <h3 class="tab-title">Portfolio</h3>
 {{#if holdings}}
 <div class="table-responsive">
@@ -20,6 +21,221 @@
         </tbody>
     </table>
 </div>
++<div id="wrapper" style="display:flex;">
+<div id="container-pie" style="margin: 0 auto;flex: 0 0 45%;"></div>
+<div id="container-historical-value" style="margin: 0 auto 1em;flex: 1;"></div>
+</div>
+<script>
+
+    $(document).ready(getContainerPie());
+
+    function getContainerPie() {
+
+      arraygraph = [{name: "SOUL", y: 100, oldColor: "#E8E8E8", sliced: true}];
+      urlforcombined = 'https://api.o3.network/v1/historical?currency=USD&SOUL=7712405&KCAL=89.9992967615&NACHO=8000&KCAL=5.0000009778&NACHO=1000';
+      currencysymbol = '$';
+
+  Highcharts.chart('container-pie', {
+      chart: {
+          type: 'pie'
+      },
+      title: !1,
+      credits: {
+          enabled: !1
+      },
+      tooltip: {
+          pointFormat: '{series.name}: <b>{point.percentage:.2f}%</b>'
+      },
+      plotOptions: {
+          pie: {
+              allowPointSelect: !0,
+              cursor: 'pointer',
+              depth: 30,
+              colors: ['#E8E8E8', '#17B0E7', '#2f7ed8', '#434348', '#8bbc21', '#64E572', '#DDDF00', '#8085e9', '#f28f43', '#e4d354', '#f45b5b', '#77a1e5'],
+              slicedOffset: 10,
+              dataLabels: {
+                  enabled: !0,
+                  format: '{point.name}: {point.percentage:.2f} %',
+                  style: {
+                      textOutline: !1
+                  }
+              },
+              states: {
+                  hover: {
+                      enabled: !1
+                  },
+                  inactive: {
+                      opacity: 1
+                  }
+              },
+              point: {
+                  events: {
+                      mouseOver: function() {
+                          this.options.oldColor = this.color;
+                          this.graphic.attr("fill", "#17B0E7");
+                          var point = this,
+                              points = this.series.points;
+                          for (var key in points) {
+                              if (points[key].sliced) {
+                                  points[key].slice(!1)
+                              }
+                          }
+                          if (!point.selected) {
+                              point.slice(!0)
+                          }
+                      },
+                      mouseOut: function() {
+                          this.graphic.attr("fill", this.options.oldColor);
+                          for (var key in this.points) {
+                              if (this.points[key].sliced) {
+                                  this.points[key].slice(!1)
+                              }
+                          }
+                      }
+                  }
+              }
+          }
+      },
+      series: [{
+          type: 'pie',
+          name: 'Portfolio',
+          data: arraygraph
+      }]
+  })
+  $.ajax({
+      xhrFields: {
+          withCredentials: !1
+      },
+      cache: !1,
+      crossDomain: !0,
+      type: 'GET',
+      dataType: 'json',
+      data: {},
+      url: urlforcombined + '&i=3M',
+      success: function(data) {
+          var response = JSON.stringify(data);
+          var parsedJson = JSON.parse(response);
+          var positivebal = false;
+          var ohlc = [],
+              dataLength = parsedJson.result.data.data.length,
+              i = dataLength - 1;
+          for (i; i >= 0; --i) {
+              ohlc.push([
+                  (new Date(parsedJson.result.data.data[i].time).getTime()),
+                  parsedJson.result.data.data[i].averageUSD
+              ]);
+              if (parsedJson.result.data.data[i].averageUSD >= 1) {
+                positivebal = true;
+              }
+          }
+          if (positivebal == true) {
+            Highcharts.stockChart('container-historical-value', {
+                xAxis: {
+                  type: 'datetime',
+                  labels: {
+                    formatter: function() {
+                      return Highcharts.dateFormat('%e %b', this.value);
+                    },
+                  }
+                },
+                yAxis: {
+                    labels: {
+                        formatter: function() {
+                            return currencysymbol + this.axis.defaultLabelFormatter.call(this);
+                        }
+                    },
+                    opposite: false,
+                    min: 0,
+                    gridLineWidth: 0,
+                    minorGridLineWidth: 0
+                },
+                navigator: {
+                    enabled: false
+                },
+                scrollbar: {
+                    enabled: false
+                },
+                rangeSelector: {
+                    enabled: false
+                },
+                legend: {
+                    enabled: false
+                },
+                credits: {
+                    enabled: false
+                },
+                exporting: {
+                    enabled: false
+                },
+                plotOptions: {
+                    area: {
+                        fillColor: {
+                            linearGradient: {
+                                x1: 0,
+                                y1: 0,
+                                x2: 0,
+                                y2: 1
+                            },
+                            stops: [
+                                [0, '#17B0E7'],
+                                [1, '#fff']
+                            ]
+                        },
+                        marker: {
+                            radius: 4
+                        },
+                        lineWidth: 3,
+                        states: {
+                            hover: {
+                                lineWidth: 1
+                            }
+                        },
+                        threshold: null
+                    }
+                },
+                tooltip: {
+                    shared: true,
+                    split: false,
+                    formatter: function() {
+                        if (($("#historical-value").val()) == '24H') {
+                          var s = Highcharts.dateFormat('%A, %b %d, %Y - %H:%M', this.x);
+                        } else {
+                          var s = Highcharts.dateFormat('%A, %b %d, %Y', this.x);
+                        }
+                        $.each(this.points, function(i, point) {
+                            s += '<br/><span style="color:' + point.color + '">\u25CF</span> ' + point.series.name + ' <b>' + currencysymbol + Highcharts.numberFormat(point.y, 0, '.', ',') + '</b>';
+                        });
+                        return s;
+                    }
+                },
+                series: [{
+                    type: 'area',
+                    name: 'Average Wallet Value:',
+                    data: ohlc,
+                    color: '#17B0E7',
+                    fillColor: {
+                        linearGradient: {
+                            x1: 1,
+                            y1: 1,
+                            x2: 1,
+                            y2: 1
+                        },
+                        stops: [
+                            [0, '#fff'],
+                            [1, '#fff']
+                        ]
+                    }
+                }]
+            });
+            $("#container-historical-value").fadeIn(1000);
+          }
+      },
+      error: function(xhr, err) {
+        //console.log(err)
+      }
+  });
+}
+</script>
 {{#else}}
 <div class="alert alert-info" role="alert">
     This address is still new and does not have any assets yet.

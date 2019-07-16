@@ -75,3 +75,36 @@ $(document).ready(function() {
     $("#editPencil").click(RegisterName);
     $("#editPencil2").click(RegisterName);
 });
+
+setInterval(function() {
+  getChains();
+}, 1000);
+
+function getChains() {
+  $.ajax({
+         url : "http://45.77.48.103:7077/rpc",
+         type : "POST",
+         data : '{"jsonrpc":"2.0","method":"getBlockHeight","params":["main"],"id":1}',
+         dataType: "json",
+         success : function (datarpcnode) {
+           datamain = datarpcnode;
+           heightmain = '#' + numberWithCommas(datamain.result);
+           if (document.getElementById("blockheight").innerHTML != heightmain) {
+             document.getElementById("blockheight").innerHTML = heightmain;
+             $(document.getElementById("blockheight")).addClass('flash').delay(150).queue(function(next){
+                  $(this).removeClass('flash');
+                  next();
+             });
+           }
+           if (document.getElementById("blockheightparent").innerHTML != 'Main Chain Height') {
+             document.getElementById("blockheightparent").innerHTML = 'Main Chain Height';
+           }
+         }
+   })
+}
+
+function numberWithCommas(x) {
+    var parts = x.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return parts.join(".")
+}

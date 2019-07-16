@@ -1,11 +1,35 @@
 
 <h4 class="tab-title">Settings</h4>
-{{#if networks}}
-<div class="form-group">
-    <select class="bootstrap-select">
-        {{#each networks}}
-        <option value="{{Value}}" {{#if IsEnabled}} selected="selected" {{#else}} disabled {{/if}}>{{Name}}</option>
-        {{/each}}
-    </select>
+
+<div class="wrapper-settings">
+  <div class="settings-row">
+    <div class="settings-row-icon"><i class="fas fa-cog"></i></div>
+    <span class="settings-row-name">NETWORK</span>
+    <div class="settings-row-item">
+      <select class="bootstrap-select">
+          {{#each networks}}
+          <option value="{{Value}}" {{#if IsEnabled}} selected="selected" {{#else}} disabled {{/if}}>{{Name}}</option>
+          {{/each}}
+      </select>
+    </div>
+  </div>
+  <div class="settings-row">
+    <div class="settings-row-icon"><i class="fas fa-dollar-sign"></i></div>
+    <span class="settings-row-name">CURRENCY</span>
+    <div class="settings-row-item">
+      <select class="bootstrap-select">
+          {{#each networks}}
+          <option value="{{Value}}" {{#if IsEnabled}} selected="selected" {{#else}} disabled {{/if}}>{{Name}}</option>
+          {{/each}}
+      </select>
+    </div>
+  </div>
+  <div class="settings-row">
+    <div class="settings-row-icon"><i class="fas fa-adjust"></i></div>
+    <span class="settings-row-name">THEME</span>
+    <div>
+      <input class="tgl tgl-flat" id="cb4" type="checkbox">
+      <label class="tgl-btn" for="cb4"></label>
+    </div>
+  </div>
 </div>
-{{/if}}

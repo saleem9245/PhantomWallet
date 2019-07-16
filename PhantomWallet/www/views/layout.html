@@ -22,31 +22,29 @@
     <div class="container-fluid">
         <div class="row content">
             <div id="nameSpinner" class="loading">Loading&#8230;</div>
-            <div class="col-sm-2 sidenav hidden-xs">
+            <div class="col-sm-2 sidenav hidden-xs" style="background-color: #17B0E7;">
                 <br />
-                <div class="media">
+                <div class="media" style="padding-left:10%">
                     <div class="media-left">
                         <a href="#">
-                            <img src="/img/phantasma_logo.png" style="display: inline; height: 34px; margin-top: 3px; margin-right: 5px;" />
+                            <img src="/img/phantasma_logo_white.png" style="display: inline; height: 50px; margin-top: 10px; margin-right: 5px;" />
                         </a>
                     </div>
-                    <div class="media-body">
-                        <span class="wallet-title">PHANTASMA</span><br />
+                    <div class="media-body" style="text-align: center;padding-right: 10%;">
+                        <span class="wallet-title">PHANTOM</span><br />
                         <span class="wallet-subtitle">WALLET</span>
                     </div>
                 </div>
                 <br />
-                <br />
-                <h6><em>Account name:</em></h6>
+                <h6 style="text-align:center;"><em>Wallet connected</em></h6>
                 {{#if name == 'anonymous'}}
-                <h5 style="color: #17B0E7">
+                <h5 style="color: darkslategrey;text-align:center;">
                     {{name}}
                     <a href="#" class="editbutton" id="editPencil"><i class="fa fa-pencil-alt" aria-hidden="true"></i></a>
                 </h5>
                 {{#else}}
-                <h5 style="color: #17B0E7"><em>{{name}}</em></h5>
+                <h5 style="color: darkslategrey;text-align:center;"><em>{{name}}</em></h5>
                 {{/if}}
-                <hr />
 
                 <ul class="nav nav-pills nav-stacked">
                     {{#each menu}}
@@ -67,7 +65,9 @@
                     {{/if}}
                     {{/if}}
                     {{/each}}
-                </ul><br>
+                </ul>
+                <div class="version">version 0.1.0</div>
+                <div class="blockheight" id="blockheightparent"></div><div class="blockheight" id="blockheight"></div>
             </div>
             <nav class="navbar navbar-collapse visible-xs" role="navigation">
                 <div class="container">
@@ -88,16 +88,15 @@
                     <!-- Collect the nav links, forms, and other content for toggling -->
                     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 
-                        <h6><em>Account name:</em></h6>
+                        <h6 style="text-align:center;"><em>Wallet connected</em></h6>
                         {{#if name == 'anonymous'}}
-                        <h5 style="color: #17B0E7">
+                        <h5 style="color: darkslategrey;text-align:center;">
                             {{name}}
                             <a href="#" class="editbutton" id="editPencil2"><i class="fa fa-pencil-alt" aria-hidden="true"></i></a>
                         </h5>
                         {{#else}}
-                        <h5 style="color: #17B0E7"><em>{{name}}</em></h5>
+                        <h5 style="color: darkslategrey;text-align:center;"><em>{{name}}</em></h5>
                         {{/if}}
-                        <hr />
                         <ul class="nav navbar-nav">
                             {{#each menu}}
                             {{#if Enabled}}
@@ -117,6 +116,8 @@
                             {{/if}}
                             {{/each}}
                         </ul>
+                        <div class="version">version 0.1.0</div>
+                        <div class="blockheight" id="blockheightparent"></div><div class="blockheight" id="blockheight"></div>
                     </div>
                     <!-- /.navbar-collapse -->
                 </div>
