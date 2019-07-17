@@ -760,3 +760,38 @@ ul.nav.nav-pills {
   text-transform: uppercase;
 }
 
+.contracts {
+  font-size: 1.3em;
+}
+
+.contracts h4 {
+  font-size: 1.5em;
+}
+
+.contracts .wrapper, .contracts select, .contracts input {
+  margin: 2em 0;
+}
+
+.contracts .button:hover {
+    background-color: #17B0E7;
+    color: #fff;
+}
+
+.contracts .button {
+    padding: .5em 1em;
+    color: #17B0E7;
+    border: 2px solid #17B0E7;
+    border-radius: 100px;
+    margin: 0 auto;
+    transition: background .25s ease-in-out, color .25s ease-in-out;
+    display: inline-block;
+    background-color: #fff;
+    cursor: pointer;
+    font-size: .8em;
+}
+
+.button:focus {
+  outline: none;
+}
+
+

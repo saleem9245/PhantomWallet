@@ -1,0 +1,8 @@
+
+
+1. GetAbi
+2. i want to be able to go through like /send/P14ZWsVcCckk9jGS74ici57Vp6F5fZGLVMiKJmdFYnF88 and that gets me to the send screen with the address prefilled
+3. getToken/getStakes
+4. getTokenBalance
+5. remove hardcoded chain
+6. Simnet / MainNet / TestNet

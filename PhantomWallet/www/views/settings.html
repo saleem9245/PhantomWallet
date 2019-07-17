@@ -6,7 +6,7 @@
     <div class="settings-row-icon"><i class="fas fa-cog"></i></div>
     <span class="settings-row-name">NETWORK</span>
     <div class="settings-row-item">
-      <select class="bootstrap-select">
+      <select class="bootstrap-select" style="text-transform: capitalize;">
           {{#each networks}}
           <option value="{{Value}}" {{#if IsEnabled}} selected="selected" {{#else}} disabled {{/if}}>{{Name}}</option>
           {{/each}}
