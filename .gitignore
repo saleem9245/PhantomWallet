@@ -9,6 +9,8 @@ PhantomCli/obj
 Published/
 www/bin
 www/session
-
+*.DS_Store
+*.history
+*session*
 PhantomWallet/www/session
 

@@ -13,6 +13,8 @@ using Phantasma.RpcClient.Client;
 using Phantasma.RpcClient.DTOs;
 using Phantasma.RpcClient.Interfaces;
 using Phantasma.VM.Utils;
+using Phantasma.VM;
+using Phantasma.Storage;
 using Phantom.Wallet.Helpers;
 using Phantom.Wallet.Models;
 using TokenFlags = Phantasma.RpcClient.DTOs.TokenFlags;
@@ -329,7 +331,7 @@ namespace Phantom.Wallet.Controllers
             }
         }
 
-        public async Task<string> InvokeContractGeneric(KeyPair keyPair, string contract, string method)
+        public async Task<object> InvokeContractGeneric(KeyPair keyPair, string contract, string method)
         {
             try
             {
@@ -340,7 +342,11 @@ namespace Phantom.Wallet.Controllers
                         .SpendGas(keyPair.Address)
                         .EndScript();
                 var result = await _phantasmaRpcService.InvokeRawScript.SendRequestAsync("main", script.Encode());
-                return (string)result.GetValue("result");
+
+                byte[] decodedResult = Base16.Decode((string)result.GetValue("result"));
+                VMObject output = Serialization.Unserialize<VMObject>(decodedResult);
+
+                return output.ToObject(); 
             }
             catch (RpcResponseException rpcEx)
             {
@@ -352,6 +358,25 @@ namespace Phantom.Wallet.Controllers
                 Debug.WriteLine($"Exception occurred: {ex.Message}");
                 return null;
             }
+        }
+
+        public async Task<ABIContractDto> GetContractABI(string chain, string contract)
+        {
+            try
+            {
+                var abi = await _phantasmaRpcService.GetABI.SendRequestAsync(chain, contract);
+                return abi;
+            }
+            catch (RpcResponseException rpcEx)
+            {
+                Debug.WriteLine($"RPC Exception occurred: {rpcEx.RpcError.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Debug.WriteLine($"Exception occurred: {ex.Message}");
+            }
+            return new ABIContractDto {};
         }
 
         public List<ChainDto> GetShortestPath(string chainName, string destinationChain)

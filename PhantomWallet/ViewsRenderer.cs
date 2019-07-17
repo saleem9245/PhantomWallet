@@ -199,6 +199,8 @@ namespace Phantom.Wallet
 
             TemplateEngine.Server.Post("/contract", RouteInvokeContract);
 
+            TemplateEngine.Server.Post("/contract/abi", RouteContractABI);
+
             TemplateEngine.Server.Get("/chains", RouteChains);
 
             foreach (var entry in MenuEntries)
@@ -458,6 +460,8 @@ namespace Phantom.Wallet
             var contract = request.GetVariable("contract");
             var method = request.GetVariable("method");
             var context = InitContext(request);
+            Console.WriteLine("Calling Contract: " + contract);
+            Console.WriteLine("method: " + method);
             // TODO check if contract exists
             if (context["holdings"] is Holding[] balance)
             {
@@ -479,6 +483,15 @@ namespace Phantom.Wallet
         {
             string json = Newtonsoft.Json.JsonConvert.SerializeObject(AccountController
                             .PhantasmaChains, Formatting.Indented);
+            return json;
+        }
+
+        private object RouteContractABI(HTTPRequest request)
+        {
+            var chain = request.GetVariable("chain");
+            var contract = request.GetVariable("contract");
+            string json = Newtonsoft.Json.JsonConvert.SerializeObject(AccountController
+                            .GetContractABI(chain, contract), Formatting.Indented);
             return json;
         }
 

@@ -64,6 +64,7 @@ namespace PhantomCli
             { "clear",  new Tuple<Action<string[]>, string>(Clear,          "test")},
             { "wallet", new Tuple<Action<string[]>, string>(CopyFunc,       "test")},
             { "tx",     new Tuple<Action<string[]>, string>(Transaction,    "test")},
+            { "contract", new Tuple<Action<string[]>, string>(ContractFunc,       "test")},
             { "invoke", new Tuple<Action<string[]>, string>(InvokeFunc,     "test")},
             { "history", new Tuple<Action<string[]>, string>(HistoryFunc,   "test")}
         };
@@ -73,6 +74,17 @@ namespace PhantomCli
             string txHash = string.Join("", obj);
             string json = Newtonsoft.Json.JsonConvert.SerializeObject(AccountController
                     .GetTxConfirmations(txHash).Result, Formatting.Indented);
+            Console.WriteLine(json);
+        }
+
+        private static void ContractFunc(string[] obj)
+        {
+            string chain = obj[0];
+            string contract = obj[1];
+            Console.WriteLine("Send");
+            string json = Newtonsoft.Json.JsonConvert.SerializeObject(AccountController
+                    .GetContractABI(chain, contract).Result, Formatting.Indented);
+            Console.WriteLine("done");
             Console.WriteLine(json);
         }
 
@@ -96,10 +108,8 @@ namespace PhantomCli
                 Console.WriteLine("Node returned null...");
                 return;
             }
-            byte[] decodedResult = Base16.Decode(result);
 
-            VMObject output = Serialization.Unserialize<VMObject>(decodedResult);
-            Console.WriteLine("Result: " + output.ToObject());
+            Console.WriteLine("Result: " + result);
 
         }
 
