@@ -753,4 +753,10 @@ ul.nav.nav-pills {
   background: #17B0E7;
 }
 
+.wrapper-chains {
+  padding: 1em;
+  border-radius: 1em;
+  border: 2px solid #17B0E7;
+  text-transform: uppercase;
+}
 
