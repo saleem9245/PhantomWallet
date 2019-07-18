@@ -7,10 +7,12 @@ using Phantasma.Blockchain.Contracts.Native;
 using Phantasma.Core.Log;
 using Phantasma.Cryptography;
 using Phantasma.RpcClient.DTOs;
+using Phantasma.Numerics;
 using Phantom.Wallet.Controllers;
 using Phantom.Wallet.Helpers;
 using Phantom.Wallet.Models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Phantom.Wallet
 {
@@ -457,11 +459,30 @@ namespace Phantom.Wallet
 
         private object RouteInvokeContract(HTTPRequest request)
         {
+            var chain = request.GetVariable("chain");
             var contract = request.GetVariable("contract");
             var method = request.GetVariable("method");
+            var param = request.GetVariable("params");
             var context = InitContext(request);
-            Console.WriteLine("Calling Contract: " + contract);
-            Console.WriteLine("method: " + method);
+
+            if (param == null) {
+                PushError(request, "Parameters cannot be null!");
+                return null;
+            }
+
+            // should be in its own method
+            JObject jsonparam = JsonConvert.DeserializeObject<JObject>(param); 
+            List<object> paramList = new List<object>();
+
+            foreach (var x in jsonparam) 
+            {
+                foreach (var y in (JObject)x.Value) 
+                {
+                    paramList.Add(y.Key);
+                }
+            }
+
+
             // TODO check if contract exists
             if (context["holdings"] is Holding[] balance)
             {
@@ -469,7 +490,15 @@ namespace Phantom.Wallet
                 if (soulBalance.Amount > 0.1m)
                 {
                     var keyPair = GetLoginKey(request);
-                    return AccountController.InvokeContractGeneric(keyPair, contract, method).Result;
+                    // address is first param
+                    paramList.Insert(0, keyPair.Address);
+
+                    var result = AccountController.InvokeContractGeneric(keyPair, chain, contract, method, paramList.ToArray()).Result;
+
+                    if (result.GetType() == typeof(BigInteger)) {
+                        return result.ToString();
+                    }
+                    return Newtonsoft.Json.JsonConvert.SerializeObject(result, Formatting.Indented);
                 }
                 else
                 {

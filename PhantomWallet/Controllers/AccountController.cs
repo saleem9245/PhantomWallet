@@ -331,15 +331,17 @@ namespace Phantom.Wallet.Controllers
             }
         }
 
-        public async Task<object> InvokeContractGeneric(KeyPair keyPair, string contract, string method)
+        public async Task<object> InvokeContractGeneric(
+                KeyPair keyPair, string chain, string contract, string method, object[] paramArray)
         {
             try
             {
+                Address address = (Address) paramArray[0];
                 var script = ScriptUtils
                         .BeginScript()
-                        .AllowGas(keyPair.Address, Address.Null, 1, 9999)
-                        .CallContract(contract, method, keyPair.Address)
-                        .SpendGas(keyPair.Address)
+                        .AllowGas(address, Address.Null, 1, 9999)
+                        .CallContract(contract, method, paramArray)
+                        .SpendGas(address)
                         .EndScript();
                 var result = await _phantasmaRpcService.InvokeRawScript.SendRequestAsync("main", script.Encode());
 

@@ -100,10 +100,12 @@ namespace PhantomCli
 
         private static void InvokeFunc(string[] obj)
         {
-            string contract = obj[0];
-            string method = obj[1];
+            string chain = obj[0];
+            string contract = obj[1];
+            string method = obj[2];
             KeyPair kp = GetLoginKey();
-            var result = AccountController.InvokeContractGeneric(kp, contract, method).Result;
+            object[] paramArray = new object[] {};
+            var result = AccountController.InvokeContractGeneric(kp, chain, contract, method, paramArray).Result;
             if (result == null) {
                 Console.WriteLine("Node returned null...");
                 return;
