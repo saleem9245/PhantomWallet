@@ -74,6 +74,17 @@ function RegisterName() {
 $(document).ready(function() {
     $("#editPencil").click(RegisterName);
     $("#editPencil2").click(RegisterName);
+
+    // Custom check for night mode
+    onloadtoggle = true;
+    if (localStorage.getItem('themesetting') == 'night') {
+        if (document.getElementById("cb4")) {
+          document.getElementById("cb4").checked = true;
+        }
+        toggleNightMode();
+        onloadtoggle = false;
+    }
+
 });
 
 setInterval(function() {
@@ -103,4 +114,19 @@ function numberWithCommas(x) {
     var parts = x.toString().split(".");
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     return parts.join(".")
+}
+
+function toggleNightMode() {
+  $('.well').toggleClass('dark-mode');
+  $('.sidenav').toggleClass('dark-mode');
+
+  // Handles toggle nightmode on refresh
+  if (localStorage.getItem('themesetting') == 'night') {
+      if (onloadtoggle !== true) {
+          localStorage.setItem('themesetting', 'day');
+      }
+  } else {
+      localStorage.setItem('themesetting', 'night');
+      onloadtoggle = false;
+  }
 }

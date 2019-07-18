@@ -22,16 +22,18 @@
 </div>
 
 
-<script type="text/javascript">
+<script>
+    var QR_CONTENT = "phantasma://{{address}}";
 
-var target = document.getElementById("qrcode");
-var qrcode = new QRCode(target, {
-    text: "phantasma://{{address}}",
-    width: 272,
-    height: 272,
-    colorDark : "#000000",
-    colorLight: "#ffffff",
-    correctLevel : QRCode.CorrectLevel.H
-});
+    var QR_IMAGE = "/img/phantasma_logo_white.png";
 
+    var QR_FILTER = "color";
+
+    var QR_CONTAINER = document.getElementById("qrcode");
+
+    new QArt({
+        value: QR_CONTENT,
+        imagePath: QR_IMAGE,
+        filter: QR_FILTER
+    }).make(QR_CONTAINER);
 </script>

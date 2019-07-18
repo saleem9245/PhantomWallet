@@ -32,7 +32,7 @@
 </div>
 
 <script>
-
+/*
 function confirmRun() {
 
   var e = document.getElementById("contractinput");
@@ -45,6 +45,21 @@ function confirmRun() {
        function (returnedData) {
           console.log(returnedData)
           document.getElementById("contractresult").innerHTML = returnedData;
+       }).fail(function(e) {
+          console.log(e);
+   });
+}
+*/
+function confirmRun() {
+
+   $.post('/contract/abi',
+       {
+           chain: "main",
+           contract: 'bank'
+       },
+       function (returnedData) {
+          console.log(returnedData)
+          //document.getElementById("contractresult").innerHTML = returnedData;
        }).fail(function(e) {
           console.log(e);
    });
