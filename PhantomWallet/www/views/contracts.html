@@ -32,9 +32,9 @@
 </div>
 
 <script>
-
-function confirmRun() {
 /*
+function confirmRun() {
+
   var e = document.getElementById("contractinput");
 
    $.post('/contract',
@@ -53,14 +53,52 @@ function confirmRun() {
 
 function confirmRun() {
 
+  chain = 'main';
+  contract = 'energy';
+  method = 'GetMasterClaimDateFromReference';
+  params = ''
+
    $.post('/contract/abi',
        {
-           chain: 'main',
-           contract: 'energy'
+           chain: chain,
+           contract: contract
        },
        function (returnedData) {
-          console.log(returnedData)
-          //document.getElementById("contractresult").innerHTML = returnedData;
+          console.log(JSON.parse(returnedData))
+          var matchingMethod = (JSON.parse(returnedData).methods).filter(function(matchedMethod) {
+          	return matchedMethod.name == method;
+          });
+          parameters = matchingMethod[0].parameters;
+          returntype = matchingMethod[0].returnType;
+
+          var pLength = parameters.length,
+              i = 0;
+
+          for (i; i < pLength; i += 1) {
+            console.log(parameters[i])
+          }
+
+          params1 = { 12: 'Number' };
+          params2 = { '2019-10-11 23:00:00': 'Timestamp'};
+
+          $.post('/contract',
+              {
+                  chain: chain,
+                  contract: contract,
+                  method: method,
+                  params: {
+                        params1,
+                        params2
+                  }
+              },
+              function (returnedData) {
+                 console.log(returnedData)
+                 document.getElementById("contractresult").innerHTML = returnedData;
+              }).fail(function(e) {
+                 console.log(JSON.stringify(e));
+          });
+
+
        }).fail(function(e) {
           console.log(JSON.stringify(e));
    });
