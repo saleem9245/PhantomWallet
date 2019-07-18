@@ -490,9 +490,9 @@ namespace Phantom.Wallet
         {
             var chain = request.GetVariable("chain");
             var contract = request.GetVariable("contract");
-            string json = Newtonsoft.Json.JsonConvert.SerializeObject(AccountController
-                            .GetContractABI(chain, contract), Formatting.Indented);
-            return json;
+            var result = Newtonsoft.Json.JsonConvert.SerializeObject(AccountController
+                    .GetContractABI(chain, contract).Result, Formatting.Indented);
+            return result;
         }
 
         private object RouteRegisterName(HTTPRequest request)
