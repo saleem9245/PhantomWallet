@@ -816,7 +816,7 @@ ul.nav.nav-pills {
     color: black !important;
 }
 
-.dark-mode h4 {
+.dark-mode h4, .dark-mode h3 {
     color: #fff;
 }
 

@@ -1,8 +1,19 @@
 
 
-1. GetAbi
+1. GetAbi / bug when passing chain and contract
+
+generic contract call: nothing returned for example for energy / getunclaimed
+
 2. i want to be able to go through like /send/P14ZWsVcCckk9jGS74ici57Vp6F5fZGLVMiKJmdFYnF88 and that gets me to the send screen with the address prefilled
+
 3. getToken/getStakes
+
 4. getTokenBalance
+
 5. remove hardcoded chain
+
 6. Simnet / MainNet / TestNet
+
+save config settings (network + currency + theme) locally / xml?
+
+
