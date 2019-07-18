@@ -32,9 +32,9 @@
 </div>
 
 <script>
-/*
-function confirmRun() {
 
+function confirmRun() {
+/*
   var e = document.getElementById("contractinput");
 
    $.post('/contract',
@@ -46,23 +46,25 @@ function confirmRun() {
           console.log(returnedData)
           document.getElementById("contractresult").innerHTML = returnedData;
        }).fail(function(e) {
-          console.log(e);
+          console.log(JSON.stringify(e));
    });
 }
 */
+
 function confirmRun() {
 
    $.post('/contract/abi',
        {
-           chain: "main",
-           contract: 'bank'
+           chain: 'main',
+           contract: 'energy'
        },
        function (returnedData) {
           console.log(returnedData)
           //document.getElementById("contractresult").innerHTML = returnedData;
        }).fail(function(e) {
-          console.log(e);
+          console.log(JSON.stringify(e));
    });
 }
+
 
 </script>
