@@ -16,4 +16,6 @@ generic contract call: nothing returned for example for energy / getunclaimed
 
 save config settings (network + currency + theme) locally / xml?
 
+rework json to object[] parsing
+
 
