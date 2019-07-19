@@ -310,7 +310,6 @@ namespace Phantom.Wallet.Controllers
                        .SpendGas(keyPair.Address)
                        .EndScript();
 
-                // TODO this should be a dropdown in the wallet settings!!
                 var nexusName = "simnet";
                 var tx = new Phantasma.Blockchain.Transaction(nexusName, "main", script, DateTime.UtcNow + TimeSpan.FromHours(1));
 
@@ -331,6 +330,40 @@ namespace Phantom.Wallet.Controllers
             }
         }
 
+        public async Task<string> InvokeContractTxGeneric(
+                KeyPair keyPair, string chain, string contract, string method, object[] paramArray)
+        {
+            try
+            {
+                Address address = (Address) paramArray[0];
+                var script = ScriptUtils.BeginScript()
+                       .AllowGas(keyPair.Address, Address.Null, 1, 9999)
+                        .CallContract(contract, method, paramArray)
+                       .SpendGas(keyPair.Address)
+                       .EndScript();
+
+                // TODO should be config
+                var nexusName = "simnet";
+
+                var tx = new Phantasma.Blockchain.Transaction(nexusName, chain, script, DateTime.UtcNow + TimeSpan.FromHours(1));
+
+                tx.Sign(keyPair);
+
+                var txResult = await _phantasmaRpcService.SendRawTx.SendRequestAsync(tx.ToByteArray(true).Encode());
+                Console.WriteLine("txResult: " + txResult);
+                return txResult;
+            }
+            catch (RpcResponseException rpcEx)
+            {
+                Debug.WriteLine($"RPC Exception occurred: {rpcEx.RpcError.Message}");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Exception occurred: {ex.Message}");
+            }
+            return null;
+        }
+
         public async Task<object> InvokeContractGeneric(
                 KeyPair keyPair, string chain, string contract, string method, object[] paramArray)
         {
@@ -343,7 +376,8 @@ namespace Phantom.Wallet.Controllers
                         .CallContract(contract, method, paramArray)
                         .SpendGas(address)
                         .EndScript();
-                var result = await _phantasmaRpcService.InvokeRawScript.SendRequestAsync("main", script.Encode());
+
+                var result = await _phantasmaRpcService.InvokeRawScript.SendRequestAsync(chain, script.Encode());
 
                 byte[] decodedResult = Base16.Decode((string)result.GetValue("result"));
                 VMObject output = Serialization.Unserialize<VMObject>(decodedResult);

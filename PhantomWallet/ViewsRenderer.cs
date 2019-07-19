@@ -201,6 +201,8 @@ namespace Phantom.Wallet
 
             TemplateEngine.Server.Post("/contract", RouteInvokeContract);
 
+            TemplateEngine.Server.Post("/contract/tx", RouteInvokeContractTx);
+
             TemplateEngine.Server.Post("/contract/abi", RouteContractABI);
 
             TemplateEngine.Server.Get("/chains", RouteChains);
@@ -457,6 +459,49 @@ namespace Phantom.Wallet
             return "unconfirmed";
         }
 
+        private object RouteInvokeContractTx(HTTPRequest request)
+        {
+            var chain = request.GetVariable("chain");
+            var contract = request.GetVariable("contract");
+            var method = request.GetVariable("method");
+            var param = request.GetVariable("params");
+            var context = InitContext(request);
+
+            if (param == null) {
+                PushError(request, "Parameters cannot be null!");
+                return null;
+            }
+
+            List<object> paramList = SendUtils.BuildParamList(param);
+
+            if (context["holdings"] is Holding[] balance)
+            {
+                var soulBalance = balance.SingleOrDefault(b => b.Symbol == "SOUL");
+                if (soulBalance.Amount > 0.1m)
+                {
+                    var keyPair = GetLoginKey(request);
+                    // address is first param for now
+                    paramList.Insert(0, keyPair.Address);
+
+                    var contractTx = AccountController.InvokeContractTxGeneric(
+                            keyPair, chain, contract, method, paramList.ToArray()
+                            ).Result;
+
+                    if (SendUtils.IsTxHashValid(contractTx))
+                    {
+                        return contractTx;
+                    }
+
+                    PushError(request, contractTx);
+                }
+                else
+                {
+                    PushError(request, "You need a small drop of SOUL (+0.1) to call a contract.");
+                }
+            }
+            return null;
+        }
+
         private object RouteInvokeContract(HTTPRequest request)
         {
             var chain = request.GetVariable("chain");
@@ -470,18 +515,7 @@ namespace Phantom.Wallet
                 return null;
             }
 
-            // should be in its own method
-            JObject jsonparam = JsonConvert.DeserializeObject<JObject>(param); 
-            List<object> paramList = new List<object>();
-
-            foreach (var x in jsonparam) 
-            {
-                foreach (var y in (JObject)x.Value) 
-                {
-                    paramList.Add(y.Key);
-                }
-            }
-
+            List<object> paramList = SendUtils.BuildParamList(param);
 
             // TODO check if contract exists
             if (context["holdings"] is Holding[] balance)

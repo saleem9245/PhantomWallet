@@ -59,14 +59,15 @@ namespace PhantomCli
         private static Dictionary<string, Tuple<Action<string[]>, string>> lCommands = 
             new Dictionary<string, Tuple<Action<string[]>, string>>()
         {
-            { "help",   new Tuple<Action<string[]>, string>(HelpFunc,       "test")},
-            { "exit",   new Tuple<Action<string[]>, string>(Exit,           "test")},
-            { "clear",  new Tuple<Action<string[]>, string>(Clear,          "test")},
-            { "wallet", new Tuple<Action<string[]>, string>(CopyFunc,       "test")},
-            { "tx",     new Tuple<Action<string[]>, string>(Transaction,    "test")},
-            { "contract", new Tuple<Action<string[]>, string>(ContractFunc,       "test")},
-            { "invoke", new Tuple<Action<string[]>, string>(InvokeFunc,     "test")},
-            { "history", new Tuple<Action<string[]>, string>(HistoryFunc,   "test")}
+            { "help",       new Tuple<Action<string[]>, string>(HelpFunc,       "test")},
+            { "exit",       new Tuple<Action<string[]>, string>(Exit,           "test")},
+            { "clear",      new Tuple<Action<string[]>, string>(Clear,          "test")},
+            { "wallet",     new Tuple<Action<string[]>, string>(CopyFunc,       "test")},
+            { "tx",         new Tuple<Action<string[]>, string>(Transaction,    "test")},
+            { "contract",   new Tuple<Action<string[]>, string>(ContractFunc,   "test")},
+            { "invoke",     new Tuple<Action<string[]>, string>(InvokeFunc,     "test")},
+            { "invokeTx",   new Tuple<Action<string[]>, string>(InvokeTxFunc,     "test")},
+            { "history",    new Tuple<Action<string[]>, string>(HistoryFunc,    "test")}
         };
 
         private static void Transaction(string[] obj)
@@ -98,13 +99,30 @@ namespace PhantomCli
             Console.WriteLine();
         }
 
+        private static void InvokeTxFunc(string[] obj)
+        {
+            string chain = obj[0];
+            string contract = obj[1];
+            string method = obj[2];
+            KeyPair kp = GetLoginKey();
+            object[] paramArray = new object[] {kp.Address, kp.Address};
+            var result = AccountController.InvokeContractTxGeneric(kp, chain, contract, method, paramArray).Result;
+            if (result == null) {
+                Console.WriteLine("Node returned null...");
+                return;
+            }
+
+            Console.WriteLine("Result: " + result);
+
+        }
+
         private static void InvokeFunc(string[] obj)
         {
             string chain = obj[0];
             string contract = obj[1];
             string method = obj[2];
             KeyPair kp = GetLoginKey();
-            object[] paramArray = new object[] {};
+            object[] paramArray = new object[] {kp.Address};
             var result = AccountController.InvokeContractGeneric(kp, chain, contract, method, paramArray).Result;
             if (result == null) {
                 Console.WriteLine("Node returned null...");

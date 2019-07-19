@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using Phantasma.Cryptography;
 using Phantasma.RpcClient.DTOs;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Phantom.Wallet.Helpers
 {
@@ -38,6 +40,22 @@ namespace Phantom.Wallet.Helpers
         public static bool IsTxHashValid(string data)
         {
             return Hash.TryParse(data, out Hash result);
+        }
+
+        public static List<object> BuildParamList(string parameters)
+        {
+            JObject jsonparam = JsonConvert.DeserializeObject<JObject>(parameters);
+            List<object> paramList = new List<object>();
+
+            foreach (var param in jsonparam)
+            {
+                foreach (var param2 in (JObject)param.Value)
+                {
+                    paramList.Add(param2.Key);
+                }
+            }
+
+            return paramList;
         }
 
         public static List<ChainDto> GetShortestPath(string from, string to, List<ChainDto> phantasmaChains)
