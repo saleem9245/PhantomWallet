@@ -3,106 +3,229 @@
 <div class="row setup-content contracts" id="step-3">
     <div class="col-xs-12">
         <div class="col-md-12">
-            <div class="form-group">
-                <h4>1) Select chain</h4>
-                <div class="wrapper">
-                  {{#each chains}}
-                    <span class="wrapper-chains button">{{Name}}</span>
-                  {{/each}}
-                </div>
-                <h4>2) Select contract</h4>
-                <select id="contractinput">
-                  {{#each chains}}
+            <div class="col-md-4 col-md-offset-2 center" style="height:0;">
+              <h4>Step 1) Select chain</h4>
+              <select id="chaininput" style="width: 5em;height: 2.5em;">
+                {{#each chains}}
                   <option value="{{Name}}">{{Name}}</option>
-                  {{/each}}
-                  <option value="energy">energy</option>
-                </select>
-                <h4>3) Enter method</h4>
-                <input id="methodinput" style="width:50%;" type="text" required="required" class="form-control borderless-input shadow-box" placeholder="Enter method" />
-                <h4>4) Enter parameters</h4>
-                <input id="parametersinput" style="width:50%" type="text" required="required" class="form-control borderless-input shadow-box" placeholder="Enter parameters" />
+                {{/each}}
+              </select>
+              <div class="wrapper">
+              </div>
             </div>
-            <div class="form-group">
-                <button type="button" class="button" onclick="confirmRun()">RUN</button>
-                <br>
+            <div class="col-md-4 center">
+              <h4>Step 2) Select contract</h4>
+              <select id="contractinput" style="width: 7em;height: 2.5em;"></select>
             </div>
-            <div class="card-footer" style="width:50%;" ><h6>Result</h6> <pre><div id="contractresult" class="p-3 border rounded"></div></pre></div>
+            <div class="col-md-12 center">
+              <div id="loader-methods" class="block-loader" style="text-align:center;">
+                <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+              </div>
+              <h4 id="methodinput-title" style="1em;">Step 3) Select method</h4>
+              <div id="methodinput" style="margin:1em;">
+              </div>
+              <div>
+              </div>
+            </div>
+            <div class="col-md-12 center">
+              <div id="loader-parameters" class="block-loader" style="text-align:center;">
+                <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+              </div>
+              <h4 id="parametersinput-title">Step 4) Enter parameters</h4>
+              <div id="parametersinput">
+              </div>
+              <div id="wrapper-confirmrun">
+              </div>
+            </div>
+            <div class="col-md-12 center" style="margin:2em auto;" ><h4 id="contractresult-title">Result</h4><pre id="contractresult" class="p-3 border rounded" style="width:33%;margin: 0 auto;"></div>
         </div>
     </div>
 </div>
 
 <script>
-/*
-function confirmRun() {
 
-  var e = document.getElementById("contractinput");
+  $("#methodinput").hide();
+  $("#methodinput-title").hide();
+  $("#parametersinput").hide();
+  $("#parametersinput-title").hide();
+  $("#contractresult").hide();
+  $("#contractresult-title").hide();
+  $("#loader-methods").hide();
+  $("#loader-parameters").hide();
+  $("#wrapper-confirmrun").hide();
+  selectedchain = 'main';
+  getChainContracts('step1-main');
 
-   $.post('/contract',
-       {
-           contract: e.options[e.selectedIndex].value,
-           method: document.getElementById("methodinput").value
-       },
-       function (returnedData) {
-          console.log(returnedData)
-          document.getElementById("contractresult").innerHTML = returnedData;
-       }).fail(function(e) {
-          console.log(JSON.stringify(e));
+  $("#chaininput").change(function () {
+       var e = document.getElementById("chaininput");
+       var chain = 'step1-' + e.options[e.selectedIndex].value;
+       $("#methodinput").hide();
+       $("#methodinput-title").hide();
+       $("#parametersinput").hide();
+       $("#parametersinput-title").hide();
+       $("#contractresult").hide();
+       $("#contractresult-title").hide();
+       $("#loader-methods").hide();
+       $("#loader-parameters").hide();
+       $("#wrapper-confirmrun").hide();
+       getChainContracts(chain);
    });
-}
-*/
 
-function confirmRun() {
+  function getChainContracts(chain) {
 
-  chain = 'main';
-  contract = 'energy';
-  method = 'GetMasterClaimDateFromReference';
-  params = ''
+       chain = chain.substr(6);
+       if ($(document.getElementById("step1-" + selectedchain))) {
+        $(document.getElementById("step1-" + selectedchain)).removeClass('selected-chain');
+       }
+       fetchValuesContracts = '';
+       selectedchain = chain;
 
-   $.post('/contract/abi',
-       {
-           chain: chain,
-           contract: contract
-       },
-       function (returnedData) {
-          console.log(JSON.parse(returnedData))
-          var matchingMethod = (JSON.parse(returnedData).methods).filter(function(matchedMethod) {
-          	return matchedMethod.name == method;
-          });
-          parameters = matchingMethod[0].parameters;
-          returntype = matchingMethod[0].returnType;
+       $.get('/chains',
+         function (returnedData) {
+           var matchingContracts = (JSON.parse(returnedData)).filter(function(matchChain) {
+            return matchChain.name == chain;
+           });
+           var clength = (matchingContracts[0].contracts).length,
+               i = 0;
+           for (i; i < clength; i += 1) {
+             fetchValuesContracts += '<option value="' + (matchingContracts[0].contracts)[i] + '">' + (matchingContracts[0].contracts)[i] + '</option>';
+           }
+           document.getElementById("contractinput").innerHTML = fetchValuesContracts;
+         }).fail(function() {
+            console.log("error");
+         });
 
-          var pLength = parameters.length,
+         $(document.getElementById("step1-" + chain)).addClass('selected-chain').delay(150).queue(function(next){});
+  }
+
+  $("#contractinput").change(function () {
+       var e = document.getElementById("contractinput");
+       var contract = e.options[e.selectedIndex].value;
+       $("#methodinput").show();
+       $("#methodinput-title").show();
+       $("#parametersinput").hide();
+       $("#parametersinput-title").hide();
+       $("#wrapper-confirmrun").hide();
+       $("#contractresult").hide();
+       getABI(contract);
+   });
+
+  function getABI(contract) {
+
+      var e = document.getElementById("chaininput");
+      var chain = e.options[e.selectedIndex].value;
+      var f = document.getElementById("contractinput");
+      var contract = f.options[f.selectedIndex].value;
+      fetchValuesMethod = '';
+
+      $.post('/contract/abi',
+        {
+            chain: chain,
+            contract: contract
+        },
+        function (returnedData) {
+          var methodslength = (JSON.parse(returnedData).methods).length,
               i = 0;
-
-          for (i; i < pLength; i += 1) {
-            console.log(parameters[i])
+          for (i; i < methodslength; i += 1) {
+            fetchValuesMethod += '<span class="wrapper-methods button" id="step3-' + (JSON.parse(returnedData).methods)[i].name + '" onclick="getMethodParams(this.id)">' + (JSON.parse(returnedData).methods)[i].name + '</span>';
           }
+          document.getElementById("methodinput").innerHTML = fetchValuesMethod;
+        }).fail(function() {
+           console.log("error");
+        });
 
-          params1 = { 12: 'Number' };
-          params2 = { '2019-10-11 23:00:00': 'Timestamp'};
+  }
 
-          $.post('/contract',
-              {
-                  chain: chain,
-                  contract: contract,
-                  method: method,
-                  params: {
-                        params1,
-                        params2
-                  }
-              },
-              function (returnedData) {
-                 console.log(returnedData)
-                 document.getElementById("contractresult").innerHTML = returnedData;
-              }).fail(function(e) {
-                 console.log(JSON.stringify(e));
-          });
+  function getMethodParams(method) {
 
+      $("#parametersinput").show();
+      $("#parametersinput-title").show();
+      $("#wrapper-confirmrun").show();
+      $("#contractresult").hide();
+      document.getElementById("contractresult").innerHTML = '';
+      method = method.substr(6);
+      if (typeof selectedmethod !== 'undefined') {
+        $(document.getElementById("step3-" + selectedmethod)).removeClass('selected-method');
+      }
+      selectedmethod = method;
+      $(document.getElementById("step3-" + method)).addClass('selected-method').delay(150).queue(function(next){});
+      var e = document.getElementById("chaininput");
+      chain = e.options[e.selectedIndex].value;
+      var f = document.getElementById("contractinput");
+      contract = f.options[f.selectedIndex].value;
+      fetchValuesParams = '';
 
-       }).fail(function(e) {
-          console.log(JSON.stringify(e));
-   });
+      $.post('/contract/abi',
+        {
+            chain: chain,
+            contract: contract
+        },
+        function (returnedData) {
+           var matchingMethod = (JSON.parse(returnedData).methods).filter(function(matchedMethod) {
+             return matchedMethod.name == method;
+           });
+           var pLength = (matchingMethod[0].parameters).length,
+               i = 0;
+           var params = {};
+           for (i; i < pLength; i += 1) {
+             params[i] = { [i] : matchingMethod[0].parameters[i] }
+             fetchValuesParams += matchingMethod[0].parameters[i] +'<div><input id="parametersinput-' + [i] + '" type="text" class="form-control parameters-input" placeholder="Enter parameter ' + [i+1] + '"</div>'
+           }
+           if (fetchValuesParams !== '') {
+             document.getElementById("parametersinput").innerHTML = fetchValuesParams;
+           } else {
+             $("#parametersinput-title").hide();
+             document.getElementById("parametersinput").innerHTML = '<div style="margin:2em auto;">No parameters required.</div>'
+           }
+           document.getElementById("wrapper-confirmrun").innerHTML = '<button id="confirmrun-'+method+'" type="button" style="border-radius:0;font-size:1.2em;" class="button" onclick="confirmRun(this.id)">RUN</button>';
+        }).fail(function(e) {
+           console.log(JSON.stringify(e));
+        });
+
+  }
+
+  function confirmRun(method) {
+
+    method = method.substr(11);
+
+    $.post('/contract/abi',
+      {
+          chain: chain,
+          contract: contract
+      },
+      function (returnedData) {
+         var matchingMethod = (JSON.parse(returnedData).methods).filter(function(matchedMethod) {
+           return matchedMethod.name == method;
+         });
+         var pLength = (matchingMethod[0].parameters).length,
+             i = 0;
+         var params = {};
+         for (i; i < pLength; i += 1) {
+           params[i] = { [i] : matchingMethod[0].parameters[i] }
+         }
+
+         $.post('/contract',
+             {
+                 chain: chain,
+                 contract: contract,
+                 method: method,
+                 params: JSON.stringify({
+                   params
+                 })
+             },
+             function (returnedData) {
+                document.getElementById("contractresult").innerHTML = returnedData;
+             }).fail(function(e) {
+                console.log(JSON.stringify(e));
+                document.getElementById("contractresult").innerHTML = JSON.stringify(e.statusText);
+             });
+
+      }).fail(function(e) {
+         console.log(JSON.stringify(e));
+      });
+
+    $("#contractresult").show();
+
 }
-
 
 </script>
