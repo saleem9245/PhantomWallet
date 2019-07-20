@@ -937,5 +937,20 @@ transform: rotate(360deg);
     border-bottom: 1px solid black;
 }
 
+.dark-mode select {
+    background-color: inherit;
+}
+
+.dark-mode .button {
+    color: #fff;
+    border: 2px solid #fff;
+    background-color: inherit;
+}
+
+.dark-mode input, .dark-mode pre {
+  background-color: #333;
+  color: #fff;
+}
+
 
 

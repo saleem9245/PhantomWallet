@@ -1,18 +1,14 @@
 
-generic contract call: nothing returned for example for energy / getunclaimed
-
 i want to be able to go through like /send/P14ZWsVcCckk9jGS74ici57Vp6F5fZGLVMiKJmdFYnF88 and that gets me to the send screen with the address prefilled
 
 getToken/getStakes/getTokenBalance/getUnclaimed/claim
 
-remove hardcoded main chain
+Network type + currency + dark mode saved locally / xml?
 
-Simnet / MainNet / TestNet
+api number returned, divide by decimals (10 or 8)
 
-save config settings (network + currency + theme) locally / xml?
+Why do most contract call return a tx?
 
-rework json to object[] parsing
+Contract timestamp / enum handling
 
-Generic signed call (ex. Stake)
-
-Contract timestamp handling / ABI add param names
+Remove address object from parameters

@@ -99,8 +99,11 @@
   }
 
   $("#contractinput").change(function () {
+       $("#loader-methods").show();
        var e = document.getElementById("contractinput");
        var contract = e.options[e.selectedIndex].value;
+       fetchValuesMethod = '';
+       document.getElementById("methodinput").innerHTML = fetchValuesMethod;
        $("#methodinput").show();
        $("#methodinput-title").show();
        $("#parametersinput").hide();
@@ -129,7 +132,13 @@
           for (i; i < methodslength; i += 1) {
             fetchValuesMethod += '<span class="wrapper-methods button" id="step3-' + (JSON.parse(returnedData).methods)[i].name + '" onclick="getMethodParams(this.id)">' + (JSON.parse(returnedData).methods)[i].name + '</span>';
           }
-          document.getElementById("methodinput").innerHTML = fetchValuesMethod;
+          if (methodslength == 0) {
+            console.log('in')
+            document.getElementById("methodinput").innerHTML = '<div style="margin:2em auto;">No methods available.</div>';
+          } else {
+            document.getElementById("methodinput").innerHTML = fetchValuesMethod;
+          }
+          $("#loader-methods").hide();
         }).fail(function() {
            console.log("error");
         });
@@ -137,11 +146,14 @@
   }
 
   function getMethodParams(method) {
-
+      $("#loader-parameters").show();
+      fetchValuesParams = '';
+      document.getElementById("parametersinput").innerHTML = fetchValuesParams;
       $("#parametersinput").show();
       $("#parametersinput-title").show();
       $("#wrapper-confirmrun").show();
       $("#contractresult").hide();
+      $("#contractresult-title").hide();
       document.getElementById("contractresult").innerHTML = '';
       method = method.substr(6);
       if (typeof selectedmethod !== 'undefined') {
@@ -153,7 +165,6 @@
       chain = e.options[e.selectedIndex].value;
       var f = document.getElementById("contractinput");
       contract = f.options[f.selectedIndex].value;
-      fetchValuesParams = '';
 
       $.post('/contract/abi',
         {
@@ -166,10 +177,8 @@
            });
            var pLength = (matchingMethod[0].parameters).length,
                i = 0;
-           var params = {};
            for (i; i < pLength; i += 1) {
-             params[i] = { [i] : matchingMethod[0].parameters[i] }
-             fetchValuesParams += matchingMethod[0].parameters[i] +'<div><input id="parametersinput-' + [i] + '" type="text" class="form-control parameters-input" placeholder="Enter parameter ' + [i+1] + '"</div>'
+             fetchValuesParams += matchingMethod[0].parameters[i].name +'<div><input id="parametersinput-' + [i] + '" type="text" class="form-control parameters-input" placeholder="Enter parameter ' + [i+1] + '"</div>'
            }
            if (fetchValuesParams !== '') {
              document.getElementById("parametersinput").innerHTML = fetchValuesParams;
@@ -178,6 +187,7 @@
              document.getElementById("parametersinput").innerHTML = '<div style="margin:2em auto;">No parameters required.</div>'
            }
            document.getElementById("wrapper-confirmrun").innerHTML = '<button id="confirmrun-'+method+'" type="button" style="border-radius:0;font-size:1.2em;" class="button" onclick="confirmRun(this.id)">RUN</button>';
+           $("#loader-parameters").hide();
         }).fail(function(e) {
            console.log(JSON.stringify(e));
         });
@@ -201,8 +211,11 @@
              i = 0;
          var params = {};
          for (i; i < pLength; i += 1) {
-           params[i] = { [i] : matchingMethod[0].parameters[i] }
+           //params[i] = { [i] : matchingMethod[0].parameters[i].type }
+           paramsnumber = ((document.getElementById('parametersinput-' + [i])).value)
+           params[i] = { [paramsnumber] : matchingMethod[0].parameters[i].type }
          }
+         console.log(params)
 
          $.post('/contract',
              {
@@ -216,8 +229,21 @@
              function (returnedData) {
                 document.getElementById("contractresult").innerHTML = returnedData;
              }).fail(function(e) {
-                console.log(JSON.stringify(e));
-                document.getElementById("contractresult").innerHTML = JSON.stringify(e.statusText);
+               $.post('/contract/tx',
+                   {
+                       chain: chain,
+                       contract: contract,
+                       method: method,
+                       params: JSON.stringify({
+                         params
+                       })
+                   },
+                   function (returnedData) {
+                      document.getElementById("contractresult").innerHTML = returnedData;
+                   }).fail(function(e) {
+                      console.log(JSON.stringify(e));
+                      document.getElementById("contractresult").innerHTML = JSON.stringify(e.statusText);
+                   });
              });
 
       }).fail(function(e) {
@@ -225,6 +251,7 @@
       });
 
     $("#contractresult").show();
+    $("#contractresult-title").show();
 
 }
 
