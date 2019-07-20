@@ -1,9 +1,15 @@
 ﻿using System;
+using System.Text;
+using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
+using Phantasma.Blockchain;
 using Phantasma.Cryptography;
 using Phantasma.RpcClient.DTOs;
+using Phantasma.Numerics;
+using Phantasma.Core.Types;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -42,6 +48,37 @@ namespace Phantom.Wallet.Helpers
             return Hash.TryParse(data, out Hash result);
         }
 
+        public static T ParseEnum<T>(string value)
+        {
+            return (T) Enum.Parse(typeof(T), value, true);
+        }
+
+        public static string GetAssemblyDirectory()
+        {
+            string codeBase = Assembly.GetExecutingAssembly().CodeBase;
+            UriBuilder uri = new UriBuilder(codeBase);
+            string path = Uri.UnescapeDataString(uri.Path);
+            return Path.GetDirectoryName(path);
+        }
+
+        public static object GetEnumType(string clazz, string input)
+        {
+            AssemblyName[] assemblies = Assembly.GetExecutingAssembly().GetReferencedAssemblies();
+            List<Assembly> allAssemblies = new List<Assembly>();
+            foreach (var dllPath in Directory.GetFiles(GetAssemblyDirectory(), "*.dll"))
+            {
+                Assembly assembly = Assembly.LoadFrom(dllPath);
+                Type type = assembly.GetType(clazz);
+                if (type != null && type.IsEnum)
+                {
+                    var methodInfo = typeof(SendUtils).GetMethod("ParseEnum");
+                    var genericMethod = methodInfo.MakeGenericMethod(type);
+                    return genericMethod.Invoke(null, new object[]{input});
+                }
+            }
+            return null;
+        }
+
         public static List<object> BuildParamList(string parameters)
         {
             JObject jsonparam = JsonConvert.DeserializeObject<JObject>(parameters);
@@ -49,9 +86,69 @@ namespace Phantom.Wallet.Helpers
 
             foreach (var param in jsonparam)
             {
-                foreach (var param2 in (JObject)param.Value)
+                foreach (var param2 in param.Value)
                 {
-                    paramList.Add(param2.Key);
+                    string name = (string) param2["name"];
+                    string type = (string) param2["type"];
+                    string vmtype = (string) param2["vmtype"];
+                    string input = (string) param2["input"];
+                    string info = (string) param2["info"];
+
+                    //Console.WriteLine($"Object[name: {name} type: {type} vmtype: {vmtype} input: {input} info: {info} ]");
+
+                    object result = null;
+
+                    switch (type)
+                    {
+                        case "Phantasma.Cryptography.Address":
+                            result = Address.FromText(input);
+                            break;
+                        case "Phantasma.Numerics.BigInteger":
+                            BigInteger bigInt = new BigInteger();
+                            bool res = BigInteger.TryParse(input, out bigInt);
+                            if (!res) 
+                            {
+                                Console.WriteLine("still needs error handling!");
+                            } else
+                            {
+                                result = bigInt;
+                            }
+                            break;
+                        case "Phantasma.Core.Types.Timestamp":
+                            DateTime date = DateTime.ParseExact(input, "MM/dd/yyyy HH:mm:ss", 
+                                    System.Globalization.CultureInfo.InvariantCulture);
+                            DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+                            var ticks = (uint)(date.ToUniversalTime() - unixEpoch).TotalSeconds;
+                            result = new Timestamp(ticks);
+                            break;
+                        case "System.Boolean":
+                            result = bool.Parse(input);
+                            break;
+                        case "System.String":
+                            result = (string)input;
+                            break;
+                        case "System.Byte[]":
+                            result = Encoding.UTF8.GetBytes(input);
+                            break;
+                        case "Phantasma.Blockchain.Tokens.TokenInfo":
+                            // needs GetToken rpc call
+                            result = null;
+                            break;
+                        case "System.Int32":
+                            result = Int32.Parse(input);;
+                            break;
+                        case "Phantasma.Cryptography.Hash":
+                            result = Hash.Parse(input);
+                            break;
+                        default:
+                            result = GetEnumType(type, input);
+                            break;
+                    }
+
+                    if (result != null)
+                    {
+                        paramList.Add(result);
+                    }
                 }
             }
 

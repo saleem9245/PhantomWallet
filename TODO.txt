@@ -1,14 +1,9 @@
 
 i want to be able to go through like /send/P14ZWsVcCckk9jGS74ici57Vp6F5fZGLVMiKJmdFYnF88 and that gets me to the send screen with the address prefilled
 
-getToken/getStakes/getTokenBalance/getUnclaimed/claim
-
 Network type + currency + dark mode saved locally / xml?
 
 api number returned, divide by decimals (10 or 8)
 
-Why do most contract call return a tx?
+TokenInfo as contract parameter does not work yet
 
-Contract timestamp / enum handling
-
-Remove address object from parameters

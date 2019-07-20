@@ -11,6 +11,7 @@ using Phantasma.Numerics;
 using Phantasma.VM;
 using Phantasma.Storage;
 using Phantom.Wallet.Controllers;
+using Phantom.Wallet.Helpers;
 
 using Newtonsoft.Json;
 
@@ -66,9 +67,38 @@ namespace PhantomCli
             { "tx",         new Tuple<Action<string[]>, string>(Transaction,    "test")},
             { "contract",   new Tuple<Action<string[]>, string>(ContractFunc,   "test")},
             { "invoke",     new Tuple<Action<string[]>, string>(InvokeFunc,     "test")},
-            { "invokeTx",   new Tuple<Action<string[]>, string>(InvokeTxFunc,     "test")},
-            { "history",    new Tuple<Action<string[]>, string>(HistoryFunc,    "test")}
+            { "invokeTx",   new Tuple<Action<string[]>, string>(InvokeTxFunc,   "test")},
+            { "history",    new Tuple<Action<string[]>, string>(HistoryFunc,    "test")},
+            { "test",    new Tuple<Action<string[]>, string>(TestFunc,    "test")}
         };
+
+        private static void TestFunc(string[] obj)
+        {
+            // only used for quick testing!
+            //var json = @"{ 'parameters': [ { 'name': 'address', 'vmtype': 'Object', 'type': 'Phantasma.Cryptography.Address', 'input': 'P5ySorAXMaJLwe6AqTsshW3XD8ahkwNpWHU9KLX9CwkYd', 'info': 'info1' } ] }";
+            //List<object> lst = SendUtils.BuildParamList(json);
+            //lst.ForEach(Console.WriteLine);
+            var json2 = @"{ 'parameters': [  { 'name': 'address', 'vmtype': 'Object', 'type': 'Phantasma.Cryptography.Address', 'input': 'P5ySorAXMaJLwe6AqTsshW3XD8ahkwNpWHU9KLX9CwkYd', 'info': 'info1' }, 
+                                             { 'name': 'address', 'vmtype': 'Enum', 'type': 'Phantasma.Blockchain.ArchiveFlags', 'input': 'Compressed', 'info': 'info1' },
+                                             { 'name': 'address', 'vmtype': 'Enum', 'type': 'Phantasma.Blockchain.ArchiveFlags', 'input': 'None', 'info': 'info1' },
+                                             { 'name': 'address', 'vmtype': 'Enum', 'type': 'Phantasma.Blockchain.Contracts.Native.ExchangeOrderSide', 'input': 'Buy', 'info': 'info1' },
+                                             { 'name': 'address', 'vmtype': 'Enum', 'type': 'Phantasma.Blockchain.Contracts.Native.ExchangeOrderSide', 'input': 'Sell', 'info': 'info1' },
+                                             { 'name': 'address', 'vmtype': 'Enum', 'type': 'Phantasma.Blockchain.Contracts.Native.ExchangeOrderType', 'input': 'ImmediateOrCancel', 'info': 'info1' },
+                                             { 'name': 'address', 'vmtype': 'Enum', 'type': 'Phantasma.Blockchain.Contracts.Native.ExchangeOrderType', 'input': 'Limit', 'info': 'info1' },
+                                             { 'name': 'address', 'vmtype': 'Timestamp', 'type': 'Phantasma.Core.Types.Timestamp', 'input': '07/20/2019 20:04:30', 'info': 'info1' },
+                                             { 'name': 'address', 'vmtype': 'Bool', 'type': 'System.Boolean', 'input': 'False', 'info': 'info1' },
+                                             { 'name': 'address', 'vmtype': 'Bool', 'type': 'System.Boolean', 'input': 'True', 'info': 'info1' },
+                                             { 'name': 'address', 'vmtype': 'String', 'type': 'System.String', 'input': 'ThisIsAString', 'info': 'info1' },
+                                             { 'name': 'address', 'vmtype': 'Bytes', 'type': 'System.Byte[]', 'input': 'ThisIsAByteArray', 'info': 'info1' },
+                                             { 'name': 'address', 'vmtype': 'Number', 'type': 'System.Int32', 'input': '987654321', 'info': 'info1' },
+                                             { 'name': 'address', 'vmtype': 'Object', 'type': 'Phantasma.Cryptography.Hash', 'input': 'FFFFAAAAFFFFBBBBFFFFAAAAFFFFBBBBFFFFAAAAFFFFBBBBFFFFAAAAFFFFBBBB', 'info': 'info1' },
+                                             { 'name': 'address', 'vmtype': 'Object', 'type': 'Phantasma.Cryptography.Hash', 'input': '0xFFFFAAAAFFFFBBBBFFFFAAAAFFFFBBBBFFFFAAAAFFFFBBBBFFFFAAAAFFFFBBBB', 'info': 'info1' },
+                                             { 'name': 'address', 'vmtype': 'Number', 'type': 'Phantasma.Numerics.BigInteger', 'input': '12345678', 'info': 'info1' } 
+                                          ] }";
+            List<object> lst2 = SendUtils.BuildParamList(json2);
+            lst2.ForEach(Console.WriteLine);
+
+        }
 
         private static void Transaction(string[] obj)
         {

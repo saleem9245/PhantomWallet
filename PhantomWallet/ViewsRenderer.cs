@@ -207,6 +207,8 @@ namespace Phantom.Wallet
 
             TemplateEngine.Server.Get("/chains", RouteChains);
 
+            TemplateEngine.Server.Get("/tx/{txhash}", RouteTransaction);
+
             foreach (var entry in MenuEntries)
             {
                 var url = $"/{entry.Id}";
@@ -414,10 +416,9 @@ namespace Phantom.Wallet
 
             request.session.SetStruct<ErrorContext>("error", new ErrorContext { ErrorCode = "", ErrorDescription = $"{txHash} is still not confirmed." });
             var transactionDto = AccountController.GetTxConfirmations(txHash).Result;
+            Console.WriteLine("Confirmations:::: " + transactionDto.Confirmations);
 
-            // hack, transactionDto.Result might contain the confirmations, but that's empty
-            // so we check if the txid != null for now
-            if (transactionDto.Txid != null)
+            if (transactionDto.Confirmations > 0)
             {
                 request.session.SetString("confirmedHash", txHash);
                 if (request.session.GetBool("isCrossTransfer"))
@@ -459,6 +460,28 @@ namespace Phantom.Wallet
             return "unconfirmed";
         }
 
+        private object RouteTransaction(HTTPRequest request)
+        {
+            if (!HasLogin(request))
+            {
+                return HTTPResponse.Redirect("/login");
+            }
+
+            var context = InitContext(request);
+            var txHash = request.GetVariable("txhash");
+
+            request.session.SetStruct<ErrorContext>("error", new ErrorContext { ErrorCode = "", ErrorDescription = $"{txHash} is still not confirmed." });
+            var transactionDto = AccountController.GetTxConfirmations(txHash).Result;
+
+            if (transactionDto.Confirmations > 0)
+            {
+                return Newtonsoft.Json.JsonConvert.SerializeObject(transactionDto, Formatting.Indented);
+            }
+
+            PushError(request, "Error sending tx.");
+            return Newtonsoft.Json.JsonConvert.SerializeObject(new TransactionDto() {}, Formatting.Indented);
+        }
+
         private object RouteInvokeContractTx(HTTPRequest request)
         {
             var chain = request.GetVariable("chain");
@@ -480,9 +503,6 @@ namespace Phantom.Wallet
                 if (soulBalance.Amount > 0.1m)
                 {
                     var keyPair = GetLoginKey(request);
-                    // address is first param for now
-                    paramList.Insert(0, keyPair.Address);
-
                     var contractTx = AccountController.InvokeContractTxGeneric(
                             keyPair, chain, contract, method, paramList.ToArray()
                             ).Result;
@@ -524,9 +544,6 @@ namespace Phantom.Wallet
                 if (soulBalance.Amount > 0.1m)
                 {
                     var keyPair = GetLoginKey(request);
-                    // address is first param
-                    paramList.Insert(0, keyPair.Address);
-
                     var result = AccountController.InvokeContractGeneric(keyPair, chain, contract, method, paramList.ToArray()).Result;
 
                     if (result.GetType() == typeof(BigInteger)) {
