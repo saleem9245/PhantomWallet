@@ -5,5 +5,16 @@ Network type + currency + dark mode saved locally / xml?
 
 api number returned, divide by decimals (10 or 8)
 
-TokenInfo as contract parameter does not work yet
+change link like "http://localhost:7072/tx/{{Hash}}" to a dynamic one based on network selected (ie either http://localhost:7072/tx/{{Hash}} or https://explorer.phantasma.io/tx/{{Hash}} for example)
 
+
+
+
+
+
+
+
+
+
+TokenInfo as contract parameter does not work yet
+same for ArchiveFlags  and ExchangeOrderSide
