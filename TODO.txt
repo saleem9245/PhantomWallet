@@ -1,20 +1,12 @@
 
-i want to be able to go through like /send/P14ZWsVcCckk9jGS74ici57Vp6F5fZGLVMiKJmdFYnF88 and that gets me to the send screen with the address prefilled
 
-Network type + currency + dark mode saved locally / xml?
+3. Multisig stuff
 
-api number returned, divide by decimals (10 or 8)
+4. i want to be able to go through like /send/P14ZWsVcCckk9jGS74ici57Vp6F5fZGLVMiKJmdFYnF88 and that gets me to the send screen with the address prefilled
 
-change link like "http://localhost:7072/tx/{{Hash}}" to a dynamic one based on network selected (ie either http://localhost:7072/tx/{{Hash}} or https://explorer.phantasma.io/tx/{{Hash}} for example)
-
-
-
-
-
-
-
-
-
-
+5. TokenInfo as contract parameter does not work yet --> new ABI will describe complex types, until then an Object can only be an Address.
 TokenInfo as contract parameter does not work yet
 same for ArchiveFlags  and ExchangeOrderSide
+
+
+change link like "http://localhost:7072/tx/{{Hash}}" to a dynamic one based on network selected (ie either http://localhost:7072/tx/{{Hash}} or https://explorer.phantasma.io/tx/{{Hash}} for example)

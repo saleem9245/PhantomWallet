@@ -13,4 +13,7 @@ www/session
 *.history
 *session*
 PhantomWallet/www/session
+*.config
+*.walletconfig
+
 

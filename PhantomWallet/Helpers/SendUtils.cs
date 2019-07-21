@@ -9,6 +9,7 @@ using Phantasma.Blockchain;
 using Phantasma.Cryptography;
 using Phantasma.RpcClient.DTOs;
 using Phantasma.Numerics;
+using Phantasma.VM;
 using Phantasma.Core.Types;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -53,32 +54,6 @@ namespace Phantom.Wallet.Helpers
             return (T) Enum.Parse(typeof(T), value, true);
         }
 
-        public static string GetAssemblyDirectory()
-        {
-            string codeBase = Assembly.GetExecutingAssembly().CodeBase;
-            UriBuilder uri = new UriBuilder(codeBase);
-            string path = Uri.UnescapeDataString(uri.Path);
-            return Path.GetDirectoryName(path);
-        }
-
-        public static object GetEnumType(string clazz, string input)
-        {
-            AssemblyName[] assemblies = Assembly.GetExecutingAssembly().GetReferencedAssemblies();
-            List<Assembly> allAssemblies = new List<Assembly>();
-            foreach (var dllPath in Directory.GetFiles(GetAssemblyDirectory(), "*.dll"))
-            {
-                Assembly assembly = Assembly.LoadFrom(dllPath);
-                Type type = assembly.GetType(clazz);
-                if (type != null && type.IsEnum)
-                {
-                    var methodInfo = typeof(SendUtils).GetMethod("ParseEnum");
-                    var genericMethod = methodInfo.MakeGenericMethod(type);
-                    return genericMethod.Invoke(null, new object[]{input});
-                }
-            }
-            return null;
-        }
-
         public static List<object> BuildParamList(string parameters)
         {
             JObject jsonparam = JsonConvert.DeserializeObject<JObject>(parameters);
@@ -94,60 +69,56 @@ namespace Phantom.Wallet.Helpers
                     string input = (string) param2["input"];
                     string info = (string) param2["info"];
 
-                    //Console.WriteLine($"Object[name: {name} type: {type} vmtype: {vmtype} input: {input} info: {info} ]");
+                    VMObject result = new VMObject();
 
-                    object result = null;
-
-                    switch (type)
+                    switch (vmtype)
                     {
-                        case "Phantasma.Cryptography.Address":
-                            result = Address.FromText(input);
+                        case "Object":
+                            // for now, we assume every Object is an address
+                            // complex object creation will follow new ABI
+                            result.SetValue(Address.FromText(input));
                             break;
-                        case "Phantasma.Numerics.BigInteger":
+                        case "Number":
                             BigInteger bigInt = new BigInteger();
                             bool res = BigInteger.TryParse(input, out bigInt);
                             if (!res) 
                             {
-                                Console.WriteLine("still needs error handling!");
+                                throw new Exception($"Could not parse {input} to BigInteger");
                             } else
                             {
-                                result = bigInt;
+                                result.SetValue(bigInt);
                             }
                             break;
-                        case "Phantasma.Core.Types.Timestamp":
+                        case "Timestamp":
                             DateTime date = DateTime.ParseExact(input, "MM/dd/yyyy HH:mm:ss", 
                                     System.Globalization.CultureInfo.InvariantCulture);
-                            DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-                            var ticks = (uint)(date.ToUniversalTime() - unixEpoch).TotalSeconds;
-                            result = new Timestamp(ticks);
+                            result.SetValue(date);
                             break;
-                        case "System.Boolean":
-                            result = bool.Parse(input);
+                        case "Bool":
+                            result.SetValue(bool.Parse(input));
                             break;
-                        case "System.String":
-                            result = (string)input;
+                        case "String":
+                            result.SetValue(input);
                             break;
-                        case "System.Byte[]":
-                            result = Encoding.UTF8.GetBytes(input);
+                        case "Bytes":
+                            result.SetValue(Encoding.UTF8.GetBytes(input), VMType.Bytes);
                             break;
-                        case "Phantasma.Blockchain.Tokens.TokenInfo":
-                            // needs GetToken rpc call
-                            result = null;
-                            break;
-                        case "System.Int32":
-                            result = Int32.Parse(input);;
-                            break;
-                        case "Phantasma.Cryptography.Hash":
-                            result = Hash.Parse(input);
+                        case "Enum":
+                            uint enumNumber = Convert.ToUInt32(input);
+                            byte[] barr = BitConverter.GetBytes(enumNumber);
+                            result.SetValue(barr, VMType.Enum);
                             break;
                         default:
-                            result = GetEnumType(type, input);
-                            break;
+                            throw new Exception($"invalid vmtype: {vmtype} for {input}");
                     }
 
                     if (result != null)
                     {
                         paramList.Add(result);
+                    } 
+                    else 
+                    {
+                        Console.WriteLine($"Could not create parameter from object: Object[name: {name} type: {type} vmtype: {vmtype} input: {input} info: {info} ]");
                     }
                 }
             }

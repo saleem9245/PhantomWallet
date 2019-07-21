@@ -1,11 +1,10 @@
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.IO;
-
 using Phantasma.Cryptography;
 using Phantasma.Numerics;
 using Phantasma.VM;
@@ -24,16 +23,20 @@ namespace PhantomCli
 
         private static AccountController AccountController { get; set; }
 
+        private static CliWalletConfig config = new CliWalletConfig();
+
+        private static String prompt { get; set; }
+
         public static void SetupControllers()
         {
             AccountController = new AccountController();
         }
 
-
         static void Main(string[] args)
         {
             string version = "0.1";
-            var prompt = "phantom> ";
+            config = Utils.DeserializeConfig<CliWalletConfig>(".config");
+            prompt = config.Prompt;
             var startupMsg = "PhantomCli " + version;
 
             SetupControllers();
@@ -42,7 +45,7 @@ namespace PhantomCli
                 ((command, listCmd, lists) =>
                 {
 
-                    string command_main = command.Split(new char[] { ' ' }).First();
+                    string command_main = command.Trim().Split(new char[] { ' ' }).First();
                     string[] arguments = command.Split(new char[] { ' ' }).Skip(1).ToArray();
                     if (lCommands.ContainsKey(command_main))
                     {
@@ -69,8 +72,95 @@ namespace PhantomCli
             { "invoke",     new Tuple<Action<string[]>, string>(InvokeFunc,     "test")},
             { "invokeTx",   new Tuple<Action<string[]>, string>(InvokeTxFunc,   "test")},
             { "history",    new Tuple<Action<string[]>, string>(HistoryFunc,    "test")},
-            { "test",    new Tuple<Action<string[]>, string>(TestFunc,    "test")}
+            { "send",       new Tuple<Action<string[]>, string>(SendFunc,       "test")},
+            { "test",       new Tuple<Action<string[]>, string>(TestFunc,       "test")},
+            { "config",     new Tuple<Action<string[]>, string>(ConfigFunc,     "test")}
         };
+
+        private static void ConfigFunc(string[] obj)
+        {
+
+            if (obj.Length < 1)
+            {
+                Console.WriteLine("Too less arguments");
+                return;
+            }
+
+            string action = obj[0];
+            string cfgItem = null; 
+            string cfgValue = null;
+            try
+            {
+                cfgItem = obj[1];
+            }
+            catch (IndexOutOfRangeException ex)
+            {
+                if (action == "set") 
+                {
+                    Console.WriteLine("Item cannot be empty!");
+                    return;
+                }
+            }
+
+            try
+            {
+                cfgValue = obj[2];
+            }
+            catch (IndexOutOfRangeException ex)
+            {
+                if (action == "set") 
+                {
+                    Console.WriteLine("Value cannot be empty!");
+                    return;
+                }
+            }
+
+            if (action == "set") {
+                if (cfgItem == "prompt") 
+                {
+                    config.Prompt = cfgValue + " ";
+                    prompt = cfgValue + " ";
+                }
+                else if (cfgItem == "currency")
+                {
+                    // TODO check if currency is available
+                    config.Currency = cfgValue;
+                }
+                else if (cfgItem == "network")
+                {
+                    config.Network = cfgValue;
+                }
+                else
+                {
+                    Console.WriteLine("Config item not found!");
+                }
+                // write new cfg
+                Utils.SerializeConfig<CliWalletConfig>(config, ".config");
+
+            }
+            else if (action == "show") 
+            {
+                if (cfgItem == "prompt") 
+                {
+                    Console.WriteLine("Value: " + config.Prompt);
+                }
+                else if (cfgItem == "currency")
+                {
+                    Console.WriteLine("Value: " + config.Currency);
+                }
+                else if (cfgItem == "network")
+                {
+                    Console.WriteLine("Value: " + config.Network);
+                }
+                else
+                {
+                    Console.WriteLine(config.ToJson());
+ 
+                }
+
+            }
+        }
+
 
         private static void TestFunc(string[] obj)
         {
@@ -79,20 +169,18 @@ namespace PhantomCli
             //List<object> lst = SendUtils.BuildParamList(json);
             //lst.ForEach(Console.WriteLine);
             var json2 = @"{ 'parameters': [  { 'name': 'address', 'vmtype': 'Object', 'type': 'Phantasma.Cryptography.Address', 'input': 'P5ySorAXMaJLwe6AqTsshW3XD8ahkwNpWHU9KLX9CwkYd', 'info': 'info1' }, 
-                                             { 'name': 'address', 'vmtype': 'Enum', 'type': 'Phantasma.Blockchain.ArchiveFlags', 'input': 'Compressed', 'info': 'info1' },
-                                             { 'name': 'address', 'vmtype': 'Enum', 'type': 'Phantasma.Blockchain.ArchiveFlags', 'input': 'None', 'info': 'info1' },
-                                             { 'name': 'address', 'vmtype': 'Enum', 'type': 'Phantasma.Blockchain.Contracts.Native.ExchangeOrderSide', 'input': 'Buy', 'info': 'info1' },
-                                             { 'name': 'address', 'vmtype': 'Enum', 'type': 'Phantasma.Blockchain.Contracts.Native.ExchangeOrderSide', 'input': 'Sell', 'info': 'info1' },
-                                             { 'name': 'address', 'vmtype': 'Enum', 'type': 'Phantasma.Blockchain.Contracts.Native.ExchangeOrderType', 'input': 'ImmediateOrCancel', 'info': 'info1' },
-                                             { 'name': 'address', 'vmtype': 'Enum', 'type': 'Phantasma.Blockchain.Contracts.Native.ExchangeOrderType', 'input': 'Limit', 'info': 'info1' },
+                                             { 'name': 'address', 'vmtype': 'Enum', 'type': 'Phantasma.Blockchain.ArchiveFlags', 'input': '1', 'info': 'info1' },
+                                             { 'name': 'address', 'vmtype': 'Enum', 'type': 'Phantasma.Blockchain.ArchiveFlags', 'input': '1', 'info': 'info1' },
+                                             { 'name': 'address', 'vmtype': 'Enum', 'type': 'Phantasma.Blockchain.Contracts.Native.ExchangeOrderSide', 'input': '1', 'info': 'info1' },
+                                             { 'name': 'address', 'vmtype': 'Enum', 'type': 'Phantasma.Blockchain.Contracts.Native.ExchangeOrderSide', 'input': '2', 'info': 'info1' },
+                                             { 'name': 'address', 'vmtype': 'Enum', 'type': 'Phantasma.Blockchain.Contracts.Native.ExchangeOrderType', 'input': '3', 'info': 'info1' },
+                                             { 'name': 'address', 'vmtype': 'Enum', 'type': 'Phantasma.Blockchain.Contracts.Native.ExchangeOrderType', 'input': '4', 'info': 'info1' },
                                              { 'name': 'address', 'vmtype': 'Timestamp', 'type': 'Phantasma.Core.Types.Timestamp', 'input': '07/20/2019 20:04:30', 'info': 'info1' },
                                              { 'name': 'address', 'vmtype': 'Bool', 'type': 'System.Boolean', 'input': 'False', 'info': 'info1' },
                                              { 'name': 'address', 'vmtype': 'Bool', 'type': 'System.Boolean', 'input': 'True', 'info': 'info1' },
                                              { 'name': 'address', 'vmtype': 'String', 'type': 'System.String', 'input': 'ThisIsAString', 'info': 'info1' },
                                              { 'name': 'address', 'vmtype': 'Bytes', 'type': 'System.Byte[]', 'input': 'ThisIsAByteArray', 'info': 'info1' },
                                              { 'name': 'address', 'vmtype': 'Number', 'type': 'System.Int32', 'input': '987654321', 'info': 'info1' },
-                                             { 'name': 'address', 'vmtype': 'Object', 'type': 'Phantasma.Cryptography.Hash', 'input': 'FFFFAAAAFFFFBBBBFFFFAAAAFFFFBBBBFFFFAAAAFFFFBBBBFFFFAAAAFFFFBBBB', 'info': 'info1' },
-                                             { 'name': 'address', 'vmtype': 'Object', 'type': 'Phantasma.Cryptography.Hash', 'input': '0xFFFFAAAAFFFFBBBBFFFFAAAAFFFFBBBBFFFFAAAAFFFFBBBBFFFFAAAAFFFFBBBB', 'info': 'info1' },
                                              { 'name': 'address', 'vmtype': 'Number', 'type': 'Phantasma.Numerics.BigInteger', 'input': '12345678', 'info': 'info1' } 
                                           ] }";
             List<object> lst2 = SendUtils.BuildParamList(json2);
@@ -102,6 +190,26 @@ namespace PhantomCli
 
         private static void Transaction(string[] obj)
         {
+            if (obj.Length > 1)
+            {
+                Console.WriteLine("Too many arguments");
+                return;
+            }
+
+            if (obj.Length < 1)
+            {
+                Console.WriteLine("Too less arguments");
+                return;
+            }
+
+            string txHash = obj[0];
+            string json = Newtonsoft.Json.JsonConvert.SerializeObject(AccountController
+                    .GetTxConfirmations(txHash).Result, Formatting.Indented);
+            Console.WriteLine(json);
+        }
+
+        private static void SendFunc(string[] obj)
+        {
             string txHash = string.Join("", obj);
             string json = Newtonsoft.Json.JsonConvert.SerializeObject(AccountController
                     .GetTxConfirmations(txHash).Result, Formatting.Indented);
@@ -110,6 +218,18 @@ namespace PhantomCli
 
         private static void ContractFunc(string[] obj)
         {
+            if (obj.Length > 2)
+            {
+                Console.WriteLine("Too many arguments");
+                return;
+            }
+
+            if (obj.Length < 2)
+            {
+                Console.WriteLine("Too less arguments");
+                return;
+            }
+
             string chain = obj[0];
             string contract = obj[1];
             Console.WriteLine("Send");
@@ -131,6 +251,18 @@ namespace PhantomCli
 
         private static void InvokeTxFunc(string[] obj)
         {
+            if (obj.Length > 3)
+            {
+                Console.WriteLine("Too many arguments");
+                return;
+            }
+
+            if (obj.Length < 3)
+            {
+                Console.WriteLine("Too less arguments");
+                return;
+            }
+
             string chain = obj[0];
             string contract = obj[1];
             string method = obj[2];
