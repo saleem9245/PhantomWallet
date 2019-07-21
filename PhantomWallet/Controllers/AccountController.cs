@@ -335,7 +335,6 @@ namespace Phantom.Wallet.Controllers
         {
             try
             {
-                Address address = (Address) paramArray[0];
                 var script = ScriptUtils.BeginScript()
                        .AllowGas(keyPair.Address, Address.Null, 1, 9999)
                         .CallContract(contract, method, paramArray)

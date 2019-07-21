@@ -69,45 +69,49 @@ namespace Phantom.Wallet.Helpers
                     string input = (string) param2["input"];
                     string info = (string) param2["info"];
 
-                    VMObject result = new VMObject();
+                    //VMObject result = new VMObject();
+                    object result = null;
+                    Console.WriteLine($"Object[name: {name} type: {type} vmtype: {vmtype} input: {input} info: {info} ]");
 
                     switch (vmtype)
                     {
                         case "Object":
                             // for now, we assume every Object is an address
                             // complex object creation will follow new ABI
-                            result.SetValue(Address.FromText(input));
+                            Address address = Address.FromText(input);
+                            //result.SetValue(address);
+                            result = address;
                             break;
                         case "Number":
-                            BigInteger bigInt = new BigInteger();
-                            bool res = BigInteger.TryParse(input, out bigInt);
-                            if (!res) 
-                            {
-                                throw new Exception($"Could not parse {input} to BigInteger");
-                            } else
-                            {
-                                result.SetValue(bigInt);
-                            }
+                            BigInteger num = new BigInteger(input, 10);
+                            //result.SetValue((BigInteger) num);
+                            result = num;
                             break;
                         case "Timestamp":
                             DateTime date = DateTime.ParseExact(input, "MM/dd/yyyy HH:mm:ss", 
                                     System.Globalization.CultureInfo.InvariantCulture);
-                            result.SetValue(date);
+                            DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+                            var ticks = (uint)(date.ToUniversalTime() - unixEpoch).TotalSeconds;
+                            result = new Timestamp(ticks);
+                            //result.SetValue(date);
                             break;
                         case "Bool":
-                            result.SetValue(bool.Parse(input));
+                            //result.SetValue(bool.Parse(input));
+                            result = bool.Parse(input);
                             break;
                         case "String":
-                            result.SetValue(input);
+                            //result.SetValue(input);
+                            result = input;
                             break;
                         case "Bytes":
-                            result.SetValue(Encoding.UTF8.GetBytes(input), VMType.Bytes);
+                            //result.SetValue(Encoding.UTF8.GetBytes(input), VMType.Bytes);
+                            result = Encoding.UTF8.GetBytes(input);
                             break;
-                        case "Enum":
-                            uint enumNumber = Convert.ToUInt32(input);
-                            byte[] barr = BitConverter.GetBytes(enumNumber);
-                            result.SetValue(barr, VMType.Enum);
-                            break;
+                        //case "Enum":
+                        //    uint enumNumber = Convert.ToUInt32(input);
+                        //    byte[] barr = BitConverter.GetBytes(enumNumber);
+                        //    result.SetValue(barr, VMType.Enum);
+                        //    break;
                         default:
                             throw new Exception($"invalid vmtype: {vmtype} for {input}");
                     }
