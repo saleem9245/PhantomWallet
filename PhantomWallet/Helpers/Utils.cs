@@ -1,12 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.IO;
 using LunarLabs.Parser.JSON;
 using Phantasma.Blockchain.Contracts.Native;
 using Phantasma.Cryptography;
 using Phantasma.Numerics;
 using Phantasma.RpcClient.DTOs;
 using Phantasma.Storage;
+using Phantom.Wallet.DTOs;
+using Newtonsoft.Json;
 
 namespace Phantom.Wallet.Helpers
 {
@@ -123,6 +127,22 @@ namespace Phantom.Wallet.Helpers
             }
 
             return string.Empty;
+        }
+
+        public static T DeserializeConfig<T>(string path)
+        {
+            return (T) JsonConvert.DeserializeObject<T>(File.ReadAllText(path));
+        }
+
+        public static void SerializeConfig<T>(T walletConfig, string path)
+        {
+            if (path == null || path == "") 
+            {
+                Console.WriteLine("Path cannot be empty!");
+                return;
+            }
+
+            File.WriteAllText(path, JsonConvert.SerializeObject(walletConfig));
         }
 
         public static decimal GetCoinRate(uint ticker, string symbol = "USD")

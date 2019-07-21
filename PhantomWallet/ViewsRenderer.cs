@@ -10,6 +10,7 @@ using Phantasma.RpcClient.DTOs;
 using Phantasma.Numerics;
 using Phantom.Wallet.Controllers;
 using Phantom.Wallet.Helpers;
+using Phantom.Wallet.DTOs;
 using Phantom.Wallet.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -206,6 +207,8 @@ namespace Phantom.Wallet
             TemplateEngine.Server.Post("/contract/abi", RouteContractABI);
 
             TemplateEngine.Server.Get("/chains", RouteChains);
+
+            TemplateEngine.Server.Post("/config", RouteConfig);
 
             TemplateEngine.Server.Get("/tx/{txhash}", RouteTransaction);
 
@@ -475,11 +478,11 @@ namespace Phantom.Wallet
 
             if (transactionDto.Confirmations > 0)
             {
-                return Newtonsoft.Json.JsonConvert.SerializeObject(transactionDto, Formatting.Indented);
+                return JsonConvert.SerializeObject(transactionDto, Formatting.Indented);
             }
 
             PushError(request, "Error sending tx.");
-            return Newtonsoft.Json.JsonConvert.SerializeObject(new TransactionDto() {}, Formatting.Indented);
+            return JsonConvert.SerializeObject(new TransactionDto() {}, Formatting.Indented);
         }
 
         private object RouteInvokeContractTx(HTTPRequest request)
@@ -549,7 +552,7 @@ namespace Phantom.Wallet
                     if (result.GetType() == typeof(BigInteger)) {
                         return result.ToString();
                     }
-                    return Newtonsoft.Json.JsonConvert.SerializeObject(result, Formatting.Indented);
+                    return JsonConvert.SerializeObject(result, Formatting.Indented);
                 }
                 else
                 {
@@ -561,16 +564,33 @@ namespace Phantom.Wallet
 
         private object RouteChains(HTTPRequest request)
         {
-            string json = Newtonsoft.Json.JsonConvert.SerializeObject(AccountController
+            string json = JsonConvert.SerializeObject(AccountController
                             .PhantasmaChains, Formatting.Indented);
             return json;
+        }
+
+        private object RouteConfig(HTTPRequest request)
+        {
+            var mode = request.GetVariable("mode");
+
+            if (mode == "set")
+            {
+                WalletConfigDto config = JsonConvert.DeserializeObject<WalletConfigDto>(request.GetVariable("config"));
+                Utils.SerializeConfig<WalletConfigDto>(config, ".walletconfig");
+            }
+            else if (mode == "get")
+            {
+                return Utils.DeserializeConfig<WalletConfigDto>(".walletconfig");
+            }
+
+            return new WalletConfigDto() {};
         }
 
         private object RouteContractABI(HTTPRequest request)
         {
             var chain = request.GetVariable("chain");
             var contract = request.GetVariable("contract");
-            var result = Newtonsoft.Json.JsonConvert.SerializeObject(AccountController
+            var result = JsonConvert.SerializeObject(AccountController
                     .GetContractABI(chain, contract).Result, Formatting.Indented);
             return result;
         }
