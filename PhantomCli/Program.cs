@@ -34,7 +34,7 @@ namespace PhantomCli
 
         static void Main(string[] args)
         {
-            string version = "0.1";
+            string version = "0.1-alpha";
             config = Utils.DeserializeConfig<CliWalletConfig>(".config");
             prompt = config.Prompt;
             var startupMsg = "PhantomCli " + version;
@@ -93,7 +93,7 @@ namespace PhantomCli
             {
                 cfgItem = obj[1];
             }
-            catch (IndexOutOfRangeException ex)
+            catch (IndexOutOfRangeException)
             {
                 if (action == "set") 
                 {
@@ -106,7 +106,7 @@ namespace PhantomCli
             {
                 cfgValue = obj[2];
             }
-            catch (IndexOutOfRangeException ex)
+            catch (IndexOutOfRangeException)
             {
                 if (action == "set") 
                 {

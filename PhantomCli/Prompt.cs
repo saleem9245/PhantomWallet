@@ -60,14 +60,14 @@ namespace PhantomCli
                         inputHistory = xmls.Deserialize(fs) as List<List<char>>;
                         fs.SetLength(0);
                     } 
-                    catch (InvalidOperationException e) 
+                    catch (InvalidOperationException) 
                     {
 
                     }
                 }
 
             }
-            catch (FileNotFoundException e)
+            catch (FileNotFoundException)
             {
 
             }
