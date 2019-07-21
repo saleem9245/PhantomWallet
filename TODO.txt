@@ -1,9 +1,10 @@
+1. Network type + currency + dark mode saved locally / xml? --> done
 
-i want to be able to go through like /send/P14ZWsVcCckk9jGS74ici57Vp6F5fZGLVMiKJmdFYnF88 and that gets me to the send screen with the address prefilled
+2. api number returned, divide by decimals (10 or 8) --> needs to be done on the frontend
 
-Network type + currency + dark mode saved locally / xml?
+3. Multisig stuff
 
-api number returned, divide by decimals (10 or 8)
+4. i want to be able to go through like /send/P14ZWsVcCckk9jGS74ici57Vp6F5fZGLVMiKJmdFYnF88 and that gets me to the send screen with the address prefilled
 
-TokenInfo as contract parameter does not work yet
+5. TokenInfo as contract parameter does not work yet --> new ABI will describe complex types, until then an Object can only be an Address.
 

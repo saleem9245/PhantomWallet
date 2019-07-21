@@ -369,12 +369,11 @@ namespace Phantom.Wallet.Controllers
         {
             try
             {
-                Address address = (Address) paramArray[0];
                 var script = ScriptUtils
                         .BeginScript()
-                        .AllowGas(address, Address.Null, 1, 9999)
+                        .AllowGas(keyPair.Address, Address.Null, 1, 9999)
                         .CallContract(contract, method, paramArray)
-                        .SpendGas(address)
+                        .SpendGas(keyPair.Address)
                         .EndScript();
 
                 var result = await _phantasmaRpcService.InvokeRawScript.SendRequestAsync(chain, script.Encode());

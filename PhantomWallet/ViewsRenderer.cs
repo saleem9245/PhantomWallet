@@ -208,7 +208,7 @@ namespace Phantom.Wallet
 
             TemplateEngine.Server.Get("/chains", RouteChains);
 
-            TemplateEngine.Server.Post("/config", RouteConfig);
+            TemplateEngine.Server.Get("/config", RouteConfig);
 
             TemplateEngine.Server.Get("/tx/{txhash}", RouteTransaction);
 
@@ -540,7 +540,6 @@ namespace Phantom.Wallet
 
             List<object> paramList = SendUtils.BuildParamList(param);
 
-            // TODO check if contract exists
             if (context["holdings"] is Holding[] balance)
             {
                 var soulBalance = balance.SingleOrDefault(b => b.Symbol == "SOUL");
