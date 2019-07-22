@@ -681,8 +681,8 @@ namespace Phantom.Wallet
         private static readonly Net[] Networks =
         {
             new Net{Name = "simnet", IsEnabled = true, Value = 1},
-            new Net{Name = "testnet", IsEnabled = false, Value = 2},
-            new Net{Name = "mainnet", IsEnabled = false, Value = 3},
+            new Net{Name = "testnet", IsEnabled = true, Value = 2},
+            new Net{Name = "mainnet", IsEnabled = true, Value = 3},
         };
         #endregion
     }

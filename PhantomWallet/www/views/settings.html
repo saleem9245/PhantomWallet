@@ -6,9 +6,9 @@
     <div class="settings-row-icon"><i class="fas fa-cog"></i></div>
     <span class="settings-row-name">NETWORK</span>
     <div class="settings-row-item">
-      <select class="bootstrap-select" style="text-transform: capitalize;">
+      <select id="selectnetwork" class="bootstrap-select" style="text-transform: capitalize;">
           {{#each networks}}
-          <option value="{{Value}}" {{#if IsEnabled}} selected="selected" {{#else}} disabled {{/if}}>{{Name}}</option>
+          <option value="{{Name}}" {{#if IsEnabled}} selected="selected" {{#else}} disabled {{/if}}>{{Name}}</option>
           {{/each}}
       </select>
     </div>
@@ -17,7 +17,7 @@
     <div class="settings-row-icon"><i class="fas fa-dollar-sign"></i></div>
     <span class="settings-row-name">CURRENCY</span>
     <div class="settings-row-item">
-      <select class="bootstrap-select">
+      <select id="selectcurrency" class="bootstrap-select">
           <option value="USD">USD</option>
           <option value="EUR" disabled>EUR</option>
           <option value="CAD" disabled>CAD</option>
@@ -42,3 +42,71 @@
     <span><a href="/send">P2f7ZFuj6NfZ76ymNMnG3xRBT5hAMicDrQRHE4S7SoxEr</a></span>
   </div>
 </div>
+
+<script>
+
+  $.get('/config',
+    function (returnedData) {
+      console.log(returnedData)
+    }).fail(function() {
+       console.log("error");
+    });
+
+
+  // Network Change
+  $("#selectnetwork").change(function () {
+
+       console.log('change')
+
+   })
+
+  // Currency Change
+  $("#selectcurrency").change(function () {
+
+        console.log('change')
+
+  })
+
+  // Theme Change
+  const selecttheme = document.getElementById('cb4')
+  selecttheme.addEventListener('change', (event) => {
+    if (event.target.checked) {
+      console.log('checked')
+      var e = document.getElementById("selectnetwork");
+      var network = e.options[e.selectedIndex].value;
+      var f = document.getElementById("selectcurrency");
+      var currency = f.options[f.selectedIndex].value;
+      config = {network: network, currency: currency, Theme: 'dark'}
+      console.log(config)
+      $.post('/config',
+        {
+            mode: 'set',
+            config: config
+        },
+        function (returnedData) {
+          console.log(returnedData)
+        }).fail(function() {
+           console.log("error");
+        });
+    } else {
+      console.log('no checked')
+      var e = document.getElementById("selectnetwork");
+      var network = e.options[e.selectedIndex].value;
+      var f = document.getElementById("selectcurrency");
+      var currency = f.options[f.selectedIndex].value;
+      config = {network: network, currency: currency, Theme: 'light'}
+      console.log(config)
+      $.post('/config',
+        {
+            mode: 'set',
+            config: config
+        },
+        function (returnedData) {
+          console.log(returnedData)
+        }).fail(function() {
+           console.log("error");
+        });
+    }
+  })
+
+</script>

@@ -84,12 +84,19 @@ $(document).ready(function() {
         toggleNightMode();
         onloadtoggle = false;
     }
-
+    document.getElementById("blockheight").innerHTML = localStorage.getItem('lastheight');
+    document.getElementById("soulprice").innerHTML = localStorage.getItem('lastsoulprice');
+    var pathname = window.location.pathname;
+    if (pathname != '/login') {
+      setInterval(function() {
+        getChains();
+      }, 1000);
+      setInterval(function() {
+        getPricing();
+      }, 60000);
+    }
 });
 
-setInterval(function() {
-  getChains();
-}, 1000);
 
 function getChains() {
    $.get('/chains',
@@ -102,12 +109,29 @@ function getChains() {
                 next();
            });
          }
-         if (document.getElementById("blockheightparent").innerHTML != 'MAIN CHAIN BLOCK ') {
-           document.getElementById("blockheightparent").innerHTML = 'MAIN CHAIN BLOCK ';
-         }
+         cacheheight = document.getElementById("blockheight").innerHTML;
+         localStorage.setItem('lastheight', cacheheight);
        }).fail(function() {
           console.log("error");
-   });
+       });
+}
+
+function getPricing() {
+   $.get('https://api.coingecko.com/api/v3/simple/price?ids=phantasma&vs_currencies=usd',
+       function (returnedData) {
+         soulprice = '$' + numberWithCommas(returnedData.phantasma.usd);
+         if (document.getElementById("soulprice").innerHTML != soulprice) {
+           document.getElementById("soulprice").innerHTML = soulprice;
+           $(document.getElementById("soulprice")).addClass('flash').delay(150).queue(function(next){
+                $(this).removeClass('flash');
+                next();
+           });
+         }
+         cachesoulprice = document.getElementById("soulprice").innerHTML;
+         localStorage.setItem('lastsoulprice', cachesoulprice);
+       }).fail(function() {
+          console.log("error");
+       });
 }
 
 function numberWithCommas(x) {

@@ -94,16 +94,6 @@
             console.log("error");
          });
 
-         $.get('/config',
-           {
-               mode: "get"
-           },
-           function (returnedData) {
-             console.log(returnedData)
-           }).fail(function() {
-              console.log("error");
-           });
-
        $(document.getElementById("step1-" + chain)).addClass('selected-chain').delay(150).queue(function(next){});
   }
 
@@ -239,18 +229,17 @@
              },
              function (returnedData) {
                if (returnedData.startsWith('0x')) {
-                 document.getElementById("contractresult").innerHTML = '<a href="http://localhost:7072/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                 $.get('/tx/' + returnedData,
+                     function (returnedDataTX) {
+                       if (JSON.parse(returnedDataTX).confirmations > 0) {
+                         document.getElementById("contractresult").innerHTML = 'Success. Transaction confirmed.<br><a href="http://localhost:7072/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                       }
+                     }).fail(function(e) {
+                        document.getElementById("contractresult").innerHTML = 'Error. Transaction not confirmed yet.<br>' + JSON.parse(e);
+                     });
                } else {
-                 document.getElementById("contractresult").innerHTML = returnedData;
+                 document.getElementById("contractresult").innerHTML = 'Error. Transaction not confirmed.<br>' + returnedData;
                }
-
-                $.get('/tx/' + returnedData,
-                    function (returnedData) {
-                       console.log(returnedData)
-                    }).fail(function(e) {
-                       console.log(JSON.stringify(e));
-                    });
-
              }).fail(function(e) {
                 console.log(JSON.stringify(e));
                 document.getElementById("contractresult").innerHTML = JSON.stringify(e.statusText);
