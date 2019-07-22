@@ -13,17 +13,28 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th class="col-1">Date (UTC)</th>
-                <th class="col-4">Hash</th>
-                <th class="col-7">Description</th>
+                <th class="col-1">Type</th>
+                <th class="col-2">Date (UTC)</th>
+                <th class="col-3">Hash</th>
+                <th class="col-4">Amount</th>
+                <th class="col-5">Description</th>
             </tr>
         </thead>
         <tbody>
             {{#each transactions}}
             <tr>
-                <td class="col-1">{{#date Date}}</td>
-                <td class="col-4"><small><a href="http://localhost:7072/tx/{{Hash}}">{{Hash}}</a></small></td>
-                <td class="col-7">{{Description}}</td>
+                <td class="col-1">
+                  {{#if Type == 'Transfer'}}
+                    <i class="fas fa-paper-plane" style="margin-left: 0.5em;font-size: 1.2em;"></i>
+                  {{/if}}
+                  {{#if Type == 'Custom'}}
+                    <i class="fas fa-file-signature" style="margin-left: 0.5em;font-size: 1.2em;"></i>
+                  {{/if}}
+                </td>
+                <td class="col-2">{{#date Date}}</td>
+                <td class="col-3"><small><a href="http://localhost:7072/tx/{{Hash}}" target="_blank" title="View Transaction">{{Hash}}</a></small></td>
+                <td class="col-4">{{Amount}}</td>
+                <td class="col-5">{{Description}}</td>
             </tr>
             {{/each}}
         </tbody>

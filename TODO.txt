@@ -11,3 +11,5 @@ same for ArchiveFlags  and ExchangeOrderSide
 Simnet hardcoded in accountcontroller.cs
 
 change link like "http://localhost:7072/tx/{{Hash}}" to a dynamic one based on network selected (ie either http://localhost:7072/tx/{{Hash}} or https://explorer.phantasma.io/tx/{{Hash}} for example)
+
+account type login

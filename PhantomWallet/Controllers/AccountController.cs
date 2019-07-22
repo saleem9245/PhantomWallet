@@ -135,8 +135,10 @@ namespace Phantom.Wallet.Controllers
                 {
                     txs.Add(new Transaction
                     {
+                        Type = Utils.GetTxType(tx, PhantasmaChains, PhantasmaTokens),
                         Date = new Timestamp(tx.Timestamp),
                         Hash = tx.Txid,
+                        Amount = Utils.GetTxAmount(tx, PhantasmaChains, PhantasmaTokens),
                         Description = Utils.GetTxDescription(tx, PhantasmaChains, PhantasmaTokens)
                     });
                 }
@@ -380,7 +382,7 @@ namespace Phantom.Wallet.Controllers
                 byte[] decodedResult = Base16.Decode((string)result.GetValue("result"));
                 VMObject output = Serialization.Unserialize<VMObject>(decodedResult);
 
-                return output.ToObject(); 
+                return output.ToObject();
             }
             catch (RpcResponseException rpcEx)
             {

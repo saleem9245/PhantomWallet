@@ -16,6 +16,94 @@ namespace Phantom.Wallet.Helpers
 {
     public static class Utils
     {
+      public static string GetTxAmount(TransactionDto tx, List<ChainDto> phantasmaChains, List<TokenDto> phantasmaTokens)
+      {
+          string amountsymbol = null;
+          string typetx = null;
+
+          string senderToken = null;
+          Address senderChain = Address.FromText(tx.ChainAddress);
+          Address senderAddress = Address.Null;
+
+          string receiverToken = null;
+          Address receiverChain = Address.Null;
+          Address receiverAddress = Address.Null;
+
+          BigInteger amount = 0;
+
+          foreach (var evt in tx.Events) //todo move this
+          {
+              switch (evt.EventKind)
+              {
+                  case EventKind.TokenSend:
+                      {
+                          var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
+                          amount = data.value;
+                          senderAddress = Address.FromText(evt.EventAddress);
+                          senderToken = data.symbol;
+                          var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == senderToken).Decimals);
+                          amountsymbol = $"{amountDecimal} {senderToken}";
+                      }
+                      break;
+
+                  case EventKind.TokenReceive:
+                      {
+                          var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
+                          amount = data.value;
+                          receiverAddress = Address.FromText(evt.EventAddress);
+                          receiverChain = data.chainAddress;
+                          receiverToken = data.symbol;
+                          var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == receiverToken).Decimals);
+                          amountsymbol = $"{amountDecimal} {receiverToken}";
+                      }
+                      break;
+
+                  case EventKind.TokenEscrow:
+                      {
+                          var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
+                          amount = data.value;
+                          receiverAddress = Address.FromText(evt.EventAddress);
+                          receiverChain = data.chainAddress;
+                          var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.symbol).Decimals);
+                          amountsymbol = $"{amountDecimal} {data.symbol}";
+                      }
+                      break;
+              }
+          }
+
+          return amountsymbol;
+      }
+
+      public static string GetTxType(TransactionDto tx, List<ChainDto> phantasmaChains, List<TokenDto> phantasmaTokens)
+      {
+          string typetx = null;
+
+          foreach (var evt in tx.Events) //todo move this
+          {
+              switch (evt.EventKind)
+              {
+                  case EventKind.TokenSend:
+                      {
+                          typetx = $"Transfer";
+                      }
+                      break;
+
+                  case EventKind.TokenReceive:
+                      {
+                          typetx = $"Transfer";
+                      }
+                      break;
+              }
+
+              if (typetx == null)
+              {
+                typetx = $"Custom";
+              }
+          }
+
+          return typetx;
+      }
+
         public static string GetTxDescription(TransactionDto tx, List<ChainDto> phantasmaChains, List<TokenDto> phantasmaTokens)
         {
             string description = null;
@@ -62,7 +150,7 @@ namespace Phantom.Wallet.Helpers
                             receiverChain = data.chainAddress;
                             var chain = GetChainName(receiverChain.Text, phantasmaChains);
                             description =
-                                $"{amountDecimal} {data.symbol} tokens escrowed for address {receiverAddress} in {chain}";
+                                $"escrowed for address {receiverAddress} in {chain}";
                         }
                         break;
                     case EventKind.AddressRegister:
@@ -96,13 +184,13 @@ namespace Phantom.Wallet.Helpers
                     var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == senderToken).Decimals);
 
                     description =
-                        $"{amountDecimal} {senderToken} sent from {senderAddress.ToString()} to {receiverAddress.ToString()}";
+                        $"sent from {senderAddress.ToString()} to {receiverAddress.ToString()}";
                 }
                 else if (amount > 0 && receiverAddress != Address.Null && receiverToken != null)
                 {
                     var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == receiverToken).Decimals);
 
-                    description = $"{amountDecimal} {receiverToken} received on {receiverAddress.Text} ";
+                    description = $"received on {receiverAddress.Text} ";
                 }
                 else
                 {
@@ -136,7 +224,7 @@ namespace Phantom.Wallet.Helpers
 
         public static void SerializeConfig<T>(T walletConfig, string path)
         {
-            if (path == null || path == "") 
+            if (path == null || path == "")
             {
                 Console.WriteLine("Path cannot be empty!");
                 return;

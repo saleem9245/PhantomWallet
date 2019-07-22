@@ -37,8 +37,10 @@ namespace Phantom.Wallet.Models
 
     public struct Transaction
     {
+        public string Type;
         public DateTime Date;
         public string Hash;
+        public string Amount;
         public string Description;
     }
 

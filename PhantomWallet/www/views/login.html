@@ -19,32 +19,37 @@
 
 <body>
     <div class="container-fluid">
-        <div class="col-md-6 col-md-offset-3 col-sm-12">
+        <div class="col-md-4 col-md-offset-4 col-sm-12 login-panel" style="text-align:center;border: 4px solid #17B0E7;">
             <div id="logo-container">
                 <img src="/img/phantasma_logo.png" id="logo-img" />
+                <span style="font-size:2em;">PANTHOM</span><br>
+                <span style="font-size:2em;">WALLET</span><br>
+                <span style="font-size:1em;color:#17B0E7;">verson 0.1.0</span>
             </div>
-            <ul class="nav nav-tabs" id="myTab" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link active" id="login-tab" data-toggle="tab" href="#login" role="tab" aria-controls="login" aria-selected="true">Login</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="create-tab" data-toggle="tab" href="#create" role="tab" aria-controls="create" aria-selected="false">Create Account</a>
-                </li>
-                <!--<li class="nav-item">
-                    <a class="nav-link" id="offline-tab" data-toggle="tab" href="#offline" role="tab" aria-controls="offline" aria-selected="false">Offline Operation</a>
-                </li>-->
-            </ul>
+            <div style="display:table;margin:0 auto;">
+              <ul class="nav nav-tabs" id="myTab" role="tablist">
+                  <li class="nav-item">
+                      <a class="nav-link active" id="login-tab" data-toggle="tab" href="#login" role="tab" aria-controls="login" aria-selected="true">LOGIN</a>
+                  </li>
+                  <li class="nav-item" style="margin-left: 1em;">
+                      <a class="nav-link" id="create-tab" data-toggle="tab" href="#create" role="tab" aria-controls="create" aria-selected="false">CREATE ACCOUNT</a>
+                  </li>
+                  <!--<li class="nav-item">
+                      <a class="nav-link" id="offline-tab" data-toggle="tab" href="#offline" role="tab" aria-controls="offline" aria-selected="false">Offline Operation</a>
+                  </li>-->
+              </ul>
+            </div>
 
-            <div class="tab-content login-panel" id="myTabContent">
+            <div class="tab-content" id="myTabContent">
                 <div class="tab-pane fade active" id="login" role="tabpanel" aria-labelledby="login-tab">
                     <form action="" id="loginForm" onsubmit="onLogin()" style="width: 100%;">
                         <div class="form-group input-group" style="width: 100%;padding-bottom: 40px;">
-                            <label for="private_key" class="login-label">Private Key</label>
+                            <label for="private_key" class="login-label">Enter Private Key</label>
                             <!--<span class="input-group-addon"><i class="fas fa-lock"></i></span>-->
                             <input class="form-control shadow-box borderless-input" type="password" name='private_key' id='private_key' />
                         </div>
                         <div class="form-group">
-                            <button type="button" class="btn btn-primary btn-block btn-phantasma" id='login-button' onclick="onLogin()">Log In</button>
+                            <button type="button" class="btn btn-primary btn-block btn-phantasma" id='login-button' onclick="onLogin()">LOGIN</button>
                         </div>
 
                         {{#if error}}
@@ -69,9 +74,9 @@
                             <i class="fas fa-copy"></i>
                         </a>
                     </p>
-                    <button type="button" class="btn btn-primary btn-block btn-phantasma" onclick="location.href='/create'">Generate another</button>
+                    <button type="button" class="btn btn-primary btn-block btn-phantasma" onclick="location.href='/create'">GENERATE ANOTHER</button>
                     {{#else}}
-                    <button type="button" class="btn btn-primary btn-block btn-phantasma" onclick="location.href='/create'">Generate address</button>
+                    <button type="button" class="btn btn-primary btn-block btn-phantasma" onclick="location.href='/create'">GENERATE ADDRESS</button>
                     {{/if}}
                 </div>
 

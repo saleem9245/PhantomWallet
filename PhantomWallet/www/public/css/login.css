@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=Rubik');
+
 @media screen and (max-width: 767px) {
     .container-fluid {
         margin: 2px !important;
@@ -10,7 +12,7 @@
 
 
 body {
-    font-family: Open Sans;
+    font-family: "Rubik";
     background-image: url('../img/background.png');
     background-repeat: no-repeat;
     background-color: white;
@@ -65,7 +67,11 @@ div.well {
     font-size: 12px;
     line-height: 17px;
     color: #7C95AB;
-    padding-bottom: 40px;
+    padding-bottom: 1em;
+}
+
+#loginForm {
+    margin-top:2em;
 }
 
 .address-label {
@@ -113,6 +119,11 @@ div.well {
     border: 0px;
     color: #7C95AB;
     font-size: 20px;
+}
+
+.nav-tabs {
+    border-bottom: 1px solid #fff;
+    margin-top: 80px;
 }
 
 .nav-tabs {
