@@ -1,15 +1,14 @@
-/config doesnt look like its working. I've added a get on setting page load. and when you change the selected theme, it does a set if you want to test.
 
-3. Multisig stuff
+1. Multisig stuff
 
-4. i want to be able to go through like /send/P14ZWsVcCckk9jGS74ici57Vp6F5fZGLVMiKJmdFYnF88 and that gets me to the send screen with the address prefilled
+2. i want to be able to go through like /send/P14ZWsVcCckk9jGS74ici57Vp6F5fZGLVMiKJmdFYnF88 and that gets me to the send screen with the address prefilled
 
-5. TokenInfo as contract parameter does not work yet --> new ABI will describe complex types, until then an Object can only be an Address.
-TokenInfo as contract parameter does not work yet
-same for ArchiveFlags  and ExchangeOrderSide
+3. TokenInfo as contract parameter does not work yet --> new ABI will describe complex types, until then an Object can only be an Address.
 
-Simnet hardcoded in accountcontroller.cs
+4. config file path win + *nix
 
-change link like "http://localhost:7072/tx/{{Hash}}" to a dynamic one based on network selected (ie either http://localhost:7072/tx/{{Hash}} or https://explorer.phantasma.io/tx/{{Hash}} for example)
+5. add logfile 
 
-account type login
+6. change link like "http://localhost:7072/tx/{{Hash}}" to a dynamic one based on network selected (ie either http://localhost:7072/tx/{{Hash}} or https://explorer.phantasma.io/tx/{{Hash}} for example)
+
+7. account type login

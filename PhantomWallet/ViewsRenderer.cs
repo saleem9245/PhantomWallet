@@ -208,7 +208,7 @@ namespace Phantom.Wallet
 
             TemplateEngine.Server.Get("/chains", RouteChains);
 
-            TemplateEngine.Server.Get("/config", RouteConfig);
+            TemplateEngine.Server.Post("/config", RouteConfig);
 
             TemplateEngine.Server.Get("/tx/{txhash}", RouteTransaction);
 
@@ -247,6 +247,8 @@ namespace Phantom.Wallet
         private HTTPResponse RouteLoginWithParams(HTTPRequest request)
         {
             var key = request.GetVariable("key");
+            AccountController.UpdateConfig(Utils.ReadConfig<WalletConfigDto>(
+                        ".walletconfig"));
 
             try
             {
@@ -265,7 +267,6 @@ namespace Phantom.Wallet
 
         private string RouteLogin(HTTPRequest request)
         {
-            Console.WriteLine("login now");
             var context = InitContext(request);
             return RendererView(context, "login");
         }
@@ -548,7 +549,7 @@ namespace Phantom.Wallet
                     var keyPair = GetLoginKey(request);
                     var result = AccountController.InvokeContractGeneric(keyPair, chain, contract, method, paramList.ToArray()).Result;
 
-                    if (result.GetType() == typeof(BigInteger)) {
+                    if (result != null && result.GetType() == typeof(BigInteger)) {
                         return result.ToString();
                     }
                     return JsonConvert.SerializeObject(result, Formatting.Indented);
@@ -571,15 +572,23 @@ namespace Phantom.Wallet
         private object RouteConfig(HTTPRequest request)
         {
             var mode = request.GetVariable("mode");
+            var configStr = request.GetVariable("config");
+
+            WalletConfigDto config = new WalletConfigDto();
 
             if (mode == "set")
             {
-                WalletConfigDto config = JsonConvert.DeserializeObject<WalletConfigDto>(request.GetVariable("config"));
-                Utils.SerializeConfig<WalletConfigDto>(config, ".walletconfig");
+                config = JsonConvert.DeserializeObject<WalletConfigDto>(configStr);
+                Console.WriteLine("config: " + config);
+                Utils.WriteConfig<WalletConfigDto>(config, ".walletconfig");
+                AccountController.UpdateConfig(config);
             }
             else if (mode == "get")
             {
-                return Utils.DeserializeConfig<WalletConfigDto>(".walletconfig");
+
+                config = Utils.ReadConfig<WalletConfigDto>(".walletconfig");
+                Console.WriteLine("config: " + config);
+                return JsonConvert.SerializeObject(config);
             }
 
             return new WalletConfigDto() {};

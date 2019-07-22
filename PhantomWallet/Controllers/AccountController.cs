@@ -19,6 +19,7 @@ using Phantom.Wallet.Helpers;
 using Phantom.Wallet.Models;
 using TokenFlags = Phantasma.RpcClient.DTOs.TokenFlags;
 using Transaction = Phantom.Wallet.Models.Transaction;
+using Phantom.Wallet.DTOs;
 
 namespace Phantom.Wallet.Controllers
 {
@@ -30,9 +31,16 @@ namespace Phantom.Wallet.Controllers
 
         public string AccountName { get; set; }
 
+        public WalletConfigDto WalletConfig { get; set; }
+
         public AccountController()
         {
             _phantasmaRpcService = (IPhantasmaRpcService)Backend.AppServices.GetService(typeof(IPhantasmaRpcService));
+        }
+
+        public void UpdateConfig(WalletConfigDto cfg)
+        {
+            WalletConfig = cfg;
         }
 
         public List<SendHolding> PrepareSendHoldings()
@@ -164,7 +172,7 @@ namespace Phantom.Wallet.Controllers
                 var sourceChain = Address.FromText(sourceChainAddress);
                 var destinationChainName =
                     PhantasmaChains.SingleOrDefault(c => c.Address == destinationChainAddress).Name;
-                var nexusName = "simnet";
+                var nexusName = WalletConfig.Network;
 
                 var block = Hash.Parse(blockHash);
 
@@ -221,7 +229,7 @@ namespace Phantom.Wallet.Controllers
                         .SpendGas(keyPair.Address)
                         .EndScript();
 
-                var nexusName = "simnet";
+                var nexusName = WalletConfig.Network;
 
                 var tx = new Phantasma.Blockchain.Transaction(nexusName, chainName, script, DateTime.UtcNow + TimeSpan.FromHours(1));
                 tx.Sign(keyPair);
@@ -261,9 +269,7 @@ namespace Phantom.Wallet.Controllers
                         .SpendGas(keyPair.Address)
                         .EndScript();
 
-                // TODO this should be a dropdown in the wallet settings!!
-                var nexusName = "simnet";
-
+                var nexusName = WalletConfig.Network;
                 var tx = new Phantasma.Blockchain.Transaction(nexusName, chainName, script,
                     DateTime.UtcNow + TimeSpan.FromHours(1));
                 tx.Sign(keyPair);
@@ -312,7 +318,7 @@ namespace Phantom.Wallet.Controllers
                        .SpendGas(keyPair.Address)
                        .EndScript();
 
-                var nexusName = "simnet";
+                var nexusName = WalletConfig.Network;
                 var tx = new Phantasma.Blockchain.Transaction(nexusName, "main", script, DateTime.UtcNow + TimeSpan.FromHours(1));
 
                 tx.Sign(keyPair);
@@ -343,9 +349,7 @@ namespace Phantom.Wallet.Controllers
                        .SpendGas(keyPair.Address)
                        .EndScript();
 
-                // TODO should be config
-                var nexusName = "simnet";
-
+                var nexusName = WalletConfig.Network;
                 var tx = new Phantasma.Blockchain.Transaction(nexusName, chain, script, DateTime.UtcNow + TimeSpan.FromHours(1));
 
                 tx.Sign(keyPair);

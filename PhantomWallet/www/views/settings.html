@@ -45,7 +45,10 @@
 
 <script>
 
-  $.get('/config',
+  $.post('/config',
+        {
+            mode: 'get',
+        },
     function (returnedData) {
       console.log(returnedData)
     }).fail(function() {
@@ -81,7 +84,7 @@
       $.post('/config',
         {
             mode: 'set',
-            config: config
+            config: JSON.stringify(config)
         },
         function (returnedData) {
           console.log(returnedData)
@@ -99,7 +102,7 @@
       $.post('/config',
         {
             mode: 'set',
-            config: config
+            config: JSON.stringify(config)
         },
         function (returnedData) {
           console.log(returnedData)

@@ -217,12 +217,12 @@ namespace Phantom.Wallet.Helpers
             return string.Empty;
         }
 
-        public static T DeserializeConfig<T>(string path)
+        public static T ReadConfig<T>(string path)
         {
             return (T) JsonConvert.DeserializeObject<T>(File.ReadAllText(path));
         }
 
-        public static void SerializeConfig<T>(T walletConfig, string path)
+        public static void WriteConfig<T>(T walletConfig, string path)
         {
             if (path == null || path == "")
             {

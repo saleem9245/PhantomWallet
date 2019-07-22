@@ -35,7 +35,7 @@ namespace PhantomCli
         static void Main(string[] args)
         {
             string version = "0.1-alpha";
-            config = Utils.DeserializeConfig<CliWalletConfig>(".config");
+            config = Utils.ReadConfig<CliWalletConfig>(".config");
             prompt = config.Prompt;
             var startupMsg = "PhantomCli " + version;
 
@@ -135,7 +135,7 @@ namespace PhantomCli
                     Console.WriteLine("Config item not found!");
                 }
                 // write new cfg
-                Utils.SerializeConfig<CliWalletConfig>(config, ".config");
+                Utils.WriteConfig<CliWalletConfig>(config, ".config");
 
             }
             else if (action == "show") 

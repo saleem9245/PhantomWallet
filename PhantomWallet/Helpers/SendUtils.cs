@@ -79,12 +79,10 @@ namespace Phantom.Wallet.Helpers
                             // for now, we assume every Object is an address
                             // complex object creation will follow new ABI
                             Address address = Address.FromText(input);
-                            //result.SetValue(address);
                             result = address;
                             break;
                         case "Number":
                             BigInteger num = new BigInteger(input, 10);
-                            //result.SetValue((BigInteger) num);
                             result = num;
                             break;
                         case "Timestamp":
@@ -93,25 +91,19 @@ namespace Phantom.Wallet.Helpers
                             DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
                             var ticks = (uint)(date.ToUniversalTime() - unixEpoch).TotalSeconds;
                             result = new Timestamp(ticks);
-                            //result.SetValue(date);
                             break;
                         case "Bool":
-                            //result.SetValue(bool.Parse(input));
                             result = bool.Parse(input);
                             break;
                         case "String":
-                            //result.SetValue(input);
                             result = input;
                             break;
                         case "Bytes":
-                            //result.SetValue(Encoding.UTF8.GetBytes(input), VMType.Bytes);
                             result = Encoding.UTF8.GetBytes(input);
                             break;
-                        //case "Enum":
-                        //    uint enumNumber = Convert.ToUInt32(input);
-                        //    byte[] barr = BitConverter.GetBytes(enumNumber);
-                        //    result.SetValue(barr, VMType.Enum);
-                        //    break;
+                        case "Enum":
+                            result = Convert.ToInt32(input);
+                            break;
                         default:
                             throw new Exception($"invalid vmtype: {vmtype} for {input}");
                     }
