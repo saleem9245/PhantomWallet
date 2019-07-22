@@ -1,4 +1,4 @@
-
+/config doesnt look like its working. I've added a get on setting page load. and when you change the selected theme, it does a set if you want to test.
 
 3. Multisig stuff
 
@@ -8,5 +8,6 @@
 TokenInfo as contract parameter does not work yet
 same for ArchiveFlags  and ExchangeOrderSide
 
+Simnet hardcoded in accountcontroller.cs
 
 change link like "http://localhost:7072/tx/{{Hash}}" to a dynamic one based on network selected (ie either http://localhost:7072/tx/{{Hash}} or https://explorer.phantasma.io/tx/{{Hash}} for example)
