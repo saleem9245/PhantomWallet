@@ -84,10 +84,14 @@ $(document).ready(function() {
         toggleNightMode();
         onloadtoggle = false;
     }
-    document.getElementById("blockheight").innerHTML = localStorage.getItem('lastheight');
-    document.getElementById("soulprice").innerHTML = localStorage.getItem('lastsoulprice');
+    if (document.getElementById("blockheight")) {
+      document.getElementById("blockheight").innerHTML = localStorage.getItem('lastheight');
+    }
+    if (document.getElementById("blockheight")) {
+      document.getElementById("soulprice").innerHTML = localStorage.getItem('lastsoulprice');
+    }
     var pathname = window.location.pathname;
-    if (pathname != '/login') {
+    if (pathname != '/login' && pathname != '/create') {
       setInterval(function() {
         getChains();
       }, 1000);

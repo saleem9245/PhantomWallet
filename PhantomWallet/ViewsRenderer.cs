@@ -582,6 +582,8 @@ namespace Phantom.Wallet
                 Console.WriteLine("config: " + config);
                 Utils.WriteConfig<WalletConfigDto>(config, ".walletconfig");
                 AccountController.UpdateConfig(config);
+                return JsonConvert.SerializeObject(config);
+
             }
             else if (mode == "get")
             {

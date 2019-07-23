@@ -152,10 +152,6 @@ div.well {
         font-weight: 500;
     }
 
-        .nav-tabs > li > a:hover {
-            border: none;
-        }
-
         .nav-tabs > li > a:focus {
             border: none;
         }

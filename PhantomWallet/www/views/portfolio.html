@@ -1,35 +1,90 @@
 <script src="https://code.highcharts.com/stock/highstock.js"></script>
 <h3 class="tab-title">Portfolio</h3>
 {{#if holdings}}
-<div class="table-responsive">
-    <table class="table table-general">
-        <thead>
-            <tr>
-                <th class="col-6">Name</th>
-                <th class="col-3">Amount</th>
-                <th class="col-3">Value (USD)</th>
-            </tr>
-        </thead>
-        <tbody>
-            {{#each holdings}}
-            <tr class="token-shadow">
-                <td class="col-6"><img class="token-icon" src="img/{{Icon}}.png" /> {{Name}} (in {{ChainName}} chain)</td>
-                <td class="col-3">{{AmountFormated}} <a href="http://localhost:7072/token/{{Symbol}}" style="color: #17B0E7">{{Symbol}}</a></td>
-                <td class="col-3">${{UsdFormated}}</td>
-            </tr>
-            {{/each}}
-        </tbody>
-    </table>
-</div>
-<div id="wrapper">
-<div id="container-pie" class="col-md-6" style="margin: 0 auto;"></div>
-<div id="container-historical-value" class="cold-md-6" style="margin: 0 auto 1em;"></div>
+<div class="portfolio">
+  <div class="table-responsive col-md-9">
+      <table class="table table-general">
+          <thead>
+              <tr>
+                  <th class="col-6">Name</th>
+                  <th class="col-3">Amount</th>
+                  <th class="col-3">Value (USD)</th>
+              </tr>
+          </thead>
+          <tbody>
+              {{#each holdings}}
+              <tr class="token-shadow">
+                  <td class="col-6"><img class="token-icon" src="img/{{Icon}}.png" /> {{Name}} (in {{ChainName}} chain)</td>
+                  <td class="col-3">{{AmountFormated}} <a href="http://localhost:7072/token/{{Symbol}}" style="color: #17B0E7">{{Symbol}}</a></td>
+                  <td class="col-3">${{UsdFormated}}</td>
+              </tr>
+              {{/each}}
+          </tbody>
+      </table>
+  </div>
+  <div class="col-md-2 blockright-portfolio">
+    <div><img class="token-icon" src="img/phantasma_logo.png" /><span style="color: grey;">ENERGY</span><br><span id="unclaimed-kcal" style="font-size: 1.1em;">6,000 KCAL</span><br><button type="button" style="border-radius:0;font-size:1.2em;" class="button" onclick="confirmRun(this.id)">CLAIM</button></div><br>
+    <div><img class="token-icon" src="img/phantasma_logo.png" /><span style="color: grey;">STAKES</span><br><span id="stake-soul" style="font-size: 1.1em;">95,000 SOUL</span><br><span style="font-size: 1.2em;">15 kcal per day</span><button type="button" style="border-radius:0;font-size:1.2em;" class="button" onclick="confirmRun(this.id)">STAKE</button><button type="button" style="border-radius:0;font-size:1.2em;" class="button" onclick="confirmRun(this.id)">UNSTAKE</button></div>
+  </div><br>
+  <div id="wrapper" style="float:left;">
+  <div id="container-pie" class="col-md-6" style="margin: 0 auto;"></div>
+  <div id="container-historical-value" class="cold-md-6" style="margin: 0 auto 1em;"></div>
+  </div>
 </div>
 <script>
 
     $(document).ready(
-      getContainerPie()
+      getContainerPie(),
+      getUnclaimed(),
+      getStake()
     );
+
+    function getUnclaimed() {
+
+      var params = [];
+      params[0] = { name: 'stakeAddress', vmtype: 'Object', type: 'Phantasma.Cryptography.Address', input: 'P2f7ZFuj6NfZ76ymNMnG3xRBT5hAMicDrQRHE4S7SoxEr', info: '' }
+
+      $.post('/contract',
+         {
+             chain: 'main',
+             contract: 'energy',
+             method: 'GetUnclaimed',
+             params: JSON.stringify({
+               params
+             })
+         },
+         function (returnedData) {
+            console.log(returnedData)
+            document.getElementById("unclaimed-kcal").innerHTML = (returnedData) / (Math.pow(10, 10));
+         }).fail(function(e) {
+            console.log(e)
+         })
+
+    }
+
+    function getStake() {
+
+      var params = [];
+      params[0] = { name: 'stakeAddress', vmtype: 'Object', type: 'Phantasma.Cryptography.Address', input: 'P2f7ZFuj6NfZ76ymNMnG3xRBT5hAMicDrQRHE4S7SoxEr', info: '' }
+
+      $.post('/contract',
+         {
+             chain: 'main',
+             contract: 'energy',
+             method: 'GetStake',
+             params: JSON.stringify({
+               params
+             })
+         },
+         function (returnedData) {
+            console.log(returnedData)
+            document.getElementById("stake-soul").innerHTML = (returnedData) / (Math.pow(10, 8));
+         }).fail(function(e) {
+            console.log(e)
+         })
+
+    }
+
 
     function getContainerPie() {
 

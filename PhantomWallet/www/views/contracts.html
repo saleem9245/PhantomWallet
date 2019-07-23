@@ -1,6 +1,6 @@
 <h3 class="tab-title">Contracts</h3>
 
-<div class="row setup-content contracts" id="step-3">
+<div class="row setup-content contracts">
     <div class="col-xs-12">
         <div class="col-md-12">
             <div class="col-md-4 col-md-offset-2 center" style="height:0;">
@@ -216,8 +216,36 @@
            })
        },
        function (returnedData) {
-          document.getElementById("contractresult").innerHTML = returnedData;
+         if (returnedData == 'null') {
+           $.post('/contract/tx',
+               {
+                   chain: chain,
+                   contract: contract,
+                   method: method,
+                   params: JSON.stringify({
+                     params
+                   })
+               },
+               function (returnedData) {
+                 if (returnedData.startsWith('0x')) {
+                   $.get('/tx/' + returnedData,
+                       function (returnedDataTX) {
+                         if (JSON.parse(returnedDataTX).confirmations > 0) {
+                           document.getElementById("contractresult").innerHTML = 'Success. Transaction confirmed.<br><a href="http://localhost:7072/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                         }
+                       }).fail(function(e) {
+                          document.getElementById("contractresult").innerHTML = 'Error. Transaction not confirmed yet.<br>' + JSON.parse(e);
+                       });
+                 }
+               }).fail(function(e) {
+                  console.log(JSON.stringify(e));
+                  document.getElementById("contractresult").innerHTML = JSON.stringify(e.statusText);
+               });
+         } else {
+           document.getElementById("contractresult").innerHTML = returnedData;
+         }
        }).fail(function(e) {
+         console.log(e)
          $.post('/contract/tx',
              {
                  chain: chain,
@@ -237,8 +265,6 @@
                      }).fail(function(e) {
                         document.getElementById("contractresult").innerHTML = 'Error. Transaction not confirmed yet.<br>' + JSON.parse(e);
                      });
-               } else {
-                 document.getElementById("contractresult").innerHTML = 'Error. Transaction not confirmed.<br>' + returnedData;
                }
              }).fail(function(e) {
                 console.log(JSON.stringify(e));

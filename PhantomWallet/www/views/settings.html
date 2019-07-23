@@ -21,6 +21,7 @@
           <option value="USD">USD</option>
           <option value="EUR" disabled>EUR</option>
           <option value="CAD" disabled>CAD</option>
+          <option value="GBP" disabled>GBP</option>
       </select>
     </div>
   </div>
@@ -36,6 +37,15 @@
 <br>
 <br>
 <hr style="width:50%">
+<div>
+  <div style="text-align:center;border:0">
+    <span style="display: inline-block;">Toggle Advanced Settings</span>
+    <div style="display: inline-block;margin-left:2em;font-size: 1.5em;">
+      <input type="checkbox">
+    </div>
+  </div>
+</div>
+<hr style="width:50%">
 <div class="wrapper-settings">
   <div class="settings-row" style="display:block;text-align:center;border:0">
     <span>Support Phantom Wallet</span><br>
@@ -50,62 +60,64 @@
             mode: 'get',
         },
     function (returnedData) {
-      console.log(returnedData)
+      console.log(JSON.parse(returnedData))
+       var e = document.getElementById("selectnetwork");
+       e.options[e.selectedIndex].value = JSON.parse(returnedData).network;
     }).fail(function() {
        console.log("error");
     });
 
-
   // Network Change
   $("#selectnetwork").change(function () {
-
-       console.log('change')
-
+    var e = document.getElementById("selectnetwork");
+    var network = e.options[e.selectedIndex].value;
+    var selecttheme = document.getElementById('cb4').checked
+    if (selecttheme = true) {
+      config = {network: network, currency: 'USD', theme: 'dark'}
+    } else {
+      config = {network: network, currency: 'USD', theme: 'light'}
+    }
+    console.log(config)
+    $.post('/config',
+      {
+          mode: 'set',
+          config: JSON.stringify(config)
+      },
+      function (returnedData) {
+        console.log(JSON.parse(returnedData) )
+      }).fail(function(e) {
+         console.log(e);
+      });
    })
-
-  // Currency Change
-  $("#selectcurrency").change(function () {
-
-        console.log('change')
-
-  })
 
   // Theme Change
   const selecttheme = document.getElementById('cb4')
   selecttheme.addEventListener('change', (event) => {
     if (event.target.checked) {
-      console.log('checked')
       var e = document.getElementById("selectnetwork");
       var network = e.options[e.selectedIndex].value;
-      var f = document.getElementById("selectcurrency");
-      var currency = f.options[f.selectedIndex].value;
-      config = {network: network, currency: currency, Theme: 'dark'}
-      console.log(config)
+      config = {network: network, currency: 'USD', theme: 'dark'}
       $.post('/config',
         {
             mode: 'set',
             config: JSON.stringify(config)
         },
         function (returnedData) {
-          console.log(returnedData)
+          console.log(JSON.parse(returnedData))
         }).fail(function() {
            console.log("error");
         });
     } else {
-      console.log('no checked')
       var e = document.getElementById("selectnetwork");
       var network = e.options[e.selectedIndex].value;
-      var f = document.getElementById("selectcurrency");
-      var currency = f.options[f.selectedIndex].value;
-      config = {network: network, currency: currency, Theme: 'light'}
-      console.log(config)
+      config = {network: network, currency: 'USD', theme: 'light'}
       $.post('/config',
         {
             mode: 'set',
             config: JSON.stringify(config)
         },
         function (returnedData) {
-          console.log(returnedData)
+          console.log(JSON.parse(returnedData) )
         }).fail(function() {
            console.log("error");
         });

@@ -877,12 +877,12 @@ ul.nav.nav-pills {
     margin: 2em 0;
 }
 
-.contracts .button:hover, .contracts .selected-chain, .contracts .selected-method {
+.contracts .button:hover, .portfolio .button:hover, .contracts .selected-chain, .contracts .selected-method {
     background-color: #17B0E7 !important;
     color: #fff !important;
 }
 
-.contracts .button {
+.contracts .button, .portfolio .button {
     padding: 1em 1em;
     color: #17B0E7;
     border: 2px solid #17B0E7;
@@ -978,6 +978,22 @@ thead th {
 
 .dark-mode .table-striped td {
     color: #ddd;
+}
+
+.blockright-portfolio {
+    margin-left: 6em;
+    margin-top: 2em;
+    text-align: center;
+}
+
+.blockright-portfolio div {
+    margin-top: 1em;
+    display: inline-block;
+    line-height: 1.3em;
+    border: 2px solid #17B0E7;
+    padding: 2em;
+    width: 14em;
+    font-size: 1.5em;
 }
 
 
