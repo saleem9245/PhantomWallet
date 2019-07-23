@@ -400,6 +400,44 @@ namespace Phantom.Wallet.Controllers
             }
         }
 
+        public async Task<IList<EventDto>> GetEvents(string address)
+        {
+            IList<EventDto> result = null;
+
+            try
+            {
+                result = await _phantasmaRpcService.GetEvents.SendRequestAsync(address);
+            }
+            catch (RpcResponseException rpcEx)
+            {
+                Debug.WriteLine($"RPC Exception occurred: {rpcEx.RpcError.Message}");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Exception occurred: {ex.Message}");
+            }
+
+            return result;
+        }
+
+        public async Task<bool> RelaySend(string script)
+        {
+            try
+            {
+                var result = await _phantasmaRpcService.RelaySend.SendRequestAsync(script);
+                return result;
+            }
+            catch (RpcResponseException rpcEx)
+            {
+                Debug.WriteLine($"RPC Exception occurred: {rpcEx.RpcError.Message}");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Exception occurred: {ex.Message}");
+            }
+            return false;
+        }
+
         public async Task<ABIContractDto> GetContractABI(string chain, string contract)
         {
             try

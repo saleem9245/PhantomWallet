@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using LunarLabs.WebServer.HTTP;
@@ -19,6 +20,10 @@ namespace Phantom.Wallet
 {
     public class ViewsRenderer
     {
+
+        private static readonly string cfgPath = Path.Combine(Environment.GetFolderPath(
+                                        Environment.SpecialFolder.ApplicationData), "DateLinks.xml");
+
         public ViewsRenderer(HTTPServer server, string viewsPath)
         {
             if (server == null) throw new ArgumentNullException(nameof(server));
@@ -247,8 +252,10 @@ namespace Phantom.Wallet
         private HTTPResponse RouteLoginWithParams(HTTPRequest request)
         {
             var key = request.GetVariable("key");
+
+            // TODO remove hardcoded config file
             AccountController.UpdateConfig(Utils.ReadConfig<WalletConfigDto>(
-                        ".walletconfig"));
+                        cfgPath));
 
             try
             {
@@ -579,8 +586,8 @@ namespace Phantom.Wallet
             if (mode == "set")
             {
                 config = JsonConvert.DeserializeObject<WalletConfigDto>(configStr);
-                Console.WriteLine("config: " + config);
-                Utils.WriteConfig<WalletConfigDto>(config, ".walletconfig");
+                Console.WriteLine("config: " + config + " path: " + cfgPath);
+                Utils.WriteConfig<WalletConfigDto>(config, cfgPath);
                 AccountController.UpdateConfig(config);
                 return JsonConvert.SerializeObject(config);
 
@@ -588,12 +595,11 @@ namespace Phantom.Wallet
             else if (mode == "get")
             {
 
-                config = Utils.ReadConfig<WalletConfigDto>(".walletconfig");
+                config = Utils.ReadConfig<WalletConfigDto>(cfgPath);
                 Console.WriteLine("config: " + config);
-                return JsonConvert.SerializeObject(config);
             }
 
-            return new WalletConfigDto() {};
+            return JsonConvert.SerializeObject(config);
         }
 
         private object RouteContractABI(HTTPRequest request)
