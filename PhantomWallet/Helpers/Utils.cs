@@ -19,7 +19,6 @@ namespace Phantom.Wallet.Helpers
       public static string GetTxAmount(TransactionDto tx, List<ChainDto> phantasmaChains, List<TokenDto> phantasmaTokens)
       {
           string amountsymbol = null;
-          string typetx = null;
 
           string senderToken = null;
           Address senderChain = Address.FromText(tx.ChainAddress);
@@ -219,6 +218,11 @@ namespace Phantom.Wallet.Helpers
 
         public static T ReadConfig<T>(string path)
         {
+            if (!File.Exists(path)) 
+            {
+                File.CreateText(path);
+            }
+
             return (T) JsonConvert.DeserializeObject<T>(File.ReadAllText(path));
         }
 
