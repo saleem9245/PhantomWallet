@@ -89,6 +89,29 @@
 
     <script>
 
+    $(document).ready(
+
+      getTheme()
+
+    );
+
+    function getTheme() {
+
+      $.post('/config',
+            {
+                mode: 'get',
+            },
+        function (returnedData) {
+           if ((JSON.parse(returnedData)).theme == 'dark') {
+             if (localStorage.getItem('themesetting') !== 'dark') {
+               localStorage.setItem('themesetting', 'dark');
+             }
+           }
+        }).fail(function() {
+           console.log("error");
+        })
+
+    }
 
     function onLogin(){
         var pk = document.getElementById("private_key");

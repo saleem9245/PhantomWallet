@@ -55,17 +55,28 @@
 
 <script>
 
-  $.post('/config',
-        {
-            mode: 'get',
-        },
-    function (returnedData) {
-      console.log(JSON.parse(returnedData))
-       var e = document.getElementById("selectnetwork");
-       e.options[e.selectedIndex].value = JSON.parse(returnedData).network;
-    }).fail(function() {
-       console.log("error");
-    });
+  $(document).ready(
+
+    getSettings()
+
+  );
+
+  function getSettings() {
+
+    $.post('/config',
+          {
+              mode: 'get',
+          },
+      function (returnedData) {
+         console.log(JSON.parse(returnedData).network)
+         var e = document.getElementById("selectnetwork");
+         // tofix bug selected / active network on load page
+         e.options[e.selectedIndex].value = (JSON.parse(returnedData)).network;
+      }).fail(function() {
+         console.log("error");
+      });
+
+  }
 
   // Network Change
   $("#selectnetwork").change(function () {
@@ -77,14 +88,13 @@
     } else {
       config = {network: network, currency: 'USD', theme: 'light'}
     }
-    console.log(config)
     $.post('/config',
       {
           mode: 'set',
           config: JSON.stringify(config)
       },
       function (returnedData) {
-        console.log(JSON.parse(returnedData) )
+        //console.log(JSON.parse(returnedData))
       }).fail(function(e) {
          console.log(e);
       });
@@ -103,7 +113,7 @@
             config: JSON.stringify(config)
         },
         function (returnedData) {
-          console.log(JSON.parse(returnedData))
+          //console.log(JSON.parse(returnedData))
         }).fail(function() {
            console.log("error");
         });
@@ -117,7 +127,7 @@
             config: JSON.stringify(config)
         },
         function (returnedData) {
-          console.log(JSON.parse(returnedData) )
+          //console.log(JSON.parse(returnedData) )
         }).fail(function() {
            console.log("error");
         });
