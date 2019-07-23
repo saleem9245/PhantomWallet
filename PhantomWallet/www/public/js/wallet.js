@@ -6,10 +6,6 @@ function copyText(text, name) {
         bootbox.alert("Could not copy " + name + "...");
     });
 
-    /*  var copyText = document.getElementById("myAddress");
-      copyText.select();
-      document.execCommand("copy");
-    */
 }
 
 function RegisterName() {
@@ -72,6 +68,7 @@ function RegisterName() {
 }
 
 $(document).ready(function() {
+
     $("#editPencil").click(RegisterName);
     $("#editPencil2").click(RegisterName);
 
@@ -101,7 +98,6 @@ $(document).ready(function() {
     }
 });
 
-
 function getChains() {
    $.get('/chains',
        function (returnedData) {
@@ -115,8 +111,8 @@ function getChains() {
          }
          cacheheight = document.getElementById("blockheight").innerHTML;
          localStorage.setItem('lastheight', cacheheight);
-       }).fail(function() {
-          console.log("error");
+       }).fail(function(e) {
+          console.log(e);
        });
 }
 
@@ -133,8 +129,8 @@ function getPricing() {
          }
          cachesoulprice = document.getElementById("soulprice").innerHTML;
          localStorage.setItem('lastsoulprice', cachesoulprice);
-       }).fail(function() {
-          console.log("error");
+       }).fail(function(e) {
+          console.log(e);
        });
 }
 
@@ -147,7 +143,6 @@ function numberWithCommas(x) {
 function toggleNightMode() {
   $('.well').toggleClass('dark-mode');
   $('.sidenav').toggleClass('dark-mode');
-
   // Handles toggle nightmode on refresh
   if (localStorage.getItem('themesetting') == 'night') {
       if (onloadtoggle !== true) {

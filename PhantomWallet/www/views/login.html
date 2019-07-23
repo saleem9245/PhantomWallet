@@ -102,13 +102,13 @@
                 mode: 'get',
             },
         function (returnedData) {
-           if ((JSON.parse(returnedData)).theme == 'dark') {
-             if (localStorage.getItem('themesetting') !== 'dark') {
-               localStorage.setItem('themesetting', 'dark');
-             }
-           }
-        }).fail(function() {
-           console.log("error");
+          if ((JSON.parse(returnedData)).theme == 'dark') {
+            if (localStorage.getItem('themesetting') !== 'dark') {
+              localStorage.setItem('themesetting', 'dark');
+            }
+          }
+        }).fail(function(e) {
+           console.log(e);
         })
 
     }
@@ -120,14 +120,14 @@
         } else {
             window.location.replace("/login/"+pk.value);
         }
-        }
+    }
 
-        var input = document.getElementById("private_key");
-        input.addEventListener("keyup", function(event) {
-        event.preventDefault();
-        if (event.keyCode === 13) {
-            document.getElementById("login-button").click();
-        }
+    var input = document.getElementById("private_key");
+    input.addEventListener("keyup", function(event) {
+      event.preventDefault();
+      if (event.keyCode === 13) {
+          document.getElementById("login-button").click();
+      }
     });
 
     {{#if WIF}}

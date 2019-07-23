@@ -8,7 +8,7 @@
     <div class="settings-row-item">
       <select id="selectnetwork" class="bootstrap-select" style="text-transform: capitalize;">
           {{#each networks}}
-          <option value="{{Name}}" {{#if IsEnabled}} selected="selected" {{#else}} disabled {{/if}}>{{Name}}</option>
+          <option value="{{Name}}" {{#if IsEnabled}} {{#else}} disabled {{/if}}>{{Name}}</option>
           {{/each}}
       </select>
     </div>
@@ -63,26 +63,32 @@
 
   function getSettings() {
 
+    // Update setting values on load
     $.post('/config',
           {
               mode: 'get',
           },
       function (returnedData) {
-         console.log(JSON.parse(returnedData).network)
-         var e = document.getElementById("selectnetwork");
-         // tofix bug selected / active network on load page
-         e.options[e.selectedIndex].value = (JSON.parse(returnedData)).network;
-      }).fail(function() {
-         console.log("error");
+       var e = document.getElementById("selectnetwork");
+       function setSelectedIndex(s, v) {
+        for ( var i = 0; i < s.options.length; i++ ) {
+            if ( s.options[i].text == v ) {
+                s.options[i].selected = true;
+                return;
+            }
+        }
+       }
+        setSelectedIndex(e,JSON.parse(returnedData).network);
+      }).fail(function(e) {
+         console.log(e);
       });
-
   }
 
   // Network Change
   $("#selectnetwork").change(function () {
     var e = document.getElementById("selectnetwork");
     var network = e.options[e.selectedIndex].value;
-    var selecttheme = document.getElementById('cb4').checked
+    var selecttheme = document.getElementById('cb4').checked;
     if (selecttheme = true) {
       config = {network: network, currency: 'USD', theme: 'dark'}
     } else {
@@ -94,14 +100,14 @@
           config: JSON.stringify(config)
       },
       function (returnedData) {
-        //console.log(JSON.parse(returnedData))
+
       }).fail(function(e) {
          console.log(e);
       });
    })
 
   // Theme Change
-  const selecttheme = document.getElementById('cb4')
+  const selecttheme = document.getElementById('cb4');
   selecttheme.addEventListener('change', (event) => {
     if (event.target.checked) {
       var e = document.getElementById("selectnetwork");
@@ -113,9 +119,9 @@
             config: JSON.stringify(config)
         },
         function (returnedData) {
-          //console.log(JSON.parse(returnedData))
-        }).fail(function() {
-           console.log("error");
+
+        }).fail(function(e) {
+           console.log(e);
         });
     } else {
       var e = document.getElementById("selectnetwork");
@@ -127,9 +133,9 @@
             config: JSON.stringify(config)
         },
         function (returnedData) {
-          //console.log(JSON.parse(returnedData) )
-        }).fail(function() {
-           console.log("error");
+          
+        }).fail(function(e) {
+           console.log(e);
         });
     }
   })

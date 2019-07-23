@@ -23,17 +23,25 @@
 
 
 <script>
+
+  $(document).ready(
+
+    getQRCode()
+
+  );
+
+  function getQRCode() {
+
     var QR_CONTENT = "phantasma://{{address}}";
-
     var QR_IMAGE = "/img/phantasma_logo_white.png";
-
     var QR_FILTER = "color";
-
     var QR_CONTAINER = document.getElementById("qrcode");
-
     new QArt({
         value: QR_CONTENT,
         imagePath: QR_IMAGE,
         filter: QR_FILTER
     }).make(QR_CONTAINER);
+
+  }
+
 </script>
