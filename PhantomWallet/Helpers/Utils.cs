@@ -19,7 +19,6 @@ namespace Phantom.Wallet.Helpers
       public static string GetTxAmount(TransactionDto tx, List<ChainDto> phantasmaChains, List<TokenDto> phantasmaTokens)
       {
           string amountsymbol = null;
-          string typetx = null;
 
           string senderToken = null;
           Address senderChain = Address.FromText(tx.ChainAddress);
@@ -219,11 +218,18 @@ namespace Phantom.Wallet.Helpers
 
         public static T ReadConfig<T>(string path)
         {
+            path = FixPath(path, true);
+            if (!File.Exists(path)) 
+            {
+                File.CreateText(path);
+            }
+
             return (T) JsonConvert.DeserializeObject<T>(File.ReadAllText(path));
         }
 
         public static void WriteConfig<T>(T walletConfig, string path)
         {
+            path = FixPath(path, true);
             if (path == null || path == "")
             {
                 Console.WriteLine("Path cannot be empty!");
@@ -231,6 +237,30 @@ namespace Phantom.Wallet.Helpers
             }
 
             File.WriteAllText(path, JsonConvert.SerializeObject(walletConfig));
+        }
+
+        public static string FixPath(string path, bool final)
+        {
+            String platform = System.Environment.OSVersion.Platform.ToString();
+
+            if (platform != "Unix")
+            {
+                path = path.Replace(@"/", @"\");
+                if (!final && !path.EndsWith(@"\"))
+                {
+                    path += @"\";
+                }
+            }
+            else
+            {
+                path = path.Replace(@"\", @"/");
+                if (!final && !path.EndsWith(@"/"))
+                {
+                    path += @"/";
+                }
+            }
+
+            return path;
         }
 
         public static decimal GetCoinRate(uint ticker, string symbol = "USD")

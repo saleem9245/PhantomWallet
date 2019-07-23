@@ -1,20 +1,26 @@
+Important:
 
 1. Multisig stuff
 
-Missing .walletconfig on initial build
+2. config file path win + *nix
 
-2. i want to be able to go through like /send/P14ZWsVcCckk9jGS74ici57Vp6F5fZGLVMiKJmdFYnF88 and that gets me to the send screen with the address prefilled
+3. add logfile
 
-3. TokenInfo as contract parameter does not work yet --> new ABI will describe complex types, until then an Object can only be an Address.
+4. change link like "http://localhost:7072/tx/{{Hash}}" to a dynamic one based on network selected (ie either http://localhost:7072/tx/{{Hash}} or https://explorer.phantasma.io/tx/{{Hash}} for example) in context
 
-4. config file path win + *nix
 
-5. add logfile
+Wait for new ABI:
 
-6. change link like "http://localhost:7072/tx/{{Hash}}" to a dynamic one based on network selected (ie either http://localhost:7072/tx/{{Hash}} or https://explorer.phantasma.io/tx/{{Hash}} for example) in context
+1. TokenInfo as contract parameter does not work yet --> new ABI will describe complex types, until then an Object can only be an Address.
 
-7. account type login (db + logic + view)
+2. Check when/if call require signed tx
 
-8. Account import/export
 
-9. Check when/if call require signed tx
+For later:
+
+1. i want to be able to go through like /send/P14ZWsVcCckk9jGS74ici57Vp6F5fZGLVMiKJmdFYnF88 and that gets me to the send screen with the address prefilled
+
+2. account type login (db + logic + view)
+
+3. Account import/export
+
