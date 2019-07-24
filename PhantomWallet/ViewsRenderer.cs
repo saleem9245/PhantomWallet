@@ -253,9 +253,7 @@ namespace Phantom.Wallet
         {
             var key = request.GetVariable("key");
 
-            // TODO remove hardcoded config file
-            AccountController.UpdateConfig(Utils.ReadConfig<WalletConfigDto>(
-                        Utils.CfgPath));
+            AccountController.UpdateConfig(Utils.ReadConfig<WalletConfigDto>(Utils.CfgPath));
 
             try
             {
@@ -291,7 +289,7 @@ namespace Phantom.Wallet
 
         private HTTPResponse RouteLogout(HTTPRequest request)
         {
-            request.session.Remove("login");
+            request.session.Destroy();
             return HTTPResponse.Redirect("/login");
         }
 
@@ -570,8 +568,8 @@ namespace Phantom.Wallet
 
         private object RouteChains(HTTPRequest request)
         {
-            string json = JsonConvert.SerializeObject(AccountController
-                            .PhantasmaChains, Formatting.Indented);
+            var chains = AccountController.PhantasmaChains;
+            string json = JsonConvert.SerializeObject(chains, Formatting.Indented);
             return json;
         }
 
