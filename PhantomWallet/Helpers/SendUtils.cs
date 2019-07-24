@@ -65,15 +65,17 @@ namespace Phantom.Wallet.Helpers
                 {
                     string name = (string) param2["name"];
                     string type = (string) param2["type"];
-                    string vmtype = (string) param2["vmtype"];
+                    //string vmtype = (string) param2["vmtype"];
                     string input = (string) param2["input"];
                     string info = (string) param2["info"];
 
                     //VMObject result = new VMObject();
                     object result = null;
-                    Console.WriteLine($"Object[name: {name} type: {type} vmtype: {vmtype} input: {input} info: {info} ]");
+                    //Console.WriteLine($"Object[name: {name} type: {type} vmtype: {vmtype} input: {input} info: {info} ]");
+                    Console.WriteLine($"Object[name: {name} type: {type} input: {input} info: {info} ]");
 
-                    switch (vmtype)
+                    //switch (vmtype)
+                    switch (type)
                     {
                         case "Object":
                             // for now, we assume every Object is an address
@@ -86,7 +88,7 @@ namespace Phantom.Wallet.Helpers
                             result = num;
                             break;
                         case "Timestamp":
-                            DateTime date = DateTime.ParseExact(input, "MM/dd/yyyy HH:mm:ss", 
+                            DateTime date = DateTime.ParseExact(input, "MM/dd/yyyy HH:mm:ss",
                                     System.Globalization.CultureInfo.InvariantCulture);
                             DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
                             var ticks = (uint)(date.ToUniversalTime() - unixEpoch).TotalSeconds;
@@ -105,16 +107,18 @@ namespace Phantom.Wallet.Helpers
                             result = Convert.ToInt32(input);
                             break;
                         default:
-                            throw new Exception($"invalid vmtype: {vmtype} for {input}");
+                            //throw new Exception($"invalid vmtype: {vmtype} for {input}");
+                            throw new Exception($"invalid type: {type} for {input}");
                     }
 
                     if (result != null)
                     {
                         paramList.Add(result);
-                    } 
-                    else 
+                    }
+                    else
                     {
-                        Console.WriteLine($"Could not create parameter from object: Object[name: {name} type: {type} vmtype: {vmtype} input: {input} info: {info} ]");
+                        //Console.WriteLine($"Could not create parameter from object: Object[name: {name} type: {type} vmtype: {vmtype} input: {input} info: {info} ]");
+                        Console.WriteLine($"Could not create parameter from object: Object[name: {name} type: {type} input: {input} info: {info} ]");
                     }
                 }
             }
