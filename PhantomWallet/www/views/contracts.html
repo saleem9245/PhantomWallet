@@ -171,6 +171,7 @@
       var matchingMethod = (JSON.parse(abiFromContract).methods).filter(function(matchedMethod) {
         return matchedMethod.name == method;
       });
+      console.log(matchingMethod)
       var pLength = (matchingMethod[0].parameters).length,
           i = 0;
       for (i; i < pLength; i += 1) {

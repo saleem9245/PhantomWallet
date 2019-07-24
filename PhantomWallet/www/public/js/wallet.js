@@ -74,7 +74,7 @@ $(document).ready(function() {
 
     // Custom check for night mode
     onloadtoggle = true;
-    if (localStorage.getItem('themesetting') == 'night') {
+    if (localStorage.getItem('themesetting') == 'dark') {
         if (document.getElementById("cb4")) {
           document.getElementById("cb4").checked = true;
         }
@@ -144,12 +144,12 @@ function toggleNightMode() {
   $('.well').toggleClass('dark-mode');
   $('.sidenav').toggleClass('dark-mode');
   // Handles toggle nightmode on refresh
-  if (localStorage.getItem('themesetting') == 'night') {
+  if (localStorage.getItem('themesetting') == 'dark') {
       if (onloadtoggle !== true) {
-          localStorage.setItem('themesetting', 'day');
+          localStorage.setItem('themesetting', 'light');
       }
   } else {
-      localStorage.setItem('themesetting', 'night');
+      localStorage.setItem('themesetting', 'dark');
       onloadtoggle = false;
   }
 }
