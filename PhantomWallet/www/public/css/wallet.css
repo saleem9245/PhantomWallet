@@ -250,6 +250,12 @@ ul.nav.nav-pills {
     margin-right: 12px;
 }
 
+.portfolio-token-icon {
+    width: 50px;
+    height: 50px;
+    margin-right: 12px;
+}
+
 .well {
     height: 940px;
     overflow-y: scroll;
@@ -1002,20 +1008,10 @@ thead th {
     color: #ddd;
 }
 
-.blockright-portfolio {
-    margin-left: 6em;
-    margin-top: 2em;
+.top-portfolio, .stats-portfolio {
     text-align: center;
-}
-
-.blockright-portfolio div {
-    margin-top: 1em;
-    display: inline-block;
-    line-height: 1.3em;
-    border: 2px solid #17B0E7;
-    padding: 2em;
-    width: 14em;
-    font-size: 1.5em;
+    font-size: 2em;
+    margin: 2em auto;
 }
 
 @-webkit-keyframes fadeIn {

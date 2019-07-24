@@ -2,7 +2,14 @@
 <h3 class="tab-title">Portfolio</h3>
 {{#if holdings}}
 <div class="portfolio">
-  <div class="table-responsive col-md-9">
+  <div class="top-portfolio col-md-12">
+    <div class="col-md-3"><img class="portfolio-token-icon" src="img/kcal_logo.png" /><span style="color: grey;">ENERGY</span><br><span id="unclaimed-kcal">6,000 KCAL</span></div>
+    <div class="col-md-1" style="text-align:left;"><button type="button" class="button" onclick="confirmRun(this.id)">CLAIM</button></div>
+    <div class="col-md-3"><img class="portfolio-token-icon" src="img/phantasma_logo.png" /><span style="color: grey;">STAKES</span><br><span id="stake-soul">95,000 SOUL</span></div>
+    <div class="col-md-2" style="text-align:left;"><button type="button" class="button" onclick="confirmRun(this.id)">MANAGE STAKES</button></div>
+    <div class="col-md-3"><img class="portfolio-token-icon" src="img/soulmasters_logo.png" /><span style="color: grey;">SOULMASTERS</span><br><span id="stake-soul">350</span></div>
+  </div>
+  <div class="table-responsive col-md-12">
       <table class="table table-general">
           <thead>
               <tr>
@@ -22,13 +29,9 @@
           </tbody>
       </table>
   </div>
-  <div class="col-md-2 blockright-portfolio">
-    <div><img class="token-icon" src="img/phantasma_logo.png" /><span style="color: grey;">ENERGY</span><br><span id="unclaimed-kcal" style="font-size: 1.1em;">6,000 KCAL</span><br><button type="button" style="border-radius:0;font-size:1.2em;" class="button" onclick="confirmRun(this.id)">CLAIM</button></div><br>
-    <div><img class="token-icon" src="img/phantasma_logo.png" /><span style="color: grey;">STAKES</span><br><span id="stake-soul" style="font-size: 1.1em;">95,000 SOUL</span><br><span style="font-size: 1.2em;">15 kcal per day</span><button type="button" style="border-radius:0;font-size:1.2em;" class="button" onclick="confirmRun(this.id)">STAKE</button><button type="button" style="border-radius:0;font-size:1.2em;" class="button" onclick="confirmRun(this.id)">UNSTAKE</button></div>
-  </div><br>
-  <div id="wrapper" style="float:left;">
-  <div id="container-pie" class="col-md-6" style="margin: 0 auto;"></div>
-  <div id="container-historical-value" class="cold-md-6" style="margin: 0 auto 1em;"></div>
+  <div id="wrapper">
+  <div id="container-pie" class="col-md-6"></div>
+  <div id="container-historical-value" class="cold-md-6"></div>
   </div>
 </div>
 <script>
@@ -42,7 +45,7 @@
     function getUnclaimed() {
 
       var params = [];
-      params[0] = { name: 'stakeAddress', vmtype: 'Object', type: 'Phantasma.Cryptography.Address', input: 'P2f7ZFuj6NfZ76ymNMnG3xRBT5hAMicDrQRHE4S7SoxEr', info: '' }
+      params[0] = { name: 'stakeAddress', type: 'Object', input: '{{address}}', info: '' }
 
       $.post('/contract',
          {
@@ -65,7 +68,7 @@
     function getStake() {
 
       var params = [];
-      params[0] = { name: 'stakeAddress', vmtype: 'Object', type: 'Phantasma.Cryptography.Address', input: 'P2f7ZFuj6NfZ76ymNMnG3xRBT5hAMicDrQRHE4S7SoxEr', info: '' }
+      params[0] = { name: 'stakeAddress', type: 'Object', input: '{{address}}', info: '' }
 
       $.post('/contract',
          {
