@@ -42,7 +42,7 @@
     function getUnclaimed() {
 
       var params = [];
-      params[0] = { name: 'stakeAddress', vmtype: 'Object', type: 'Phantasma.Cryptography.Address', input: 'P2f7ZFuj6NfZ76ymNMnG3xRBT5hAMicDrQRHE4S7SoxEr', info: '' }
+      params[0] = { name: 'stakeAddress', type: 'Object', input: 'P2f7ZFuj6NfZ76ymNMnG3xRBT5hAMicDrQRHE4S7SoxEr', info: '' }
 
       $.post('/contract',
          {
@@ -65,7 +65,7 @@
     function getStake() {
 
       var params = [];
-      params[0] = { name: 'stakeAddress', vmtype: 'Object', type: 'Phantasma.Cryptography.Address', input: 'P2f7ZFuj6NfZ76ymNMnG3xRBT5hAMicDrQRHE4S7SoxEr', info: '' }
+      params[0] = { name: 'stakeAddress', type: 'Object', input: 'P2f7ZFuj6NfZ76ymNMnG3xRBT5hAMicDrQRHE4S7SoxEr', info: '' }
 
       $.post('/contract',
          {

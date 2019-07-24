@@ -10,6 +10,12 @@ namespace PhantomCli
         [JsonProperty("prompt")]
         public string Prompt { get; set; } = "phantom> ";
 
+        [JsonProperty("logfile")]
+        public string LogFile { get; set; } = "cli.log";
+
+        [JsonProperty("startup_message")]
+        public string StartupMsg{ get; set; } = "PhantomCli";
+
         new public static CliWalletConfig FromJson(string json) => JsonConvert.DeserializeObject<CliWalletConfig>(json, JsonUtils.Settings);
         new public string ToJson() => JsonConvert.SerializeObject(this, Formatting.Indented);
     }

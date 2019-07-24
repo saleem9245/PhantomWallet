@@ -5,7 +5,6 @@ using System.Linq;
 using LunarLabs.WebServer.HTTP;
 using LunarLabs.WebServer.Templates;
 using Phantasma.Blockchain.Contracts.Native;
-using Phantasma.Core.Log;
 using Phantasma.Cryptography;
 using Phantasma.RpcClient.DTOs;
 using Phantasma.Numerics;
@@ -15,21 +14,22 @@ using Phantom.Wallet.DTOs;
 using Phantom.Wallet.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Serilog;
+using Serilog.Core;
 
 namespace Phantom.Wallet
 {
     public class ViewsRenderer
     {
-
-        private static readonly string cfgPath = Path.Combine(Environment.GetFolderPath(
-                                        Environment.SpecialFolder.ApplicationData), "DateLinks.xml");
+        private static Logger Log = new LoggerConfiguration().MinimumLevel.Debug()
+                                    .WriteTo.File(Utils.LogPath).CreateLogger();
 
         public ViewsRenderer(HTTPServer server, string viewsPath)
         {
             if (server == null) throw new ArgumentNullException(nameof(server));
             TemplateEngine = new TemplateEngine(server, viewsPath);
-            Console.WriteLine(TemplateEngine.ToString());
-            Console.WriteLine(server.Settings.Path);
+            Log.Information(TemplateEngine.ToString());
+            Log.Information(server.Settings.Path);
         }
 
         public void SetupControllers()
@@ -255,7 +255,7 @@ namespace Phantom.Wallet
 
             // TODO remove hardcoded config file
             AccountController.UpdateConfig(Utils.ReadConfig<WalletConfigDto>(
-                        cfgPath));
+                        Utils.CfgPath));
 
             try
             {
@@ -264,7 +264,7 @@ namespace Phantom.Wallet
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Log.Error(e.ToString());
                 PushError(request, "Error decoding key.");
                 return HTTPResponse.Redirect("/login");
             }
@@ -427,7 +427,6 @@ namespace Phantom.Wallet
 
             request.session.SetStruct<ErrorContext>("error", new ErrorContext { ErrorCode = "", ErrorDescription = $"{txHash} is still not confirmed." });
             var transactionDto = AccountController.GetTxConfirmations(txHash).Result;
-            Console.WriteLine("Confirmations:::: " + transactionDto.Confirmations);
 
             if (transactionDto.Confirmations > 0)
             {
@@ -586,8 +585,7 @@ namespace Phantom.Wallet
             if (mode == "set")
             {
                 config = JsonConvert.DeserializeObject<WalletConfigDto>(configStr);
-                Console.WriteLine("config: " + config + " path: " + cfgPath);
-                Utils.WriteConfig<WalletConfigDto>(config, cfgPath);
+                Utils.WriteConfig<WalletConfigDto>(config, Utils.CfgPath);
                 AccountController.UpdateConfig(config);
                 return JsonConvert.SerializeObject(config);
 
@@ -595,8 +593,7 @@ namespace Phantom.Wallet
             else if (mode == "get")
             {
 
-                config = Utils.ReadConfig<WalletConfigDto>(cfgPath);
-                Console.WriteLine("config: " + config);
+                config = Utils.ReadConfig<WalletConfigDto>(Utils.CfgPath);
             }
 
             return JsonConvert.SerializeObject(config);

@@ -20,6 +20,8 @@ using Phantom.Wallet.Models;
 using TokenFlags = Phantasma.RpcClient.DTOs.TokenFlags;
 using Transaction = Phantom.Wallet.Models.Transaction;
 using Phantom.Wallet.DTOs;
+using Serilog;
+using Serilog.Core;
 
 namespace Phantom.Wallet.Controllers
 {
@@ -32,6 +34,9 @@ namespace Phantom.Wallet.Controllers
         public string AccountName { get; set; }
 
         public WalletConfigDto WalletConfig { get; set; }
+
+        private static Serilog.Core.Logger Log = new LoggerConfiguration()
+            .MinimumLevel.Debug().WriteTo.File(Utils.LogPath).CreateLogger();
 
         public AccountController()
         {
@@ -355,7 +360,7 @@ namespace Phantom.Wallet.Controllers
                 tx.Sign(keyPair);
 
                 var txResult = await _phantasmaRpcService.SendRawTx.SendRequestAsync(tx.ToByteArray(true).Encode());
-                Console.WriteLine("txResult: " + txResult);
+                Log.Information("txResult: " + txResult);
                 return txResult;
             }
             catch (RpcResponseException rpcEx)
@@ -451,7 +456,7 @@ namespace Phantom.Wallet.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Log.Error(ex.Message);
                 Debug.WriteLine($"Exception occurred: {ex.Message}");
             }
             return new ABIContractDto {};
