@@ -16,92 +16,98 @@ namespace Phantom.Wallet.Helpers
 {
     public static class Utils
     {
-      public static string GetTxAmount(TransactionDto tx, List<ChainDto> phantasmaChains, List<TokenDto> phantasmaTokens)
-      {
-          string amountsymbol = null;
+        public static string CfgPath { get; } = Path.Combine(Environment.GetFolderPath(
+                                         Environment.SpecialFolder.ApplicationData), "phantom_wallet.cfg");
 
-          string senderToken = null;
-          Address senderChain = Address.FromText(tx.ChainAddress);
-          Address senderAddress = Address.Null;
+        public static string LogPath { get; } = Path.Combine(Environment.GetFolderPath(
+                                         Environment.SpecialFolder.ApplicationData), "phantom_wallet.log");
 
-          string receiverToken = null;
-          Address receiverChain = Address.Null;
-          Address receiverAddress = Address.Null;
+        public static string GetTxAmount(TransactionDto tx, List<ChainDto> phantasmaChains, List<TokenDto> phantasmaTokens)
+        {
+            string amountsymbol = null;
 
-          BigInteger amount = 0;
+            string senderToken = null;
+            Address senderChain = Address.FromText(tx.ChainAddress);
+            Address senderAddress = Address.Null;
 
-          foreach (var evt in tx.Events) //todo move this
-          {
-              switch (evt.EventKind)
-              {
-                  case EventKind.TokenSend:
-                      {
-                          var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
-                          amount = data.value;
-                          senderAddress = Address.FromText(evt.EventAddress);
-                          senderToken = data.symbol;
-                          var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == senderToken).Decimals);
-                          amountsymbol = $"{amountDecimal} {senderToken}";
-                      }
-                      break;
+            string receiverToken = null;
+            Address receiverChain = Address.Null;
+            Address receiverAddress = Address.Null;
 
-                  case EventKind.TokenReceive:
-                      {
-                          var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
-                          amount = data.value;
-                          receiverAddress = Address.FromText(evt.EventAddress);
-                          receiverChain = data.chainAddress;
-                          receiverToken = data.symbol;
-                          var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == receiverToken).Decimals);
-                          amountsymbol = $"{amountDecimal} {receiverToken}";
-                      }
-                      break;
+            BigInteger amount = 0;
 
-                  case EventKind.TokenEscrow:
-                      {
-                          var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
-                          amount = data.value;
-                          receiverAddress = Address.FromText(evt.EventAddress);
-                          receiverChain = data.chainAddress;
-                          var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.symbol).Decimals);
-                          amountsymbol = $"{amountDecimal} {data.symbol}";
-                      }
-                      break;
-              }
-          }
+            foreach (var evt in tx.Events) //todo move this
+            {
+                switch (evt.EventKind)
+                {
+                    case EventKind.TokenSend:
+                        {
+                            var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
+                            amount = data.value;
+                            senderAddress = Address.FromText(evt.EventAddress);
+                            senderToken = data.symbol;
+                            var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == senderToken).Decimals);
+                            amountsymbol = $"{amountDecimal} {senderToken}";
+                        }
+                        break;
 
-          return amountsymbol;
-      }
+                    case EventKind.TokenReceive:
+                        {
+                            var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
+                            amount = data.value;
+                            receiverAddress = Address.FromText(evt.EventAddress);
+                            receiverChain = data.chainAddress;
+                            receiverToken = data.symbol;
+                            var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == receiverToken).Decimals);
+                            amountsymbol = $"{amountDecimal} {receiverToken}";
+                        }
+                        break;
 
-      public static string GetTxType(TransactionDto tx, List<ChainDto> phantasmaChains, List<TokenDto> phantasmaTokens)
-      {
-          string typetx = null;
+                    case EventKind.TokenEscrow:
+                        {
+                            var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
+                            amount = data.value;
+                            receiverAddress = Address.FromText(evt.EventAddress);
+                            receiverChain = data.chainAddress;
+                            var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.symbol).Decimals);
+                            amountsymbol = $"{amountDecimal} {data.symbol}";
+                        }
+                        break;
+                }
+            }
 
-          foreach (var evt in tx.Events) //todo move this
-          {
-              switch (evt.EventKind)
-              {
-                  case EventKind.TokenSend:
-                      {
-                          typetx = $"Transfer";
-                      }
-                      break;
+            return amountsymbol;
+        }
 
-                  case EventKind.TokenReceive:
-                      {
-                          typetx = $"Transfer";
-                      }
-                      break;
-              }
+        public static string GetTxType(TransactionDto tx, List<ChainDto> phantasmaChains, List<TokenDto> phantasmaTokens)
+        {
+            string typetx = null;
 
-              if (typetx == null)
-              {
-                typetx = $"Custom";
-              }
-          }
+            foreach (var evt in tx.Events) //todo move this
+            {
+                switch (evt.EventKind)
+                {
+                    case EventKind.TokenSend:
+                        {
+                            typetx = $"Transfer";
+                        }
+                        break;
 
-          return typetx;
-      }
+                    case EventKind.TokenReceive:
+                        {
+                            typetx = $"Transfer";
+                        }
+                        break;
+                }
+
+                if (typetx == null)
+                {
+                  typetx = $"Custom";
+                }
+            }
+
+            return typetx;
+        }
 
         public static string GetTxDescription(TransactionDto tx, List<ChainDto> phantasmaChains, List<TokenDto> phantasmaTokens)
         {

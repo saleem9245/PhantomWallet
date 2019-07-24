@@ -4,6 +4,9 @@ using System.Net.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Phantasma.RpcClient;
 using Phantasma.RpcClient.Interfaces;
+using Phantom.Wallet.Helpers;
+using Serilog;
+using Serilog.Core;
 
 namespace Phantom.Wallet
 {
@@ -12,6 +15,8 @@ namespace Phantom.Wallet
         public static IServiceProvider AppServices => _app.Services;
         private static IServiceCollection serviceCollection = new ServiceCollection();
         private static Application _app = new Application(serviceCollection);
+        private static Logger Logger = new LoggerConfiguration().MinimumLevel.Debug()
+                                    .WriteTo.File(Utils.LogPath).CreateLogger();
 
         static void Main(string[] args)
         {

@@ -11,6 +11,8 @@ using Phantasma.VM;
 using Phantasma.Storage;
 using Phantom.Wallet.Controllers;
 using Phantom.Wallet.Helpers;
+using Serilog;
+using Serilog.Core;
 
 using Newtonsoft.Json;
 
@@ -23,9 +25,16 @@ namespace PhantomCli
 
         private static AccountController AccountController { get; set; }
 
-        private static CliWalletConfig config = new CliWalletConfig();
+        private static CliWalletConfig config = Utils.ReadConfig<CliWalletConfig>(".config");
 
         private static String prompt { get; set; }
+
+        private static Logger CliLogger = new LoggerConfiguration().MinimumLevel.Debug()
+                            .WriteTo.Console(outputTemplate:"{Message:lj}{NewLine}{Exception}")
+                            .CreateLogger();
+
+        private static Logger Logger = new LoggerConfiguration().MinimumLevel.Debug()
+                                    .WriteTo.File(config.LogFile).CreateLogger();
 
         public static void SetupControllers()
         {
@@ -35,9 +44,10 @@ namespace PhantomCli
         static void Main(string[] args)
         {
             string version = "0.1-alpha";
-            config = Utils.ReadConfig<CliWalletConfig>(".config");
             prompt = config.Prompt;
-            var startupMsg = "PhantomCli " + version;
+            var startupMsg =  config.StartupMsg + " " + version;
+
+            Logger.Information(startupMsg);
 
             SetupControllers();
             List<string> completionList = new List<string>(lCommands.Keys); 
@@ -55,7 +65,7 @@ namespace PhantomCli
                         function_to_execute(arguments);
                     }
                     else
-                        Console.WriteLine("Command '" + command_main + "' not found");
+                        CliLogger.Warning("Command '" + command_main + "' not found");
                     return null;
                 }), prompt, startupMsg, completionList);
         }
@@ -63,11 +73,11 @@ namespace PhantomCli
         private static Dictionary<string, Tuple<Action<string[]>, string>> lCommands = 
             new Dictionary<string, Tuple<Action<string[]>, string>>()
         {
-            { "help",       new Tuple<Action<string[]>, string>(HelpFunc,       "test")},
-            { "exit",       new Tuple<Action<string[]>, string>(Exit,           "test")},
-            { "clear",      new Tuple<Action<string[]>, string>(Clear,          "test")},
-            { "wallet",     new Tuple<Action<string[]>, string>(CopyFunc,       "test")},
-            { "tx",         new Tuple<Action<string[]>, string>(Transaction,    "test")},
+            { "help",       new Tuple<Action<string[]>, string>(HelpFunc,       "Shows this help")},
+            { "exit",       new Tuple<Action<string[]>, string>(Exit,           "Exit the PhantomCli shell")},
+            { "clear",      new Tuple<Action<string[]>, string>(Clear,          "Clears the screen")},
+            { "wallet",     new Tuple<Action<string[]>, string>(Wallet,         "Opens a wallet with a private key")},
+            { "tx",         new Tuple<Action<string[]>, string>(Transaction,    "Param [txid], shows the transaction in formatted json")},
             { "contract",   new Tuple<Action<string[]>, string>(ContractFunc,   "test")},
             { "invoke",     new Tuple<Action<string[]>, string>(InvokeFunc,     "test")},
             { "invokeTx",   new Tuple<Action<string[]>, string>(InvokeTxFunc,   "test")},
@@ -82,7 +92,7 @@ namespace PhantomCli
 
             if (obj.Length < 1)
             {
-                Console.WriteLine("Too less arguments");
+                CliLogger.Information("Too less arguments");
                 return;
             }
 
@@ -97,7 +107,7 @@ namespace PhantomCli
             {
                 if (action == "set") 
                 {
-                    Console.WriteLine("Item cannot be empty!");
+                    CliLogger.Information("Item cannot be empty!");
                     return;
                 }
             }
@@ -110,7 +120,7 @@ namespace PhantomCli
             {
                 if (action == "set") 
                 {
-                    Console.WriteLine("Value cannot be empty!");
+                    CliLogger.Information("Value cannot be empty!");
                     return;
                 }
             }
@@ -132,7 +142,7 @@ namespace PhantomCli
                 }
                 else
                 {
-                    Console.WriteLine("Config item not found!");
+                    CliLogger.Information("Config item not found!");
                 }
                 // write new cfg
                 Utils.WriteConfig<CliWalletConfig>(config, ".config");
@@ -142,19 +152,19 @@ namespace PhantomCli
             {
                 if (cfgItem == "prompt") 
                 {
-                    Console.WriteLine("Value: " + config.Prompt);
+                    CliLogger.Information("Value: " + config.Prompt);
                 }
                 else if (cfgItem == "currency")
                 {
-                    Console.WriteLine("Value: " + config.Currency);
+                    CliLogger.Information("Value: " + config.Currency);
                 }
                 else if (cfgItem == "network")
                 {
-                    Console.WriteLine("Value: " + config.Network);
+                    CliLogger.Information("Value: " + config.Network);
                 }
                 else
                 {
-                    Console.WriteLine(config.ToJson());
+                    CliLogger.Information(config.ToJson());
  
                 }
 
@@ -164,10 +174,6 @@ namespace PhantomCli
 
         private static void TestFunc(string[] obj)
         {
-            // only used for quick testing!
-            //var json = @"{ 'parameters': [ { 'name': 'address', 'vmtype': 'Object', 'type': 'Phantasma.Cryptography.Address', 'input': 'P5ySorAXMaJLwe6AqTsshW3XD8ahkwNpWHU9KLX9CwkYd', 'info': 'info1' } ] }";
-            //List<object> lst = SendUtils.BuildParamList(json);
-            //lst.ForEach(Console.WriteLine);
             var json2 = @"{ 'parameters': [  { 'name': 'address', 'vmtype': 'Object', 'type': 'Phantasma.Cryptography.Address', 'input': 'P5ySorAXMaJLwe6AqTsshW3XD8ahkwNpWHU9KLX9CwkYd', 'info': 'info1' }, 
                                              { 'name': 'address', 'vmtype': 'Enum', 'type': 'Phantasma.Blockchain.ArchiveFlags', 'input': '1', 'info': 'info1' },
                                              { 'name': 'address', 'vmtype': 'Enum', 'type': 'Phantasma.Blockchain.ArchiveFlags', 'input': '1', 'info': 'info1' },
@@ -184,7 +190,7 @@ namespace PhantomCli
                                              { 'name': 'address', 'vmtype': 'Number', 'type': 'Phantasma.Numerics.BigInteger', 'input': '12345678', 'info': 'info1' } 
                                           ] }";
             List<object> lst2 = SendUtils.BuildParamList(json2);
-            lst2.ForEach(Console.WriteLine);
+            //lst2.ForEach(CliLogger.Information);
 
         }
 
@@ -192,20 +198,20 @@ namespace PhantomCli
         {
             if (obj.Length > 1)
             {
-                Console.WriteLine("Too many arguments");
+                CliLogger.Information("Too many arguments");
                 return;
             }
 
             if (obj.Length < 1)
             {
-                Console.WriteLine("Too less arguments");
+                CliLogger.Information("Too less arguments");
                 return;
             }
 
             string txHash = obj[0];
             string json = Newtonsoft.Json.JsonConvert.SerializeObject(AccountController
                     .GetTxConfirmations(txHash).Result, Formatting.Indented);
-            Console.WriteLine(json);
+            CliLogger.Information(json);
         }
 
         private static void SendFunc(string[] obj)
@@ -213,53 +219,51 @@ namespace PhantomCli
             string txHash = string.Join("", obj);
             string json = Newtonsoft.Json.JsonConvert.SerializeObject(AccountController
                     .GetTxConfirmations(txHash).Result, Formatting.Indented);
-            Console.WriteLine(json);
+            CliLogger.Information(json);
         }
 
         private static void ContractFunc(string[] obj)
         {
             if (obj.Length > 2)
             {
-                Console.WriteLine("Too many arguments");
+                CliLogger.Information("Too many arguments");
                 return;
             }
 
             if (obj.Length < 2)
             {
-                Console.WriteLine("Too less arguments");
+                CliLogger.Information("Too less arguments");
                 return;
             }
 
             string chain = obj[0];
             string contract = obj[1];
-            Console.WriteLine("Send");
             string json = Newtonsoft.Json.JsonConvert.SerializeObject(AccountController
                     .GetContractABI(chain, contract).Result, Formatting.Indented);
-            Console.WriteLine("done");
-            Console.WriteLine(json);
+            CliLogger.Information(json);
         }
 
         private static void HistoryFunc(string[] obj)
         {
-            Console.WriteLine();
+            CliLogger.Information("");
             foreach (List<char> item in Prompt.GetHistory()) 
             {
-                Console.WriteLine(new string(item.ToArray()));
+                CliLogger.Information(new String(item.ToArray()));
             }
-            Console.WriteLine();
+            CliLogger.Information("");
         }
 
         private static void InvokeTxFunc(string[] obj)
         {
             if (obj.Length > 3)
             {
-                Console.WriteLine("Too many arguments");
+                CliLogger.Error("Too many arguments");
                 return;
             }
 
             if (obj.Length < 3)
             {
-                Console.WriteLine("Too less arguments");
+                CliLogger.Error("Too less arguments");
                 return;
             }
 
@@ -270,11 +274,11 @@ namespace PhantomCli
             object[] paramArray = new object[] {kp.Address, kp.Address};
             var result = AccountController.InvokeContractTxGeneric(kp, chain, contract, method, paramArray).Result;
             if (result == null) {
-                Console.WriteLine("Node returned null...");
+                CliLogger.Warning("Node returned null...");
                 return;
             }
 
-            Console.WriteLine("Result: " + result);
+            CliLogger.Information("Result: " + result);
 
         }
 
@@ -287,11 +291,11 @@ namespace PhantomCli
             object[] paramArray = new object[] {kp.Address};
             var result = AccountController.InvokeContractGeneric(kp, chain, contract, method, paramArray).Result;
             if (result == null) {
-                Console.WriteLine("Node returned null...");
+                CliLogger.Warning("Node returned null...");
                 return;
             }
 
-            Console.WriteLine("Result: " + result);
+            CliLogger.Information("Result: " + result);
 
         }
 
@@ -305,7 +309,7 @@ namespace PhantomCli
             Environment.Exit(0);
         }
 
-        private static void CopyFunc(string[] obj)
+        private static void Wallet(string[] obj)
         {
             GetLoginKey();
         }
@@ -314,7 +318,7 @@ namespace PhantomCli
         {
             if (keyPair == null && !changeWallet) 
             {
-                Console.Write("Enter private key: ");
+                CliLogger.Information("Enter private key: ");
                 var wif = Console.ReadLine();
                 var kPair = KeyPair.FromWIF(wif);
                 keyPair = kPair;
@@ -325,7 +329,10 @@ namespace PhantomCli
 
         public static void HelpFunc(string[] args)
         {
-            Console.WriteLine("===== SOME MEANINGFULL HELP ==== ");
+            foreach (KeyValuePair<string, Tuple<Action<string[]>, string>> kvp in lCommands)
+            {
+                CliLogger.Information(string.Format("{0} [ {1} ]",kvp.Key.PadRight(15),kvp.Value.Item2));
+            }
         }
     }
 }
