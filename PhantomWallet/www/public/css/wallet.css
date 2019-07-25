@@ -245,8 +245,8 @@ ul.nav.nav-pills {
 }
 
 .token-icon {
-    width: 22px;
-    height: 22px;
+    width: 40px;
+    height: 40px;
     margin-right: 12px;
 }
 
@@ -254,6 +254,8 @@ ul.nav.nav-pills {
     width: 50px;
     height: 50px;
     margin-right: 12px;
+    margin-bottom: .5em;
+    margin-top: .5em;
 }
 
 .well {
@@ -296,21 +298,39 @@ ul.nav.nav-pills {
     padding: 10px;
 }
 
+.portfolio .table-responsive {
+    padding: 0 20em 0 20em;
+}
+
+.portfolio .table-responsive .token-shadow {
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    border-bottom: 1px solid #17B0E7;
+    border-top: 1px solid #17B0E7;
+}
+
 .borderless-input {
     border-radius: 0px;
     border: 0px;
     background-color: transparent;
 }
 
+
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+    vertical-align: middle;
+}
+
 .table-general {
-    color: #7C95AB;
+    color: #333333;
     border-spacing: 0 30px;
     border-collapse: collapse;
+    text-align: center;
 }
 
     .table-general thead tr {
         border: none;
-        font-size: 16px;
+        font-size: 14px;
+        color: grey;
     }
 
     .table-general th {
@@ -765,6 +785,29 @@ ul.nav.nav-pills {
     margin-top: 4em;
 }
 
+.wrapper-portfolio {
+    float: left;
+    margin: 3em auto;
+    width: 100%;
+    text-align: center;
+}
+
+.wrapper-portfolio div {
+    text-align: left;
+    display: inline-block;
+    font-size: 1.5em;
+    margin: 0em 2em;
+}
+
+.portfolio {
+    margin-top: -4em;
+}
+
+.portfolio .wrapper-portfolio button {
+    width: 7em;
+    font-size: .6em;
+}
+
 .settings-row {
     display: flex;
     border-bottom: 1px solid #17B0E7;
@@ -1008,10 +1051,22 @@ thead th {
     color: #ddd;
 }
 
-.top-portfolio, .stats-portfolio {
+.top-portfolio {
     text-align: center;
-    font-size: 2em;
-    margin: 2em auto;
+    font-size: 1.5em;
+    padding: 0 10em;
+}
+
+.top-portfolio-col {
+    width: 30%;
+    display: inline-block;
+    text-transform: uppercase;
+    line-height: 1em;
+    color: grey;
+}
+
+.top-portfolio-col-small {
+    font-size: .7em;
 }
 
 @-webkit-keyframes fadeIn {
@@ -1051,5 +1106,40 @@ thead th {
     opacity: 1;
 }
 
+#container-pie, #container-historical-value {
+    padding: 2em;
+}
 
+table.dataTable thead .sorting_asc:after {
+    color: #17B0E7;
+    font-family: 'Font Awesome 5 Free';
+    content: "\f13a";
+    position: absolute;
+    margin-left: 0.2em;
+}
+table.dataTable thead .sorting_desc:after {
+    color: #17B0E7;
+    font-family: 'Font Awesome 5 Free';
+    content: "\f139";
+    position: absolute;
+    margin-left: 0.2em;
+}
+table.dataTable thead .sorting_desc,
+table.dataTable thead .sorting_asc,
+table.dataTable thead .sorting {
+    position: relative;
+    cursor: pointer;
+    width: auto !important;
+}
+    table.dataTable thead .sorting_desc:hover,
+    table.dataTable thead .sorting_asc:hover,
+    table.dataTable thead .sorting:hover {
+    color: #17B0E7;
+}
 
+.dataTables_info {
+    display: none;
+}
+.dataTables_filter {
+    display: none;
+}

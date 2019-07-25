@@ -1,37 +1,48 @@
 <script src="https://code.highcharts.com/stock/highstock.js"></script>
+<script src="https://unpkg.com/datatables.net@1.10.19/js/jquery.dataTables.min.js"></script>
 <h3 class="tab-title">Portfolio</h3>
 {{#if holdings}}
 <div class="portfolio">
   <div class="top-portfolio col-md-12">
-    <div class="col-md-3"><img class="portfolio-token-icon" src="img/kcal_logo.png" /><span style="color: grey;">ENERGY</span><br><span id="unclaimed-kcal">6,000 KCAL</span></div>
-    <div class="col-md-1" style="text-align:left;"><button type="button" class="button" onclick="Claim()">CLAIM</button></div>
-    <div class="col-md-3"><img class="portfolio-token-icon" src="img/phantasma_logo.png" /><span style="color: grey;">STAKES</span><br><span id="stake-soul">95,000 SOUL</span></div>
-    <div class="col-md-2" style="text-align:left;"><button type="button" class="button" onclick="Stake()">MANAGE STAKES</button></div>
-    <div class="col-md-3"><img class="portfolio-token-icon" src="img/soulmasters_logo.png" /><span style="color: grey;">SOULMASTERS</span><br><span id="stake-soul">350</span></div>
-  </div>
+    <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/kcal_logo.png" /><span style="color:#333">ENERGY</span><br><span id="a" style="color:#337ab7">25 KCAL</span><br><span id="d" class="top-portfolio-col-small">GENERATING: 24 KCAL/DAY</span></div>
+    <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/phantasma_logo.png" /><span style="color:#333">STAKES</span><br><span id="b" style="color:#337ab7">450,000 SOUL</span><br><span id="e" class="top-portfolio-col-small">REWARDS: 4,333 SOUL / MONTH</span></div>
+    <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/soulmasters_logo.png" /><span style="color:#333">SOULMASTERS</span><br><span><span id="c" style="color:#337ab7">2 SOULMASTERS</span></span><br><span><span id="f" class="top-portfolio-col-small">TOTAL: 250 SOULMASTERS</span></span></div>
+</div>
+    <div class="wrapper-portfolio">
+      <div><button type="button" class="button" onclick="Claim()">CLAIM<BR>KCAL</button></div>
+      <div><button type="button" class="button" onclick="Stake()">STAKE<BR>SOUL</button></div>
+      <div><button type="button" class="button"onclick="Stake()">UNSTAKE<BR>SOUL</button></div>
+    </div>
+
   <div class="table-responsive col-md-12">
-      <table class="table table-general">
+      <table class="table table-general" id="mainportfoliotable">
           <thead>
               <tr>
-                  <th class="col-6">Name</th>
-                  <th class="col-3">Amount</th>
-                  <th class="col-3">Value (USD)</th>
+                  <th class="col-6">ASSET NAME</th>
+                  <th class="col-6">CHAIN NAME</th>
+                  <th class="col-3">ASSET QUANTITY</th>
+                  <th class="col-3">USD VALUE</th>
               </tr>
           </thead>
           <tbody>
               {{#each holdings}}
               <tr class="token-shadow">
-                  <td class="col-6"><img class="token-icon" src="img/{{Icon}}.png" /> {{Name}} (in {{ChainName}} chain)</td>
-                  <td class="col-3">{{AmountFormated}} <a href="http://localhost:7072/token/{{Symbol}}" style="color: #17B0E7">{{Symbol}}</a></td>
+                  {{#if Symbol == 'SOUL'}}
+                    <td class="col-6"><img class="token-icon" src="img/{{Icon}}.png" />{{Name}} - <a href="http://localhost:7072/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
+                  {{#else}}
+                    <td class="col-6"><img class="token-icon" src="img/soulmasters_logo.png" />{{Name}} - <a href="http://localhost:7072/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
+                  {{/if}}
+                  <td class="col-6">{{ChainName}}</td>
+                  <td class="col-3">{{AmountFormated}}</td>
                   <td class="col-3">${{UsdFormated}}</td>
               </tr>
               {{/each}}
           </tbody>
       </table>
   </div>
-  <div id="wrapper">
-  <div id="container-pie" class="col-md-6"></div>
-  <div id="container-historical-value" class="cold-md-6"></div>
+  <div id="wrapper" style="margin:0 auto;">
+  <div id="container-pie" style="height:370px" class="col-md-6"></div>
+  <div id="container-historical-value" style="height:370px" class="col-md-4"></div>
   </div>
 </div>
 <script>
@@ -39,8 +50,47 @@
     $(document).ready(
       getContainerPie(),
       getUnclaimed(),
-      getStake()
+      getStake(),
+      GetSoulmastersDetails(),
+      initTables()
     );
+
+    function initTables() {
+        if (!$.fn.dataTable.isDataTable('#mainportfoliotable')) {
+            setTimeout(function() {
+                jQuery.extend(jQuery.fn.dataTableExt.oSort, {
+                    "currency-pre": function(a) {
+                        a = (a === "-") ? 0 : a.replace(/[^\d\-\.]/g, "");
+                        return parseFloat(a)
+                    },
+                    "currency-asc": function(a, b) {
+                        return a - b
+                    },
+                    "currency-desc": function(a, b) {
+                        return b - a
+                    }
+                });
+                $('#mainportfoliotable').DataTable({
+                    "order": [
+                        [3, "desc"]
+                    ],
+                    "language": {
+                        "decimal": ".",
+                        "thousands": ","
+                    },
+                    "bPaginate": !1,
+                    "aaSorting": [],
+                    "columnDefs": [{
+                        type: 'currency',
+                        targets: [3]
+                    }],
+                    "initComplete": function() {
+                        $(this).show()
+                    }
+                })
+            }, 100)
+        }
+    }
 
     function getUnclaimed() {
 
@@ -57,8 +107,8 @@
              })
          },
          function (returnedData) {
-            console.log(returnedData)
-            document.getElementById("unclaimed-kcal").innerHTML = (returnedData) / (Math.pow(10, 10));
+             unclaimedFormatted = (returnedData) / (Math.pow(10, 10));
+             document.getElementById("unclaimed-kcal").innerHTML = numberWithCommas(unclaimedFormatted) + ' KCAL';
          }).fail(function(e) {
             console.log(e)
          })
@@ -81,7 +131,7 @@
              })
          },
          function (returnedData) {
-            console.log(returnedData)
+              //console.log(returnedData)
          }).fail(function(e) {
             console.log(e)
          })
@@ -93,7 +143,7 @@
       var params = [];
       params[0] = { name: 'stakeAddress', type: 'Object', input: '{{address}}', info: '' }
 
-      $.post('/contract/tx',
+      $.post('/contract',
          {
              chain: 'main',
              contract: 'energy',
@@ -103,8 +153,8 @@
              })
          },
          function (returnedData) {
-            console.log(returnedData)
-            document.getElementById("stake-soul").innerHTML = (returnedData) / (Math.pow(10, 8));
+            stakesFormatted = (returnedData) / (Math.pow(10, 8));
+            document.getElementById("stake-soul").innerHTML = numberWithCommas(stakesFormatted) + ' SOUL';
          }).fail(function(e) {
             console.log(e)
          })
@@ -115,9 +165,9 @@
 
       var params = [];
       params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
-      params[1] = { name: 'stakeAmount', type: 'Object', input: '1000000', info: '' }
+      params[1] = { name: 'stakeAmount', type: 'Number', input: '1000000', info: '' }
 
-      $.post('/contract',
+      $.post('/contract/tx',
          {
              chain: 'main',
              contract: 'energy',
@@ -127,25 +177,88 @@
              })
          },
          function (returnedData) {
-            console.log(returnedData)
+            //console.log(returnedData)
          }).fail(function(e) {
             console.log(e)
          })
 
     }
 
+    function GetSoulmastersDetails() {
+
+      var params = [];
+      var params2 = [];
+
+      $.when(
+
+        $.post('/contract',
+           {
+               chain: 'main',
+               contract: 'energy',
+               method: 'GetCurrentMasterCount',
+               params: JSON.stringify({
+                 params
+               })
+           },
+           function (returnedData) {
+              mastertotalcount = returnedData;
+           }).fail(function(e) {
+              console.log(e)
+           }),
+
+         params2[0] = { name: 'stakeAddress', type: 'Object', input: '{{address}}', info: '' },
+
+         $.post('/contract',
+            {
+                chain: 'main',
+                contract: 'energy',
+                method: 'GetStake',
+                params: JSON.stringify({
+                  params2
+                })
+            },
+            function (returnedData) {
+               stakeamount = returnedData;
+            }).fail(function(e) {
+               console.log(e)
+            })
+
+         ).then(function() {
+           mastercount = Math.floor(stakeamount/(Math.pow(10,8))/50000);
+           rewards = 125000/mastertotalcount*mastertotalcount;
+           document.getElementById("count-soulmasters").innerHTML = mastercount + ' Soulmasters ' + '(out of ' + mastertotalcount + ' in total)';
+           document.getElementById("rewards-soulmasters").innerHTML = 'Rwd / month: ' + numberWithCommas(rewards) + ' SOUL';
+         })
+
+    }
 
     function getContainerPie() {
 
-      arraygraph = [{name: "SOUL", y: 100, oldColor: "#E8E8E8", sliced: true}];
-      urlforcombined = 'https://api.o3.network/v1/historical?currency=USD&SOUL=7712405&KCAL=89.9992967615&NACHO=8000&KCAL=5.0000009778&NACHO=1000';
+
+      valueTOTALusd = 0;
+      urlforcombined = 'https://api.o3.network/v1/historical?currency=USD';
+      arraygraph = [];
+
+      {{#each holdings}}
+      valueTOTALusd += {{AmountFormated}};
+      {{/each}}
+
+      {{#each holdings}}
+        urlforcombined = urlforcombined + '&{{Symbol}}={{AmountFormated}}';
+        arraygraph.push({name: "{{Symbol}}", y: ({{AmountFormated}})/valueTOTALusd, oldColor: "#E8E8E8", sliced: true})
+      {{/each}}
+
+      //arraygraph = [{name: "SOUL", y: 75, oldColor: "#E8E8E8", sliced: true},{name: "KCAL", y: 25, oldColor: "#E8E8E8", sliced: true}];
+      //urlforcombined = 'https://api.o3.network/v1/historical?currency=USD&SOUL=7712405&KCAL=89.9992967615&NACHO=8000&KCAL=5.0000009778&NACHO=1000';
       currencysymbol = '$';
 
   Highcharts.chart('container-pie', {
       chart: {
-          type: 'pie'
+          type: 'pie',
+          style: {
+              fontFamily: 'Rubik'
+          }
       },
-      title: !1,
       credits: {
           enabled: !1
       },
@@ -203,10 +316,18 @@
           }
       },
       series: [{
+          title: 'test',
           type: 'pie',
           name: 'Portfolio',
           data: arraygraph
-      }]
+      }],
+      title: {
+          text: 'Portfolio composition',
+          //text: '',
+          style: {
+              fontSize: '16px'
+          }
+      }
   })
   $.ajax({
       xhrFields: {
@@ -236,6 +357,11 @@
           }
           if (positivebal == true) {
             Highcharts.stockChart('container-historical-value', {
+                chart: {
+                    style: {
+                        fontFamily: 'Rubik'
+                    }
+                },
                 xAxis: {
                   type: 'datetime',
                   labels: {
@@ -331,7 +457,14 @@
                             [1, '#fff']
                         ]
                     }
-                }]
+                }],
+                title: {
+                    text: 'Portfolio value',
+                    //text: '',
+                    style: {
+                        fontSize: '16px'
+                    }
+                }
             });
             $("#container-historical-value").fadeIn(1000);
           }
