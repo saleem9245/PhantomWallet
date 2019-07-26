@@ -336,9 +336,9 @@ namespace Phantom.Wallet.Helpers
             return path;
         }
 
-        public static decimal GetCoinRate(uint ticker, string symbol = "USD")
+        public static decimal GetCoinRate(string ticker, string symbol)
         {
-            var url = $"https://api.coinmarketcap.com/v2/ticker/{ticker}/?convert={symbol}";
+            var url = $"https://api.coingecko.com/api/v3/simple/price?ids={ticker}&vs_currencies={symbol}";
 
             string json;
 
@@ -351,10 +351,9 @@ namespace Phantom.Wallet.Helpers
 
                 var root = JSONReader.ReadFromString(json);
 
-                root = root["data"];
-                var quotes = root["quotes"][symbol];
+                root = root[ticker];
 
-                var price = quotes.GetDecimal("price");
+                var price = root.GetDecimal(symbol.ToLower());
 
                 return price;
             }

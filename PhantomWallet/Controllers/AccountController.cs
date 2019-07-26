@@ -80,7 +80,32 @@ namespace Phantom.Wallet.Controllers
                 var holdings = new List<Holding>();
                 var account = await _phantasmaRpcService.GetAccount.SendRequestAsync(address);
                 AccountName = account.Name;
-                var rateUsd = Utils.GetCoinRate(2827);
+                string currency = WalletConfig.Currency;
+                string currencysymbol;
+                switch (currency)
+                {
+                    case "USD":
+                        currencysymbol = "$";
+                        break;
+                    case "EUR":
+                        currencysymbol = "€";
+                        break;
+                    case "CAD":
+                        currencysymbol = "C$";
+                        break;
+                    case "GBP":
+                        currencysymbol = "£";
+                        break;
+                    case "JPY":
+                        currencysymbol = "¥";
+                        break;
+                    case "AUD":
+                        currencysymbol = "A$";
+                        break;
+                    default:
+                        throw new Exception($"invalid currency: {currency}");
+                }
+                var rate = Utils.GetCoinRate("phantasma", currency);
                 foreach (var token in account.Tokens)
                 {
                     var holding = new Holding
@@ -88,7 +113,8 @@ namespace Phantom.Wallet.Controllers
                         Symbol = token.Symbol,
                         Icon = "phantasma_logo",
                         Name = GetTokenName(token.Symbol),
-                        Rate = rateUsd,
+                        CurrencySymbol = currencysymbol,
+                        Rate = rate,
                         ChainName = token.ChainName.FirstLetterToUpper()
                     };
                     decimal amount = 0;

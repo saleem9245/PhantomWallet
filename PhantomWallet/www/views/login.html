@@ -91,20 +91,25 @@
 
     $(document).ready(
 
-      getTheme()
+      getSettings()
 
     );
 
-    function getTheme() {
+    function getSettings() {
 
       $.post('/config',
             {
                 mode: 'get',
             },
         function (returnedData) {
-          if ((JSON.parse(returnedData)).theme == 'dark') {
-            if (localStorage.getItem('themesetting') !== 'dark') {
-              localStorage.setItem('themesetting', 'dark');
+          if ((JSON.parse(returnedData)).theme) {
+            if (localStorage.getItem('themesetting') !== (JSON.parse(returnedData)).theme) {
+              localStorage.setItem('themesetting', (JSON.parse(returnedData)).theme);
+            }
+          }
+          if ((JSON.parse(returnedData)).currency) {
+            if (localStorage.getItem('currency') !== (JSON.parse(returnedData)).currency) {
+              localStorage.setItem('currency', (JSON.parse(returnedData)).currency);
             }
           }
         }).fail(function(e) {

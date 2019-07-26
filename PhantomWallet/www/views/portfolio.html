@@ -35,7 +35,7 @@
                   <td class="col-6">{{ChainName}}</td>
                   <td class="col-3">{{AmountFormated}}</td>
                   {{#if Symbol == 'SOUL'}}
-                    <td class="col-3">${{UsdFormated}}</td>
+                    <td class="col-3">{{CurrencySymbol}}{{PriceFormated}}</td>
                   {{#else}}
                     <td class="col-3">N/A</td>
                   {{/if}}
@@ -47,7 +47,7 @@
                 <td class="col-6">TOTAL</td>
                 <td class="col-6"></td>
                 <td class="col-3"></td>
-                <td class="col-3" id="totalusdportfolio"></td>
+                <td class="col-3" id="totalportfolio"></td>
               </tr>
           </tfoot>
       </table>
@@ -60,6 +60,26 @@
 <script>
 
     $(document).ready(function() {
+
+      if (localStorage.getItem('currency') !== 'null') {
+        currency = localStorage.getItem('currency');
+        if (localStorage.getItem('currency') == 'EUR') {
+          currencysymbol = '€';
+        } else if (localStorage.getItem('currency') == 'CAD') {
+          currencysymbol = 'C$';
+        } else if (localStorage.getItem('currency') == 'GBP') {
+          currencysymbol = '£';
+        } else if (localStorage.getItem('currency') == 'JPY') {
+          currencysymbol = '¥';
+        } else if (localStorage.getItem('currency') == 'AUD') {
+          currencysymbol = 'A$';
+        } else {
+          currencysymbol = '$';
+        }
+      } else {
+        currency = 'USD';
+        currencysymbol = '$';
+      }
 
       getContainerPie();
       getUnclaimed();
@@ -132,7 +152,7 @@
          function (returnedData) {
              unclaimedFormatted = (returnedData) / (Math.pow(10, 10));
              if (document.getElementById("unclaimed-kcal").innerHTML != numberWithCommas(unclaimedFormatted) + ' KCAL') {
-               document.getElementById("unclaimed-kcal").innerHTML = numberWithCommas(unclaimedFormatted) + ' KCAL';
+               document.getElementById("unclaimed-kcal").innerHTML = numberWithCommas(toFixed(unclaimedFormatted)) + ' KCAL';
                $(document.getElementById("unclaimed-kcal")).addClass('flash-portfolio').delay(300).queue(function(next){
                     $(this).removeClass('flash-portfolio');
                     next();
@@ -315,28 +335,24 @@
 
     function getContainerPie() {
 
-
-      valueTOTALusd = 0;
-      urlforcombined = 'https://api.o3.network/v1/historical?currency=USD';
+      valueTOTAL = 0;
+      urlforcombined = 'https://api.o3.network/v1/historical?currency=' + currency;
       arraygraph = [];
 
       {{#each holdings}}
         if ('{{Symbol}}' == 'SOUL') {
-          valueTOTALusd += {{UsdFormated}};
+          valueTOTAL += parseInt(('{{PriceFormated}}').replace(/,/g, ''));
         }
       {{/each}}
 
       {{#each holdings}}
         if ('{{Symbol}}' == 'SOUL') {
           urlforcombined = urlforcombined + '&{{Symbol}}={{AmountFormated}}';
-          arraygraph.push({name: "{{Symbol}}", y: ({{AmountFormated}})/valueTOTALusd, oldColor: "#E8E8E8", sliced: true})
+          arraygraph.push({name: "{{Symbol}}", y: ({{AmountFormated}})/valueTOTAL, oldColor: "#E8E8E8", sliced: true})
         }
       {{/each}}
 
-      document.getElementById("totalusdportfolio").innerHTML = '$' + numberWithCommas(valueTOTALusd.toFixed(0));
-      //arraygraph = [{name: "SOUL", y: 75, oldColor: "#E8E8E8", sliced: true},{name: "KCAL", y: 25, oldColor: "#E8E8E8", sliced: true}];
-      //urlforcombined = 'https://api.o3.network/v1/historical?currency=USD&SOUL=7712405&KCAL=89.9992967615&NACHO=8000&KCAL=5.0000009778&NACHO=1000';
-      currencysymbol = '$';
+      document.getElementById("totalportfolio").innerHTML = currencysymbol + numberWithCommas(valueTOTAL.toFixed(0));
 
   Highcharts.chart('container-pie', {
       chart: {

@@ -155,6 +155,7 @@
      } else {
        config = {network: network, currency: currency, theme: 'light'}
      }
+     localStorage.setItem('currency', currency);
      $.post('/config',
        {
            mode: 'set',

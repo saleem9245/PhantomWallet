@@ -30,9 +30,10 @@ namespace Phantom.Wallet.Models
         public string Icon;
         public decimal Amount;
         public decimal Rate;
-        public decimal Usd => (Amount * Rate);
+        public decimal Price => (Amount * Rate);
         public string AmountFormated => Amount.ToString("0,0.####");
-        public string UsdFormated => Usd.ToString("0,0");
+        public string PriceFormated => Price.ToString("0,0");
+        public string CurrencySymbol;
     }
 
     public struct Transaction
