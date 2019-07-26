@@ -427,9 +427,16 @@ namespace Phantom.Wallet
             var txHash = request.GetVariable("txhash");
 
             request.session.SetStruct<ErrorContext>("error", new ErrorContext { ErrorCode = "", ErrorDescription = $"{txHash} is still not confirmed." });
-            var transactionDto = AccountController.GetTxConfirmations(txHash).Result;
+            var result = AccountController.GetTxConfirmations(txHash).Result;
 
-            if (transactionDto.Confirmations > 0)
+            if (result.GetType() == typeof(ErrorResult))
+            {
+                return result;
+            }
+
+            var txObject = (TransactionDto) result;
+
+            if (txObject.Confirmations > 0)
             {
                 request.session.SetString("confirmedHash", txHash);
                 if (request.session.GetBool("isCrossTransfer"))
@@ -439,7 +446,7 @@ namespace Phantom.Wallet
                     var settleTx = AccountController.SettleBlockTransfer(
                         GetLoginKey(request),
                         settle.ChainAddress,
-                        transactionDto.Txid, settle.DestinationChainAddress).Result;
+                        txObject.Txid, settle.DestinationChainAddress).Result;
 
                     // clear
                     request.session.SetBool("isCrossTransfer", false);
@@ -482,11 +489,18 @@ namespace Phantom.Wallet
             var txHash = request.GetVariable("txhash");
 
             request.session.SetStruct<ErrorContext>("error", new ErrorContext { ErrorCode = "", ErrorDescription = $"{txHash} is still not confirmed." });
-            var transactionDto = AccountController.GetTxConfirmations(txHash).Result;
+            var result = AccountController.GetTxConfirmations(txHash).Result;
 
-            if (transactionDto.Confirmations > 0)
+            if (result.GetType() == typeof(ErrorResult))
             {
-                return JsonConvert.SerializeObject(transactionDto, Formatting.Indented);
+                return result;
+            }
+
+            var txObject = (TransactionDto) result;
+
+            if (txObject.Confirmations > 0)
+            {
+                return JsonConvert.SerializeObject(txObject, Formatting.Indented);
             }
 
             PushError(request, "Error sending tx.");
@@ -514,9 +528,16 @@ namespace Phantom.Wallet
                 if (soulBalance.Amount > 0.1m)
                 {
                     var keyPair = GetLoginKey(request);
-                    var contractTx = AccountController.InvokeContractTxGeneric(
+                    var result = AccountController.InvokeContractTxGeneric(
                             keyPair, chain, contract, method, paramList.ToArray()
                             ).Result;
+
+                    if (result.GetType() == typeof(ErrorResult))
+                    {
+                        return result;
+                    }
+                    
+                    var contractTx = (string)result;
 
                     if (SendUtils.IsTxHashValid(contractTx))
                     {
@@ -621,7 +642,15 @@ namespace Phantom.Wallet
                     if (soulBalance.Amount > 0.1m) //RegistrationCost
                     {
                         var keyPair = GetLoginKey(request);
-                        var registerTx = AccountController.RegisterName(keyPair, name).Result;
+                        var result = AccountController.RegisterName(keyPair, name).Result;
+
+                        if (result.GetType() == typeof(ErrorResult))
+                        {
+                            return result;
+                        }
+
+                        var registerTx = (string) result;
+
                         if (SendUtils.IsTxHashValid(registerTx))
                         {
                             return registerTx;

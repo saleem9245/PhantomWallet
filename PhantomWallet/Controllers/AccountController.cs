@@ -321,7 +321,7 @@ namespace Phantom.Wallet.Controllers
             }
         }
 
-        public async Task<TransactionDto> GetTxConfirmations(string txHash)
+        public async Task<object> GetTxConfirmations(string txHash)
         {
             try
             {
@@ -330,17 +330,17 @@ namespace Phantom.Wallet.Controllers
             }
             catch (RpcResponseException rpcEx)
             {
-                Debug.WriteLine($"RPC Exception occurred: {rpcEx.RpcError.Message}");
+                Log.Error($"RPC Exception occurred: {rpcEx.RpcError.Message}");
+                return new ErrorResult { error = rpcEx.RpcError.Message };
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Exception occurred: {ex.Message}");
+                Log.Error($"Exception occurred: {ex.Message}");
+                return new ErrorResult { error = ex.Message };
             }
-
-            return new TransactionDto {};
         }
 
-        public async Task<string> RegisterName(KeyPair keyPair, string name)
+        public async Task<object> RegisterName(KeyPair keyPair, string name)
         {
             try
             {
@@ -360,17 +360,17 @@ namespace Phantom.Wallet.Controllers
             }
             catch (RpcResponseException rpcEx)
             {
-                Debug.WriteLine($"RPC Exception occurred: {rpcEx.RpcError.Message}");
-                return null;
+                Log.Error($"RPC Exception occurred: {rpcEx.RpcError.Message}");
+                return new ErrorResult { error = rpcEx.RpcError.Message };
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Exception occurred: {ex.Message}");
-                return null;
+                Log.Error($"Exception occurred: {ex.Message}");
+                return new ErrorResult { error = ex.Message };
             }
         }
 
-        public async Task<string> InvokeContractTxGeneric(
+        public async Task<object> InvokeContractTxGeneric(
                 KeyPair keyPair, string chain, string contract, string method, object[] paramArray)
         {
             try
@@ -392,13 +392,14 @@ namespace Phantom.Wallet.Controllers
             }
             catch (RpcResponseException rpcEx)
             {
-                Debug.WriteLine($"RPC Exception occurred: {rpcEx.RpcError.Message}");
+                Log.Error($"RPC Exception occurred: {rpcEx.RpcError.Message}");
+                return new ErrorResult { error = rpcEx.RpcError.Message };
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Exception occurred: {ex.Message}");
+                Log.Error($"Exception occurred: {ex.Message}");
+                return new ErrorResult { error = ex.Message };
             }
-            return null;
         }
 
         public async Task<object> InvokeContractGeneric(

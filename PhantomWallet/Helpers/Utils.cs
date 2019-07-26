@@ -82,7 +82,7 @@ namespace Phantom.Wallet.Helpers
         public static string GetTxType(TransactionDto tx, List<ChainDto> phantasmaChains, List<TokenDto> phantasmaTokens)
         {
             string typetx = null;
-            string description = null;
+            //string description = null;
 
             string senderToken = null;
             Address senderChain = Address.FromText(tx.ChainAddress);

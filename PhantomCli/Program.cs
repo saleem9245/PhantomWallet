@@ -50,6 +50,9 @@ namespace PhantomCli
             Logger.Information(startupMsg);
 
             SetupControllers();
+            AccountController.UpdateConfig(
+                    Utils.ReadConfig<CliWalletConfig>(Utils.CfgPath));
+
             List<string> completionList = new List<string>(lCommands.Keys); 
             Prompt.Run(
                 ((command, listCmd, lists) =>
@@ -190,8 +193,6 @@ namespace PhantomCli
                                              { 'name': 'address', 'vmtype': 'Number', 'type': 'Phantasma.Numerics.BigInteger', 'input': '12345678', 'info': 'info1' } 
                                           ] }";
             List<object> lst2 = SendUtils.BuildParamList(json2);
-            //lst2.ForEach(CliLogger.Information);
-
         }
 
         private static void Transaction(string[] obj)

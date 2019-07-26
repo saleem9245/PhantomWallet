@@ -1,15 +1,12 @@
 Important:
 
-bug logout account name
 add logs returned on failed contract tx call (only seen on node for now)
 
 1. Multisig stuff
 
-3. change link like "http://localhost:7072/tx/{{Hash}}" to a dynamic one based on network selected (ie either http://localhost:7072/tx/{{Hash}} or https://explorer.phantasma.io/tx/{{Hash}} for example) in context
+2. change link like "http://localhost:7072/tx/{{Hash}}" to a dynamic one based on network selected (ie either http://localhost:7072/tx/{{Hash}} or https://explorer.phantasma.io/tx/{{Hash}} for example) in context
 
-4. cross chain transfer doesn't work
-
-5. write documentation
+3. write documentation
 
 
 Wait for new ABI:

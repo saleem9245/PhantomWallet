@@ -76,4 +76,10 @@ namespace Phantom.Wallet.Models
         public string Symbol;
         public string AmountOrId;
     }
+
+    public struct ErrorResult
+    {
+        public string error;
+    }
+
 }
