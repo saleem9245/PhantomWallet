@@ -1194,3 +1194,26 @@ table.dataTable thead .sorting {
 .top-portfolio-col-highlight {
     color: #337ab7;
 }
+.multisig-event {
+    position: absolute;
+    top: 2em;
+    right: 3em;
+    font-size: 3em;
+    line-height: .5em;
+    text-align: center;
+    color: #cfd90e;
+}
+.multisig-event:hover {
+    color: #17B0E7;
+    cursor: pointer;
+}
+.multisig-event span {
+    font-size: .5em;
+    text-align: center;
+}
+
+#wrapper-portfolio-confirm {
+    margin: 2em auto;
+    width: 12%;
+    text-align: center;
+}

@@ -10,10 +10,12 @@
 </div>
     <div class="wrapper-portfolio">
       <div><button type="button" class="button" onclick="Claim()">CLAIM<BR>KCAL</button></div>
-      <div><button type="button" class="button" onclick="Stake()">STAKE<BR>SOUL</button></div>
-      <div><button type="button" class="button"onclick="Stake()">UNSTAKE<BR>SOUL</button></div>
+      <div><button type="button" class="button" onclick="ManageStakes('stake')">STAKE<BR>SOUL</button></div>
+      <div><button type="button" class="button"onclick="ManageStakes('unstake')">UNSTAKE<BR>SOUL</button></div>
+      <div><button type="button" class="button"onclick="MasterClaim">CLAIM<BR>SOUL</button></div>
     </div>
-
+    <div id="wrapper-portfolio-confirm" style="display:none;">
+    </div>
   <div class="table-responsive col-md-12">
       <table class="table table-general" id="mainportfoliotable">
           <thead>
@@ -21,7 +23,7 @@
                   <th class="col-6">ASSET NAME</th>
                   <th class="col-6">CHAIN NAME</th>
                   <th class="col-3">ASSET QUANTITY</th>
-                  <th class="col-3">USD VALUE</th>
+                  <th class="col-3" id="currency-header">VALUE</th>
               </tr>
           </thead>
           <tbody>
@@ -57,6 +59,10 @@
   <div id="container-historical-value" style="height:370px" class="col-md-4"></div>
   </div>
 </div>
+<div class="multisig-event">
+  <i class="fas fa-exclamation-circle" onclick="console.log('trigger popup event')" ></i><br>
+  <span>NEW<br>EVENT</span>
+</div>
 <script>
 
     $(document).ready(function() {
@@ -80,6 +86,7 @@
         currency = 'USD';
         currencysymbol = '$';
       }
+      document.getElementById("currency-header").innerHTML = currency + ' VALUE';
 
       getContainerPie();
       getUnclaimed();
@@ -227,7 +234,9 @@
 
       var params = [];
       params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
-      params[1] = { name: 'stakeAmount', type: 'Number', input: '1000000', info: '' }
+      params[1] = { name: 'stakeAmount', type: 'Number', input: document.getElementById("manageinput").value, info: '' }
+
+      console.log(params)
 
       $.post('/contract/tx',
          {
@@ -243,6 +252,35 @@
          }).fail(function(e) {
             console.log(e)
          })
+
+         $("#wrapper-portfolio-confirm").fadeOut(1000);
+
+    }
+
+    function Unstake() {
+
+      var params = [];
+      params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
+      params[1] = { name: 'stakeAmount', type: 'Number', input: document.getElementById("manageinput").value, info: '' }
+
+      console.log(params)
+
+      $.post('/contract/tx',
+         {
+             chain: 'main',
+             contract: 'energy',
+             method: 'Unstake',
+             params: JSON.stringify({
+               params
+             })
+         },
+         function (returnedData) {
+            //console.log(returnedData)
+         }).fail(function(e) {
+            console.log(e)
+         })
+
+         $("#wrapper-portfolio-confirm").fadeOut(1000);
 
     }
 
@@ -330,6 +368,20 @@
              });
            }
          })
+
+    }
+
+    function ManageStakes(method) {
+
+      $("#wrapper-portfolio-confirm").fadeIn(1000);
+
+      fetchValuesManage = '';
+      if (method == 'stake') {
+        fetchValuesManage = '<input id="manageinput" type="text" class="form-control " placeholder="Enter Amount to Stake" style="display:inline-block;text-align:center;"><button type="button" class="button" style="margin-top:1em;border-radius: 0;" onclick="Stake()">CONFIRM</button>'
+      } else if (method == 'unstake') {
+        fetchValuesManage = '<input id="manageinput" type="text" class="form-control " placeholder="Enter Amount to Unstake" style="display:inline-block;text-align:center;"><button type="button" class="button" style="margin-top:1em;border-radius: 0;" onclick="Unstake()">CONFIRM</button>'
+      }
+      document.getElementById("wrapper-portfolio-confirm").innerHTML = fetchValuesManage;
 
     }
 

@@ -113,6 +113,7 @@ namespace Phantom.Wallet.Controllers
                         Symbol = token.Symbol,
                         Icon = "phantasma_logo",
                         Name = GetTokenName(token.Symbol),
+                        Currency = currency,
                         CurrencySymbol = currencysymbol,
                         Rate = rate,
                         ChainName = token.ChainName.FirstLetterToUpper()

@@ -34,6 +34,7 @@ namespace Phantom.Wallet.Models
         public string AmountFormated => Amount.ToString("0,0.####");
         public string PriceFormated => Price.ToString("0,0");
         public string CurrencySymbol;
+        public string Currency;
     }
 
     public struct Transaction

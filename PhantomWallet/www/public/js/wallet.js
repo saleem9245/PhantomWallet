@@ -84,7 +84,7 @@ $(document).ready(function() {
     if (document.getElementById("blockheight")) {
       document.getElementById("blockheight").innerHTML = localStorage.getItem('lastheight');
     }
-    if (document.getElementById("blockheight")) {
+    if (document.getElementById("soulprice")) {
       document.getElementById("soulprice").innerHTML = localStorage.getItem('lastsoulprice');
     }
     var pathname = window.location.pathname;
@@ -117,9 +117,30 @@ function getChains() {
 }
 
 function getPricing() {
-   $.get('https://api.coingecko.com/api/v3/simple/price?ids=phantasma&vs_currencies=usd',
+
+  if (localStorage.getItem('currency') !== 'null') {
+    currency = localStorage.getItem('currency');
+    if (localStorage.getItem('currency') == 'EUR') {
+      currencysymbol = '€';
+    } else if (localStorage.getItem('currency') == 'CAD') {
+      currencysymbol = 'C$';
+    } else if (localStorage.getItem('currency') == 'GBP') {
+      currencysymbol = '£';
+    } else if (localStorage.getItem('currency') == 'JPY') {
+      currencysymbol = '¥';
+    } else if (localStorage.getItem('currency') == 'AUD') {
+      currencysymbol = 'A$';
+    } else {
+      currencysymbol = '$';
+    }
+  } else {
+    currency = 'USD';
+    currencysymbol = '$';
+  }
+
+   $.get('https://api.coingecko.com/api/v3/simple/price?ids=phantasma&vs_currencies=' + currency.toLowerCase(),
        function (returnedData) {
-         soulprice = '$' + numberWithCommas(returnedData.phantasma.usd);
+         soulprice = currencysymbol + numberWithCommas(returnedData.phantasma[currency.toLowerCase()]);
          if (document.getElementById("soulprice").innerHTML != soulprice) {
            document.getElementById("soulprice").innerHTML = soulprice;
            $(document.getElementById("soulprice")).addClass('flash').delay(150).queue(function(next){

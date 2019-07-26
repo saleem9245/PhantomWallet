@@ -86,11 +86,11 @@
 
 <script>
 
-  $(document).ready(
+  $(document).ready(function() {
 
-    getSettings()
+    getSettings();
 
-  );
+  });
 
   function getSettings() {
 
@@ -156,6 +156,7 @@
        config = {network: network, currency: currency, theme: 'light'}
      }
      localStorage.setItem('currency', currency);
+     getPricing();
      $.post('/config',
        {
            mode: 'set',
@@ -242,7 +243,7 @@
     var quantity = e.options[e.selectedIndex].value,
         i = 0;
     for (i; i < quantity; i += 1) {
-      fetchValueInputs += 'Address ' + [i+1] + '<div><input id="addressinput-' + [i+1] + '" type="text" class="form-control " placeholder="Enter address ' + [i+1] + '"</div>'
+      fetchValueInputs += 'Address ' + [i+1] + '<div><input id="addressinput-' + [i+1] + '" type="text" class="form-control " placeholder="Enter address ' + [i+1] + '"></div>'
     }
 
     fetchValueInputs += '<button id="confirmrun-' + [i] + '" style="font-size:.9em;margin-top:2em;" type="button" required class="button" onclick="confirmRun(this.id)">CONVERT TO<br>MULTISIGNATURE WALLET</button>'
