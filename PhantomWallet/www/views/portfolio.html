@@ -1,12 +1,15 @@
 <script src="https://code.highcharts.com/stock/highstock.js"></script>
 <script src="https://unpkg.com/datatables.net@1.10.19/js/jquery.dataTables.min.js"></script>
+<div class="multisig-events">
+aaa
+</div>
 <h3 class="tab-title">Portfolio</h3>
 {{#if holdings}}
 <div class="portfolio">
   <div class="top-portfolio col-md-12">
-    <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/kcal_logo.png" /><span style="color:#333">ENERGY</span><br><span id="a" style="color:#337ab7">25 KCAL</span><br><span id="d" class="top-portfolio-col-small">GENERATING: 24 KCAL/DAY</span></div>
-    <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/phantasma_logo.png" /><span style="color:#333">STAKES</span><br><span id="b" style="color:#337ab7">450,000 SOUL</span><br><span id="e" class="top-portfolio-col-small">REWARDS: 4,333 SOUL / MONTH</span></div>
-    <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/soulmasters_logo.png" /><span style="color:#333">SOULMASTERS</span><br><span><span id="c" style="color:#337ab7">2 SOULMASTERS</span></span><br><span><span id="f" class="top-portfolio-col-small">TOTAL: 250 SOULMASTERS</span></span></div>
+    <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/kcal_logo.png" /><span style="color:#333">ENERGY</span><br><span id="unclaimed-kcal" style="color:#337ab7">KCAL</span><br><span id="rewards-kcal" class="top-portfolio-col-small">KCAL PER DAY</span></div>
+    <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/phantasma_logo.png" /><span style="color:#333">STAKES</span><br><span id="stake-soul" style="color:#337ab7">SOUL</span><br><span id="rewards-soulmasters" class="top-portfolio-col-small">SOUL PER MONTH</span></div>
+    <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/soulmasters_logo.png" /><span style="color:#333">SOULMASTERS</span><br><span><span id="count-soulmasters" style="color:#337ab7">SOULMASTER</span></span><br><span><span id="count-soulmasters-total" class="top-portfolio-col-small">OUT OF SOULMASTER</span></span></div>
 </div>
     <div class="wrapper-portfolio">
       <div><button type="button" class="button" onclick="Claim()">CLAIM<BR>KCAL</button></div>
@@ -34,10 +37,22 @@
                   {{/if}}
                   <td class="col-6">{{ChainName}}</td>
                   <td class="col-3">{{AmountFormated}}</td>
-                  <td class="col-3">${{UsdFormated}}</td>
+                  {{#if Symbol == 'SOUL'}}
+                    <td class="col-3">${{UsdFormated}}</td>
+                  {{#else}}
+                    <td class="col-3">N/A</td>
+                  {{/if}}
               </tr>
               {{/each}}
-          </tbody>
+            </tbody>
+            <tfoot>
+              <tr class="token-shadow">
+                <td class="col-6">TOTAL</td>
+                <td class="col-6"></td>
+                <td class="col-3"></td>
+                <td class="col-3" id="totalusdportfolio"></td>
+              </tr>
+          </tfoot>
       </table>
   </div>
   <div id="wrapper" style="margin:0 auto;">
@@ -47,13 +62,25 @@
 </div>
 <script>
 
-    $(document).ready(
-      getContainerPie(),
-      getUnclaimed(),
-      getStake(),
-      GetSoulmastersDetails(),
-      initTables()
-    );
+    $(document).ready(function() {
+
+      getContainerPie();
+      getUnclaimed();
+      getStake();
+      GetSoulmastersDetails();
+      initTables();
+
+      var pathname = window.location.pathname;
+      if (pathname != '/login' && pathname != '/create') {
+        setInterval(function() {
+          console.log('tick')
+          getUnclaimed();
+          getStake();
+          GetSoulmastersDetails();
+        }, 60000);
+      }
+
+    });
 
     function initTables() {
         if (!$.fn.dataTable.isDataTable('#mainportfoliotable')) {
@@ -108,7 +135,13 @@
          },
          function (returnedData) {
              unclaimedFormatted = (returnedData) / (Math.pow(10, 10));
-             document.getElementById("unclaimed-kcal").innerHTML = numberWithCommas(unclaimedFormatted) + ' KCAL';
+             if (document.getElementById("unclaimed-kcal").innerHTML != numberWithCommas(unclaimedFormatted) + ' KCAL') {
+               document.getElementById("unclaimed-kcal").innerHTML = numberWithCommas(unclaimedFormatted) + ' KCAL';
+               $(document.getElementById("unclaimed-kcal")).addClass('flash-portfolio').delay(300).queue(function(next){
+                    $(this).removeClass('flash-portfolio');
+                    next();
+               });
+             }
          }).fail(function(e) {
             console.log(e)
          })
@@ -154,7 +187,20 @@
          },
          function (returnedData) {
             stakesFormatted = (returnedData) / (Math.pow(10, 8));
-            document.getElementById("stake-soul").innerHTML = numberWithCommas(stakesFormatted) + ' SOUL';
+            if (document.getElementById("stake-soul").innerHTML != numberWithCommas(stakesFormatted) + ' SOUL') {
+              document.getElementById("stake-soul").innerHTML = numberWithCommas(stakesFormatted) + ' SOUL';
+              $(document.getElementById("stake-soul")).addClass('flash-portfolio').delay(300).queue(function(next){
+                   $(this).removeClass('flash-portfolio');
+                   next();
+              });
+            }
+            if (document.getElementById("rewards-kcal").innerHTML != numberWithCommas(stakesFormatted/500) + ' KCAL PER DAY') {
+              document.getElementById("rewards-kcal").innerHTML = numberWithCommas(stakesFormatted/500) + ' KCAL PER DAY';
+              $(document.getElementById("rewards-kcal")).addClass('flash-portfolio').delay(300).queue(function(next){
+                   $(this).removeClass('flash-portfolio');
+                   next();
+              });
+            }
          }).fail(function(e) {
             console.log(e)
          })
@@ -226,8 +272,47 @@
          ).then(function() {
            mastercount = Math.floor(stakeamount/(Math.pow(10,8))/50000);
            rewards = 125000/mastertotalcount*mastertotalcount;
-           document.getElementById("count-soulmasters").innerHTML = mastercount + ' Soulmasters ' + '(out of ' + mastertotalcount + ' in total)';
-           document.getElementById("rewards-soulmasters").innerHTML = 'Rwd / month: ' + numberWithCommas(rewards) + ' SOUL';
+           if (mastercount == 0 || mastercount == 1) {
+             if (document.getElementById("count-soulmasters").innerHTML != mastercount + ' SOULMASTER') {
+               document.getElementById("count-soulmasters").innerHTML = mastercount + ' SOULMASTER';
+               $(document.getElementById("count-soulmasters")).addClass('flash-portfolio').delay(300).queue(function(next){
+                    $(this).removeClass('flash-portfolio');
+                    next();
+               });
+             }
+           } else {
+             if (document.getElementById("count-soulmasters").innerHTML != mastercount + ' SOULMASTERS') {
+               document.getElementById("count-soulmasters").innerHTML = mastercount + ' SOULMASTERS';
+               $(document.getElementById("count-soulmasters")).addClass('flash-portfolio').delay(300).queue(function(next){
+                    $(this).removeClass('flash-portfolio');
+                    next();
+               });
+             }
+           }
+           if (mastertotalcount == 0 || mastertotalcount == 1) {
+             if (document.getElementById("count-soulmasters-total").innerHTML != 'OUT OF ' + mastertotalcount + ' SOULMASTER') {
+               document.getElementById("count-soulmasters-total").innerHTML = 'OUT OF ' + mastertotalcount + ' SOULMASTER';
+               $(document.getElementById("count-soulmasters-total")).addClass('flash-portfolio').delay(300).queue(function(next){
+                    $(this).removeClass('flash-portfolio');
+                    next();
+               });
+             }
+           } else {
+             if (document.getElementById("count-soulmasters-total").innerHTML != 'OUT OF ' + mastertotalcount + ' SOULMASTERS') {
+               document.getElementById("count-soulmasters-total").innerHTML = 'OUT OF ' + mastertotalcount + ' SOULMASTERS';
+               $(document.getElementById("count-soulmasters-total")).addClass('flash-portfolio').delay(300).queue(function(next){
+                    $(this).removeClass('flash-portfolio');
+                    next();
+               });
+             }
+           }
+           if (document.getElementById("rewards-soulmasters").innerHTML != numberWithCommas(rewards) + ' SOUL PER MONTH') {
+             document.getElementById("rewards-soulmasters").innerHTML = numberWithCommas(rewards) + ' SOUL PER MONTH';
+             $(document.getElementById("rewards-soulmasters")).addClass('flash-portfolio').delay(300).queue(function(next){
+                  $(this).removeClass('flash-portfolio');
+                  next();
+             });
+           }
          })
 
     }
@@ -240,14 +325,19 @@
       arraygraph = [];
 
       {{#each holdings}}
-      valueTOTALusd += {{AmountFormated}};
+        if ('{{Symbol}}' == 'SOUL') {
+          valueTOTALusd += {{UsdFormated}};
+        }
       {{/each}}
 
       {{#each holdings}}
-        urlforcombined = urlforcombined + '&{{Symbol}}={{AmountFormated}}';
-        arraygraph.push({name: "{{Symbol}}", y: ({{AmountFormated}})/valueTOTALusd, oldColor: "#E8E8E8", sliced: true})
+        if ('{{Symbol}}' == 'SOUL') {
+          urlforcombined = urlforcombined + '&{{Symbol}}={{AmountFormated}}';
+          arraygraph.push({name: "{{Symbol}}", y: ({{AmountFormated}})/valueTOTALusd, oldColor: "#E8E8E8", sliced: true})
+        }
       {{/each}}
 
+      document.getElementById("totalusdportfolio").innerHTML = '$' + numberWithCommas(valueTOTALusd.toFixed(0));
       //arraygraph = [{name: "SOUL", y: 75, oldColor: "#E8E8E8", sliced: true},{name: "KCAL", y: 25, oldColor: "#E8E8E8", sliced: true}];
       //urlforcombined = 'https://api.o3.network/v1/historical?currency=USD&SOUL=7712405&KCAL=89.9992967615&NACHO=8000&KCAL=5.0000009778&NACHO=1000';
       currencysymbol = '$';
@@ -338,7 +428,7 @@
       type: 'GET',
       dataType: 'json',
       data: {},
-      url: urlforcombined + '&i=3M',
+      url: urlforcombined.replace(/\,/g,'') + '&i=3M',
       success: function(data) {
           var response = JSON.stringify(data);
           var parsedJson = JSON.parse(response);

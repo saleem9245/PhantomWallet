@@ -778,6 +778,10 @@ ul.nav.nav-pills {
     transform: scale(1.1)
 }
 
+.flash-portfolio {
+    color: #17B0E7 !important;
+}
+
 .wrapper-settings {
     width: 40%;
     margin: 0 auto;
@@ -787,7 +791,7 @@ ul.nav.nav-pills {
 
 .wrapper-portfolio {
     float: left;
-    margin: 3em auto;
+    margin: 2em auto;
     width: 100%;
     text-align: center;
 }
@@ -800,12 +804,12 @@ ul.nav.nav-pills {
 }
 
 .portfolio {
-    margin-top: -4em;
+    margin-top: -5em;
 }
 
 .portfolio .wrapper-portfolio button {
     width: 7em;
-    font-size: .6em;
+    font-size: .75em;
 }
 
 .settings-row {
@@ -972,7 +976,7 @@ ul.nav.nav-pills {
     margin: 0em auto 2em !important;
 }
 
-.button:focus, select:focus {
+.button:focus, select:focus, th:focus {
     outline: none;
 }
 
@@ -1043,6 +1047,15 @@ thead th {
     text-align: center;
 }
 
+.portfolio .table-responsive tfoot .token-shadow {
+    border-bottom: 0;
+    border-top: 1px solid #17B0E7;
+}
+
+.table > tfoot > tr > td {
+    border-top: 0;
+}
+
 .dark-mode .table-striped > tbody > tr:nth-of-type(odd) {
     background-color: #555;
 }
@@ -1053,7 +1066,7 @@ thead th {
 
 .top-portfolio {
     text-align: center;
-    font-size: 1.5em;
+    font-size: 1.4em;
     padding: 0 10em;
 }
 

@@ -47,7 +47,7 @@ namespace Phantom.Wallet.Helpers
                             senderAddress = Address.FromText(evt.EventAddress);
                             senderToken = data.symbol;
                             var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == senderToken).Decimals);
-                            amountsymbol = $"{amountDecimal} {senderToken}";
+                            amountsymbol = $"{amountDecimal.ToString("0,0.####")} {senderToken}";
                         }
                         break;
 
@@ -59,7 +59,7 @@ namespace Phantom.Wallet.Helpers
                             receiverChain = data.chainAddress;
                             receiverToken = data.symbol;
                             var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == receiverToken).Decimals);
-                            amountsymbol = $"{amountDecimal} {receiverToken}";
+                            amountsymbol = $"{amountDecimal.ToString("0,0.####")} {receiverToken}";
                         }
                         break;
 
@@ -70,7 +70,7 @@ namespace Phantom.Wallet.Helpers
                             receiverAddress = Address.FromText(evt.EventAddress);
                             receiverChain = data.chainAddress;
                             var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.symbol).Decimals);
-                            amountsymbol = $"{amountDecimal} {data.symbol}";
+                            amountsymbol = $"{amountDecimal.ToString("0,0.####")} {data.symbol}";
                         }
                         break;
                 }
@@ -82,6 +82,17 @@ namespace Phantom.Wallet.Helpers
         public static string GetTxType(TransactionDto tx, List<ChainDto> phantasmaChains, List<TokenDto> phantasmaTokens)
         {
             string typetx = null;
+            string description = null;
+
+            string senderToken = null;
+            Address senderChain = Address.FromText(tx.ChainAddress);
+            Address senderAddress = Address.Null;
+
+            string receiverToken = null;
+            Address receiverChain = Address.Null;
+            Address receiverAddress = Address.Null;
+
+            BigInteger amount = 0;
 
             foreach (var evt in tx.Events) //todo move this
             {
@@ -89,20 +100,76 @@ namespace Phantom.Wallet.Helpers
                 {
                     case EventKind.TokenSend:
                         {
-                            typetx = $"Transfer";
+                            var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
+                            amount = data.value;
+                            senderAddress = Address.FromText(evt.EventAddress);
+                            senderToken = data.symbol;
                         }
                         break;
 
                     case EventKind.TokenReceive:
                         {
-                            typetx = $"Transfer";
+                            var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
+                            amount = data.value;
+                            receiverAddress = Address.FromText(evt.EventAddress);
+                            receiverChain = data.chainAddress;
+                            receiverToken = data.symbol;
+                        }
+                        break;
+
+                    case EventKind.TokenEscrow:
+                        {
+                            var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
+                            amount = data.value;
+                            var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.symbol).Decimals);
+                            receiverAddress = Address.FromText(evt.EventAddress);
+                            receiverChain = data.chainAddress;
+                            var chain = GetChainName(receiverChain.Text, phantasmaChains);
+                            typetx = $"Custom";
+                        }
+                        break;
+                    case EventKind.AddressRegister:
+                        {
+                            var name = Serialization.Unserialize<string>(evt.Data.Decode());
+                            typetx = $"Custom";
+                        }
+                        break;
+
+                    case EventKind.AddFriend:
+                        {
+                            var address = Serialization.Unserialize<Address>(evt.Data.Decode());
+                            typetx = $"Custom";
+                        }
+                        break;
+
+                    case EventKind.RemoveFriend:
+                        {
+                            var address = Serialization.Unserialize<Address>(evt.Data.Decode());
+                            typetx = $"Custom";
                         }
                         break;
                 }
+            }
 
-                if (typetx == null)
+            if (typetx == null)
+            {
+                if (amount > 0 && senderAddress != Address.Null && receiverAddress != Address.Null &&
+                    senderToken != null && senderToken == receiverToken)
                 {
-                  typetx = $"Custom";
+                    typetx = $"{senderAddress.ToString()}";
+                }
+                else if (amount > 0 && receiverAddress != Address.Null && receiverToken != null)
+                {
+                    typetx = $"{receiverAddress.ToString()}";
+                }
+                else
+                {
+                    typetx = $"Custom";
+                }
+
+                if (receiverChain != Address.Null && receiverChain != senderChain)
+                {
+                    typetx = $"Custom";
                 }
             }
 
@@ -225,7 +292,7 @@ namespace Phantom.Wallet.Helpers
         public static T ReadConfig<T>(string path)
         {
             path = FixPath(path, true);
-            if (!File.Exists(path)) 
+            if (!File.Exists(path))
             {
                 File.CreateText(path);
             }

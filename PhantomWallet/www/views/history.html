@@ -24,11 +24,14 @@
             {{#each transactions}}
             <tr>
                 <td class="col-1">
-                  {{#if Type == 'Transfer'}}
-                    <i class="fas fa-paper-plane" style="margin-left: 0.5em;font-size: 1.2em;"></i>
-                  {{/if}}
                   {{#if Type == 'Custom'}}
-                    <i class="fas fa-file-signature" style="margin-left: 0.5em;font-size: 1.2em;"></i>
+                    <i class="fas fa-paper-plane" style="margin-left: 0.5em;font-size: 1.2em;margin-top: .2em;"></i>
+                  {{#else}}
+                    {{#if Type == address}}
+                    <i class="fas fa-sign-out-alt" style="margin-left: 0.5em;font-size: 1.2em;margin-top: .2em;"></i>
+                    {{#else}}
+                    <i class="fas fa-sign-in-alt" style="margin-left: 0.5em;font-size: 1.2em;margin-top: .2em;"></i>
+                    {{/if}}
                   {{/if}}
                 </td>
                 <td class="col-2">{{#date Date}}</td>
