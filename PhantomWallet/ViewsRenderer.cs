@@ -172,6 +172,7 @@ namespace Phantom.Wallet
                 context["transactions"] = cache.Transactions;
                 context["holdings"] = cache.Holdings;
 
+                Console.WriteLine("NAME: " + AccountController.AccountName);
                 if (string.IsNullOrEmpty(AccountController.AccountName))
                 {
                     context["name"] = "Anonymous";
@@ -289,6 +290,8 @@ namespace Phantom.Wallet
 
         private HTTPResponse RouteLogout(HTTPRequest request)
         {
+            var keyPair = GetLoginKey(request);
+            InvalidateCache(keyPair.Address);
             request.session.Destroy();
             return HTTPResponse.Redirect("/login");
         }
@@ -585,8 +588,8 @@ namespace Phantom.Wallet
                 config = JsonConvert.DeserializeObject<WalletConfigDto>(configStr);
                 Utils.WriteConfig<WalletConfigDto>(config, Utils.CfgPath);
                 AccountController.UpdateConfig(config);
-                return JsonConvert.SerializeObject(config);
 
+                return JsonConvert.SerializeObject(config);
             }
             else if (mode == "get")
             {

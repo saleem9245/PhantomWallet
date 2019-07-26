@@ -2,7 +2,6 @@ Important:
 
 bug logout account name
 add logs returned on failed contract tx call (only seen on node for now)
-WalletConfig.Currency does not get updated except on login
 
 1. Multisig stuff
 
