@@ -91,7 +91,7 @@ $(document).ready(function() {
     if (pathname != '/login' && pathname != '/create') {
       setInterval(function() {
         getChains();
-      }, 1000);
+      }, 2000);
       setInterval(function() {
         getPricing();
       }, 60000);

@@ -1156,3 +1156,41 @@ table.dataTable thead .sorting {
 .dataTables_filter {
     display: none;
 }
+
+.dark-mode .highcharts-background {
+    fill: transparent;
+}
+.dark-mode .highcharts-data-labels .highcharts-label tspan {
+    fill: #fff !important;
+}
+.dark-mode .highcharts-title {
+    fill: #fff !important;
+}
+.dark-mode .highcharts-label.highcharts-range-input text {
+    fill: #fff !important;
+}
+.dark-mode .highcharts-series-0 .highcharts-area {
+    fill: #555;
+}
+.dark-mode .highcharts-series-1 .highcharts-area {
+    fill: #aeaeae;
+}
+.dark-mode .highcharts-yaxis-labels text,
+.dark-mode .highcharts-xaxis-labels text {
+    fill: #fff !important;
+}
+.dark-mode .token-shadow {
+    color: #fff;
+}
+.top-portfolio-col {
+    color: #333;
+}
+.dark-mode .top-portfolio-col {
+    color: #fff;
+}
+.dark-mode .top-portfolio-col-small {
+    color: grey;
+}
+.top-portfolio-col-highlight {
+    color: #337ab7;
+}

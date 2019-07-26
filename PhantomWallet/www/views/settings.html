@@ -20,9 +20,11 @@
       <div class="settings-row-item">
         <select id="selectcurrency" class="bootstrap-select">
             <option value="USD">USD</option>
-            <option value="EUR" disabled>EUR</option>
-            <option value="CAD" disabled>CAD</option>
-            <option value="GBP" disabled>GBP</option>
+            <option value="EUR">EUR</option>
+            <option value="CAD">CAD</option>
+            <option value="GBP">GBP</option>
+            <option value="JPY">JPY</option>
+            <option value="AUD">AUD</option>
         </select>
       </div>
     </div>
@@ -100,6 +102,7 @@
       function (returnedData) {
         if (JSON.parse(returnedData) !== null) {
            var e = document.getElementById("selectnetwork");
+           var f = document.getElementById("selectcurrency");
            function setSelectedIndex(s, v) {
             for ( var i = 0; i < s.options.length; i++ ) {
                 if ( s.options[i].text == v ) {
@@ -109,6 +112,7 @@
             }
            }
            setSelectedIndex(e,JSON.parse(returnedData).network);
+           setSelectedIndex(f,JSON.parse(returnedData).currency);
         }
       }).fail(function(e) {
          console.log(e);
@@ -119,11 +123,13 @@
   $("#selectnetwork").change(function () {
     var e = document.getElementById("selectnetwork");
     var network = e.options[e.selectedIndex].value;
+    var f = document.getElementById("selectcurrency");
+    var currency = f.options[f.selectedIndex].value;
     var selecttheme = document.getElementById('cb4').checked;
     if (selecttheme = true) {
-      config = {network: network, currency: 'USD', theme: 'dark'}
+      config = {network: network, currency: currency, theme: 'dark'}
     } else {
-      config = {network: network, currency: 'USD', theme: 'light'}
+      config = {network: network, currency: currency, theme: 'light'}
     }
     $.post('/config',
       {
@@ -137,13 +143,39 @@
       });
    })
 
+   // Currency Change
+   $("#selectcurrency").change(function () {
+     var e = document.getElementById("selectnetwork");
+     var network = e.options[e.selectedIndex].value;
+     var f = document.getElementById("selectcurrency");
+     var currency = f.options[f.selectedIndex].value;
+     var selecttheme = document.getElementById('cb4').checked;
+     if (selecttheme = true) {
+       config = {network: network, currency: currency, theme: 'dark'}
+     } else {
+       config = {network: network, currency: currency, theme: 'light'}
+     }
+     $.post('/config',
+       {
+           mode: 'set',
+           config: JSON.stringify(config)
+       },
+       function (returnedData) {
+
+       }).fail(function(e) {
+          console.log(e);
+       });
+    })
+
   // Theme Change
   const selecttheme = document.getElementById('cb4');
   selecttheme.addEventListener('change', (event) => {
     if (event.target.checked) {
       var e = document.getElementById("selectnetwork");
       var network = e.options[e.selectedIndex].value;
-      config = {network: network, currency: 'USD', theme: 'dark'}
+      var f = document.getElementById("selectcurrency");
+      var currency = f.options[f.selectedIndex].value;
+      config = {network: network, currency: currency, theme: 'dark'}
       $.post('/config',
         {
             mode: 'set',
@@ -157,7 +189,9 @@
     } else {
       var e = document.getElementById("selectnetwork");
       var network = e.options[e.selectedIndex].value;
-      config = {network: network, currency: 'USD', theme: 'light'}
+      var f = document.getElementById("selectcurrency");
+      var currency = f.options[f.selectedIndex].value;
+      config = {network: network, currency: currency, theme: 'light'}
       $.post('/config',
         {
             mode: 'set',

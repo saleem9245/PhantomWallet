@@ -1,15 +1,12 @@
 <script src="https://code.highcharts.com/stock/highstock.js"></script>
 <script src="https://unpkg.com/datatables.net@1.10.19/js/jquery.dataTables.min.js"></script>
-<div class="multisig-events">
-aaa
-</div>
 <h3 class="tab-title">Portfolio</h3>
 {{#if holdings}}
 <div class="portfolio">
   <div class="top-portfolio col-md-12">
-    <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/kcal_logo.png" /><span style="color:#333">ENERGY</span><br><span id="unclaimed-kcal" style="color:#337ab7">KCAL</span><br><span id="rewards-kcal" class="top-portfolio-col-small">KCAL PER DAY</span></div>
-    <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/phantasma_logo.png" /><span style="color:#333">STAKES</span><br><span id="stake-soul" style="color:#337ab7">SOUL</span><br><span id="rewards-soulmasters" class="top-portfolio-col-small">SOUL PER MONTH</span></div>
-    <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/soulmasters_logo.png" /><span style="color:#333">SOULMASTERS</span><br><span><span id="count-soulmasters" style="color:#337ab7">SOULMASTER</span></span><br><span><span id="count-soulmasters-total" class="top-portfolio-col-small">OUT OF SOULMASTER</span></span></div>
+    <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/kcal_logo.png" /><span>ENERGY</span><br><span id="unclaimed-kcal" class="top-portfolio-col-highlight">KCAL</span><br><span id="rewards-kcal" class="top-portfolio-col-small">KCAL PER DAY</span></div>
+    <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/phantasma_logo.png" /><span>STAKES</span><br><span id="stake-soul" class="top-portfolio-col-highlight">SOUL</span><br><span id="rewards-soulmasters" class="top-portfolio-col-small">SOUL PER MONTH</span></div>
+    <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/soulmasters_logo.png" /><span>SOULMASTERS</span><br><span><span id="count-soulmasters" class="top-portfolio-col-highlight">SOULMASTER</span></span><br><span><span id="count-soulmasters-total" class="top-portfolio-col-small">OUT OF SOULMASTER</span></span></div>
 </div>
     <div class="wrapper-portfolio">
       <div><button type="button" class="button" onclick="Claim()">CLAIM<BR>KCAL</button></div>
@@ -73,7 +70,6 @@ aaa
       var pathname = window.location.pathname;
       if (pathname != '/login' && pathname != '/create') {
         setInterval(function() {
-          console.log('tick')
           getUnclaimed();
           getStake();
           GetSoulmastersDetails();
