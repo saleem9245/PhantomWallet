@@ -129,7 +129,7 @@ namespace Phantom.Wallet
                 LastUpdated = currentTime,
                 Holdings = AccountController.GetAccountHoldings(address.Text).Result,
                 Tokens = AccountController.GetAccountTokens(address.Text).Result.ToArray(),
-                Transactions = AccountController.GetAccountTransactions(address.Text).Result //todo remove .Result,
+                Transactions = AccountController.GetAccountTransactions(address.Text).Result
             };
 
             _accountCaches[address] = cache;
@@ -431,7 +431,7 @@ namespace Phantom.Wallet
 
             if (result.GetType() == typeof(ErrorResult))
             {
-                return result;
+                return JsonConvert.SerializeObject(result, Formatting.Indented);
             }
 
             var txObject = (TransactionDto) result;
@@ -493,7 +493,7 @@ namespace Phantom.Wallet
 
             if (result.GetType() == typeof(ErrorResult))
             {
-                return result;
+                return JsonConvert.SerializeObject(result, Formatting.Indented);
             }
 
             var txObject = (TransactionDto) result;
@@ -528,13 +528,14 @@ namespace Phantom.Wallet
                 if (soulBalance.Amount > 0.1m)
                 {
                     var keyPair = GetLoginKey(request);
+                    InvalidateCache(keyPair.Address);
                     var result = AccountController.InvokeContractTxGeneric(
                             keyPair, chain, contract, method, paramList.ToArray()
                             ).Result;
 
                     if (result.GetType() == typeof(ErrorResult))
                     {
-                        return result;
+                        return JsonConvert.SerializeObject(result, Formatting.Indented);
                     }
                     
                     var contractTx = (string)result;
@@ -608,7 +609,11 @@ namespace Phantom.Wallet
             {
                 config = JsonConvert.DeserializeObject<WalletConfigDto>(configStr);
                 Utils.WriteConfig<WalletConfigDto>(config, Utils.CfgPath);
+
                 AccountController.UpdateConfig(config);
+
+                var keyPair = GetLoginKey(request);
+                InvalidateCache(keyPair.Address);
 
                 return JsonConvert.SerializeObject(config);
             }
@@ -646,7 +651,7 @@ namespace Phantom.Wallet
 
                         if (result.GetType() == typeof(ErrorResult))
                         {
-                            return result;
+                            return JsonConvert.SerializeObject(result, Formatting.Indented);
                         }
 
                         var registerTx = (string) result;
