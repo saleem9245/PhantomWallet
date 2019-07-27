@@ -4,17 +4,16 @@
 {{#if holdings}}
 <div class="portfolio">
   <div class="top-portfolio col-md-12">
-    <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/kcal_logo.png" /><span>ENERGY</span><br><span id="unclaimed-kcal" class="top-portfolio-col-highlight">KCAL</span><br><span id="rewards-kcal" class="top-portfolio-col-small">KCAL PER DAY</span></div>
-    <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/phantasma_logo.png" /><span>STAKES</span><br><span id="stake-soul" class="top-portfolio-col-highlight">SOUL</span><br><span id="rewards-soulmasters" class="top-portfolio-col-small">SOUL PER MONTH</span></div>
+    <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/kcal_logo.png" /><span>ENERGY</span><br><span id="unclaimed-kcal" class="top-portfolio-col-highlight">KCAL</span><br><span id="rewards-kcal" class="top-portfolio-col-small">KCAL / DAY</span></div>
+    <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/phantasma_logo.png" /><span>STAKES</span><br><span id="stake-soul" class="top-portfolio-col-highlight">SOUL</span><br><span id="rewards-soulmasters" class="top-portfolio-col-small">SOUL / MONTH</span></div>
     <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/soulmasters_logo.png" /><span>SOULMASTERS</span><br><span><span id="count-soulmasters" class="top-portfolio-col-highlight">SOULMASTER</span></span><br><span><span id="count-soulmasters-total" class="top-portfolio-col-small">OUT OF SOULMASTER</span></span></div>
 </div>
     <div class="wrapper-portfolio">
       <div><button type="button" class="button" onclick="Claim()">CLAIM<BR>KCAL</button></div>
-      <div><button type="button" class="button" onclick="ManageStakes('stake')">STAKE<BR>SOUL</button></div>
-      <div><button type="button" class="button"onclick="ManageStakes('unstake')">UNSTAKE<BR>SOUL</button></div>
-      <div><button type="button" class="button"onclick="MasterClaim">CLAIM<BR>SOUL</button></div>
+      <div><input id="manageinput" type="number" min="1" class="form-control " placeholder="Amount" style="display:inline-block;text-align:center;width: 22%;display:inline-block;margin-right: 1em;"><button type="button" class="button" style="border-radius: 0;" onclick="Stake()">STAKE</button><button type="button" class="button" style="border-radius: 0;margin-left: .1em;" onclick="Unstake()">UNSTAKE</button></div>
+      <div><button type="button" class="button"onclick="MasterClaim()">CLAIM<BR>REWARDS</button></div>
     </div>
-    <div id="wrapper-portfolio-confirm" style="display:none;">
+    <div id="wrapper-portfolio-confirm">
     </div>
   <div class="table-responsive col-md-12">
       <table class="table table-general" id="mainportfoliotable">
@@ -187,7 +186,8 @@
              })
          },
          function (returnedData) {
-              //console.log(returnedData)
+              console.log(returnedData)
+              document.getElementById("wrapper-portfolio-confirm").innerHTML = returnedData;
          }).fail(function(e) {
             console.log(e)
          })
@@ -221,8 +221,8 @@
                    next();
               });
             }
-            if (document.getElementById("rewards-kcal").innerHTML != numberWithCommas(stakesFormatted/500) + ' KCAL PER DAY') {
-              document.getElementById("rewards-kcal").innerHTML = numberWithCommas(stakesFormatted/500) + ' KCAL PER DAY';
+            if (document.getElementById("rewards-kcal").innerHTML != numberWithCommas(stakesFormatted/500) + ' KCAL / DAY') {
+              document.getElementById("rewards-kcal").innerHTML = numberWithCommas(stakesFormatted/500) + ' KCAL / DAY';
               $(document.getElementById("rewards-kcal")).addClass('flash-portfolio').delay(300).queue(function(next){
                    $(this).removeClass('flash-portfolio');
                    next();
@@ -237,6 +237,7 @@
     function Stake() {
 
       var params = [];
+      fetchValuesManage = '';
       params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
       params[1] = { name: 'stakeAmount', type: 'Number', input: toFixed((document.getElementById("manageinput").value)*(Math.pow(10,8))), info: '' }
 
@@ -250,12 +251,13 @@
              })
          },
          function (returnedData) {
-            //console.log(returnedData)
+            console.log(returnedData)
+            document.getElementById("wrapper-portfolio-confirm").innerHTML = returnedData;
          }).fail(function(e) {
             console.log(e)
+            document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
          })
 
-         $("#wrapper-portfolio-confirm").fadeOut(1000);
          setTimeout(function() {
            getStake();
            setTimeout(function() {
@@ -281,12 +283,12 @@
              })
          },
          function (returnedData) {
-            //console.log(returnedData)
+            console.log(returnedData)
+            document.getElementById("wrapper-portfolio-confirm").innerHTML = returnedData;
          }).fail(function(e) {
             console.log(e)
+            document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
          })
-
-         $("#wrapper-portfolio-confirm").fadeOut(1000);
 
     }
 
@@ -370,28 +372,14 @@
                });
              }
            }
-           if (document.getElementById("rewards-soulmasters").innerHTML != numberWithCommas(rewards) + ' SOUL PER MONTH') {
-             document.getElementById("rewards-soulmasters").innerHTML = numberWithCommas(rewards) + ' SOUL PER MONTH';
+           if (document.getElementById("rewards-soulmasters").innerHTML != numberWithCommas(rewards) + ' SOUL / MONTH') {
+             document.getElementById("rewards-soulmasters").innerHTML = numberWithCommas(rewards) + ' SOUL / MONTH';
              $(document.getElementById("rewards-soulmasters")).addClass('flash-portfolio').delay(300).queue(function(next){
                   $(this).removeClass('flash-portfolio');
                   next();
              });
            }
          })
-
-    }
-
-    function ManageStakes(method) {
-
-      $("#wrapper-portfolio-confirm").fadeIn(1000);
-
-      fetchValuesManage = '';
-      if (method == 'stake') {
-        fetchValuesManage = '<input id="manageinput" type="number" min="1" class="form-control " placeholder="Enter Amount to Stake" style="display:inline-block;text-align:center;"><button type="button" class="button" style="margin-top:1em;border-radius: 0;" onclick="Stake()">CONFIRM</button>'
-      } else if (method == 'unstake') {
-        fetchValuesManage = '<input id="manageinput" type="number" min="1" class="form-control " placeholder="Enter Amount to Unstake" style="display:inline-block;text-align:center;"><button type="button" class="button" style="margin-top:1em;border-radius: 0;" onclick="Unstake()">CONFIRM</button>'
-      }
-      document.getElementById("wrapper-portfolio-confirm").innerHTML = fetchValuesManage;
 
     }
 
@@ -623,7 +611,7 @@
                     }
                 }],
                 title: {
-                    text: 'Total portfolio value - ' + currency,
+                    text: 'Portfolio total ' + currency + ' value',
                     //text: '',
                     style: {
                         fontSize: '16px'

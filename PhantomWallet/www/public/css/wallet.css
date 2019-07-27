@@ -300,6 +300,7 @@ ul.nav.nav-pills {
 
 .portfolio .table-responsive {
     padding: 0 20em 0 20em;
+    margin-top: 1em;
 }
 
 .portfolio .table-responsive .token-shadow {
@@ -791,16 +792,19 @@ ul.nav.nav-pills {
 
 .wrapper-portfolio {
     float: left;
-    margin: 2em auto;
+    margin: 1em auto;
     width: 100%;
     text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .wrapper-portfolio div {
-    text-align: left;
     display: inline-block;
-    font-size: 1.5em;
-    margin: 0em 2em;
+    font-size: 1.2em;
+    width: 24%;
+    display: inline-block;
 }
 
 .portfolio {
@@ -808,8 +812,9 @@ ul.nav.nav-pills {
 }
 
 .portfolio .wrapper-portfolio button {
-    width: 7em;
+    width: 6.5em;
     font-size: .75em;
+    padding: .5em .5em;
 }
 
 .settings-row {
@@ -1213,7 +1218,9 @@ table.dataTable thead .sorting {
 }
 
 #wrapper-portfolio-confirm {
-    margin: 2em auto;
-    width: 12%;
     text-align: center;
+    display: block;
+    width: 100%;
+    float: left;
+    margin: 1em 0;
 }
