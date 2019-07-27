@@ -13,7 +13,7 @@
       <div><input id="manageinput" type="number" min="1" class="form-control " placeholder="Amount" style="display:inline-block;text-align:center;width: 22%;display:inline-block;margin-right: 1em;"><button type="button" class="button" style="border-radius: 0;" onclick="Stake()">STAKE</button><button type="button" class="button" style="border-radius: 0;margin-left: .1em;" onclick="Unstake()">UNSTAKE</button></div>
       <div><button type="button" class="button"onclick="MasterClaim()">CLAIM<BR>REWARDS</button></div>
     </div>
-    <div id="wrapper-portfolio-confirm">
+    <div id="wrapper-portfolio-confirm" style="visibility:hidden;">
     </div>
   <div class="table-responsive col-md-12">
       <table class="table table-general" id="mainportfoliotable">
@@ -141,6 +141,177 @@
         }
     }
 
+    function Claim() {
+
+      var params = [];
+      params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
+      params[1] = { name: 'stakeAddress', type: 'Object', input: '{{address}}', info: '' }
+
+      $.post('/contract/tx',
+         {
+             chain: 'main',
+             contract: 'energy',
+             method: 'Claim',
+             params: JSON.stringify({
+               params
+             })
+         },
+         function (returnedData) {
+            //console.log(returnedData)
+            $.get('/tx/' + returnedData,
+                function (returnedDataTX) {
+                  //console.log(JSON.parse(returnedDataTX).error)
+                  if ((JSON.parse(returnedDataTX).error) != undefined) {
+                    document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
+                  } else {
+                    document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="http://localhost:7072/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                  }
+                }).fail(function(e) {
+                  //console.log(e)
+                  document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
+                });
+         }).fail(function(e) {
+            console.log(e)
+            document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
+         })
+
+         setTimeout(function() {
+           getUnclaimed();
+         }, 2000);
+
+         document.getElementById("manageinput").value = '';
+         $("#wrapper-portfolio-confirm").css('visibility', 'visible');
+
+    }
+
+    function Stake() {
+
+      var params = [];
+      fetchValuesManage = '';
+      params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
+      params[1] = { name: 'stakeAmount', type: 'Number', input: toFixed((document.getElementById("manageinput").value)*(Math.pow(10,8))), info: '' }
+
+      $.post('/contract/tx',
+         {
+             chain: 'main',
+             contract: 'energy',
+             method: 'Stake',
+             params: JSON.stringify({
+               params
+             })
+         },
+         function (returnedData) {
+            //console.log(returnedData)
+            $.get('/tx/' + returnedData,
+                function (returnedDataTX) {
+                  //console.log(JSON.parse(returnedDataTX).error)
+                  if ((JSON.parse(returnedDataTX).error) != undefined) {
+                    document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
+                  } else {
+                    document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="http://localhost:7072/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                  }
+                }).fail(function(e) {
+                  //console.log(e)
+                  document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
+                });
+         }).fail(function(e) {
+            console.log(e)
+            document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
+         })
+
+         setTimeout(function() {
+           getStake();
+           setTimeout(function() {
+             GetSoulmastersDetails();
+           }, 1000);
+         }, 2000);
+
+         document.getElementById("manageinput").value = '';
+
+    }
+
+    function Unstake() {
+
+      var params = [];
+      params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
+      params[1] = { name: 'stakeAmount', type: 'Number', input: toFixed((document.getElementById("manageinput").value)*(Math.pow(10,8))), info: '' }
+
+      $.post('/contract/tx',
+         {
+             chain: 'main',
+             contract: 'energy',
+             method: 'Unstake',
+             params: JSON.stringify({
+               params
+             })
+         },
+         function (returnedData) {
+            //console.log(returnedData)
+            $.get('/tx/' + returnedData,
+                function (returnedDataTX) {
+                  //console.log(JSON.parse(returnedDataTX).error)
+                  if ((JSON.parse(returnedDataTX).error) != undefined) {
+                    document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
+                  } else {
+                    document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="http://localhost:7072/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                  }
+                }).fail(function(e) {
+                  //console.log(e)
+                  document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
+                });
+         }).fail(function(e) {
+            console.log(e)
+            document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
+         })
+
+         setTimeout(function() {
+           getStake();
+           setTimeout(function() {
+             GetSoulmastersDetails();
+           }, 1000);
+         }, 2000);
+
+         document.getElementById("manageinput").value = '';
+
+    }
+
+    function MasterClaim() {
+
+      var params = [];
+      params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
+
+      $.post('/contract/tx',
+         {
+             chain: 'main',
+             contract: 'energy',
+             method: 'MasterClaim',
+             params: JSON.stringify({
+               params
+             })
+         },
+         function (returnedData) {
+            //console.log(returnedData)
+            $.get('/tx/' + returnedData,
+                function (returnedDataTX) {
+                  //console.log(JSON.parse(returnedDataTX).error)
+                  if ((JSON.parse(returnedDataTX).error) != undefined) {
+                    document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
+                  } else {
+                    document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="http://localhost:7072/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                  }
+                }).fail(function(e) {
+                  //console.log(e)
+                  document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
+                });
+         }).fail(function(e) {
+            console.log(e)
+            document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
+         })
+
+         document.getElementById("manageinput").value = '';
+
+    }
+
     function getUnclaimed() {
 
       var params = [];
@@ -167,34 +338,6 @@
          }).fail(function(e) {
             console.log(e)
          })
-
-    }
-
-    function Claim() {
-
-      var params = [];
-      params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
-      params[1] = { name: 'stakeAddress', type: 'Object', input: '{{address}}', info: '' }
-
-      $.post('/contract/tx',
-         {
-             chain: 'main',
-             contract: 'energy',
-             method: 'Claim',
-             params: JSON.stringify({
-               params
-             })
-         },
-         function (returnedData) {
-              console.log(returnedData)
-              document.getElementById("wrapper-portfolio-confirm").innerHTML = returnedData;
-         }).fail(function(e) {
-            console.log(e)
-         })
-
-         setTimeout(function() {
-           getUnclaimed();
-         }, 2000);
 
     }
 
@@ -230,64 +373,6 @@
             }
          }).fail(function(e) {
             console.log(e)
-         })
-
-    }
-
-    function Stake() {
-
-      var params = [];
-      fetchValuesManage = '';
-      params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
-      params[1] = { name: 'stakeAmount', type: 'Number', input: toFixed((document.getElementById("manageinput").value)*(Math.pow(10,8))), info: '' }
-
-      $.post('/contract/tx',
-         {
-             chain: 'main',
-             contract: 'energy',
-             method: 'Stake',
-             params: JSON.stringify({
-               params
-             })
-         },
-         function (returnedData) {
-            console.log(returnedData)
-            document.getElementById("wrapper-portfolio-confirm").innerHTML = returnedData;
-         }).fail(function(e) {
-            console.log(e)
-            document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
-         })
-
-         setTimeout(function() {
-           getStake();
-           setTimeout(function() {
-             GetSoulmastersDetails();
-           }, 1000);
-         }, 2000);
-
-    }
-
-    function Unstake() {
-
-      var params = [];
-      params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
-      params[1] = { name: 'stakeAmount', type: 'Number', input: toFixed((document.getElementById("manageinput").value)*(Math.pow(10,8))), info: '' }
-
-      $.post('/contract/tx',
-         {
-             chain: 'main',
-             contract: 'energy',
-             method: 'Unstake',
-             params: JSON.stringify({
-               params
-             })
-         },
-         function (returnedData) {
-            console.log(returnedData)
-            document.getElementById("wrapper-portfolio-confirm").innerHTML = returnedData;
-         }).fail(function(e) {
-            console.log(e)
-            document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
          })
 
     }

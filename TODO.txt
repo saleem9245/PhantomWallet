@@ -1,6 +1,6 @@
 Important:
 
-add logs returned on failed contract tx call (only seen on node for now)
+fix balance holdings cache / dynamic view (array of new values) to be called after for example GetStake()
 
 1. Multisig stuff
 
@@ -22,5 +22,5 @@ For later:
 
 2. account type login (db + logic + view)
 
-3. Account import/export
+3. Account import/export/swap
 

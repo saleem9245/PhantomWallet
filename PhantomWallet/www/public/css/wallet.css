@@ -298,6 +298,14 @@ ul.nav.nav-pills {
     padding: 10px;
 }
 
+.portfolio a {
+    color: #17B0E7;
+}
+
+.portfolio .table {
+    margin-bottom: 0;
+}
+
 .portfolio .table-responsive {
     padding: 0 20em 0 20em;
     margin-top: 1em;
@@ -780,7 +788,7 @@ ul.nav.nav-pills {
 }
 
 .flash-portfolio {
-    color: #17B0E7 !important;
+    color: #337ab7 !important;
 }
 
 .wrapper-settings {
@@ -1197,7 +1205,7 @@ table.dataTable thead .sorting {
     color: grey;
 }
 .top-portfolio-col-highlight {
-    color: #337ab7;
+    color: #17B0E7;
 }
 .multisig-event {
     position: absolute;
