@@ -228,7 +228,6 @@
                    })
                },
                function (returnedData) {
-                 console.log(returnedData)
                  if (returnedData.startsWith('0x')) {
                    $.get('/tx/' + returnedData,
                        function (returnedDataTX) {

@@ -192,6 +192,10 @@
             console.log(e)
          })
 
+         setTimeout(function() {
+           getUnclaimed();
+         }, 2000);
+
     }
 
     function getStake() {
@@ -234,9 +238,7 @@
 
       var params = [];
       params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
-      params[1] = { name: 'stakeAmount', type: 'Number', input: document.getElementById("manageinput").value, info: '' }
-
-      console.log(params)
+      params[1] = { name: 'stakeAmount', type: 'Number', input: toFixed((document.getElementById("manageinput").value)*(Math.pow(10,8))), info: '' }
 
       $.post('/contract/tx',
          {
@@ -254,6 +256,12 @@
          })
 
          $("#wrapper-portfolio-confirm").fadeOut(1000);
+         setTimeout(function() {
+           getStake();
+           setTimeout(function() {
+             GetSoulmastersDetails();
+           }, 1000);
+         }, 2000);
 
     }
 
@@ -261,9 +269,7 @@
 
       var params = [];
       params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
-      params[1] = { name: 'stakeAmount', type: 'Number', input: document.getElementById("manageinput").value, info: '' }
-
-      console.log(params)
+      params[1] = { name: 'stakeAmount', type: 'Number', input: toFixed((document.getElementById("manageinput").value)*(Math.pow(10,8))), info: '' }
 
       $.post('/contract/tx',
          {
@@ -325,7 +331,11 @@
 
          ).then(function() {
            mastercount = Math.floor(stakeamount/(Math.pow(10,8))/50000);
-           rewards = 125000/mastertotalcount*mastertotalcount;
+           if (mastertotalcount > 0) {
+             rewards = 125000/mastertotalcount;
+           } else {
+             rewards = 0;
+           }
            if (mastercount == 0 || mastercount == 1) {
              if (document.getElementById("count-soulmasters").innerHTML != mastercount + ' SOULMASTER') {
                document.getElementById("count-soulmasters").innerHTML = mastercount + ' SOULMASTER';
@@ -377,9 +387,9 @@
 
       fetchValuesManage = '';
       if (method == 'stake') {
-        fetchValuesManage = '<input id="manageinput" type="text" class="form-control " placeholder="Enter Amount to Stake" style="display:inline-block;text-align:center;"><button type="button" class="button" style="margin-top:1em;border-radius: 0;" onclick="Stake()">CONFIRM</button>'
+        fetchValuesManage = '<input id="manageinput" type="number" min="1" class="form-control " placeholder="Enter Amount to Stake" style="display:inline-block;text-align:center;"><button type="button" class="button" style="margin-top:1em;border-radius: 0;" onclick="Stake()">CONFIRM</button>'
       } else if (method == 'unstake') {
-        fetchValuesManage = '<input id="manageinput" type="text" class="form-control " placeholder="Enter Amount to Unstake" style="display:inline-block;text-align:center;"><button type="button" class="button" style="margin-top:1em;border-radius: 0;" onclick="Unstake()">CONFIRM</button>'
+        fetchValuesManage = '<input id="manageinput" type="number" min="1" class="form-control " placeholder="Enter Amount to Unstake" style="display:inline-block;text-align:center;"><button type="button" class="button" style="margin-top:1em;border-radius: 0;" onclick="Unstake()">CONFIRM</button>'
       }
       document.getElementById("wrapper-portfolio-confirm").innerHTML = fetchValuesManage;
 
@@ -400,7 +410,7 @@
       {{#each holdings}}
         if ('{{Symbol}}' == 'SOUL') {
           urlforcombined = urlforcombined + '&{{Symbol}}={{AmountFormated}}';
-          arraygraph.push({name: "{{Symbol}}", y: ({{AmountFormated}})/valueTOTAL, oldColor: "#E8E8E8", sliced: true})
+          arraygraph.push({name: "{{Symbol}}", y: ({{PriceFormated}})/valueTOTAL, oldColor: "#E8E8E8", sliced: true})
         }
       {{/each}}
 
@@ -613,7 +623,7 @@
                     }
                 }],
                 title: {
-                    text: 'Portfolio value',
+                    text: 'Total portfolio value - ' + currency,
                     //text: '',
                     style: {
                         fontSize: '16px'
