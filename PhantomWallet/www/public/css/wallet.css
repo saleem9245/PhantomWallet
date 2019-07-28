@@ -1132,8 +1132,12 @@ thead th {
     opacity: 1;
 }
 
-#container-pie, #container-historical-value {
-    padding: 2em;
+#container-pie {
+    padding: 1em 2em 2em 2em;
+}
+
+#container-historical-value {
+    padding: 0 2em 2em 2em;
 }
 
 table.dataTable thead .sorting_asc:after {

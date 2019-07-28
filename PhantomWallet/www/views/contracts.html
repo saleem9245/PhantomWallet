@@ -228,22 +228,23 @@
                    })
                },
                function (returnedData) {
-                 if (returnedData.startsWith('0x')) {
-                   $.get('/tx/' + returnedData,
-                       function (returnedDataTX) {
-                         if (JSON.parse(returnedDataTX).confirmations > 0) {
-                           document.getElementById("contractresult").innerHTML = 'Success. Transaction confirmed.<br><a href="http://localhost:7072/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
-                         } else {
-                           document.getElementById("contractresult").innerHTML = 'Error';
-                         }
-                       }).fail(function(e) {
-                          document.getElementById("contractresult").innerHTML = 'Error. <br>' + JSON.parse(e);
-                       });
-                 }
+                  //console.log(returnedData)
+                  $.get('/tx/' + returnedData,
+                      function (returnedDataTX) {
+                        //console.log(JSON.parse(returnedDataTX).error)
+                        if ((JSON.parse(returnedDataTX).error) != undefined) {
+                          document.getElementById("contractresult").innerHTML = (JSON.parse(returnedDataTX).error);
+                        } else {
+                          document.getElementById("contractresult").innerHTML = 'Transaction successful.<br><a href="http://localhost:7072/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                        }
+                      }).fail(function(e) {
+                        console.log(e)
+                        document.getElementById("contractresult").innerHTML = e;
+                      });
                }).fail(function(e) {
-                  console.log(e);
-                  document.getElementById("contractresult").innerHTML = 'Error. Transaction not confirmed yet.<br>' + JSON.parse(e);
-               });
+                  console.log(e)
+                  document.getElementById("contractresult").innerHTML = e;
+               })
          } else {
            document.getElementById("contractresult").innerHTML = returnedData;
          }

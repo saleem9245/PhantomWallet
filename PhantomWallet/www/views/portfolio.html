@@ -10,10 +10,11 @@
 </div>
     <div class="wrapper-portfolio">
       <div><button type="button" class="button" onclick="Claim()">CLAIM<BR>KCAL</button></div>
-      <div><input id="manageinput" type="number" min="1" class="form-control " placeholder="Amount" style="display:inline-block;text-align:center;width: 22%;display:inline-block;margin-right: 1em;"><button type="button" class="button" style="border-radius: 0;" onclick="Stake()">STAKE</button><button type="button" class="button" style="border-radius: 0;margin-left: .1em;" onclick="Unstake()">UNSTAKE</button></div>
+      <div><input id="manageinput" type="number" min="1" onkeyup=imposeMinMax(this) class="form-control " placeholder="Amount" style="display:inline-block;text-align:center;width: 22%;display:inline-block;margin-right: 1em;"><button type="button" class="button" style="border-radius: 0;" onclick="Stake()">STAKE</button><button type="button" class="button" style="border-radius: 0;margin-left: .1em;" onclick="Unstake()">UNSTAKE</button></div>
       <div><button type="button" class="button"onclick="MasterClaim()">CLAIM<BR>REWARDS</button></div>
     </div>
     <div id="wrapper-portfolio-confirm" style="visibility:hidden;">
+      Transaction
     </div>
   <div class="table-responsive col-md-12">
       <table class="table table-general" id="mainportfoliotable">
@@ -54,9 +55,21 @@
       </table>
   </div>
   <div id="wrapper" style="margin:0 auto;">
-  <div id="container-pie" style="height:370px" class="col-md-6"></div>
-  <div id="container-historical-value" style="height:370px" class="col-md-4"></div>
+  <div id="container-pie" style="height:340px" class="col-md-6"></div>
+  <div class="wrapper-container-historical">
+    <div class="dropdown-custom col-md-4" id="dropdown-historical-value" style="margin-top: 1em;text-align:center;font-size:16px;">
+      <select id="historical-value" style="margin-right:.5em;">
+        <option value="24H">1 Day</option>
+        <option value="1W">1 Week</option>
+        <option value="1M">1 Month</option>
+        <option value="3M">3 Months</option>
+        <option value="ALL">All Time</option>
+      </select>
+      Portfolio Historical <span id="portfolio-currency-title"></span> Value
+    </div>
+    <div id="container-historical-value" style="height:340px" class="col-md-4"></div>
   </div>
+</div>
 </div>
 <div class="multisig-event">
   <i class="fas fa-exclamation-circle" onclick="console.log('trigger popup event')" ></i><br>
@@ -87,7 +100,8 @@
       }
       document.getElementById("currency-header").innerHTML = currency + ' VALUE';
 
-      getContainerPie();
+      getPieChart();
+      getPortfolioChart('3M')
       getUnclaimed();
       getStake();
       GetSoulmastersDetails();
@@ -160,27 +174,28 @@
             //console.log(returnedData)
             $.get('/tx/' + returnedData,
                 function (returnedDataTX) {
-                  //console.log(JSON.parse(returnedDataTX).error)
+                  //console.log(returnedDataTX)
                   if ((JSON.parse(returnedDataTX).error) != undefined) {
                     document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
+                    $("#wrapper-portfolio-confirm").css('visibility', 'visible');
                   } else {
                     document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="http://localhost:7072/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                    $("#wrapper-portfolio-confirm").css('visibility', 'visible');
                   }
                 }).fail(function(e) {
-                  //console.log(e)
+                  console.log(e)
                   document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
+                  $("#wrapper-portfolio-confirm").css('visibility', 'visible');
                 });
          }).fail(function(e) {
             console.log(e)
             document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
+            $("#wrapper-portfolio-confirm").css('visibility', 'visible');
          })
 
          setTimeout(function() {
            getUnclaimed();
          }, 2000);
-
-         document.getElementById("manageinput").value = '';
-         $("#wrapper-portfolio-confirm").css('visibility', 'visible');
 
     }
 
@@ -204,19 +219,23 @@
             //console.log(returnedData)
             $.get('/tx/' + returnedData,
                 function (returnedDataTX) {
-                  //console.log(JSON.parse(returnedDataTX).error)
+                  //console.log(returnedDataTX)
                   if ((JSON.parse(returnedDataTX).error) != undefined) {
                     document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
+                    $("#wrapper-portfolio-confirm").css('visibility', 'visible');
                   } else {
                     document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="http://localhost:7072/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                    $("#wrapper-portfolio-confirm").css('visibility', 'visible');
                   }
                 }).fail(function(e) {
-                  //console.log(e)
+                  console.log(e)
                   document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
+                  $("#wrapper-portfolio-confirm").css('visibility', 'visible');
                 });
          }).fail(function(e) {
             console.log(e)
             document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
+            $("#wrapper-portfolio-confirm").css('visibility', 'visible');
          })
 
          setTimeout(function() {
@@ -249,19 +268,23 @@
             //console.log(returnedData)
             $.get('/tx/' + returnedData,
                 function (returnedDataTX) {
-                  //console.log(JSON.parse(returnedDataTX).error)
+                  //console.log(returnedDataTX)
                   if ((JSON.parse(returnedDataTX).error) != undefined) {
                     document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
+                    $("#wrapper-portfolio-confirm").css('visibility', 'visible');
                   } else {
                     document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="http://localhost:7072/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                    $("#wrapper-portfolio-confirm").css('visibility', 'visible');
                   }
                 }).fail(function(e) {
-                  //console.log(e)
+                  console.log(e)
                   document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
+                  $("#wrapper-portfolio-confirm").css('visibility', 'visible');
                 });
          }).fail(function(e) {
             console.log(e)
             document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
+            $("#wrapper-portfolio-confirm").css('visibility', 'visible');
          })
 
          setTimeout(function() {
@@ -293,19 +316,23 @@
             //console.log(returnedData)
             $.get('/tx/' + returnedData,
                 function (returnedDataTX) {
-                  //console.log(JSON.parse(returnedDataTX).error)
+                  //console.log(returnedDataTX)
                   if ((JSON.parse(returnedDataTX).error) != undefined) {
                     document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
+                    $("#wrapper-portfolio-confirm").css('visibility', 'visible');
                   } else {
                     document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="http://localhost:7072/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                    $("#wrapper-portfolio-confirm").css('visibility', 'visible');
                   }
                 }).fail(function(e) {
-                  //console.log(e)
+                  console.log(e)
                   document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
+                  $("#wrapper-portfolio-confirm").css('visibility', 'visible');
                 });
          }).fail(function(e) {
             console.log(e)
             document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
+            $("#wrapper-portfolio-confirm").css('visibility', 'visible');
          })
 
          document.getElementById("manageinput").value = '';
@@ -468,10 +495,168 @@
 
     }
 
-    function getContainerPie() {
+    function getPortfolioChart(timeframe) {
+
+      urlforcombined = 'https://api.o3.network/v1/historical?currency=' + currency;
+      arraygraph = [];
+
+      {{#each holdings}}
+        if ('{{Symbol}}' == 'SOUL') {
+          urlforcombined = urlforcombined + '&{{Symbol}}={{AmountFormated}}';
+        }
+      {{/each}}
+
+      $.ajax({
+          xhrFields: {
+              withCredentials: !1
+          },
+          cache: !1,
+          crossDomain: !0,
+          type: 'GET',
+          dataType: 'json',
+          data: {},
+          url: urlforcombined.replace(/\,/g,'') + '&i=' + timeframe,
+          success: function(data) {
+              var response = JSON.stringify(data);
+              var parsedJson = JSON.parse(response);
+              var positivebal = false;
+              var ohlc = [],
+                  dataLength = parsedJson.result.data.data.length,
+                  i = dataLength - 1;
+              for (i; i >= 0; --i) {
+                  ohlc.push([
+                      (new Date(parsedJson.result.data.data[i].time).getTime()),
+                      parsedJson.result.data.data[i].averageUSD
+                  ]);
+                  if (parsedJson.result.data.data[i].averageUSD >= 1) {
+                    positivebal = true;
+                  }
+              }
+              if (positivebal == true) {
+                Highcharts.stockChart('container-historical-value', {
+                    chart: {
+                        style: {
+                            fontFamily: 'Rubik'
+                        }
+                    },
+                    xAxis: {
+                      type: 'datetime',
+                      labels: {
+                        formatter: function() {
+                          return Highcharts.dateFormat('%e %b', this.value);
+                        },
+                      }
+                    },
+                    yAxis: {
+                        labels: {
+                            formatter: function() {
+                                return currencysymbol + this.axis.defaultLabelFormatter.call(this);
+                            }
+                        },
+                        opposite: false,
+                        min: 0,
+                        gridLineWidth: 0,
+                        minorGridLineWidth: 0
+                    },
+                    navigator: {
+                        enabled: false
+                    },
+                    scrollbar: {
+                        enabled: false
+                    },
+                    rangeSelector: {
+                        enabled: false
+                    },
+                    legend: {
+                        enabled: false
+                    },
+                    credits: {
+                        enabled: false
+                    },
+                    exporting: {
+                        enabled: false
+                    },
+                    plotOptions: {
+                        area: {
+                            fillColor: {
+                                linearGradient: {
+                                    x1: 0,
+                                    y1: 0,
+                                    x2: 0,
+                                    y2: 1
+                                },
+                                stops: [
+                                    [0, '#17B0E7'],
+                                    [1, '#fff']
+                                ]
+                            },
+                            marker: {
+                                radius: 4
+                            },
+                            lineWidth: 3,
+                            states: {
+                                hover: {
+                                    lineWidth: 1
+                                }
+                            },
+                            threshold: null
+                        }
+                    },
+                    tooltip: {
+                        shared: true,
+                        split: false,
+                        formatter: function() {
+                            if (($("#historical-value").val()) == '24H') {
+                              var s = Highcharts.dateFormat('%A, %b %d, %Y - %H:%M', this.x);
+                            } else {
+                              var s = Highcharts.dateFormat('%A, %b %d, %Y', this.x);
+                            }
+                            $.each(this.points, function(i, point) {
+                                s += '<br/><span style="color:' + point.color + '">\u25CF</span> ' + point.series.name + ' <b>' + currencysymbol + Highcharts.numberFormat(point.y, 0, '.', ',') + '</b>';
+                            });
+                            return s;
+                        }
+                    },
+                    series: [{
+                        type: 'area',
+                        name: 'Average Wallet Value:',
+                        data: ohlc,
+                        color: '#17B0E7',
+                        fillColor: {
+                            linearGradient: {
+                                x1: 1,
+                                y1: 1,
+                                x2: 1,
+                                y2: 1
+                            },
+                            stops: [
+                                [0, '#fff'],
+                                [1, '#fff']
+                            ]
+                        }
+                    }],
+                    title: {
+                        //text: 'Portfolio total ' + currency + ' value',
+                        text: '',
+                        style: {
+                            fontSize: '16px'
+                        }
+                    }
+                });
+                $("#container-historical-value").fadeIn(1000);
+                document.getElementById("portfolio-currency-title").innerHTML = currency;
+              }
+          },
+          error: function(xhr, err) {
+            //console.log(err)
+          }
+        });
+
+    }
+
+    function getPieChart() {
 
       valueTOTAL = 0;
-      urlforcombined = 'https://api.o3.network/v1/historical?currency=' + currency;
       arraygraph = [];
 
       {{#each holdings}}
@@ -482,235 +667,97 @@
 
       {{#each holdings}}
         if ('{{Symbol}}' == 'SOUL') {
-          urlforcombined = urlforcombined + '&{{Symbol}}={{AmountFormated}}';
           arraygraph.push({name: "{{Symbol}}", y: ({{PriceFormated}})/valueTOTAL, oldColor: "#E8E8E8", sliced: true})
         }
       {{/each}}
 
-      document.getElementById("totalportfolio").innerHTML = currencysymbol + numberWithCommas(valueTOTAL.toFixed(0));
-
-  Highcharts.chart('container-pie', {
-      chart: {
-          type: 'pie',
-          style: {
-              fontFamily: 'Rubik'
-          }
-      },
-      credits: {
-          enabled: !1
-      },
-      tooltip: {
-          pointFormat: '{series.name}: <b>{point.percentage:.2f}%</b>'
-      },
-      plotOptions: {
-          pie: {
-              allowPointSelect: !0,
-              cursor: 'pointer',
-              depth: 30,
-              colors: ['#E8E8E8', '#17B0E7', '#2f7ed8', '#434348', '#8bbc21', '#64E572', '#DDDF00', '#8085e9', '#f28f43', '#e4d354', '#f45b5b', '#77a1e5'],
-              slicedOffset: 10,
-              dataLabels: {
-                  enabled: !0,
-                  format: '{point.name}: {point.percentage:.2f} %',
-                  style: {
-                      textOutline: !1
-                  }
-              },
-              states: {
-                  hover: {
-                      enabled: !1
-                  },
-                  inactive: {
-                      opacity: 1
-                  }
-              },
-              point: {
-                  events: {
-                      mouseOver: function() {
-                          this.options.oldColor = this.color;
-                          this.graphic.attr("fill", "#17B0E7");
-                          var point = this,
-                              points = this.series.points;
-                          for (var key in points) {
-                              if (points[key].sliced) {
-                                  points[key].slice(!1)
-                              }
-                          }
-                          if (!point.selected) {
-                              point.slice(!0)
-                          }
-                      },
-                      mouseOut: function() {
-                          this.graphic.attr("fill", this.options.oldColor);
-                          for (var key in this.points) {
-                              if (this.points[key].sliced) {
-                                  this.points[key].slice(!1)
-                              }
-                          }
-                      }
-                  }
-              }
-          }
-      },
-      series: [{
-          title: 'test',
-          type: 'pie',
-          name: 'Portfolio',
-          data: arraygraph
-      }],
-      title: {
-          text: 'Portfolio composition',
-          //text: '',
-          style: {
-              fontSize: '16px'
-          }
-      }
-  })
-  $.ajax({
-      xhrFields: {
-          withCredentials: !1
-      },
-      cache: !1,
-      crossDomain: !0,
-      type: 'GET',
-      dataType: 'json',
-      data: {},
-      url: urlforcombined.replace(/\,/g,'') + '&i=3M',
-      success: function(data) {
-          var response = JSON.stringify(data);
-          var parsedJson = JSON.parse(response);
-          var positivebal = false;
-          var ohlc = [],
-              dataLength = parsedJson.result.data.data.length,
-              i = dataLength - 1;
-          for (i; i >= 0; --i) {
-              ohlc.push([
-                  (new Date(parsedJson.result.data.data[i].time).getTime()),
-                  parsedJson.result.data.data[i].averageUSD
-              ]);
-              if (parsedJson.result.data.data[i].averageUSD >= 1) {
-                positivebal = true;
-              }
-          }
-          if (positivebal == true) {
-            Highcharts.stockChart('container-historical-value', {
-                chart: {
+      Highcharts.chart('container-pie', {
+        chart: {
+            type: 'pie',
+            style: {
+                fontFamily: 'Rubik'
+            }
+        },
+        credits: {
+            enabled: !1
+        },
+        tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.2f}%</b>'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: !0,
+                cursor: 'pointer',
+                depth: 30,
+                colors: ['#E8E8E8', '#17B0E7', '#2f7ed8', '#434348', '#8bbc21', '#64E572', '#DDDF00', '#8085e9', '#f28f43', '#e4d354', '#f45b5b', '#77a1e5'],
+                slicedOffset: 10,
+                dataLabels: {
+                    enabled: !0,
+                    format: '{point.name}: {point.percentage:.2f} %',
                     style: {
-                        fontFamily: 'Rubik'
+                        textOutline: !1
                     }
                 },
-                xAxis: {
-                  type: 'datetime',
-                  labels: {
-                    formatter: function() {
-                      return Highcharts.dateFormat('%e %b', this.value);
+                states: {
+                    hover: {
+                        enabled: !1
                     },
-                  }
+                    inactive: {
+                        opacity: 1
+                    }
                 },
-                yAxis: {
-                    labels: {
-                        formatter: function() {
-                            return currencysymbol + this.axis.defaultLabelFormatter.call(this);
-                        }
-                    },
-                    opposite: false,
-                    min: 0,
-                    gridLineWidth: 0,
-                    minorGridLineWidth: 0
-                },
-                navigator: {
-                    enabled: false
-                },
-                scrollbar: {
-                    enabled: false
-                },
-                rangeSelector: {
-                    enabled: false
-                },
-                legend: {
-                    enabled: false
-                },
-                credits: {
-                    enabled: false
-                },
-                exporting: {
-                    enabled: false
-                },
-                plotOptions: {
-                    area: {
-                        fillColor: {
-                            linearGradient: {
-                                x1: 0,
-                                y1: 0,
-                                x2: 0,
-                                y2: 1
-                            },
-                            stops: [
-                                [0, '#17B0E7'],
-                                [1, '#fff']
-                            ]
-                        },
-                        marker: {
-                            radius: 4
-                        },
-                        lineWidth: 3,
-                        states: {
-                            hover: {
-                                lineWidth: 1
+                point: {
+                    events: {
+                        mouseOver: function() {
+                            this.options.oldColor = this.color;
+                            this.graphic.attr("fill", "#17B0E7");
+                            var point = this,
+                                points = this.series.points;
+                            for (var key in points) {
+                                if (points[key].sliced) {
+                                    points[key].slice(!1)
+                                }
+                            }
+                            if (!point.selected) {
+                                point.slice(!0)
                             }
                         },
-                        threshold: null
-                    }
-                },
-                tooltip: {
-                    shared: true,
-                    split: false,
-                    formatter: function() {
-                        if (($("#historical-value").val()) == '24H') {
-                          var s = Highcharts.dateFormat('%A, %b %d, %Y - %H:%M', this.x);
-                        } else {
-                          var s = Highcharts.dateFormat('%A, %b %d, %Y', this.x);
+                        mouseOut: function() {
+                            this.graphic.attr("fill", this.options.oldColor);
+                            for (var key in this.points) {
+                                if (this.points[key].sliced) {
+                                    this.points[key].slice(!1)
+                                }
+                            }
                         }
-                        $.each(this.points, function(i, point) {
-                            s += '<br/><span style="color:' + point.color + '">\u25CF</span> ' + point.series.name + ' <b>' + currencysymbol + Highcharts.numberFormat(point.y, 0, '.', ',') + '</b>';
-                        });
-                        return s;
-                    }
-                },
-                series: [{
-                    type: 'area',
-                    name: 'Average Wallet Value:',
-                    data: ohlc,
-                    color: '#17B0E7',
-                    fillColor: {
-                        linearGradient: {
-                            x1: 1,
-                            y1: 1,
-                            x2: 1,
-                            y2: 1
-                        },
-                        stops: [
-                            [0, '#fff'],
-                            [1, '#fff']
-                        ]
-                    }
-                }],
-                title: {
-                    text: 'Portfolio total ' + currency + ' value',
-                    //text: '',
-                    style: {
-                        fontSize: '16px'
                     }
                 }
-            });
-            $("#container-historical-value").fadeIn(1000);
-          }
-      },
-      error: function(xhr, err) {
-        //console.log(err)
-      }
-  });
-}
+            }
+        },
+        series: [{
+            title: 'test',
+            type: 'pie',
+            name: 'Portfolio',
+            data: arraygraph
+        }],
+        title: {
+            text: 'Portfolio composition',
+            //text: '',
+            style: {
+                fontSize: '16px'
+            }
+        }
+    })
+
+  }
+
+// Handles historical-value change
+$("#historical-value").change(function() {
+
+  getPortfolioChart($("#historical-value").val())
+
+})
+
 </script>
 {{#else}}
 <div class="alert alert-info" role="alert">
