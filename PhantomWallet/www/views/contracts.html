@@ -190,6 +190,7 @@
 
   function confirmRun(method) {
 
+    $("#contractresult").fadeTo(1, 0);
     var e = document.getElementById("chaininput");
     chain = e.options[e.selectedIndex].value;
     var f = document.getElementById("contractinput");
@@ -234,19 +235,24 @@
                         //console.log(JSON.parse(returnedDataTX).error)
                         if ((JSON.parse(returnedDataTX).error) != undefined) {
                           document.getElementById("contractresult").innerHTML = (JSON.parse(returnedDataTX).error);
+                          $("#contractresult").fadeTo("slow", 1);
                         } else {
                           document.getElementById("contractresult").innerHTML = 'Transaction successful.<br><a href="http://localhost:7072/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                          $("#contractresult").fadeTo("slow", 1);
                         }
                       }).fail(function(e) {
                         console.log(e)
                         document.getElementById("contractresult").innerHTML = e;
+                        $("#contractresult").fadeTo("slow", 1);
                       });
                }).fail(function(e) {
                   console.log(e)
                   document.getElementById("contractresult").innerHTML = e;
+                  $("#contractresult").fadeTo("slow", 1);
                })
          } else {
            document.getElementById("contractresult").innerHTML = returnedData;
+           $("#contractresult").fadeTo("slow", 1);
          }
        }).fail(function(e) {
          console.log(e)
@@ -265,21 +271,24 @@
                      function (returnedDataTX) {
                        if (JSON.parse(returnedDataTX).confirmations > 0) {
                          document.getElementById("contractresult").innerHTML = 'Success. Transaction confirmed.<br><a href="http://localhost:7072/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                         $("#contractresult").fadeTo("slow", 1);
                        } else {
                          document.getElementById("contractresult").innerHTML = 'Error';
+                         $("#contractresult").fadeTo("slow", 1);
                        }
                      }).fail(function(e) {
                         console.log(e);
                         document.getElementById("contractresult").innerHTML = 'Error. <br>' + JSON.parse(e);
+                        $("#contractresult").fadeTo("slow", 1);
                      });
                }
              }).fail(function(e) {
                 console.log(e);
                 document.getElementById("contractresult").innerHTML = 'Error. <br>' + JSON.parse(e);
+                $("#contractresult").fadeTo("slow", 1);
              });
        });
 
-    $("#contractresult").show();
     $("#contractresult-title").show();
 
 }

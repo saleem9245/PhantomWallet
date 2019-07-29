@@ -1170,8 +1170,29 @@ table.dataTable thead .sorting {
 .dataTables_info {
     display: none;
 }
-.dataTables_filter {
+.dataTables_length {
     display: none;
+}
+.portfolio .dataTables_filter {
+    display: none;
+}
+
+.dataTables_filter, .dataTables_paginate {
+    text-align: center;
+}
+
+.dataTables_filter input {
+    width: 350px;
+    background-color: initial;
+    color: initial;
+    height: 36px;
+    text-align: center;
+    text-transform: uppercase;
+    border-radius: 30px;
+    padding-right: 1em;
+    padding-left: 1em;
+    line-height: inherit;
+    margin: 2em 0;
 }
 
 .dark-mode .highcharts-background {
@@ -1235,4 +1256,14 @@ table.dataTable thead .sorting {
     width: 100%;
     float: left;
     margin: 1em 0;
+}
+
+.portfolio .button-disabled {
+    cursor: not-allowed;
+    background-color: #eee;
+}
+
+.dark-mode .portfolio .button-disabled {
+    cursor: not-allowed;
+    background-color: grey;
 }
