@@ -3,18 +3,17 @@
 <h3 class="tab-title">Portfolio</h3>
 {{#if holdings}}
 <div class="portfolio">
-  <div id="sendSpinner" class="loading">Loading&#8230;</div>
   <div class="top-portfolio col-md-12">
     <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/kcal_logo.png" /><span>ENERGY</span><br><span id="unclaimed-kcal" class="top-portfolio-col-highlight">KCAL</span><br><span id="rewards-kcal" class="top-portfolio-col-small">KCAL / DAY</span></div>
     <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/phantasma_logo.png" /><span>STAKES</span><br><span id="stake-soul" class="top-portfolio-col-highlight">SOUL</span><br><span id="rewards-soulmasters" class="top-portfolio-col-small">SOUL / MONTH</span></div>
     <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/soulmasters_logo.png" /><span>SOULMASTERS</span><br><span><span id="count-soulmasters" class="top-portfolio-col-highlight">SOULMASTER</span></span><br><span><span id="count-soulmasters-total" class="top-portfolio-col-small">OUT OF SOULMASTER</span></span></div>
 </div>
     <div class="wrapper-portfolio">
-      <div><button type="button" id="claim-kcal" class="button" onclick="Claim()">CLAIM<BR>KCAL</button></div>
-      <div><input id="manageinput" type="number" min="1" class="form-control " placeholder="Amount" style="display:inline-block;text-align:center;width: 22%;display:inline-block;margin-right: 1em;"><button type="button" class="button" style="border-radius: 0;" onclick="Stake()">STAKE</button><button type="button" id="unstake-soul" class="button" style="border-radius: 0;margin-left: .1em;display:none;" onclick="Unstake()">UNSTAKE</button></div>
+      <div><button type="button" class="button" onclick="Claim()">CLAIM<BR>KCAL</button></div>
+      <div><input id="manageinput" type="number" min="1" onkeyup=imposeMinMax(this) class="form-control " placeholder="Amount" style="display:inline-block;text-align:center;width: 22%;display:inline-block;margin-right: 1em;"><button type="button" class="button" style="border-radius: 0;" onclick="Stake()">STAKE</button><button type="button" class="button" style="border-radius: 0;margin-left: .1em;" onclick="Unstake()">UNSTAKE</button></div>
       <div><button type="button" class="button"onclick="MasterClaim()">CLAIM<BR>REWARDS</button></div>
     </div>
-    <div id="wrapper-portfolio-confirm" style="opacity:0;">
+    <div id="wrapper-portfolio-confirm" style="visibility:hidden;">
       Transaction
     </div>
   <div class="table-responsive col-md-12">
@@ -57,11 +56,8 @@
   </div>
   <div id="wrapper" style="margin:0 auto;">
   <div id="container-pie" style="height:340px" class="col-md-6"></div>
-  <div id="loader-pie" class="block-loader col-md-6" style="text-align:center;">
-    <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-  </div>
   <div class="wrapper-container-historical">
-    <div class="dropdown-custom col-md-4" id="dropdown-historical-value" style="margin-top: 1em;text-align:center;font-size:16px;display:none;">
+    <div class="dropdown-custom col-md-4" id="dropdown-historical-value" style="margin-top: 1em;text-align:center;font-size:16px;">
       <select id="historical-value" style="margin-right:.5em;">
         <option value="24H">1 Day</option>
         <option value="1W">1 Week</option>
@@ -69,12 +65,9 @@
         <option value="3M">3 Months</option>
         <option value="ALL">All Time</option>
       </select>
-      Portfolio historical <span id="portfolio-currency-title"></span> value
+      Portfolio Historical <span id="portfolio-currency-title"></span> Value
     </div>
     <div id="container-historical-value" style="height:340px" class="col-md-4"></div>
-    <div id="loader-historical" class="block-loader col-md-4" style="text-align:center;">
-      <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-    </div>
   </div>
 </div>
 </div>
@@ -85,8 +78,6 @@
 <script>
 
     $(document).ready(function() {
-
-      $('#sendSpinner').hide();
 
       if (localStorage.getItem('currency') !== 'null') {
         currency = localStorage.getItem('currency');
@@ -108,11 +99,6 @@
         currencysymbol = '$';
       }
       document.getElementById("currency-header").innerHTML = currency + ' VALUE';
-      $("#historical-value").val('3M');
-      $("#loader-pie").hide();
-      $("#loader-historical").hide();
-      $("#container-pie").hide();
-      $("#container-historical-value").hide();
 
       getPieChart();
       getPortfolioChart('3M')
@@ -171,7 +157,6 @@
 
     function Claim() {
 
-      $("#wrapper-portfolio-confirm").fadeTo(1, 0);
       var params = [];
       params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
       params[1] = { name: 'stakeAddress', type: 'Object', input: '{{address}}', info: '' }
@@ -192,20 +177,20 @@
                   //console.log(returnedDataTX)
                   if ((JSON.parse(returnedDataTX).error) != undefined) {
                     document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
-                    $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                    $("#wrapper-portfolio-confirm").css('visibility', 'visible');
                   } else {
                     document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="http://localhost:7072/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
-                    $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                    $("#wrapper-portfolio-confirm").css('visibility', 'visible');
                   }
                 }).fail(function(e) {
                   console.log(e)
                   document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
-                  $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                  $("#wrapper-portfolio-confirm").css('visibility', 'visible');
                 });
          }).fail(function(e) {
             console.log(e)
             document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
-            $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+            $("#wrapper-portfolio-confirm").css('visibility', 'visible');
          })
 
          setTimeout(function() {
@@ -216,160 +201,105 @@
 
     function Stake() {
 
-      $("#wrapper-portfolio-confirm").fadeTo(1, 0);
       var params = [];
       fetchValuesManage = '';
       params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
       params[1] = { name: 'stakeAmount', type: 'Number', input: toFixed((document.getElementById("manageinput").value)*(Math.pow(10,8))), info: '' }
 
-      if (toFixed((document.getElementById("manageinput").value)) < 1) {
-            bootbox.alert("Minimum amount to stake is 1 SOUL!");
-            return;
-      }
-
-      $('#sendSpinner').show();
-      bootbox.confirm({
-          title: "Staking confirmation",
-          message: "Stake <strong>" +
-              numberWithCommas(toFixed((document.getElementById("manageinput").value))) +
-              " SOUL?",
-          buttons: {
-              cancel: {
-                  label: '<i class="fa fa-times"></i> Cancel'
-              },
-              confirm: {
-                  label: '<i class="fa fa-check"></i> Confirm'
-              }
-          },
-          callback: function(result) {
-
-            if (result) {
-
-              $.post('/contract/tx',
-                 {
-                     chain: 'main',
-                     contract: 'energy',
-                     method: 'Stake',
-                     params: JSON.stringify({
-                       params
-                     })
-                 },
-                 function (returnedData) {
-                    //console.log(returnedData)
-                    $.get('/tx/' + returnedData,
-                        function (returnedDataTX) {
-                          //console.log(returnedDataTX)
-                          if ((JSON.parse(returnedDataTX).error) != undefined) {
-                            document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
-                            $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
-                          } else {
-                            document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="http://localhost:7072/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
-                            $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
-                          }
-                        }).fail(function(e) {
-                          console.log(e)
-                          document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
-                          $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
-                        });
-                 }).fail(function(e) {
-                    console.log(e)
-                    document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
-                    $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
-                 })
-
-                 setTimeout(function() {
-                   getStake();
-                   setTimeout(function() {
-                     GetSoulmastersDetails();
-                   }, 1000);
-                 }, 2000);
-
-                 document.getElementById("manageinput").value = '';
-               }
-               $('#sendSpinner').hide();
-             }
+      $.post('/contract/tx',
+         {
+             chain: 'main',
+             contract: 'energy',
+             method: 'Stake',
+             params: JSON.stringify({
+               params
+             })
+         },
+         function (returnedData) {
+            //console.log(returnedData)
+            $.get('/tx/' + returnedData,
+                function (returnedDataTX) {
+                  //console.log(returnedDataTX)
+                  if ((JSON.parse(returnedDataTX).error) != undefined) {
+                    document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
+                    $("#wrapper-portfolio-confirm").css('visibility', 'visible');
+                  } else {
+                    document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="http://localhost:7072/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                    $("#wrapper-portfolio-confirm").css('visibility', 'visible');
+                  }
+                }).fail(function(e) {
+                  console.log(e)
+                  document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
+                  $("#wrapper-portfolio-confirm").css('visibility', 'visible');
+                });
+         }).fail(function(e) {
+            console.log(e)
+            document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
+            $("#wrapper-portfolio-confirm").css('visibility', 'visible');
          })
+
+         setTimeout(function() {
+           getStake();
+           setTimeout(function() {
+             GetSoulmastersDetails();
+           }, 1000);
+         }, 2000);
+
+         document.getElementById("manageinput").value = '';
+
     }
 
     function Unstake() {
 
-      $("#wrapper-portfolio-confirm").fadeTo(1, 0);
       var params = [];
       params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
       params[1] = { name: 'stakeAmount', type: 'Number', input: toFixed((document.getElementById("manageinput").value)*(Math.pow(10,8))), info: '' }
 
-      if (toFixed((document.getElementById("manageinput").value)) < 1) {
-            bootbox.alert("Minimum amount to unstake is 1 SOUL!");
-            return;
-      }
-
-      $('#sendSpinner').show();
-      bootbox.confirm({
-          title: "Unstaking confirmation",
-          message: "Unstake <strong>" +
-              numberWithCommas(toFixed((document.getElementById("manageinput").value))) +
-              " SOUL?",
-          buttons: {
-              cancel: {
-                  label: '<i class="fa fa-times"></i> Cancel'
-              },
-              confirm: {
-                  label: '<i class="fa fa-check"></i> Confirm'
-              }
-          },
-          callback: function(result) {
-
-            if (result) {
-
-              $.post('/contract/tx',
-                 {
-                     chain: 'main',
-                     contract: 'energy',
-                     method: 'Unstake',
-                     params: JSON.stringify({
-                       params
-                     })
-                 },
-                 function (returnedData) {
-                    //console.log(returnedData)
-                    $.get('/tx/' + returnedData,
-                        function (returnedDataTX) {
-                          //console.log(returnedDataTX)
-                          if ((JSON.parse(returnedDataTX).error) != undefined) {
-                            document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
-                            $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
-                          } else {
-                            document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="http://localhost:7072/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
-                            $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
-                          }
-                        }).fail(function(e) {
-                          console.log(e)
-                          document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
-                          $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
-                        });
-                 }).fail(function(e) {
-                    console.log(e)
-                    document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
-                    $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
-                 })
-
-                 setTimeout(function() {
-                   getStake();
-                   setTimeout(function() {
-                     GetSoulmastersDetails();
-                   }, 1000);
-                 }, 2000);
-
-                 document.getElementById("manageinput").value = '';
-             }
-             $('#sendSpinner').hide();
-           }
+      $.post('/contract/tx',
+         {
+             chain: 'main',
+             contract: 'energy',
+             method: 'Unstake',
+             params: JSON.stringify({
+               params
+             })
+         },
+         function (returnedData) {
+            //console.log(returnedData)
+            $.get('/tx/' + returnedData,
+                function (returnedDataTX) {
+                  //console.log(returnedDataTX)
+                  if ((JSON.parse(returnedDataTX).error) != undefined) {
+                    document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
+                    $("#wrapper-portfolio-confirm").css('visibility', 'visible');
+                  } else {
+                    document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="http://localhost:7072/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                    $("#wrapper-portfolio-confirm").css('visibility', 'visible');
+                  }
+                }).fail(function(e) {
+                  console.log(e)
+                  document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
+                  $("#wrapper-portfolio-confirm").css('visibility', 'visible');
+                });
+         }).fail(function(e) {
+            console.log(e)
+            document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
+            $("#wrapper-portfolio-confirm").css('visibility', 'visible');
          })
+
+         setTimeout(function() {
+           getStake();
+           setTimeout(function() {
+             GetSoulmastersDetails();
+           }, 1000);
+         }, 2000);
+
+         document.getElementById("manageinput").value = '';
+
     }
 
     function MasterClaim() {
 
-      $("#wrapper-portfolio-confirm").fadeTo(1, 0);
       var params = [];
       params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
 
@@ -388,22 +318,21 @@
                 function (returnedDataTX) {
                   //console.log(returnedDataTX)
                   if ((JSON.parse(returnedDataTX).error) != undefined) {
-                    //document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
-                    document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction rejected: allowed only once per month starting on the 1st day of each month following staking.';
-                    $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                    document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
+                    $("#wrapper-portfolio-confirm").css('visibility', 'visible');
                   } else {
                     document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="http://localhost:7072/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
-                    $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                    $("#wrapper-portfolio-confirm").css('visibility', 'visible');
                   }
                 }).fail(function(e) {
                   console.log(e)
                   document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
-                  $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                  $("#wrapper-portfolio-confirm").css('visibility', 'visible');
                 });
          }).fail(function(e) {
             console.log(e)
             document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
-            $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+            $("#wrapper-portfolio-confirm").css('visibility', 'visible');
          })
 
          document.getElementById("manageinput").value = '';
@@ -431,13 +360,6 @@
                $(document.getElementById("unclaimed-kcal")).addClass('flash-portfolio').delay(300).queue(function(next){
                     $(this).removeClass('flash-portfolio');
                     next();
-               });
-             }
-             if (unclaimedFormatted == 0) {
-               $(document.getElementById("claim-kcal")).addClass('button-disabled').delay(300).queue(function(next){
-               });
-             } else {
-               $(document.getElementById("claim-kcal")).removeClass('button-disabled').delay(300).queue(function(next){
                });
              }
          }).fail(function(e) {
@@ -475,11 +397,6 @@
                    $(this).removeClass('flash-portfolio');
                    next();
               });
-            }
-            if (stakesFormatted == 0) {
-              $("#unstake-soul").hide();
-            } else {
-              $("#unstake-soul").show();
             }
          }).fail(function(e) {
             console.log(e)
@@ -580,276 +497,179 @@
 
     function getPortfolioChart(timeframe) {
 
-      $("#loader-historical").show();
-
       urlforcombined = 'https://api.o3.network/v1/historical?currency=' + currency;
       arraygraph = [];
-      params = [];
-      params[0] = { name: 'stakeAddress', type: 'Object', input: '{{address}}', info: '' }
 
-      $.when(
+      {{#each holdings}}
+        if ('{{Symbol}}' == 'SOUL') {
+          urlforcombined = urlforcombined + '&{{Symbol}}={{AmountFormated}}';
+        }
+      {{/each}}
 
-      $.post('/contract',
-         {
-             chain: 'main',
-             contract: 'energy',
-             method: 'GetStake',
-             params: JSON.stringify({
-               params
-             })
-         },
-         function (returnedData) {
-
-            stakesFormatted = (returnedData) / (Math.pow(10, 8));
-
-         }
-       ).fail(function(e) {
-          console.log(e)
-       }),
-       $.post('/contract',
-          {
-              chain: 'main',
-              contract: 'energy',
-              method: 'GetUnclaimed',
-              params: JSON.stringify({
-                params
-              })
+      $.ajax({
+          xhrFields: {
+              withCredentials: !1
           },
-          function (returnedData) {
-
-             unclaimedFormatted = (returnedData) / (Math.pow(10, 10));
-
-          }
-        ).fail(function(e) {
-           console.log(e)
-        })
-
-      ).then(function() {
-
-        {{#each holdings}}
-          if ('{{Symbol}}' == 'SOUL') {
-            amountsoulcombined = {{Amount}} + stakesFormatted
-            urlforcombined = urlforcombined + '&{{Symbol}}=' + amountsoulcombined;
-          }
-          if ('{{Symbol}}' == 'KCAL') {
-            amountkcalcombined = {{Amount}} + unclaimedFormatted
-            urlforcombined = urlforcombined + '&{{Symbol}}=' + amountkcalcombined;
-          }
-        {{/each}}
-
-            $.ajax({
-                xhrFields: {
-                    withCredentials: !1
-                },
-                cache: !1,
-                crossDomain: !0,
-                type: 'GET',
-                dataType: 'json',
-                data: {},
-                url: urlforcombined.replace(/\,/g,'') + '&i=' + timeframe,
-                success: function(data) {
-                    var response = JSON.stringify(data);
-                    var parsedJson = JSON.parse(response);
-                    var positivebal = false;
-                    var ohlc = [],
-                        dataLength = parsedJson.result.data.data.length,
-                        i = dataLength - 1;
-                    for (i; i >= 0; --i) {
-                        ohlc.push([
-                            (new Date(parsedJson.result.data.data[i].time).getTime()),
-                            parsedJson.result.data.data[i].averageUSD
-                        ]);
-                        if (parsedJson.result.data.data[i].averageUSD >= 1) {
-                          positivebal = true;
+          cache: !1,
+          crossDomain: !0,
+          type: 'GET',
+          dataType: 'json',
+          data: {},
+          url: urlforcombined.replace(/\,/g,'') + '&i=' + timeframe,
+          success: function(data) {
+              var response = JSON.stringify(data);
+              var parsedJson = JSON.parse(response);
+              var positivebal = false;
+              var ohlc = [],
+                  dataLength = parsedJson.result.data.data.length,
+                  i = dataLength - 1;
+              for (i; i >= 0; --i) {
+                  ohlc.push([
+                      (new Date(parsedJson.result.data.data[i].time).getTime()),
+                      parsedJson.result.data.data[i].averageUSD
+                  ]);
+                  if (parsedJson.result.data.data[i].averageUSD >= 1) {
+                    positivebal = true;
+                  }
+              }
+              if (positivebal == true) {
+                Highcharts.stockChart('container-historical-value', {
+                    chart: {
+                        style: {
+                            fontFamily: 'Rubik'
+                        }
+                    },
+                    xAxis: {
+                      type: 'datetime',
+                      labels: {
+                        formatter: function() {
+                          return Highcharts.dateFormat('%e %b', this.value);
+                        },
+                      }
+                    },
+                    yAxis: {
+                        labels: {
+                            formatter: function() {
+                                return currencysymbol + this.axis.defaultLabelFormatter.call(this);
+                            }
+                        },
+                        opposite: false,
+                        min: 0,
+                        gridLineWidth: 0,
+                        minorGridLineWidth: 0
+                    },
+                    navigator: {
+                        enabled: false
+                    },
+                    scrollbar: {
+                        enabled: false
+                    },
+                    rangeSelector: {
+                        enabled: false
+                    },
+                    legend: {
+                        enabled: false
+                    },
+                    credits: {
+                        enabled: false
+                    },
+                    exporting: {
+                        enabled: false
+                    },
+                    plotOptions: {
+                        area: {
+                            fillColor: {
+                                linearGradient: {
+                                    x1: 0,
+                                    y1: 0,
+                                    x2: 0,
+                                    y2: 1
+                                },
+                                stops: [
+                                    [0, '#17B0E7'],
+                                    [1, '#fff']
+                                ]
+                            },
+                            marker: {
+                                radius: 4
+                            },
+                            lineWidth: 3,
+                            states: {
+                                hover: {
+                                    lineWidth: 1
+                                }
+                            },
+                            threshold: null
+                        }
+                    },
+                    tooltip: {
+                        shared: true,
+                        split: false,
+                        formatter: function() {
+                            if (($("#historical-value").val()) == '24H') {
+                              var s = Highcharts.dateFormat('%A, %b %d, %Y - %H:%M', this.x);
+                            } else {
+                              var s = Highcharts.dateFormat('%A, %b %d, %Y', this.x);
+                            }
+                            $.each(this.points, function(i, point) {
+                                s += '<br/><span style="color:' + point.color + '">\u25CF</span> ' + point.series.name + ' <b>' + currencysymbol + Highcharts.numberFormat(point.y, 0, '.', ',') + '</b>';
+                            });
+                            return s;
+                        }
+                    },
+                    series: [{
+                        type: 'area',
+                        name: 'Average Wallet Value:',
+                        data: ohlc,
+                        color: '#17B0E7',
+                        fillColor: {
+                            linearGradient: {
+                                x1: 1,
+                                y1: 1,
+                                x2: 1,
+                                y2: 1
+                            },
+                            stops: [
+                                [0, '#fff'],
+                                [1, '#fff']
+                            ]
+                        }
+                    }],
+                    title: {
+                        //text: 'Portfolio total ' + currency + ' value',
+                        text: '',
+                        style: {
+                            fontSize: '16px'
                         }
                     }
-                    if (positivebal == true) {
-                      Highcharts.stockChart('container-historical-value', {
-                          chart: {
-                              style: {
-                                  fontFamily: 'Rubik'
-                              }
-                          },
-                          xAxis: {
-                            type: 'datetime',
-                            labels: {
-                              formatter: function() {
-                                return Highcharts.dateFormat('%e %b', this.value);
-                              },
-                            }
-                          },
-                          yAxis: {
-                              labels: {
-                                  formatter: function() {
-                                      return currencysymbol + this.axis.defaultLabelFormatter.call(this);
-                                  }
-                              },
-                              opposite: false,
-                              min: 0,
-                              gridLineWidth: 0,
-                              minorGridLineWidth: 0
-                          },
-                          navigator: {
-                              enabled: false
-                          },
-                          scrollbar: {
-                              enabled: false
-                          },
-                          rangeSelector: {
-                              enabled: false
-                          },
-                          legend: {
-                              enabled: false
-                          },
-                          credits: {
-                              enabled: false
-                          },
-                          exporting: {
-                              enabled: false
-                          },
-                          plotOptions: {
-                              area: {
-                                  fillColor: {
-                                      linearGradient: {
-                                          x1: 0,
-                                          y1: 0,
-                                          x2: 0,
-                                          y2: 1
-                                      },
-                                      stops: [
-                                          [0, '#17B0E7'],
-                                          [1, '#fff']
-                                      ]
-                                  },
-                                  marker: {
-                                      radius: 4
-                                  },
-                                  lineWidth: 3,
-                                  states: {
-                                      hover: {
-                                          lineWidth: 1
-                                      }
-                                  },
-                                  threshold: null
-                              }
-                          },
-                          tooltip: {
-                              shared: true,
-                              split: false,
-                              formatter: function() {
-                                  if (($("#historical-value").val()) == '24H') {
-                                    var s = Highcharts.dateFormat('%A, %b %d, %Y - %H:%M', this.x);
-                                  } else {
-                                    var s = Highcharts.dateFormat('%A, %b %d, %Y', this.x);
-                                  }
-                                  $.each(this.points, function(i, point) {
-                                      s += '<br/><span style="color:' + point.color + '">\u25CF</span> ' + point.series.name + ' <b>' + currencysymbol + Highcharts.numberFormat(point.y, 0, '.', ',') + '</b>';
-                                  });
-                                  return s;
-                              }
-                          },
-                          series: [{
-                              type: 'area',
-                              name: 'Average Wallet Value:',
-                              data: ohlc,
-                              color: '#17B0E7',
-                              fillColor: {
-                                  linearGradient: {
-                                      x1: 1,
-                                      y1: 1,
-                                      x2: 1,
-                                      y2: 1
-                                  },
-                                  stops: [
-                                      [0, '#fff'],
-                                      [1, '#fff']
-                                  ]
-                              }
-                          }],
-                          title: {
-                              text: '',
-                              style: {
-                                  fontSize: '16px'
-                              }
-                          }
-                      });
-                      $("#loader-historical").hide();
-                      $("#container-historical-value").fadeIn(1000);
-                      $("#historical-value").val(timeframe);
-                      $("#dropdown-historical-value").fadeIn(1000);
-                      document.getElementById("portfolio-currency-title").innerHTML = currency;
-                    }
-                },
-                error: function(xhr, err) {
-                  console.log(err)
-                }
-              });
-
-      })
+                });
+                $("#container-historical-value").fadeIn(1000);
+                document.getElementById("portfolio-currency-title").innerHTML = currency;
+              }
+          },
+          error: function(xhr, err) {
+            //console.log(err)
+          }
+        });
 
     }
 
     function getPieChart() {
 
-      $("#loader-pie").show();
-
       valueTOTAL = 0;
       arraygraph = [];
-      params = [];
-      params[0] = { name: 'stakeAddress', type: 'Object', input: '{{address}}', info: '' }
 
-      $.when(
+      {{#each holdings}}
+        if ('{{Symbol}}' == 'SOUL') {
+          valueTOTAL += parseInt(('{{PriceFormated}}').replace(/,/g, ''));
+        }
+      {{/each}}
 
-      $.post('/contract',
-         {
-             chain: 'main',
-             contract: 'energy',
-             method: 'GetStake',
-             params: JSON.stringify({
-               params
-             })
-         },
-         function (returnedData) {
-
-            stakesFormatted = (returnedData) / (Math.pow(10, 8));
-
-         }
-       ).fail(function(e) {
-          console.log(e)
-       }),
-       $.post('/contract',
-          {
-              chain: 'main',
-              contract: 'energy',
-              method: 'GetUnclaimed',
-              params: JSON.stringify({
-                params
-              })
-          },
-          function (returnedData) {
-
-             unclaimedFormatted = (returnedData) / (Math.pow(10, 10));
-
-          }
-        ).fail(function(e) {
-           console.log(e)
-        })
-
-      ).then(function() {
-
-        {{#each holdings}}
-          if ('{{Symbol}}' == 'SOUL') {
-            valueTOTAL += parseInt(('{{PriceFormated}}').replace(/,/g, ''));
-          }
-        {{/each}}
-
-        {{#each holdings}}
-          if ('{{Symbol}}' == 'SOUL') {
-            arraygraph.push({name: "{{Symbol}}", y: ({{PriceFormated}})/valueTOTAL, oldColor: "#E8E8E8", sliced: true})
-          }
-        {{/each}}
-
-      document.getElementById("totalportfolio").innerHTML = currencysymbol + numberWithCommas(valueTOTAL.toFixed(0));
+      {{#each holdings}}
+        if ('{{Symbol}}' == 'SOUL') {
+          arraygraph.push({name: "{{Symbol}}", y: ({{PriceFormated}})/valueTOTAL, oldColor: "#E8E8E8", sliced: true})
+        }
+      {{/each}}
 
       Highcharts.chart('container-pie', {
         chart: {
@@ -929,17 +749,11 @@
         }
     })
 
-    $("#loader-pie").hide();
-    $("#container-pie").fadeIn(1000);
-
-  })
-
   }
 
 // Handles historical-value change
 $("#historical-value").change(function() {
 
-  $("#container-historical-value").hide();
   getPortfolioChart($("#historical-value").val())
 
 })
