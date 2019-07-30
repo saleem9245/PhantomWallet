@@ -852,6 +852,10 @@ ul.nav.nav-pills {
     outline: 0;
 }
 
+.history input {
+    outline: 0;
+}
+
 .tgl {
     display: none;
 }
@@ -1193,6 +1197,36 @@ table.dataTable thead .sorting {
     padding-left: 1em;
     line-height: inherit;
     margin: 2em 0;
+}
+
+.dataTables_filter input:focus {
+    box-shadow: 0 0 0 1pt #17B0E7;
+    border: 0;
+    outline: 0;
+}
+
+input[type="search"]::-webkit-search-cancel-button {
+    -webkit-appearance: searchfield-cancel-button !important;
+}
+
+.dataTables_filter label i {
+    margin-right: .5em;
+    color: #333;
+    font-size: 1.5em;
+    vertical-align: middle;
+}
+
+.dark-mode .history .dataTables_filter i, .dark-mode .history .dataTables_filter input {
+    color: #fff;
+}
+
+.dataTables_paginate span a, .dataTables_paginate a {
+    padding: .5em;
+    cursor: pointer;
+}
+
+.dataTables_paginate a:focus, .dataTables_paginate span a:focus {
+    outline: 0;
 }
 
 .dark-mode .highcharts-background {

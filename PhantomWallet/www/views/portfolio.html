@@ -47,7 +47,7 @@
             </tbody>
             <tfoot>
               <tr class="token-shadow">
-                <td class="col-6">TOTAL</td>
+                <td class="col-6"></td>
                 <td class="col-6"></td>
                 <td class="col-3"></td>
                 <td class="col-3" id="totalportfolio"></td>
@@ -78,8 +78,8 @@
   </div>
 </div>
 </div>
-<div class="multisig-event">
-  <i class="fas fa-exclamation-circle" onclick="console.log('trigger popup event')" ></i><br>
+<div class="multisig-event" onclick="CheckMultisignature();">
+  <i class="fas fa-exclamation-circle"></i><br>
   <span>NEW<br>EVENT</span>
 </div>
 <script>
@@ -389,7 +389,7 @@
                   //console.log(returnedDataTX)
                   if ((JSON.parse(returnedDataTX).error) != undefined) {
                     //document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
-                    document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction rejected: allowed only once per month starting on the 1st day of each month following staking.';
+                    document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction rejected: allowed only once per month starting on the 1st day of each month following staking';
                     $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
                   } else {
                     document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="http://localhost:7072/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
@@ -943,6 +943,35 @@ $("#historical-value").change(function() {
   getPortfolioChart($("#historical-value").val())
 
 })
+
+function CheckMultisignature() {
+
+  console.log('CheckMultisignature')
+
+  $('#sendSpinner').show();
+  bootbox.confirm({
+      title: "New multisignature withdrawal request!",
+      message: "- Initiator: P5ySorAXMaJLwe6AqTsshW3XD8ahkwNpWHU9KLX9CwkYd<br>" +
+          '- Amount: 123 SOUL<br>' +
+          '- From: P5ySorAXMaJLwe6AqTsshW3XD8ahkwNpWHU9KLX9CwkYd<br>'+
+          '- To: P5ySorAXMaJLwe6AqTsshW3XD8ahkwNpWHU9KLX9CwkYd<br>'+
+          '- Signatures: 2 out of 3 signed',
+      buttons: {
+          cancel: {
+              label: '<i class="fa fa-times"></i> Cancel'
+          },
+          confirm: {
+              label: '<i class="fa fa-check"></i> Confirm'
+          }
+      },
+      callback: function(result) {
+
+
+        $('#sendSpinner').hide();
+      }
+  })
+
+}
 
 </script>
 {{#else}}

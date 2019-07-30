@@ -1,48 +1,50 @@
 <script src="https://unpkg.com/datatables.net@1.10.19/js/jquery.dataTables.min.js"></script>
-<div style="z-index: 10;background: inherit;"><h3 class="tab-title">Transactions History</h3></div>
+<h3 class="tab-title">Transactions History</h3>
+<div class="history">
 
-{{#if confirmedHash}}
-<!--<div class="table-responsive">-->
-<div class="alert alert-success" style="overflow: auto">
-    The transaction <a href="http://localhost:7072/tx/{{confirmedHash}}">{{confirmedHash}}</a> was sent with <strong>success</strong>!
-</div>
-<!--</div>-->
-{{/if}}
+  {{#if confirmedHash}}
+  <!--<div class="table-responsive">-->
+  <div class="alert alert-success" style="overflow: auto">
+      The transaction <a href="http://localhost:7072/tx/{{confirmedHash}}">{{confirmedHash}}</a> was sent with <strong>success</strong>!
+  </div>
+  <!--</div>-->
+  {{/if}}
 
-{{#if transactions}}
-<div class="table-responsive">
-    <table class="table table-striped" id="mainhistorytable">
-        <thead>
-            <tr>
-                <th class="col-1">Type</th>
-                <th class="col-2">Date (UTC)</th>
-                <th class="col-3">Hash</th>
-                <th class="col-4">Amount</th>
-                <th class="col-5">Description</th>
-            </tr>
-        </thead>
-        <tbody>
-            {{#each transactions}}
-            <tr>
-                <td class="col-1">
-                  {{#if Type == 'Custom'}}
-                    <i class="fas fa-paper-plane" style="margin-left: 0.5em;font-size: 1.2em;margin-top: .2em;"></i>
-                  {{#else}}
-                    {{#if Type == address}}
-                    <i class="fas fa-sign-out-alt" style="margin-left: 0.5em;font-size: 1.2em;margin-top: .2em;"></i>
+  {{#if transactions}}
+  <div class="table-responsive">
+      <table class="table table-striped" id="mainhistorytable" style="display:none;">
+          <thead>
+              <tr>
+                  <th class="col-1">Type</th>
+                  <th class="col-2">Date (UTC)</th>
+                  <th class="col-3">Hash</th>
+                  <th class="col-4">Amount</th>
+                  <th class="col-5">Description</th>
+              </tr>
+          </thead>
+          <tbody>
+              {{#each transactions}}
+              <tr>
+                  <td class="col-1">
+                    {{#if Type == 'Custom'}}
+                      <i class="fas fa-file-signature" style="margin-left: 0.5em;font-size: 1.2em;margin-top: .2em;"><span style="display:none;">{{Type}}</span></i>
                     {{#else}}
-                    <i class="fas fa-sign-in-alt" style="margin-left: 0.5em;font-size: 1.2em;margin-top: .2em;"></i>
+                      {{#if Type == address}}
+                      <i class="fas fa-sign-out-alt" style="margin-left: 0.5em;font-size: 1.2em;margin-top: .2em;"><span style="display:none;">{{Type}}</i>
+                      {{#else}}
+                      <i class="fas fa-sign-in-alt" style="margin-left: 0.5em;font-size: 1.2em;margin-top: .2em;"><span style="display:none;">{{Type}}</i>
+                      {{/if}}
                     {{/if}}
-                  {{/if}}
-                </td>
-                <td class="col-2">{{#date Date}}</td>
-                <td class="col-3"><small><a href="http://localhost:7072/tx/{{Hash}}" target="_blank" title="View Transaction">{{Hash}}</a></small></td>
-                <td class="col-4">{{Amount}}</td>
-                <td class="col-5">{{Description}}</td>
-            </tr>
-            {{/each}}
-        </tbody>
-    </table>
+                  </td>
+                  <td class="col-2">{{#date Date}}</td>
+                  <td class="col-3"><small><a href="http://localhost:7072/tx/{{Hash}}" target="_blank" title="View Transaction">{{Hash}}</a></small></td>
+                  <td class="col-4">{{Amount}}</td>
+                  <td class="col-5">{{Description}}</td>
+              </tr>
+              {{/each}}
+          </tbody>
+      </table>
+  </div>
 </div>
 
 {{#else}}
@@ -76,23 +78,24 @@
               });
               $('#mainhistorytable').DataTable({
                   "language": {
-                    search: "<i class='fa fa-search'></i>",
-                    searchPlaceholder: "Transaction",
-                    zeroRecords: "No matching transaction found"
-                  },
-                  "language": {
                       "decimal": ".",
-                      "thousands": ","
+                      "thousands": ",",
+                      search: "<i class='fas fa-search'></i>",
+                      searchPlaceholder: "Transaction",
+                      zeroRecords: "No matching transaction found"
                   },
                   "bPaginate": !0,
-                  "pageLength": 12,
+                  "pageLength": 10,
                   "aaSorting": [],
+                  //"aaSorting": false,
+                  //"ordering": false,
+                  "order": [1, "desc"],
                   "columnDefs": [{
                       type: 'currency',
                       targets: [3]
                   }, {
                     searchable: false,
-                    targets: [1]
+                    targets: [0]
                   }],
                   "initComplete": function() {
                       $(this).show()
