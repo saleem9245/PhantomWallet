@@ -72,7 +72,7 @@ $(document).ready(function() {
     $("#editPencil").click(RegisterName);
     $("#editPencil2").click(RegisterName);
 
-    // Custom check for night mode
+    // Custom check for night mode on initial load
     onloadtoggle = true;
     if (localStorage.getItem('themesetting') == 'dark') {
         if (document.getElementById("cb4")) {
@@ -81,13 +81,16 @@ $(document).ready(function() {
         toggleNightMode();
         onloadtoggle = false;
     }
+    // check if height already cached
     if (document.getElementById("blockheight")) {
       document.getElementById("blockheight").innerHTML = localStorage.getItem('lastheight');
     }
+    // check if price already cached
     if (document.getElementById("soulprice")) {
       document.getElementById("soulprice").innerHTML = localStorage.getItem('lastsoulprice');
     }
     var pathname = window.location.pathname;
+    // on all pages except login and create, getchains every 2 sec and getpricing every 1 minute
     if (pathname != '/login' && pathname != '/create') {
       setInterval(function() {
         getChains();
@@ -98,10 +101,12 @@ $(document).ready(function() {
     }
 });
 
+// function get chains (every 2 sec) to get current blockheight
 function getChains() {
    $.get('/chains',
        function (returnedData) {
          heightmain = '#' + numberWithCommas(JSON.parse(returnedData)[0].height);
+         // if height not equal current, flash height
          if (document.getElementById("blockheight").innerHTML != heightmain) {
            document.getElementById("blockheight").innerHTML = heightmain;
            $(document.getElementById("blockheight")).addClass('flash').delay(150).queue(function(next){
@@ -109,6 +114,7 @@ function getChains() {
                 next();
            });
          }
+         // store height for later
          cacheheight = document.getElementById("blockheight").innerHTML;
          localStorage.setItem('lastheight', cacheheight);
        }).fail(function(e) {
@@ -116,8 +122,10 @@ function getChains() {
        });
 }
 
+// function get pricing soul from coingecko
 function getPricing() {
 
+  // if session storage values not set, set them to USD / $
   if (localStorage.getItem('currency') !== 'null') {
     currency = localStorage.getItem('currency');
     if (localStorage.getItem('currency') == 'EUR') {
@@ -141,6 +149,7 @@ function getPricing() {
    $.get('https://api.coingecko.com/api/v3/simple/price?ids=phantasma&vs_currencies=' + currency.toLowerCase(),
        function (returnedData) {
          soulprice = currencysymbol + numberWithCommas(returnedData.phantasma[currency.toLowerCase()]);
+         // if price not equal current, flash price
          if (document.getElementById("soulprice").innerHTML != soulprice) {
            document.getElementById("soulprice").innerHTML = soulprice;
            $(document.getElementById("soulprice")).addClass('flash').delay(150).queue(function(next){
@@ -148,6 +157,7 @@ function getPricing() {
                 next();
            });
          }
+         // store price for later
          cachesoulprice = document.getElementById("soulprice").innerHTML;
          localStorage.setItem('lastsoulprice', cachesoulprice);
        }).fail(function(e) {
@@ -155,12 +165,14 @@ function getPricing() {
        });
 }
 
+// function add comma to number
 function numberWithCommas(x) {
     var parts = x.toString().split(".");
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     return parts.join(".")
 }
 
+// function toggle on/off dark theme
 function toggleNightMode() {
   $('.well').toggleClass('dark-mode');
   $('.sidenav').toggleClass('dark-mode');
@@ -175,6 +187,7 @@ function toggleNightMode() {
   }
 }
 
+// function fixed decimals value
 function toFixed(x) {
   if (Math.abs(x) < 1.0) {
     var e = parseInt(x.toString().split('e-')[1]);
@@ -191,15 +204,4 @@ function toFixed(x) {
     }
   }
   return x;
-}
-
-function imposeMinMax(el) {
-  if(el.value != ""){
-    if(parseInt(el.value) < parseInt(el.min)){
-      el.value = el.min;
-    }
-    if(parseInt(el.value) > parseInt(el.max)){
-      el.value = el.max;
-    }
-  }
 }

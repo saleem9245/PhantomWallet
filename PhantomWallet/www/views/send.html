@@ -168,8 +168,8 @@
 
             if (curStepBtn === "step-2") {
                 saveToken();
-                let amount = $("#amount").val();
-                if (parseInt(amount, 10) > parseInt(max_amount, 10)) {
+                let amount = $("#amount").val().replace(/\,/g,'');
+                if (parseInt(amount, 10) > parseInt(max_amount.replace(/\,/g,''), 10)) {
                     bootbox.alert("Insufficient funds");
                     return;
                 }
@@ -231,11 +231,11 @@
     }
 
     function pickMax() {
-        $("#amount").val(max_amount);
+        $("#amount").val(max_amount.replace(/\,/g,''));
     }
 
     function confirmSend() {
-        let amount = $("#amount").val();
+        let amount = $("#amount").val().replace(/\,/g,'');
         let target_address = $("#destination").val();
 
         if (isFungible) {
@@ -244,7 +244,7 @@
                 return;
             }
 
-            if (parseInt(amount, 10) > parseInt(max_amount, 10)) {
+            if (parseInt(amount, 10) > parseInt(max_amount.replace(/\,/g,''), 10)) {
                 bootbox.alert("Insufficient funds");
                 return;
             }
@@ -273,7 +273,7 @@
         bootbox.confirm({
             title: "Transfer confirmation",
             message: "Send <strong>" +
-                amount +
+                numberWithCommas(amount) +
                 " " +
                 selected_symbol +
                 "</strong> to address <strong>" +
@@ -339,14 +339,14 @@
     function selectTokens() {
 
     selected_chain = $( "#selectChain" ).val();
-    console.log(selected_chain);
 
 		let tokenBox = $('#select-token-form');
 		tokenBox.find('option').remove();
 
 		{{#each chainTokens}}
 		if ('{{ChainName}}' === selected_chain) {
-			tokenBox.append($('<option>', {value:'{{Symbol}}', text:'{{Name}} ({{Symbol}}) - {{Amount}}'}));
+      formatedAmount = numberWithCommas('{{Amount}}');
+			tokenBox.append($('<option>', {value:'{{Symbol}}', text:'{{Name}} ({{Symbol}}) - ' + formatedAmount}));
 		}
 		{{/each}}
 
@@ -361,7 +361,7 @@
 		    selected_symbol = $('#select-token-form').val();
 		    {{#each chainTokens}}
             if ('{{Symbol}}' === selected_symbol && selected_chain === '{{ChainName}}') {
-                max_amount = '{{Amount}}';
+                max_amount = numberWithCommas('{{Amount}}');
                 if ('{{Fungible}}' === 'False') {
                     isFungible = false;
                     $('#amountGroup').hide();

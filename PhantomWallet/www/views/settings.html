@@ -1,4 +1,3 @@
-
 <h4 class="tab-title">Settings</h4>
 
 <div class="settings">
@@ -38,7 +37,7 @@
     </div>
   </div>
   <div style="margin: 2em auto;width:750px;">
-    <div style="text-align:center;border:0;padding:1em;font-size: 1.2em;">
+    <div class="center" style="border:0;padding:1em;font-size: 1.2em;">
       <div style="display: flex;justify-content: center;">
         <span style="display: inline-block;">Show Advanced Settings</span>
         <div style="display: inline-block;margin-left:1em;font-size:1em;">
@@ -68,7 +67,7 @@
             <span style="float:left;">
               Number of signatures required for withdrawals:
             </span>
-            <select id="multisig-sign" class="bootstrap-select" style="float: right;width: 70px;text-align-last: center;;">
+            <select id="multisig-sign" class="bootstrap-select" style="float: right;width: 70px;text-align-last: center;">
             </select>
           </div>
           <div id="address-input">
@@ -81,40 +80,42 @@
 
 <script>
 
-  $(document).ready(function() {
+$(document).ready(function() {
 
-    getSettings();
+  getSettings();
 
-  });
+});
 
-  function getSettings() {
+function getSettings() {
 
-    // Update setting values on load
-    $.post('/config',
-          {
-              mode: 'get',
-          },
-      function (returnedData) {
-        if (JSON.parse(returnedData) !== null) {
-           var e = document.getElementById("selectnetwork");
-           var f = document.getElementById("selectcurrency");
-           function setSelectedIndex(s, v) {
-            for ( var i = 0; i < s.options.length; i++ ) {
-                if ( s.options[i].text == v ) {
-                    s.options[i].selected = true;
-                    return;
-                }
-            }
-           }
-           setSelectedIndex(e,JSON.parse(returnedData).network);
-           setSelectedIndex(f,JSON.parse(returnedData).currency);
-        }
-      }).fail(function(e) {
-         console.log(e);
-      });
-  }
+  // Get setting values on load
+  $.post('/config',
+        {
+            mode: 'get',
+        },
+    function (returnedData) {
+      if (JSON.parse(returnedData) !== null) {
+         // if returned data, get network and currency
+         var e = document.getElementById("selectnetwork");
+         var f = document.getElementById("selectcurrency");
+         function setSelectedIndex(s, v) {
+          for ( var i = 0; i < s.options.length; i++ ) {
+              if ( s.options[i].text == v ) {
+                  s.options[i].selected = true;
+                  return;
+              }
+          }
+         }
+         // init network and currencies based on what /config returns
+         setSelectedIndex(e,JSON.parse(returnedData).network);
+         setSelectedIndex(f,JSON.parse(returnedData).currency);
+      }
+    }).fail(function(e) {
+       console.log(e);
+    });
+}
 
-  // Network Change
+  // On network change event
   $("#selectnetwork").change(function () {
     var e = document.getElementById("selectnetwork");
     var network = e.options[e.selectedIndex].value;
@@ -126,6 +127,7 @@
     } else {
       config = {network: network, currency: currency, theme: 'light'}
     }
+    // post new config
     $.post('/config',
       {
           mode: 'set',
@@ -138,7 +140,7 @@
       });
    })
 
-   // Currency Change
+   // On currency change event
    $("#selectcurrency").change(function () {
      var e = document.getElementById("selectnetwork");
      var network = e.options[e.selectedIndex].value;
@@ -150,8 +152,11 @@
      } else {
        config = {network: network, currency: currency, theme: 'light'}
      }
+     // set session storage currency
      localStorage.setItem('currency', currency);
+     // get price based on the new currency
      getPricing();
+     // post new config
      $.post('/config',
        {
            mode: 'set',
@@ -164,15 +169,17 @@
        });
     })
 
-  // Theme Change
+  // On theme change event
   const selecttheme = document.getElementById('cb4');
   selecttheme.addEventListener('change', (event) => {
+    // if input already checked
     if (event.target.checked) {
       var e = document.getElementById("selectnetwork");
       var network = e.options[e.selectedIndex].value;
       var f = document.getElementById("selectcurrency");
       var currency = f.options[f.selectedIndex].value;
       config = {network: network, currency: currency, theme: 'dark'}
+      // post new config
       $.post('/config',
         {
             mode: 'set',
@@ -184,11 +191,13 @@
            console.log(e);
         });
     } else {
+      // if input not already checked
       var e = document.getElementById("selectnetwork");
       var network = e.options[e.selectedIndex].value;
       var f = document.getElementById("selectcurrency");
       var currency = f.options[f.selectedIndex].value;
       config = {network: network, currency: currency, theme: 'light'}
+      // post new config
       $.post('/config',
         {
             mode: 'set',
@@ -202,7 +211,7 @@
     }
   })
 
-  // Toggle Advanced Settings
+  // Toggle on/off advanced settings
   const selectadvanced = document.getElementById('check-advanced');
   selectadvanced.addEventListener('change', (event) => {
     if (event.target.checked) {
@@ -212,15 +221,18 @@
     }
   })
 
-  // Multi signature creation
+  // Multisignature dropdown on change event
   $("#multisig-qty").change(function () {
 
     $("#multisig-sign-wrapper").hide();
+    // start with number of addresses required
     var e = document.getElementById("multisig-qty");
     var eselected = e .options[e .selectedIndex].value;
     var multisigqty = [];
+    // start building the future dropdown for signature count based on qty
     for (i = 0; i < e.options.length;i++) {
       console.log(e.options[i].value)
+      // build array up to signature count <= number of addresses
       if (e.options[i].value <= eselected) {
         multisigqty.push(e.options[i].value)
       }
@@ -228,8 +240,10 @@
 
     var f = document.getElementById("multisig-sign");
     f.innerHTML = "";
+    // loop over the number of addresses
     for (i = 0; i < multisigqty.length; i++) {
       var opt = multisigqty[i];
+      // for each number of address picked, fill the dropdown
       f.innerHTML += "<option value=\"" + opt + "\">" + opt + "</option>";
     }
 
@@ -237,10 +251,11 @@
     var e = document.getElementById("multisig-qty");
     var quantity = e.options[e.selectedIndex].value,
         i = 0;
+    // build the div/input based on the number of addresses
     for (i; i < quantity; i += 1) {
       fetchValueInputs += 'Address ' + [i+1] + '<div><input id="addressinput-' + [i+1] + '" type="text" class="form-control " placeholder="Enter address ' + [i+1] + '"></div>'
     }
-
+    // add the confirm button
     fetchValueInputs += '<button id="confirmrun-' + [i] + '" style="font-size:.9em;margin-top:2em;" type="button" required class="button" onclick="confirmRun(this.id)">CONVERT TO<br>MULTISIGNATURE WALLET</button>'
 
     document.getElementById("address-input").innerHTML = fetchValueInputs;
@@ -248,24 +263,26 @@
 
    });
 
-   function confirmRun(quantity) {
+// confirm conversion to multisig
+function confirmRun(quantity) {
 
-     var e = document.getElementById("multisig-qty");
-     qty = e.options[e.selectedIndex].value;
-     max = document.getElementById("multisig-max").value;
-     var g = document.getElementById("multisig-sign");
-     sign = g.options[g.selectedIndex].value;
-     quantity = quantity.substr(11);
+  var e = document.getElementById("multisig-qty");
+  qty = e.options[e.selectedIndex].value;
+  max = document.getElementById("multisig-max").value;
+  var g = document.getElementById("multisig-sign");
+  sign = g.options[g.selectedIndex].value;
+  quantity = quantity.substr(11);
 
-     var i = 0;
-     var params = [];
-     for (i; i < quantity; i += 1) {
-       paramsaddress = ((document.getElementById('addressinput-' + [i+1])).value)
-       params[i] = { address: paramsaddress, order: i+1, minsignature: sign, maxwithoutsignature: max }
-     }
+  var i = 0;
+  var params = [];
+  // start building the params to be sent
+  for (i; i < quantity; i += 1) {
+    paramsaddress = ((document.getElementById('addressinput-' + [i+1])).value)
+    params[i] = { address: paramsaddress, order: i+1, minsignature: sign, maxwithoutsignature: max }
+  }
+  // todo actual multisig params to send
+  console.log(params)
 
-     console.log(params)
-
-   }
+}
 
 </script>

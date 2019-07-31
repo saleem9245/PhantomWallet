@@ -1,13 +1,10 @@
-<script src="https://unpkg.com/datatables.net@1.10.19/js/jquery.dataTables.min.js"></script>
 <h3 class="tab-title">Transactions History</h3>
 <div class="history">
 
   {{#if confirmedHash}}
-  <!--<div class="table-responsive">-->
   <div class="alert alert-success" style="overflow: auto">
       The transaction <a href="http://localhost:7072/tx/{{confirmedHash}}">{{confirmedHash}}</a> was sent with <strong>success</strong>!
   </div>
-  <!--</div>-->
   {{/if}}
 
   {{#if transactions}}
@@ -27,12 +24,12 @@
               <tr>
                   <td class="col-1">
                     {{#if Type == 'Custom'}}
-                      <i class="fas fa-file-signature" style="margin-left: 0.5em;font-size: 1.2em;margin-top: .2em;"><span style="display:none;">{{Type}}</span></i>
+                      <i class="fas fa-file-signature"><span style="display:none;">{{Type}}</span></i>
                     {{#else}}
                       {{#if Type == address}}
-                      <i class="fas fa-sign-out-alt" style="margin-left: 0.5em;font-size: 1.2em;margin-top: .2em;"><span style="display:none;">{{Type}}</i>
+                      <i class="fas fa-sign-out-alt"><span style="display:none;">{{Type}}</i>
                       {{#else}}
-                      <i class="fas fa-sign-in-alt" style="margin-left: 0.5em;font-size: 1.2em;margin-top: .2em;"><span style="display:none;">{{Type}}</i>
+                      <i class="fas fa-sign-in-alt"><span style="display:none;">{{Type}}</i>
                       {{/if}}
                     {{/if}}
                   </td>
@@ -46,6 +43,7 @@
       </table>
   </div>
 </div>
+
 {{#else}}
 <div class="alert alert-info" role="alert">
     This address is still new and does not have any transaction yet.
@@ -60,10 +58,22 @@
 
   });
 
+  // Datatable initialization
   function initTables() {
       if (!$.fn.dataTable.isDataTable('#mainhistorytable')) {
           setTimeout(function() {
               jQuery.extend(jQuery.fn.dataTableExt.oSort, {
+                  // custom ordering
+                  "non-empty-string-asc": function(str1, str2) {
+                      if (str1 == null || str1 == "") return 1;
+                      if (str2 == null || str2 == "") return -1;
+                      return ((str1 < str2) ? -1 : ((str1 > str2) ? 1 : 0))
+                  },
+                  "non-empty-string-desc": function(str1, str2) {
+                      if (str1 == null || str1 == "") return 1;
+                      if (str2 == null || str2 == "") return -1;
+                      return ((str1 < str2) ? 1 : ((str1 > str2) ? -1 : 0))
+                  },
                   "currency-pre": function(a) {
                       a = (a === "-") ? 0 : a.replace(/[^\d\-\.]/g, "");
                       return parseFloat(a)
@@ -76,6 +86,7 @@
                   }
               });
               $('#mainhistorytable').DataTable({
+                  // adjust command and dot and replace default texts
                   "language": {
                       "decimal": ".",
                       "thousands": ",",
@@ -86,16 +97,21 @@
                   "bPaginate": !0,
                   "pageLength": 10,
                   "aaSorting": [],
-                  //"aaSorting": false,
-                  //"ordering": false,
+                  // start ordering on column 1
                   "order": [1, "desc"],
+                  // custom column defs
                   "columnDefs": [{
+                      type: 'non-empty-string',
+                      targets: [3]
+                  }, {
                       type: 'currency',
                       targets: [3]
                   }, {
+                    // prevent searchable on column 0
                     searchable: false,
                     targets: [0]
                   }],
+                  // show datatable only after its fully initialized
                   "initComplete": function() {
                       $(this).show()
                   }
@@ -104,4 +120,4 @@
       }
   }
 
-{{/if}}
+</script>
