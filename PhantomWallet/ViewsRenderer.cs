@@ -285,7 +285,20 @@ namespace Phantom.Wallet
             context["WIF"] = keyPair.ToWIF();
             context["address"] = keyPair.Address;
 
+
             return RendererView(context, "login");
+        }
+
+        private string RouteMultisig(HTTPRequest request)
+        {
+            //var json  = "{ \"addressCount\": 3, \"signeeCount\": 2, \"addressArray\": [\" ksdlfjksadjfkljsadlkfjasdklf \"]}";
+            var settingsJson = request.GetVariable("settings");
+
+            var settings = JsonConvert.DeserializeObject<MultisigSettings>(settingsJson);
+            var keyPair = GetLoginKey(request);
+            var result = AccountController.CreateMultisigWallet(keyPair, settings);
+
+            return JsonConvert.SerializeObject(result, Formatting.Indented);
         }
 
         private HTTPResponse RouteLogout(HTTPRequest request)
@@ -345,6 +358,30 @@ namespace Phantom.Wallet
 
             var keyPair = GetLoginKey(request);
             string result;
+
+            // Multisig code, NOT YET DONE
+            // HACK if the address has a script it's multisig
+            //byte[] addressScript = AccountController.GetAddressScript(keyPair);
+
+            //if (addressScript != null && addressScript.Length > 0)
+            //{
+            //    if (chainName != destinationChain)
+            //    {
+            //        // cross chain multisg not supported yet
+            //        return null;
+            //    }
+
+            //    MultisigSettings settings = AccountController.CheckMultisig(keyPair, addressScript);
+            //    result = AccountController.TransferTokens(isFungible
+            //                                             ,keyPair
+            //                                             ,addressTo
+            //                                             ,chainName
+            //                                             ,symbol
+            //                                             ,amountOrId
+            //                                             ,settings).Result;
+
+            //    return "";
+            //}
 
             if (chainName == destinationChain)
             {

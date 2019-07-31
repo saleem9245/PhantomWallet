@@ -10,7 +10,9 @@ using Phantasma.Cryptography;
 using Phantasma.RpcClient.DTOs;
 using Phantasma.Numerics;
 using Phantasma.VM;
+using Phantasma.CodeGen.Assembler;
 using Phantasma.Core.Types;
+using Phantom.Wallet.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -42,6 +44,93 @@ namespace Phantom.Wallet.Helpers
                 chainPath.Add(phantasmaChains.Find(p => p.Name == element.Trim()));
             }
             return chainPath;
+        }
+
+        public static byte[] GenerateMultisigScript(MultisigSettings settings)
+        {
+            throw new Exception("NOT SUPPORTED YET");
+
+            var scriptHead = new List<string>();
+            bool isTrue = true;
+
+            for (int i = 0; i < settings.addressArray.Length; i++)
+            {
+                scriptHead.Add($"load r1 { i }");
+                scriptHead.Add($"load r2 \"{ settings.addressArray[i] }\"");
+                scriptHead.Add($"put r2 r3 r1");
+            }
+
+            // needs to check send/receive triggers! NOT YET DONE
+            var scriptTail = new string[]
+            {
+                "alias r4 $minSigned",
+                "alias r5 $addrCount",
+                "alias r6 $i",
+                "alias r7 $loopResult",
+                "alias r8 $interResult",
+                "alias r9 $result",
+                "alias r10 $signed",
+                "alias r11 $temp",
+                "alias r12 $true",
+
+                $"load $minSigned { settings.signeeCount }",
+                $"load $addrCount { settings.addressArray.Length }",
+                "load $signed 0",
+                $"load $true { isTrue }",
+
+                "load $i 0",
+                "@loop: ",
+                "lt $i $addrCount $loopResult",
+                "jmpnot $loopResult @checkSigned",
+
+                // get address from array
+                "get r3 $temp $i",
+
+                // push address to stack
+                "push $temp",
+
+                "call @checkWitness",
+                "equal $interResult, $true, $result",
+                "jmpif $result @increm",
+
+                "inc $i",
+                "jmp @loop",
+
+                "@increm:",
+                "inc $signed",
+
+                "inc $i",
+                "jmp @loop",
+
+                "@checkSigned: ",
+                "gte $signed $minSigned $result",
+                "jmpif $result @finish",
+                "jmpnot $result @break",
+                "ret",
+
+                "@finish:",
+                "push $result",
+                "ret",
+
+                "@break:",
+                "throw",
+
+                "@checkWitness: ",
+                "extcall \"CheckWitness()\"",
+                "pop $interResult",
+                "ret",
+            };
+
+            var scriptString = scriptHead.Concat(scriptTail.ToArray()).ToArray();
+
+            // temp test log to verify script
+            List<string> tempList = new List<string>(scriptString);
+            tempList.ForEach(Console.WriteLine);
+
+            // build script
+            var script = AssemblerUtils.BuildScript(scriptString);
+
+            return script;
         }
 
         public static bool IsTxHashValid(string data)

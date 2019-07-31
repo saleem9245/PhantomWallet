@@ -8,13 +8,22 @@ using System.Runtime.Serialization.Formatters.Binary;
 using Phantasma.Cryptography;
 using Phantasma.Numerics;
 using Phantasma.VM;
+using Phantasma.VM.Utils;
+using Phantasma.Blockchain.Contracts;
 using Phantasma.Storage;
 using Phantom.Wallet.Controllers;
 using Phantom.Wallet.Helpers;
+using Phantom.Wallet.Models;
+using Transaction = Phantom.Wallet.Models.Transaction;
+using ChainTx = Phantasma.Blockchain.Transaction;
+using Newtonsoft.Json;
+using Phantasma.RpcClient.DTOs;
+using Phantasma.CodeGen.Assembler;
+
+using Phantasma.Tests; //TODO remove
+
 using Serilog;
 using Serilog.Core;
-
-using Newtonsoft.Json;
 
 
 namespace PhantomCli
@@ -33,8 +42,8 @@ namespace PhantomCli
                             .WriteTo.Console(outputTemplate:"{Message:lj}{NewLine}{Exception}")
                             .CreateLogger();
 
-        private static Logger Logger = new LoggerConfiguration().MinimumLevel.Debug()
-                                    .WriteTo.File(config.LogFile).CreateLogger();
+       // private static Logger Logger = new LoggerConfiguration().MinimumLevel.Debug()
+       //                             .WriteTo.File(config.LogFile).CreateLogger();
 
         public static void SetupControllers()
         {
@@ -44,10 +53,10 @@ namespace PhantomCli
         static void Main(string[] args)
         {
             string version = "0.1-alpha";
-            prompt = config.Prompt;
+            prompt = config == null ? "phantom> ": config.Prompt;
             var startupMsg =  config.StartupMsg + " " + version;
 
-            Logger.Information(startupMsg);
+            //Logger.Information(startupMsg);
 
             SetupControllers();
             AccountController.UpdateConfig(
@@ -81,13 +90,13 @@ namespace PhantomCli
             { "clear",      new Tuple<Action<string[]>, string>(Clear,          "Clears the screen")},
             { "wallet",     new Tuple<Action<string[]>, string>(Wallet,         "Opens a wallet with a private key")},
             { "tx",         new Tuple<Action<string[]>, string>(Transaction,    "Param [txid], shows the transaction in formatted json")},
-            { "contract",   new Tuple<Action<string[]>, string>(ContractFunc,   "test")},
-            { "invoke",     new Tuple<Action<string[]>, string>(InvokeFunc,     "test")},
-            { "invokeTx",   new Tuple<Action<string[]>, string>(InvokeTxFunc,   "test")},
-            { "history",    new Tuple<Action<string[]>, string>(HistoryFunc,    "test")},
-            { "send",       new Tuple<Action<string[]>, string>(SendFunc,       "test")},
+            { "abi",        new Tuple<Action<string[]>, string>(ContractFunc,   "Param [chain, contract] shows the abi of the contract")},
+            { "invoke",     new Tuple<Action<string[]>, string>(InvokeFunc,     "invoke a contract method that requires no signed tx [not finished]")},
+            { "invokeTx",   new Tuple<Action<string[]>, string>(InvokeTxFunc,   "invoke a contract method that requires a signed tx")},
+            { "history",    new Tuple<Action<string[]>, string>(HistoryFunc,    "show the command history")},
+            //{ "send",       new Tuple<Action<string[]>, string>(SendFunc,       "")},
             { "test",       new Tuple<Action<string[]>, string>(TestFunc,       "test")},
-            { "config",     new Tuple<Action<string[]>, string>(ConfigFunc,     "test")}
+            { "config",     new Tuple<Action<string[]>, string>(ConfigFunc,     "change cli config")}
         };
 
         private static void ConfigFunc(string[] obj)
@@ -195,6 +204,38 @@ namespace PhantomCli
             List<object> lst2 = SendUtils.BuildParamList(json2);
         }
 
+        public static T[] ConcatArrays<T>(params T[][] list)
+        {
+            var result = new T[list.Sum(a => a.Length)];
+            int offset = 0;
+            for (int x = 0; x < list.Length; x++)
+            {
+                list[x].CopyTo(result, offset);
+                offset += list[x].Length;
+            }
+            return result;
+        }
+
+        private static string GetTransaction(string[] obj)
+        {
+            if (obj.Length > 1)
+            {
+                CliLogger.Information("Too many arguments");
+                return "";
+            }
+
+            if (obj.Length < 1)
+            {
+                CliLogger.Information("Too less arguments");
+                return "";
+            }
+
+            string txHash = obj[0];
+            string json = Newtonsoft.Json.JsonConvert.SerializeObject(AccountController
+                    .GetTxConfirmations(txHash).Result, Formatting.Indented);
+            return json;
+        }
+
         private static void Transaction(string[] obj)
         {
             if (obj.Length > 1)
@@ -210,14 +251,6 @@ namespace PhantomCli
             }
 
             string txHash = obj[0];
-            string json = Newtonsoft.Json.JsonConvert.SerializeObject(AccountController
-                    .GetTxConfirmations(txHash).Result, Formatting.Indented);
-            CliLogger.Information(json);
-        }
-
-        private static void SendFunc(string[] obj)
-        {
-            string txHash = string.Join("", obj);
             string json = Newtonsoft.Json.JsonConvert.SerializeObject(AccountController
                     .GetTxConfirmations(txHash).Result, Formatting.Indented);
             CliLogger.Information(json);

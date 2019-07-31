@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.IO;
+using System.Text.RegularExpressions;
 using LunarLabs.Parser.JSON;
 using Phantasma.Blockchain.Contracts.Native;
 using Phantasma.Cryptography;
@@ -10,7 +11,10 @@ using Phantasma.Numerics;
 using Phantasma.RpcClient.DTOs;
 using Phantasma.Storage;
 using Phantom.Wallet.DTOs;
+using Phantom.Wallet.Models;
 using Newtonsoft.Json;
+using Phantasma.CodeGen.Assembler;
+using Phantasma.VM;
 
 namespace Phantom.Wallet.Helpers
 {
@@ -279,6 +283,42 @@ namespace Phantom.Wallet.Helpers
             return description;
         }
 
+        public static string DisassembleScript(byte[] script)
+        {
+            return string.Join('\n', new Disassembler(script).Instructions);
+        }
+
+        public static MultisigSettings GetMultisigSettings(string scriptString)
+        {
+            //HACK TODO (!!!) this method is a very ugly hack, this needs to improve badly
+            List<string> addressList = new List<string>();
+            string[] str = scriptString.Split(' ');
+            Regex regex = new Regex(@"LOAD\s*r4,\s(\d*)");
+            Match match = regex.Match(scriptString);
+            int minSignees = Int32.Parse(match.Value.Split(" ").Last());
+            foreach (var s in str)
+            {
+                if (s.StartsWith("\""))
+                {
+                    var tempStr = Regex.Replace(s.Replace('"', ' ').Trim(), Environment.NewLine, " ").Split(' ').First();
+                    if (tempStr.Length == 45)
+                    {
+                        try
+                        {
+                            addressList.Add(Address.FromText(tempStr).ToString());
+                        }
+                        catch {}
+                    }
+                }
+            }
+
+            return new MultisigSettings 
+            {
+                addressCount = addressList.Count,
+                signeeCount = minSignees,
+                addressArray = addressList.ToArray()
+            };
+        }
         private static string GetChainName(string address, List<ChainDto> phantasmaChains)
         {
             foreach (var element in phantasmaChains)

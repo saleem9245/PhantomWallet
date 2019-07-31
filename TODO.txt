@@ -1,7 +1,5 @@
 Important:
 
-fix balance holdings cache / dynamic view (array of new values) to be called after for example GetStake()
-
 Packaging
 
 1. Multisig stuff

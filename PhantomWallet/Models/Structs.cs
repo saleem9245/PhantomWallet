@@ -51,12 +51,26 @@ namespace Phantom.Wallet.Models
         public string Name { get; set; }
         public int Value { get; set; }
         public bool IsEnabled { get; set; }
+        public string Url { get; set; }
     }
 
     public struct ErrorContext
     {
         public string ErrorDescription;
         public string ErrorCode;
+    }
+
+    public struct MultisigSettings 
+    {
+        public int addressCount;
+        public int signeeCount;
+        public string[] addressArray;
+    }
+
+    public struct MultisigTx
+    {
+        public MultisigSettings Settings;
+        public string TxData;
     }
 
     public struct SettleTx

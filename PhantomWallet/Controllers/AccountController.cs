@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using LunarLabs.WebServer.Core;
 using Phantasma.Blockchain.Contracts;
 using Phantasma.Blockchain;
@@ -281,10 +282,30 @@ namespace Phantom.Wallet.Controllers
             }
         }
 
-        public async Task<string> TransferTokens(bool isFungible, KeyPair keyPair, string addressTo, string chainName, string symbol, string amountId)
+        public async Task<string> SendRawTx(Phantasma.Blockchain.Transaction tx)
         {
             try
             {
+                var txResult = await _phantasmaRpcService.SendRawTx.SendRequestAsync(tx.ToByteArray(true).Encode());
+                return txResult;
+            }
+            catch (RpcResponseException rpcEx)
+            {
+                Debug.WriteLine($"RPC Exception occurred: {rpcEx.RpcError.Message}");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Exception occurred: {ex.Message}");
+                return null;
+            }
+        }
+
+        public async Task<string> TransferTokens(bool isFungible, KeyPair keyPair, string addressTo, string chainName, string symbol, string amountId, MultisigSettings settings = new MultisigSettings())
+        {
+            try
+            {
+
                 var destinationAddress = Address.FromText(addressTo);
                 int decimals = PhantasmaTokens.SingleOrDefault(t => t.Symbol == symbol).Decimals;
                 var bigIntAmount = UnitConversion.ToBigInteger(decimal.Parse(amountId), decimals);
@@ -306,7 +327,14 @@ namespace Phantom.Wallet.Controllers
                     DateTime.UtcNow + TimeSpan.FromHours(1));
                 tx.Sign(keyPair);
 
-                var txResult = await _phantasmaRpcService.SendRawTx.SendRequestAsync(tx.ToByteArray(true).Encode());
+                // from here on we need PhantasmaRelay to proceed with a multisig TX
+                //
+                //if (settings.addressCount != null)
+                //{
+                //    
+
+                //}
+               var txResult = await _phantasmaRpcService.SendRawTx.SendRequestAsync(tx.ToByteArray(true).Encode());
                 return txResult;
             }
             catch (RpcResponseException rpcEx)
@@ -327,6 +355,38 @@ namespace Phantom.Wallet.Controllers
             {
                 var txConfirmation = await _phantasmaRpcService.GetTxByHash.SendRequestAsync(txHash);
                 return txConfirmation;
+            }
+            catch (RpcResponseException rpcEx)
+            {
+                Log.Error($"RPC Exception occurred: {rpcEx.RpcError.Message}");
+                return new ErrorResult { error = rpcEx.RpcError.Message };
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Exception occurred: {ex.Message}");
+                return new ErrorResult { error = ex.Message };
+            }
+        }
+
+        public async Task<object> CreateMultisigWallet(KeyPair keyPair, MultisigSettings settings)
+        {
+            try
+            {
+                var multisigScript = SendUtils.GenerateMultisigScript(settings);
+
+                var script = ScriptUtils.BeginScript()
+                       .AllowGas(keyPair.Address, Address.Null, 1, 9999)
+                       .CallContract("account", "RegisterScript", keyPair.Address, multisigScript)
+                       .SpendGas(keyPair.Address)
+                       .EndScript();
+
+                var nexusName = WalletConfig.Network;
+                var tx = new Phantasma.Blockchain.Transaction(nexusName, "main", script, DateTime.UtcNow + TimeSpan.FromHours(1));
+
+                tx.Sign(keyPair);
+
+                var txResult = await _phantasmaRpcService.SendRawTx.SendRequestAsync(tx.ToByteArray(true).Encode());
+                return txResult;
             }
             catch (RpcResponseException rpcEx)
             {
@@ -400,6 +460,24 @@ namespace Phantom.Wallet.Controllers
                 Log.Error($"Exception occurred: {ex.Message}");
                 return new ErrorResult { error = ex.Message };
             }
+        }
+
+        public byte[] GetAddressScript(KeyPair keyPair)
+        {
+            List<object> param = new List<object>() { keyPair.Address };
+
+            var result = InvokeContractGeneric(keyPair
+                                               ,"main"
+                                               ,"account"
+                                               ,"LookUpScript"
+                                               ,param.ToArray()).Result;
+            return (byte[])result;
+        }
+
+        public MultisigSettings CheckMultisig(KeyPair keyPair, byte[] addressScript)
+        {
+            string scriptString = Utils.DisassembleScript(addressScript);
+            return Utils.GetMultisigSettings(scriptString);
         }
 
         public async Task<object> InvokeContractGeneric(
