@@ -19,7 +19,7 @@
 
 - Create a new wallet
 - Login with an existing wallet (private key)
-- View wallet and smart contract balance (SOUL, KCAL, other token, unclaimed KCAL, staked SOUL, rewards SOULMASTER)
+- View wallet/smart contract balance (SOUL, KCAL, other, unclaimed KCAL, staked SOUL, rewards SOULMASTER)
 - View portfolio split in percentage and portfolio historical value over time
 - Claim KCAL
 - Stake/Unstake SOUL
@@ -51,37 +51,45 @@ Dependency:
 
 Dependencies (if using on Simnet):
 
-- PhantasmaSpook
-- PhantasmaChain
-- PhantasmaExplorer
-- PhantasmaRpcClient
+- PhantasmaSpook (https://github.com/phantasma-io/PhantasmaSpook)
+- PhantasmaChain (https://github.com/phantasma-io/PhantasmaChain)
+- PhantasmaExplorer (https://github.com/phantasma-io/PhantasmaExplorer)
+- PhantasmaRpcClient (https://github.com/phantasma-io/PhantasmaRpcClient)
 
 ### Launch from binaries
 
-Phantom Wallet:
+*Phantom Wallet:*
 
-1) macOS
+- macOS
+
+1) Download here (https://)
+
+2) Make the file executable
 
 `chmod +x phantom-wallet`
 
-`./phantom-wallet --path=PhantomWallet/www --port=7071`
+3) Launch the program 
 
-2) Windows
+`./phantom-wallet --path=PhantomWallet/www`
 
-3) Linux
+4) Open a browser and go to http://localhost
 
-Phantom Cli:
+- Windows
 
-1) macOS
+- Linux
 
-2) Windows
+*Phantom Cli:*
 
-3) Linux
+- macOS
+
+- Windows
+
+- Linux
 
 ### Manual build
 
-1) Phantom Wallet
+*Phantom Wallet:*
 
 `dotnet Phantom.Wallet.dll --path=/pathtowallet/PhantomWallet/www/ --port=7071`
 
-2) Phantom Cli
+*Phantom Cli:*
