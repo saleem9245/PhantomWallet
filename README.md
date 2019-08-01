@@ -19,7 +19,7 @@
 
 - Create a new wallet
 - Login with an existing wallet (private key)
-- View wallet balance (SOUL, KCAL, any token) and smart contract balance (unclaimed KCAL, staked SOUL, rewards SOULMASTER)
+- View wallet and smart contract balance (SOUL, KCAL, other token, unclaimed KCAL, staked SOUL, rewards SOULMASTER)
 - View portfolio split in percentage and portfolio historical value over time
 - Claim KCAL
 - Stake/Unstake SOUL
@@ -45,16 +45,22 @@ The wallet can be launched either from the latest binaries, or can be built manu
 
 ### Required Tools and Dependencies
 
+Dependency:
+
 - .NET Core 2.2 (https://dotnet.microsoft.com/download/dotnet-core/2.2)
-- PhantomWallet
-- PhantasmaSpook (only required for Simnet)
-- PhantasmaChain (only required for Simnet)
-- PhantasmaExplorer (only required for Simnet)
-- PhantasmaRpcClient (only required for Simnet)
+
+Dependencies (if using on Simnet):
+
+- PhantasmaSpook
+- PhantasmaChain
+- PhantasmaExplorer
+- PhantasmaRpcClient
 
 ### Launch from binaries
 
-1) MAC
+Phantom Wallet:
+
+1) macOS
 
 `chmod +x phantom-wallet`
 
@@ -64,20 +70,18 @@ The wallet can be launched either from the latest binaries, or can be built manu
 
 3) Linux
 
+Phantom Cli:
+
+1) macOS
+
+2) Windows
+
+3) Linux
+
 ### Manual build
 
-1) PhantasmaSpook
-
-`dotnet Spook.CLI/bin/Debug/netcoreapp2.0/Spook.dll -node.wif=L2LGgkZAdupN2ee8Rs6hpkc65zaGcLbxhbSDGq8oh6umUxxzeW25 -nexus.name=simnet -rpc.enabled=true -gui.enabled=false`
-
-2) PhantasmaExplorer
-
-`dotnet Phantasma.Explorer.dll --path=/pathtoexplorer/PhantasmaExplorer/PhantasmaExplorer/www --port=7072`
-
-3) PhantomWallet
+1) Phantom Wallet
 
 `dotnet Phantom.Wallet.dll --path=/pathtowallet/PhantomWallet/www/ --port=7071`
 
-## Phantom Cli Installation
-
-The wallet can be launched either from the latest binaries, or can be built manually
+2) Phantom Cli
