@@ -9,8 +9,8 @@
 </p>
 
 <p align="center" width="150px">
-  <img src="./PhantomWallet/www/public/img/wallet.png">
-  <img src="./PhantomWallet/www/public/img/wallet-2.png">
+  <img src="./PhantomWallet/www/public/img/wallet1.png">
+  <img src="./PhantomWallet/www/public/img/wallet2.png">
 </p>
 
 ## Overview
