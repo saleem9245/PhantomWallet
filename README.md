@@ -8,8 +8,9 @@
   An extended light wallet for the <b>Phantasma</b> blockchain.
 </p>
 
-<p align="center">
-  <img src="./PhantomWallet/www/public/img/wallet.png" width="125px;">
+<p align="center" width="150px">
+  <img src="./PhantomWallet/www/public/img/wallet1.png">
+  <img src="./PhantomWallet/www/public/img/wallet2.png">
 </p>
 
 ## Overview
