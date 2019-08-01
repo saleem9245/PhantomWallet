@@ -55,7 +55,9 @@ The wallet can be launched either from the latest binaries, or can be built manu
 ### Launch from binaries
 
 1) MAC
+
 `chmod +x phantom-wallet`
+
 `./phantom-wallet --path=PhantomWallet/www --port=7071`
 
 2) Windows
@@ -65,12 +67,15 @@ The wallet can be launched either from the latest binaries, or can be built manu
 ### Manual build
 
 1) PhantasmaSpook
+
 `dotnet Spook.CLI/bin/Debug/netcoreapp2.0/Spook.dll -node.wif=L2LGgkZAdupN2ee8Rs6hpkc65zaGcLbxhbSDGq8oh6umUxxzeW25 -nexus.name=simnet -rpc.enabled=true -gui.enabled=false`
 
 2) PhantasmaExplorer
+
 `dotnet Phantasma.Explorer.dll --path=/pathtoexplorer/PhantasmaExplorer/PhantasmaExplorer/www --port=7072`
 
 3) PhantomWallet
+
 `dotnet Phantom.Wallet.dll --path=/pathtowallet/PhantomWallet/www/ --port=7071`
 
 ## Phantom Cli Installation
