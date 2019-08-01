@@ -90,7 +90,7 @@ $(document).ready(function() {
       document.getElementById("soulprice").innerHTML = localStorage.getItem('lastsoulprice');
     }
     var pathname = window.location.pathname;
-    // on all pages except login and create, getchains every 2 sec and getpricing every 1 minute
+    // on all pages except login and create, getChains every 2 sec and getPricing every minute
     if (pathname != '/login' && pathname != '/create') {
       setInterval(function() {
         getChains();
@@ -101,12 +101,12 @@ $(document).ready(function() {
     }
 });
 
-// function get chains (every 2 sec) to get current blockheight
+// function getChains every 2 sec to get current blockheight
 function getChains() {
    $.get('/chains',
        function (returnedData) {
          heightmain = '#' + numberWithCommas(JSON.parse(returnedData)[0].height);
-         // if height not equal current, flash height
+         // if height exist and changed, flash height
          if (document.getElementById("blockheight").innerHTML != heightmain) {
            document.getElementById("blockheight").innerHTML = heightmain;
            $(document.getElementById("blockheight")).addClass('flash').delay(150).queue(function(next){
@@ -122,10 +122,10 @@ function getChains() {
        });
 }
 
-// function get pricing soul from coingecko
+// function getPricing soul from coingecko
 function getPricing() {
 
-  // if session storage values not set, set them to USD / $
+  // if session storage currency values not set, set them to USD / $
   if (localStorage.getItem('currency') !== 'null') {
     currency = localStorage.getItem('currency');
     if (localStorage.getItem('currency') == 'EUR') {
@@ -149,7 +149,7 @@ function getPricing() {
    $.get('https://api.coingecko.com/api/v3/simple/price?ids=phantasma&vs_currencies=' + currency.toLowerCase(),
        function (returnedData) {
          soulprice = currencysymbol + numberWithCommas(returnedData.phantasma[currency.toLowerCase()]);
-         // if price not equal current, flash price
+         // if price exist and changed, flash price
          if (document.getElementById("soulprice").innerHTML != soulprice) {
            document.getElementById("soulprice").innerHTML = soulprice;
            $(document.getElementById("soulprice")).addClass('flash').delay(150).queue(function(next){

@@ -107,7 +107,7 @@ function getChainContracts(chain) {
        }).fail(function(e) {
           console.log(e);
        });
-     //
+     // add class selected chain
      $(document.getElementById("step1-" + chain)).addClass('selected-chain').delay(150).queue(function(next){});
 }
 
@@ -178,10 +178,13 @@ function getMethodParams(method) {
     $("#contractresult-title").hide();
     document.getElementById("contractresult").innerHTML = '';
     method = method.substr(6);
+    // remove selected method (custom background and color)
     if (typeof selectedmethod !== 'undefined') {
       $(document.getElementById("step3-" + selectedmethod)).removeClass('selected-method');
     }
+    // store selected method
     selectedmethod = method;
+    // add selected method (custom background and color)
     $(document.getElementById("step3-" + method)).addClass('selected-method').delay(150).queue(function(next){});
     var matchingMethod = (JSON.parse(abiFromContract).methods).filter(function(matchedMethod) {
       return matchedMethod.name == method;

@@ -9,7 +9,7 @@
 </div>
     <div class="wrapper-portfolio">
       <div><button type="button" id="claim-kcal" class="button" onclick="Claim()">CLAIM<BR>KCAL</button></div>
-      <div><input id="manageinput" type="number" min="1" class="form-control " placeholder="Amount" style="display:inline-block;text-align:center;width: 22%;display:inline-block;margin-right: 1em;"><button type="button" class="button" style="border-radius: 0;" onclick="Stake()">STAKE</button><button type="button" id="unstake-soul" class="button" style="border-radius: 0;margin-left: .1em;display:none;" onclick="Unstake()">UNSTAKE</button></div>
+      <div><input id="manageinput" type="number" min="1" class="form-control center" placeholder="Amount" style="display:inline-block;width: 22%;display:inline-block;margin-right: 1em;"><button type="button" class="button" style="border-radius: 0;" onclick="Stake()">STAKE</button><button type="button" id="unstake-soul" class="button" style="border-radius: 0;margin-left: .1em;display:none;" onclick="Unstake()">UNSTAKE</button></div>
       <div><button type="button" class="button"onclick="MasterClaim()">CLAIM<BR>REWARDS</button></div>
     </div>
     <div id="wrapper-portfolio-confirm" style="opacity:0;">
@@ -55,11 +55,11 @@
   </div>
   <div id="wrapper" style="margin:0 auto;">
   <div id="container-pie" style="height:340px" class="col-md-6"></div>
-  <div id="loader-pie" class="block-loader col-md-6" style="text-align:center;">
+  <div id="loader-pie" class="block-loader col-md-6 center">
     <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
   </div>
   <div class="wrapper-container-historical">
-    <div class="dropdown-custom col-md-4" id="dropdown-historical-value" style="margin-top: 1em;text-align:center;font-size:16px;display:none;">
+    <div class="dropdown-custom col-md-4 center" id="dropdown-historical-value" style="margin-top: 1em;font-size:16px;display:none;">
       <select id="historical-value" style="margin-right:.5em;">
         <option value="24H">1 Day</option>
         <option value="1W">1 Week</option>
@@ -70,7 +70,7 @@
       Portfolio historical <span id="portfolio-currency-title"></span> value
     </div>
     <div id="container-historical-value" style="height:340px" class="col-md-4"></div>
-    <div id="loader-historical" class="block-loader col-md-4" style="text-align:center;">
+    <div id="loader-historical" class="block-loader col-md-4 center">
       <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
     </div>
   </div>
@@ -82,928 +82,998 @@
 </div>
 <script>
 
-    $(document).ready(function() {
+$(document).ready(function() {
 
-      $('#sendSpinner').hide();
+  $('#sendSpinner').hide();
 
-      if (localStorage.getItem('currency') !== 'null') {
-        currency = localStorage.getItem('currency');
-        if (localStorage.getItem('currency') == 'EUR') {
-          currencysymbol = '€';
-        } else if (localStorage.getItem('currency') == 'CAD') {
-          currencysymbol = 'C$';
-        } else if (localStorage.getItem('currency') == 'GBP') {
-          currencysymbol = '£';
-        } else if (localStorage.getItem('currency') == 'JPY') {
-          currencysymbol = '¥';
-        } else if (localStorage.getItem('currency') == 'AUD') {
-          currencysymbol = 'A$';
-        } else {
-          currencysymbol = '$';
-        }
-      } else {
-        currency = 'USD';
-        currencysymbol = '$';
-      }
-      document.getElementById("currency-header").innerHTML = currency + ' VALUE';
-      $("#historical-value").val('3M');
-      $("#loader-pie").hide();
-      $("#loader-historical").hide();
-      $("#container-pie").hide();
-      $("#container-historical-value").hide();
+  // if session storage exist, get it, else set it
+  if (localStorage.getItem('currency') !== 'null') {
+    currency = localStorage.getItem('currency');
+    if (localStorage.getItem('currency') == 'EUR') {
+      currencysymbol = '€';
+    } else if (localStorage.getItem('currency') == 'CAD') {
+      currencysymbol = 'C$';
+    } else if (localStorage.getItem('currency') == 'GBP') {
+      currencysymbol = '£';
+    } else if (localStorage.getItem('currency') == 'JPY') {
+      currencysymbol = '¥';
+    } else if (localStorage.getItem('currency') == 'AUD') {
+      currencysymbol = 'A$';
+    } else {
+      currencysymbol = '$';
+    }
+  } else {
+    currency = 'USD';
+    currencysymbol = '$';
+  }
+  // adjust currency header based on existing currency setting
+  document.getElementById("currency-header").innerHTML = currency + ' VALUE';
+  // default loader/dropdown/chart values
+  $("#historical-value").val('3M');
+  $("#loader-pie").hide();
+  $("#loader-historical").hide();
+  $("#container-pie").hide();
+  $("#container-historical-value").hide();
 
-      getPieChart();
-      getPortfolioChart('3M')
+  getPieChart();
+  // init portfolio chart on 3M
+  getPortfolioChart('3M')
+  // get all three smart contract call
+  getUnclaimed();
+  getStake();
+  GetSoulmastersDetails();
+  initTables();
+
+  var pathname = window.location.pathname;
+  // on all pages except login and create, get all three smart contract call every 1 minute
+  if (pathname != '/login' && pathname != '/create') {
+    setInterval(function() {
       getUnclaimed();
       getStake();
       GetSoulmastersDetails();
-      initTables();
+    }, 60000);
+  }
 
-      var pathname = window.location.pathname;
-      if (pathname != '/login' && pathname != '/create') {
-        setInterval(function() {
-          getUnclaimed();
-          getStake();
-          GetSoulmastersDetails();
-        }, 60000);
-      }
-
-    });
-
-    function initTables() {
-        if (!$.fn.dataTable.isDataTable('#mainportfoliotable')) {
-            setTimeout(function() {
-                jQuery.extend(jQuery.fn.dataTableExt.oSort, {
-                    "currency-pre": function(a) {
-                        a = (a === "-") ? 0 : a.replace(/[^\d\-\.]/g, "");
-                        return parseFloat(a)
-                    },
-                    "currency-asc": function(a, b) {
-                        return a - b
-                    },
-                    "currency-desc": function(a, b) {
-                        return b - a
-                    }
-                });
-                $('#mainportfoliotable').DataTable({
-                    "order": [
-                        [3, "desc"]
-                    ],
-                    "language": {
-                        "decimal": ".",
-                        "thousands": ","
-                    },
-                    "bPaginate": !1,
-                    "aaSorting": [],
-                    "columnDefs": [{
-                        type: 'currency',
-                        targets: [3]
-                    }],
-                    "initComplete": function() {
-                        $(this).show()
-                    }
-                })
-            }, 100)
-        }
-    }
-
-    function Claim() {
-
-      $("#wrapper-portfolio-confirm").fadeTo(1, 0);
-      var params = [];
-      fetchValuesManage = '';
-      currentkcalamount = parseFloat((document.getElementById("KCAL-amount").innerHTML).replace(/\,/g,''));
-      changedamount = parseFloat(document.getElementById("unclaimed-kcal").innerHTML.slice(0, -5));
-      futureamount = currentkcalamount + changedamount;
-      params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
-      params[1] = { name: 'stakeAddress', type: 'Object', input: '{{address}}', info: '' }
-
-      $.post('/contract/tx',
-         {
-             chain: 'main',
-             contract: 'energy',
-             method: 'Claim',
-             params: JSON.stringify({
-               params
-             })
-         },
-         function (returnedData) {
-            //console.log(returnedData)
-            $.get('/tx/' + returnedData,
-                function (returnedDataTX) {
-                  //console.log(returnedDataTX)
-                  if ((JSON.parse(returnedDataTX).error) != undefined) {
-                    document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
-                    $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
-                  } else {
-                    setTimeout(function() {
-                      if (document.getElementById("KCAL-amount").innerHTML != numberWithCommas(futureamount)) {
-                        document.getElementById("KCAL-amount").innerHTML = numberWithCommas(futureamount);
-                        $(document.getElementById("KCAL-amount")).addClass('flash-portfolio').delay(300).queue(function(next){
-                             $(this).removeClass('flash-portfolio');
-                             next();
-                        });
-                      }
-                      getUnclaimed();
-                    }, 2000);
-                    document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="http://localhost:7072/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
-                    $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
-                  }
-                }).fail(function(e) {
-                  console.log(e)
-                  document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
-                  $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
-                });
-         }).fail(function(e) {
-            console.log(e)
-            document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
-            $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
-         })
-
-         setTimeout(function() {
-           getUnclaimed();
-         }, 2000);
-
-    }
-
-    function Stake() {
-
-      $("#wrapper-portfolio-confirm").fadeTo(1, 0);
-      var params = [];
-      fetchValuesManage = '';
-      currentsoulamount = parseFloat((document.getElementById("SOUL-amount").innerHTML).replace(/\,/g,''));
-      if (localStorage.getItem('currency') == 'CAD') {
-        currentsoulprice = parseFloat((document.getElementById("SOUL-price").innerHTML).substr(2).replace(/\,/g,''));
-      } else {
-        currentsoulprice = parseFloat((document.getElementById("SOUL-price").innerHTML).substr(1).replace(/\,/g,''));
-      }
-      currentsoulpriceunit = currentsoulprice/currentsoulamount;
-      changedamount = parseFloat(document.getElementById("manageinput").value);
-      futureamount = currentsoulamount - changedamount;
-      futuresoulprice = futureamount * currentsoulpriceunit;
-      params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
-      params[1] = { name: 'stakeAmount', type: 'Number', input: toFixed((changedamount)*(Math.pow(10,8))), info: '' }
-
-      if (toFixed((changedamount)) < 1) {
-            bootbox.alert("Minimum amount to stake is 1 SOUL!");
-            return;
-      }
-
-      $('#sendSpinner').show();
-      bootbox.confirm({
-          title: "Staking confirmation",
-          message: "Stake <strong>" +
-              numberWithCommas(toFixed((changedamount))) +
-              " SOUL?",
-          buttons: {
-              cancel: {
-                  label: '<i class="fa fa-times"></i> Cancel'
-              },
-              confirm: {
-                  label: '<i class="fa fa-check"></i> Confirm'
-              }
-          },
-          callback: function(result) {
-
-            if (result) {
-
-              $.post('/contract/tx',
-                 {
-                     chain: 'main',
-                     contract: 'energy',
-                     method: 'Stake',
-                     params: JSON.stringify({
-                       params
-                     })
-                 },
-                 function (returnedData) {
-                    //console.log(returnedData)
-                    $.get('/tx/' + returnedData,
-                        function (returnedDataTX) {
-                          //console.log(returnedDataTX)
-                          if ((JSON.parse(returnedDataTX).error) != undefined) {
-                            document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
-                            $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
-                          } else {
-                            setTimeout(function() {
-                              if (document.getElementById("SOUL-amount").innerHTML != numberWithCommas(futureamount)) {
-                                document.getElementById("SOUL-amount").innerHTML = numberWithCommas(futureamount);
-                                $(document.getElementById("SOUL-amount")).addClass('flash-portfolio').delay(300).queue(function(next){
-                                     $(this).removeClass('flash-portfolio');
-                                     next();
-                                });
-                              }
-                              if (document.getElementById("SOUL-price").innerHTML != numberWithCommas(futuresoulprice)) {
-                                document.getElementById("SOUL-price").innerHTML = currencysymbol + numberWithCommas(futuresoulprice.toFixed(0));
-                                $(document.getElementById("SOUL-price")).addClass('flash-portfolio').delay(300).queue(function(next){
-                                     $(this).removeClass('flash-portfolio');
-                                     next();
-                                });
-                                document.getElementById("totalportfolio").innerHTML = currencysymbol + numberWithCommas(futuresoulprice.toFixed(0));
-                                $(document.getElementById("totalportfolio")).addClass('flash-portfolio').delay(300).queue(function(next){
-                                     $(this).removeClass('flash-portfolio');
-                                     next();
-                                });
-                              }
-                              getStake();
-                              setTimeout(function() {
-                                GetSoulmastersDetails();
-                              }, 1000);
-                            }, 2000);
-                            document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="http://localhost:7072/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
-                            $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
-                          }
-                        }).fail(function(e) {
-                          console.log(e)
-                          document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
-                          $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
-                        });
-                 }).fail(function(e) {
-                    console.log(e)
-                    document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
-                    $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
-                 })
-
-                 document.getElementById("manageinput").value = '';
-               }
-               $('#sendSpinner').hide();
-             }
-         })
-    }
-
-    function Unstake() {
-
-      $("#wrapper-portfolio-confirm").fadeTo(1, 0);
-      var params = [];
-      fetchValuesManage = '';
-      currentsoulamount = parseFloat((document.getElementById("SOUL-amount").innerHTML).replace(/\,/g,''));
-      if (localStorage.getItem('currency') == 'CAD') {
-        currentsoulprice = parseFloat((document.getElementById("SOUL-price").innerHTML).substr(2).replace(/\,/g,''));
-      } else {
-        currentsoulprice = parseFloat((document.getElementById("SOUL-price").innerHTML).substr(1).replace(/\,/g,''));
-      }
-      currentsoulpriceunit = currentsoulprice/currentsoulamount;
-      changedamount = parseFloat(document.getElementById("manageinput").value);
-      futureamount = currentsoulamount + changedamount;
-      futuresoulprice = futureamount * currentsoulpriceunit;
-      params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
-      params[1] = { name: 'stakeAmount', type: 'Number', input: toFixed((changedamount)*(Math.pow(10,8))), info: '' }
-
-      if (toFixed((changedamount)) < 1) {
-            bootbox.alert("Minimum amount to stake is 1 SOUL!");
-            return;
-      }
-
-      $('#sendSpinner').show();
-      bootbox.confirm({
-          title: "Unstaking confirmation",
-          message: "Unstake <strong>" +
-              numberWithCommas(toFixed((changedamount))) +
-              " SOUL?",
-          buttons: {
-              cancel: {
-                  label: '<i class="fa fa-times"></i> Cancel'
-              },
-              confirm: {
-                  label: '<i class="fa fa-check"></i> Confirm'
-              }
-          },
-          callback: function(result) {
-
-            if (result) {
-
-              $.post('/contract/tx',
-                 {
-                     chain: 'main',
-                     contract: 'energy',
-                     method: 'Unstake',
-                     params: JSON.stringify({
-                       params
-                     })
-                 },
-                 function (returnedData) {
-                    //console.log(returnedData)
-                    $.get('/tx/' + returnedData,
-                        function (returnedDataTX) {
-                          //console.log(returnedDataTX)
-                          if ((JSON.parse(returnedDataTX).error) != undefined) {
-                            document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
-                            $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
-                          } else {
-                            setTimeout(function() {
-                              if (document.getElementById("SOUL-amount").innerHTML != numberWithCommas(futureamount)) {
-                                document.getElementById("SOUL-amount").innerHTML = numberWithCommas(futureamount);
-                                $(document.getElementById("SOUL-amount")).addClass('flash-portfolio').delay(300).queue(function(next){
-                                     $(this).removeClass('flash-portfolio');
-                                     next();
-                                });
-                              }
-                              if (document.getElementById("SOUL-price").innerHTML != numberWithCommas(futuresoulprice)) {
-                                document.getElementById("SOUL-price").innerHTML = currencysymbol + numberWithCommas(futuresoulprice.toFixed(0));
-                                $(document.getElementById("SOUL-price")).addClass('flash-portfolio').delay(300).queue(function(next){
-                                     $(this).removeClass('flash-portfolio');
-                                     next();
-                                });
-                                document.getElementById("totalportfolio").innerHTML = currencysymbol + numberWithCommas(futuresoulprice.toFixed(0));
-                                $(document.getElementById("totalportfolio")).addClass('flash-portfolio').delay(300).queue(function(next){
-                                     $(this).removeClass('flash-portfolio');
-                                     next();
-                                });
-                              }
-                              getStake();
-                              setTimeout(function() {
-                                GetSoulmastersDetails();
-                              }, 1000);
-                            }, 2000);
-                            document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="http://localhost:7072/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
-                            $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
-                          }
-                        }).fail(function(e) {
-                          console.log(e)
-                          document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
-                          $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
-                        });
-                 }).fail(function(e) {
-                    console.log(e)
-                    document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
-                    $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
-                 })
-
-                 document.getElementById("manageinput").value = '';
-             }
-             $('#sendSpinner').hide();
-           }
-         })
-    }
-
-    function MasterClaim() {
-
-      $("#wrapper-portfolio-confirm").fadeTo(1, 0);
-      var params = [];
-      params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
-
-      $.post('/contract/tx',
-         {
-             chain: 'main',
-             contract: 'energy',
-             method: 'MasterClaim',
-             params: JSON.stringify({
-               params
-             })
-         },
-         function (returnedData) {
-            //console.log(returnedData)
-            $.get('/tx/' + returnedData,
-                function (returnedDataTX) {
-                  //console.log(returnedDataTX)
-                  if ((JSON.parse(returnedDataTX).error) != undefined) {
-                    //document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
-                    document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction rejected: allowed only once per month starting on the 1st day of each month following staking';
-                    $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
-                  } else {
-                    document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="http://localhost:7072/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
-                    $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
-                  }
-                }).fail(function(e) {
-                  console.log(e)
-                  document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
-                  $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
-                });
-         }).fail(function(e) {
-            console.log(e)
-            document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
-            $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
-         })
-
-         document.getElementById("manageinput").value = '';
-
-    }
-
-    function getUnclaimed() {
-
-      var params = [];
-      params[0] = { name: 'stakeAddress', type: 'Object', input: '{{address}}', info: '' }
-
-      $.post('/contract',
-         {
-             chain: 'main',
-             contract: 'energy',
-             method: 'GetUnclaimed',
-             params: JSON.stringify({
-               params
-             })
-         },
-         function (returnedData) {
-             unclaimedFormatted = (returnedData) / (Math.pow(10, 10));
-             if (document.getElementById("unclaimed-kcal").innerHTML != numberWithCommas(unclaimedFormatted) + ' KCAL') {
-               document.getElementById("unclaimed-kcal").innerHTML = numberWithCommas(toFixed(unclaimedFormatted)) + ' KCAL';
-               $(document.getElementById("unclaimed-kcal")).addClass('flash-portfolio').delay(300).queue(function(next){
-                    $(this).removeClass('flash-portfolio');
-                    next();
-               });
-             }
-             if (unclaimedFormatted == 0) {
-               $(document.getElementById("claim-kcal")).addClass('button-disabled').delay(300).queue(function(next){
-               });
-             } else {
-               $(document.getElementById("claim-kcal")).removeClass('button-disabled').delay(300).queue(function(next){
-               });
-             }
-         }).fail(function(e) {
-            console.log(e)
-         })
-
-    }
-
-    function getStake() {
-
-      var params = [];
-      params[0] = { name: 'stakeAddress', type: 'Object', input: '{{address}}', info: '' }
-
-      $.post('/contract',
-         {
-             chain: 'main',
-             contract: 'energy',
-             method: 'GetStake',
-             params: JSON.stringify({
-               params
-             })
-         },
-         function (returnedData) {
-            stakesFormatted = (returnedData) / (Math.pow(10, 8));
-            if (document.getElementById("stake-soul").innerHTML != numberWithCommas(stakesFormatted) + ' SOUL') {
-              document.getElementById("stake-soul").innerHTML = numberWithCommas(stakesFormatted) + ' SOUL';
-              $(document.getElementById("stake-soul")).addClass('flash-portfolio').delay(300).queue(function(next){
-                   $(this).removeClass('flash-portfolio');
-                   next();
-              });
-            }
-            if (document.getElementById("rewards-kcal").innerHTML != numberWithCommas(stakesFormatted/500) + ' KCAL / DAY') {
-              document.getElementById("rewards-kcal").innerHTML = numberWithCommas(stakesFormatted/500) + ' KCAL / DAY';
-              $(document.getElementById("rewards-kcal")).addClass('flash-portfolio').delay(300).queue(function(next){
-                   $(this).removeClass('flash-portfolio');
-                   next();
-              });
-            }
-            if (stakesFormatted == 0) {
-              $("#unstake-soul").hide();
-            } else {
-              $("#unstake-soul").show();
-            }
-         }).fail(function(e) {
-            console.log(e)
-         })
-
-    }
-
-    function GetSoulmastersDetails() {
-
-      var params = [];
-      var params2 = [];
-
-      $.when(
-
-        $.post('/contract',
-           {
-               chain: 'main',
-               contract: 'energy',
-               method: 'GetCurrentMasterCount',
-               params: JSON.stringify({
-                 params
-               })
-           },
-           function (returnedData) {
-              mastertotalcount = returnedData;
-           }).fail(function(e) {
-              console.log(e)
-           }),
-
-         params2[0] = { name: 'stakeAddress', type: 'Object', input: '{{address}}', info: '' },
-
-         $.post('/contract',
-            {
-                chain: 'main',
-                contract: 'energy',
-                method: 'GetStake',
-                params: JSON.stringify({
-                  params2
-                })
-            },
-            function (returnedData) {
-               stakeamount = returnedData;
-            }).fail(function(e) {
-               console.log(e)
+});
+// Datatable initialization
+function initTables() {
+    if (!$.fn.dataTable.isDataTable('#mainportfoliotable')) {
+        setTimeout(function() {
+            jQuery.extend(jQuery.fn.dataTableExt.oSort, {
+              // custom ordering
+                "currency-pre": function(a) {
+                    a = (a === "-") ? 0 : a.replace(/[^\d\-\.]/g, "");
+                    return parseFloat(a)
+                },
+                "currency-asc": function(a, b) {
+                    return a - b
+                },
+                "currency-desc": function(a, b) {
+                    return b - a
+                }
+            });
+            $('#mainportfoliotable').DataTable({
+                // start ordering on column 1
+                "order": [
+                    [3, "desc"]
+                ],
+                // adjust command and dot and replace default texts
+                "language": {
+                    "decimal": ".",
+                    "thousands": ","
+                },
+                "bPaginate": !1,
+                "aaSorting": [],
+                // custom column defs
+                "columnDefs": [{
+                    type: 'currency',
+                    targets: [3]
+                }],
+                // show datatable only after its fully initialized
+                "initComplete": function() {
+                    $(this).show()
+                }
             })
-
-         ).then(function() {
-           mastercount = Math.floor(stakeamount/(Math.pow(10,8))/50000);
-           if (mastertotalcount > 0) {
-             rewards = 125000/mastertotalcount;
-           } else {
-             rewards = 0;
-           }
-           if (mastercount == 0 || mastercount == 1) {
-             if (document.getElementById("count-soulmasters").innerHTML != mastercount + ' SOULMASTER') {
-               document.getElementById("count-soulmasters").innerHTML = mastercount + ' SOULMASTER';
-               $(document.getElementById("count-soulmasters")).addClass('flash-portfolio').delay(300).queue(function(next){
-                    $(this).removeClass('flash-portfolio');
-                    next();
-               });
-             }
-           } else {
-             if (document.getElementById("count-soulmasters").innerHTML != mastercount + ' SOULMASTERS') {
-               document.getElementById("count-soulmasters").innerHTML = mastercount + ' SOULMASTERS';
-               $(document.getElementById("count-soulmasters")).addClass('flash-portfolio').delay(300).queue(function(next){
-                    $(this).removeClass('flash-portfolio');
-                    next();
-               });
-             }
-           }
-           if (mastertotalcount == 0 || mastertotalcount == 1) {
-             if (document.getElementById("count-soulmasters-total").innerHTML != 'OUT OF ' + mastertotalcount + ' SOULMASTER') {
-               document.getElementById("count-soulmasters-total").innerHTML = 'OUT OF ' + mastertotalcount + ' SOULMASTER';
-               $(document.getElementById("count-soulmasters-total")).addClass('flash-portfolio').delay(300).queue(function(next){
-                    $(this).removeClass('flash-portfolio');
-                    next();
-               });
-             }
-           } else {
-             if (document.getElementById("count-soulmasters-total").innerHTML != 'OUT OF ' + mastertotalcount + ' SOULMASTERS') {
-               document.getElementById("count-soulmasters-total").innerHTML = 'OUT OF ' + mastertotalcount + ' SOULMASTERS';
-               $(document.getElementById("count-soulmasters-total")).addClass('flash-portfolio').delay(300).queue(function(next){
-                    $(this).removeClass('flash-portfolio');
-                    next();
-               });
-             }
-           }
-           if (document.getElementById("rewards-soulmasters").innerHTML != numberWithCommas(rewards) + ' SOUL / MONTH') {
-             document.getElementById("rewards-soulmasters").innerHTML = numberWithCommas(rewards) + ' SOUL / MONTH';
-             $(document.getElementById("rewards-soulmasters")).addClass('flash-portfolio').delay(300).queue(function(next){
-                  $(this).removeClass('flash-portfolio');
-                  next();
-             });
-           }
-         })
-
+        }, 100)
     }
+}
 
-    function getPortfolioChart(timeframe) {
+// on click claim on portfolio
+function Claim() {
 
-      $("#loader-historical").show();
+  $("#wrapper-portfolio-confirm").fadeTo(1, 0);
+  var params = [];
+  fetchValuesManage = '';
+  // calculate amount/changedamount/futureamount
+  currentkcalamount = parseFloat((document.getElementById("KCAL-amount").innerHTML).replace(/\,/g,''));
+  changedamount = parseFloat(document.getElementById("unclaimed-kcal").innerHTML.slice(0, -5));
+  futureamount = currentkcalamount + changedamount;
+  // build params for contract call
+  params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
+  params[1] = { name: 'stakeAddress', type: 'Object', input: '{{address}}', info: '' }
 
-      urlforcombined = 'https://api.o3.network/v1/historical?currency=' + currency;
-      arraygraph = [];
-      params = [];
-      params[0] = { name: 'stakeAddress', type: 'Object', input: '{{address}}', info: '' }
+  $.post('/contract/tx',
+     {
+         chain: 'main',
+         contract: 'energy',
+         method: 'Claim',
+         params: JSON.stringify({
+           params
+         })
+     },
+     function (returnedData) {
+        //console.log(returnedData)
+        // If /contract/tx works, call /tx/hash to check if the tx worked
+        $.get('/tx/' + returnedData,
+            function (returnedDataTX) {
+              //console.log(returnedDataTX)
+              // If .error defined, returns the custom error message
+              if ((JSON.parse(returnedDataTX).error) != undefined) {
+                document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
+                $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+              } else {
+                // if amount exist and changed, flash the value
+                setTimeout(function() {
+                  if (document.getElementById("KCAL-amount").innerHTML != numberWithCommas(futureamount)) {
+                    document.getElementById("KCAL-amount").innerHTML = numberWithCommas(futureamount);
+                    $(document.getElementById("KCAL-amount")).addClass('flash-portfolio').delay(300).queue(function(next){
+                         $(this).removeClass('flash-portfolio');
+                         next();
+                    });
+                  }
+                  getUnclaimed();
+                }, 2000);
+                // If it works, returns the tx link
+                document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="http://localhost:7072/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+              }
+            }).fail(function(e) {
+              console.log(e)
+              document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
+              $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+            });
+     }).fail(function(e) {
+        console.log(e)
+        document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
+        $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+     })
 
-      $.when(
+     setTimeout(function() {
+       getUnclaimed();
+     }, 2000);
 
-      $.post('/contract',
-         {
-             chain: 'main',
-             contract: 'energy',
-             method: 'GetStake',
-             params: JSON.stringify({
-               params
+}
+
+// on click stake on portfolio
+function Stake() {
+
+  $("#wrapper-portfolio-confirm").fadeTo(1, 0);
+  var params = [];
+  fetchValuesManage = '';
+  // calculate amount/changedamount/futureamount
+  currentsoulamount = parseFloat((document.getElementById("SOUL-amount").innerHTML).replace(/\,/g,''));
+  if (localStorage.getItem('currency') == 'CAD') {
+    currentsoulprice = parseFloat((document.getElementById("SOUL-price").innerHTML).substr(2).replace(/\,/g,''));
+  } else {
+    currentsoulprice = parseFloat((document.getElementById("SOUL-price").innerHTML).substr(1).replace(/\,/g,''));
+  }
+  currentsoulpriceunit = currentsoulprice/currentsoulamount;
+  changedamount = parseFloat(document.getElementById("manageinput").value);
+  futureamount = currentsoulamount - changedamount;
+  futuresoulprice = futureamount * currentsoulpriceunit;
+  // build params for contract call
+  params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
+  params[1] = { name: 'stakeAmount', type: 'Number', input: toFixed((changedamount)*(Math.pow(10,8))), info: '' }
+
+  if (toFixed((changedamount)) < 1) {
+        bootbox.alert("Minimum amount to stake is 1 SOUL!");
+        return;
+  }
+
+  $('#sendSpinner').show();
+  bootbox.confirm({
+      title: "Staking confirmation",
+      message: "Stake <strong>" +
+          numberWithCommas(toFixed((changedamount))) +
+          " SOUL?",
+      buttons: {
+          cancel: {
+              label: '<i class="fa fa-times"></i> Cancel'
+          },
+          confirm: {
+              label: '<i class="fa fa-check"></i> Confirm'
+          }
+      },
+      callback: function(result) {
+
+        if (result) {
+
+          $.post('/contract/tx',
+             {
+                 chain: 'main',
+                 contract: 'energy',
+                 method: 'Stake',
+                 params: JSON.stringify({
+                   params
+                 })
+             },
+             function (returnedData) {
+                //console.log(returnedData)
+                // If /contract/tx works, call /tx/hash to check if the tx worked
+                $.get('/tx/' + returnedData,
+                    function (returnedDataTX) {
+                      //console.log(returnedDataTX)
+                      if ((JSON.parse(returnedDataTX).error) != undefined) {
+                        // If .error defined, returns the custom error message
+                        document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
+                        $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                      } else {
+                        // if amount exist and changed, flash the value
+                        setTimeout(function() {
+                          if (document.getElementById("SOUL-amount").innerHTML != numberWithCommas(futureamount)) {
+                            document.getElementById("SOUL-amount").innerHTML = numberWithCommas(futureamount);
+                            $(document.getElementById("SOUL-amount")).addClass('flash-portfolio').delay(300).queue(function(next){
+                                 $(this).removeClass('flash-portfolio');
+                                 next();
+                            });
+                          }
+                          // if price exist and changed, flash the value
+                          if (document.getElementById("SOUL-price").innerHTML != numberWithCommas(futuresoulprice)) {
+                            document.getElementById("SOUL-price").innerHTML = currencysymbol + numberWithCommas(futuresoulprice.toFixed(0));
+                            $(document.getElementById("SOUL-price")).addClass('flash-portfolio').delay(300).queue(function(next){
+                                 $(this).removeClass('flash-portfolio');
+                                 next();
+                            });
+                            // if total price exist and changed, flash the value
+                            document.getElementById("totalportfolio").innerHTML = currencysymbol + numberWithCommas(futuresoulprice.toFixed(0));
+                            $(document.getElementById("totalportfolio")).addClass('flash-portfolio').delay(300).queue(function(next){
+                                 $(this).removeClass('flash-portfolio');
+                                 next();
+                            });
+                          }
+                          // call getstake and getsoulmastersdetails after all other refresh
+                          getStake();
+                          setTimeout(function() {
+                            GetSoulmastersDetails();
+                          }, 1000);
+                        }, 2000);
+                        document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="http://localhost:7072/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                        $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                      }
+                    }).fail(function(e) {
+                      console.log(e)
+                      document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
+                      $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                    });
+             }).fail(function(e) {
+                console.log(e)
+                document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
+                $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
              })
-         },
-         function (returnedData) {
 
-            stakesFormatted = (returnedData) / (Math.pow(10, 8));
-
+             document.getElementById("manageinput").value = '';
+           }
+           $('#sendSpinner').hide();
          }
-       ).fail(function(e) {
+     })
+}
+
+function Unstake() {
+
+  $("#wrapper-portfolio-confirm").fadeTo(1, 0);
+  var params = [];
+  fetchValuesManage = '';
+  // calculate amount/changedamount/futureamount
+  currentsoulamount = parseFloat((document.getElementById("SOUL-amount").innerHTML).replace(/\,/g,''));
+  if (localStorage.getItem('currency') == 'CAD') {
+    currentsoulprice = parseFloat((document.getElementById("SOUL-price").innerHTML).substr(2).replace(/\,/g,''));
+  } else {
+    currentsoulprice = parseFloat((document.getElementById("SOUL-price").innerHTML).substr(1).replace(/\,/g,''));
+  }
+  currentsoulpriceunit = currentsoulprice/currentsoulamount;
+  changedamount = parseFloat(document.getElementById("manageinput").value);
+  futureamount = currentsoulamount + changedamount;
+  futuresoulprice = futureamount * currentsoulpriceunit;
+  // build params for contract call
+  params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
+  params[1] = { name: 'stakeAmount', type: 'Number', input: toFixed((changedamount)*(Math.pow(10,8))), info: '' }
+
+  if (toFixed((changedamount)) < 1) {
+        bootbox.alert("Minimum amount to stake is 1 SOUL!");
+        return;
+  }
+
+  $('#sendSpinner').show();
+  bootbox.confirm({
+      title: "Unstaking confirmation",
+      message: "Unstake <strong>" +
+          numberWithCommas(toFixed((changedamount))) +
+          " SOUL?",
+      buttons: {
+          cancel: {
+              label: '<i class="fa fa-times"></i> Cancel'
+          },
+          confirm: {
+              label: '<i class="fa fa-check"></i> Confirm'
+          }
+      },
+      callback: function(result) {
+
+        if (result) {
+
+          $.post('/contract/tx',
+             {
+                 chain: 'main',
+                 contract: 'energy',
+                 method: 'Unstake',
+                 params: JSON.stringify({
+                   params
+                 })
+             },
+             function (returnedData) {
+                //console.log(returnedData)
+                // If /contract/tx works, call /tx/hash to check if the tx worked
+                $.get('/tx/' + returnedData,
+                    function (returnedDataTX) {
+                      //console.log(returnedDataTX)
+                      if ((JSON.parse(returnedDataTX).error) != undefined) {
+                        // If .error defined, returns the custom error message
+                        document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
+                        $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                      } else {
+                        setTimeout(function() {
+                          // if amount exist and changed, flash the value
+                          if (document.getElementById("SOUL-amount").innerHTML != numberWithCommas(futureamount)) {
+                            document.getElementById("SOUL-amount").innerHTML = numberWithCommas(futureamount);
+                            $(document.getElementById("SOUL-amount")).addClass('flash-portfolio').delay(300).queue(function(next){
+                                 $(this).removeClass('flash-portfolio');
+                                 next();
+                            });
+                          }
+                          // if price exist and changed, flash the value
+                          if (document.getElementById("SOUL-price").innerHTML != numberWithCommas(futuresoulprice)) {
+                            document.getElementById("SOUL-price").innerHTML = currencysymbol + numberWithCommas(futuresoulprice.toFixed(0));
+                            $(document.getElementById("SOUL-price")).addClass('flash-portfolio').delay(300).queue(function(next){
+                                 $(this).removeClass('flash-portfolio');
+                                 next();
+                            });
+                            // if total price exist and changed, flash the value
+                            document.getElementById("totalportfolio").innerHTML = currencysymbol + numberWithCommas(futuresoulprice.toFixed(0));
+                            $(document.getElementById("totalportfolio")).addClass('flash-portfolio').delay(300).queue(function(next){
+                                 $(this).removeClass('flash-portfolio');
+                                 next();
+                            });
+                          }
+                          // call getstake and getsoulmastersdetails after all other refresh
+                          getStake();
+                          setTimeout(function() {
+                            GetSoulmastersDetails();
+                          }, 1000);
+                        }, 2000);
+                        document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="http://localhost:7072/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                        $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                      }
+                    }).fail(function(e) {
+                      console.log(e)
+                      document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
+                      $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                    });
+             }).fail(function(e) {
+                console.log(e)
+                document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
+                $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+             })
+
+             document.getElementById("manageinput").value = '';
+         }
+         $('#sendSpinner').hide();
+       }
+     })
+}
+
+function MasterClaim() {
+
+  $("#wrapper-portfolio-confirm").fadeTo(1, 0);
+  var params = [];
+  // build params for contract call
+  params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
+
+  $.post('/contract/tx',
+     {
+         chain: 'main',
+         contract: 'energy',
+         method: 'MasterClaim',
+         params: JSON.stringify({
+           params
+         })
+     },
+     function (returnedData) {
+        //console.log(returnedData)
+        // If /contract/tx works, call /tx/hash to check if the tx worked
+        $.get('/tx/' + returnedData,
+            function (returnedDataTX) {
+              //console.log(returnedDataTX)
+              if ((JSON.parse(returnedDataTX).error) != undefined) {
+                // If .error defined, returns the custom error message
+                document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction rejected: allowed only once per month starting on the 1st day of each month following staking';
+                $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+              } else {
+                document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="http://localhost:7072/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+              }
+            }).fail(function(e) {
+              console.log(e)
+              document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
+              $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+            });
+     }).fail(function(e) {
+        console.log(e)
+        document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
+        $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+     })
+
+     document.getElementById("manageinput").value = '';
+
+}
+
+// function getunclaimed kcal
+function getUnclaimed() {
+
+  var params = [];
+  // build params for contract call
+  params[0] = { name: 'stakeAddress', type: 'Object', input: '{{address}}', info: '' }
+
+  $.post('/contract',
+     {
+         chain: 'main',
+         contract: 'energy',
+         method: 'GetUnclaimed',
+         params: JSON.stringify({
+           params
+         })
+     },
+     function (returnedData) {
+         // format kcal with decimals value
+         unclaimedFormatted = (returnedData) / (Math.pow(10, 10));
+         // if amount exist and changed, flash the value
+         if (document.getElementById("unclaimed-kcal").innerHTML != numberWithCommas(unclaimedFormatted) + ' KCAL') {
+           document.getElementById("unclaimed-kcal").innerHTML = numberWithCommas(toFixed(unclaimedFormatted)) + ' KCAL';
+           $(document.getElementById("unclaimed-kcal")).addClass('flash-portfolio').delay(300).queue(function(next){
+                $(this).removeClass('flash-portfolio');
+                next();
+           });
+         }
+         // if kcal value 0 disable button
+         if (unclaimedFormatted == 0) {
+           $(document.getElementById("claim-kcal")).addClass('button-disabled').delay(300).queue(function(next){
+           });
+         } else {
+           $(document.getElementById("claim-kcal")).removeClass('button-disabled').delay(300).queue(function(next){
+           });
+         }
+     }).fail(function(e) {
+        console.log(e)
+     })
+
+}
+
+// function getStake
+function getStake() {
+
+  var params = [];
+  // build params for contract call
+  params[0] = { name: 'stakeAddress', type: 'Object', input: '{{address}}', info: '' }
+
+  $.post('/contract',
+     {
+         chain: 'main',
+         contract: 'energy',
+         method: 'GetStake',
+         params: JSON.stringify({
+           params
+         })
+     },
+     function (returnedData) {
+        // format soul with decimals value
+        stakesFormatted = (returnedData) / (Math.pow(10, 8));
+        // if amount exist and changed, flash the value
+        if (document.getElementById("stake-soul").innerHTML != numberWithCommas(stakesFormatted) + ' SOUL') {
+          document.getElementById("stake-soul").innerHTML = numberWithCommas(stakesFormatted) + ' SOUL';
+          $(document.getElementById("stake-soul")).addClass('flash-portfolio').delay(300).queue(function(next){
+               $(this).removeClass('flash-portfolio');
+               next();
+          });
+        }
+        // if kcal per day exist and changed, flash the value
+        if (document.getElementById("rewards-kcal").innerHTML != numberWithCommas(stakesFormatted/500) + ' KCAL / DAY') {
+          document.getElementById("rewards-kcal").innerHTML = numberWithCommas(stakesFormatted/500) + ' KCAL / DAY';
+          $(document.getElementById("rewards-kcal")).addClass('flash-portfolio').delay(300).queue(function(next){
+               $(this).removeClass('flash-portfolio');
+               next();
+          });
+        }
+        // if 0 soul staked hide unstake
+        if (stakesFormatted == 0) {
+          $("#unstake-soul").hide();
+        } else {
+          $("#unstake-soul").show();
+        }
+     }).fail(function(e) {
+        console.log(e)
+     })
+
+}
+
+// function GetSoulmastersDetails
+function GetSoulmastersDetails() {
+
+  var params = [];
+  var params2 = [];
+
+  // call both GetCurrentMasterCount and GetStake for calculations
+  $.when(
+
+    $.post('/contract',
+       {
+           chain: 'main',
+           contract: 'energy',
+           method: 'GetCurrentMasterCount',
+           params: JSON.stringify({
+             params
+           })
+       },
+       function (returnedData) {
+          mastertotalcount = returnedData;
+       }).fail(function(e) {
           console.log(e)
        }),
-       $.post('/contract',
-          {
-              chain: 'main',
-              contract: 'energy',
-              method: 'GetUnclaimed',
-              params: JSON.stringify({
-                params
-              })
-          },
-          function (returnedData) {
 
-             unclaimedFormatted = (returnedData) / (Math.pow(10, 10));
+     // build params for contract call
+     params2[0] = { name: 'stakeAddress', type: 'Object', input: '{{address}}', info: '' },
 
-          }
-        ).fail(function(e) {
+     $.post('/contract',
+        {
+            chain: 'main',
+            contract: 'energy',
+            method: 'GetStake',
+            params: JSON.stringify({
+              params2
+            })
+        },
+        function (returnedData) {
+           stakeamount = returnedData;
+        }).fail(function(e) {
            console.log(e)
         })
 
-      ).then(function() {
+     ).then(function() {
+       // calculate address mastercount
+       mastercount = Math.floor(stakeamount/(Math.pow(10,8))/50000);
+       // calculate total mastercount
+       if (mastertotalcount > 0) {
+         rewards = 125000/mastertotalcount;
+       } else {
+         rewards = 0;
+       }
+       // if amount 0 or 1 soulmaster exist and changed, flash the value
+       if (mastercount == 0 || mastercount == 1) {
+         if (document.getElementById("count-soulmasters").innerHTML != mastercount + ' SOULMASTER') {
+           document.getElementById("count-soulmasters").innerHTML = mastercount + ' SOULMASTER';
+           $(document.getElementById("count-soulmasters")).addClass('flash-portfolio').delay(300).queue(function(next){
+                $(this).removeClass('flash-portfolio');
+                next();
+           });
+         }
+       } else {
+         // if amount >1 soulmaster exist and changed, flash the value
+         if (document.getElementById("count-soulmasters").innerHTML != mastercount + ' SOULMASTERS') {
+           document.getElementById("count-soulmasters").innerHTML = mastercount + ' SOULMASTERS';
+           $(document.getElementById("count-soulmasters")).addClass('flash-portfolio').delay(300).queue(function(next){
+                $(this).removeClass('flash-portfolio');
+                next();
+           });
+         }
+       }
+       // if amount 0 or 1 total soulmaster exist and changed, flash the value
+       if (mastertotalcount == 0 || mastertotalcount == 1) {
+         if (document.getElementById("count-soulmasters-total").innerHTML != 'OUT OF ' + mastertotalcount + ' SOULMASTER') {
+           document.getElementById("count-soulmasters-total").innerHTML = 'OUT OF ' + mastertotalcount + ' SOULMASTER';
+           $(document.getElementById("count-soulmasters-total")).addClass('flash-portfolio').delay(300).queue(function(next){
+                $(this).removeClass('flash-portfolio');
+                next();
+           });
+         }
+       } else {
+         // if amount >1 total soulmaster exist and changed, flash the value
+         if (document.getElementById("count-soulmasters-total").innerHTML != 'OUT OF ' + mastertotalcount + ' SOULMASTERS') {
+           document.getElementById("count-soulmasters-total").innerHTML = 'OUT OF ' + mastertotalcount + ' SOULMASTERS';
+           $(document.getElementById("count-soulmasters-total")).addClass('flash-portfolio').delay(300).queue(function(next){
+                $(this).removeClass('flash-portfolio');
+                next();
+           });
+         }
+       }
+       // if amount rewards soulmaster exist and changed, flash the value
+       if (document.getElementById("rewards-soulmasters").innerHTML != numberWithCommas(rewards) + ' SOUL / MONTH') {
+         document.getElementById("rewards-soulmasters").innerHTML = numberWithCommas(rewards) + ' SOUL / MONTH';
+         $(document.getElementById("rewards-soulmasters")).addClass('flash-portfolio').delay(300).queue(function(next){
+              $(this).removeClass('flash-portfolio');
+              next();
+         });
+       }
+     })
 
-        {{#each holdings}}
-          if ('{{Symbol}}' == 'SOUL') {
-            amountsoulcombined = {{Amount}} + stakesFormatted
-            urlforcombined = urlforcombined + '&{{Symbol}}=' + amountsoulcombined;
-          }
-          if ('{{Symbol}}' == 'KCAL') {
-            amountkcalcombined = {{Amount}} + unclaimedFormatted
-            urlforcombined = urlforcombined + '&{{Symbol}}=' + amountkcalcombined;
-          }
-        {{/each}}
+}
 
-            $.ajax({
-                xhrFields: {
-                    withCredentials: !1
-                },
-                cache: !1,
-                crossDomain: !0,
-                type: 'GET',
-                dataType: 'json',
-                data: {},
-                url: urlforcombined.replace(/\,/g,'') + '&i=' + timeframe,
-                success: function(data) {
-                    var response = JSON.stringify(data);
-                    var parsedJson = JSON.parse(response);
-                    var positivebal = false;
-                    var ohlc = [],
-                        dataLength = parsedJson.result.data.data.length,
-                        i = dataLength - 1;
-                    for (i; i >= 0; --i) {
-                        ohlc.push([
-                            (new Date(parsedJson.result.data.data[i].time).getTime()),
-                            parsedJson.result.data.data[i].averageUSD
-                        ]);
-                        if (parsedJson.result.data.data[i].averageUSD >= 1) {
-                          positivebal = true;
-                        }
+// function getPortfolioChart based on timegrame
+function getPortfolioChart(timeframe) {
+
+  $("#loader-historical").show();
+
+  // start url pricing
+  urlforcombined = 'https://api.o3.network/v1/historical?currency=' + currency;
+  arraygraph = [];
+  params = [];
+  // build params for contract call
+  params[0] = { name: 'stakeAddress', type: 'Object', input: '{{address}}', info: '' }
+
+  // call both GetUnclaimed and GetStake for calculations
+  $.when(
+
+  $.post('/contract',
+     {
+         chain: 'main',
+         contract: 'energy',
+         method: 'GetStake',
+         params: JSON.stringify({
+           params
+         })
+     },
+     function (returnedData) {
+        // format soul based on decimals
+        stakesFormatted = (returnedData) / (Math.pow(10, 8));
+
+     }
+   ).fail(function(e) {
+      console.log(e)
+   }),
+   $.post('/contract',
+      {
+          chain: 'main',
+          contract: 'energy',
+          method: 'GetUnclaimed',
+          params: JSON.stringify({
+            params
+          })
+      },
+      function (returnedData) {
+         // format kcal based on decimals
+         unclaimedFormatted = (returnedData) / (Math.pow(10, 10));
+
+      }
+    ).fail(function(e) {
+       console.log(e)
+    })
+
+  ).then(function() {
+    // loop over holdings to build url pricing
+    {{#each holdings}}
+      if ('{{Symbol}}' == 'SOUL') {
+        amountsoulcombined = {{Amount}} + stakesFormatted
+        urlforcombined = urlforcombined + '&{{Symbol}}=' + amountsoulcombined;
+      }
+      if ('{{Symbol}}' == 'KCAL') {
+        amountkcalcombined = {{Amount}} + unclaimedFormatted
+        urlforcombined = urlforcombined + '&{{Symbol}}=' + amountkcalcombined;
+      }
+    {{/each}}
+
+        $.ajax({
+            xhrFields: {
+                withCredentials: !1
+            },
+            cache: !1,
+            crossDomain: !0,
+            type: 'GET',
+            dataType: 'json',
+            data: {},
+            // final url pricing
+            url: urlforcombined.replace(/\,/g,'') + '&i=' + timeframe,
+            success: function(data) {
+                var response = JSON.stringify(data);
+                var parsedJson = JSON.parse(response);
+                var positivebal = false;
+                var ohlc = [],
+                    dataLength = parsedJson.result.data.data.length,
+                    i = dataLength - 1;
+                for (i; i >= 0; --i) {
+                    // build array graph portfolio
+                    ohlc.push([
+                        (new Date(parsedJson.result.data.data[i].time).getTime()),
+                        parsedJson.result.data.data[i].averageUSD
+                    ]);
+                    // check if balance > 0
+                    if (parsedJson.result.data.data[i].averageUSD >= 1) {
+                      positivebal = true;
                     }
-                    if (positivebal == true) {
-                      Highcharts.stockChart('container-historical-value', {
-                          chart: {
-                              style: {
-                                  fontFamily: 'Rubik'
-                              }
+                }
+                if (positivebal == true) {
+                  Highcharts.stockChart('container-historical-value', {
+                      chart: {
+                          style: {
+                              fontFamily: 'Rubik'
+                          }
+                      },
+                      xAxis: {
+                        type: 'datetime',
+                        labels: {
+                          formatter: function() {
+                            return Highcharts.dateFormat('%e %b', this.value);
                           },
-                          xAxis: {
-                            type: 'datetime',
-                            labels: {
+                        }
+                      },
+                      yAxis: {
+                          labels: {
                               formatter: function() {
-                                return Highcharts.dateFormat('%e %b', this.value);
-                              },
-                            }
-                          },
-                          yAxis: {
-                              labels: {
-                                  formatter: function() {
-                                      return currencysymbol + this.axis.defaultLabelFormatter.call(this);
-                                  }
-                              },
-                              opposite: false,
-                              min: 0,
-                              gridLineWidth: 0,
-                              minorGridLineWidth: 0
-                          },
-                          navigator: {
-                              enabled: false
-                          },
-                          scrollbar: {
-                              enabled: false
-                          },
-                          rangeSelector: {
-                              enabled: false
-                          },
-                          legend: {
-                              enabled: false
-                          },
-                          credits: {
-                              enabled: false
-                          },
-                          exporting: {
-                              enabled: false
-                          },
-                          plotOptions: {
-                              area: {
-                                  fillColor: {
-                                      linearGradient: {
-                                          x1: 0,
-                                          y1: 0,
-                                          x2: 0,
-                                          y2: 1
-                                      },
-                                      stops: [
-                                          [0, '#17B0E7'],
-                                          [1, '#fff']
-                                      ]
-                                  },
-                                  marker: {
-                                      radius: 4
-                                  },
-                                  lineWidth: 3,
-                                  states: {
-                                      hover: {
-                                          lineWidth: 1
-                                      }
-                                  },
-                                  threshold: null
+                                  return currencysymbol + this.axis.defaultLabelFormatter.call(this);
                               }
                           },
-                          tooltip: {
-                              shared: true,
-                              split: false,
-                              formatter: function() {
-                                  if (($("#historical-value").val()) == '24H') {
-                                    var s = Highcharts.dateFormat('%A, %b %d, %Y - %H:%M', this.x);
-                                  } else {
-                                    var s = Highcharts.dateFormat('%A, %b %d, %Y', this.x);
-                                  }
-                                  $.each(this.points, function(i, point) {
-                                      s += '<br/><span style="color:' + point.color + '">\u25CF</span> ' + point.series.name + ' <b>' + currencysymbol + Highcharts.numberFormat(point.y, 0, '.', ',') + '</b>';
-                                  });
-                                  return s;
-                              }
-                          },
-                          series: [{
-                              type: 'area',
-                              name: 'Average Wallet Value:',
-                              data: ohlc,
-                              color: '#17B0E7',
+                          opposite: false,
+                          min: 0,
+                          gridLineWidth: 0,
+                          minorGridLineWidth: 0
+                      },
+                      navigator: {
+                          enabled: false
+                      },
+                      scrollbar: {
+                          enabled: false
+                      },
+                      rangeSelector: {
+                          enabled: false
+                      },
+                      legend: {
+                          enabled: false
+                      },
+                      credits: {
+                          enabled: false
+                      },
+                      exporting: {
+                          enabled: false
+                      },
+                      plotOptions: {
+                          area: {
                               fillColor: {
                                   linearGradient: {
-                                      x1: 1,
-                                      y1: 1,
-                                      x2: 1,
+                                      x1: 0,
+                                      y1: 0,
+                                      x2: 0,
                                       y2: 1
                                   },
                                   stops: [
-                                      [0, '#fff'],
+                                      [0, '#17B0E7'],
                                       [1, '#fff']
                                   ]
-                              }
-                          }],
-                          title: {
-                              text: '',
-                              style: {
-                                  fontSize: '16px'
-                              }
+                              },
+                              marker: {
+                                  radius: 4
+                              },
+                              lineWidth: 3,
+                              states: {
+                                  hover: {
+                                      lineWidth: 1
+                                  }
+                              },
+                              threshold: null
                           }
-                      });
-                      $("#loader-historical").hide();
-                      $("#container-historical-value").fadeIn(1000);
-                      $("#historical-value").val(timeframe);
-                      $("#dropdown-historical-value").fadeIn(1000);
-                      document.getElementById("portfolio-currency-title").innerHTML = currency;
-                    }
-                },
-                error: function(xhr, err) {
-                  console.log(err)
+                      },
+                      tooltip: {
+                          shared: true,
+                          split: false,
+                          formatter: function() {
+                              if (($("#historical-value").val()) == '24H') {
+                                var s = Highcharts.dateFormat('%A, %b %d, %Y - %H:%M', this.x);
+                              } else {
+                                var s = Highcharts.dateFormat('%A, %b %d, %Y', this.x);
+                              }
+                              $.each(this.points, function(i, point) {
+                                  s += '<br/><span style="color:' + point.color + '">\u25CF</span> ' + point.series.name + ' <b>' + currencysymbol + Highcharts.numberFormat(point.y, 0, '.', ',') + '</b>';
+                              });
+                              return s;
+                          }
+                      },
+                      series: [{
+                          type: 'area',
+                          name: 'Average Wallet Value:',
+                          data: ohlc,
+                          color: '#17B0E7',
+                          fillColor: {
+                              linearGradient: {
+                                  x1: 1,
+                                  y1: 1,
+                                  x2: 1,
+                                  y2: 1
+                              },
+                              stops: [
+                                  [0, '#fff'],
+                                  [1, '#fff']
+                              ]
+                          }
+                      }],
+                      title: {
+                          text: '',
+                          style: {
+                              fontSize: '16px'
+                          }
+                      }
+                  });
+                  $("#loader-historical").hide();
+                  // show portfolio graph
+                  $("#container-historical-value").fadeIn(1000);
+                  // change dropdown balue based on timeframe selected
+                  $("#historical-value").val(timeframe);
+                  $("#dropdown-historical-value").fadeIn(1000);
+                  // add currency to graph title
+                  document.getElementById("portfolio-currency-title").innerHTML = currency;
                 }
-              });
-
-      })
-
-    }
-
-    function getPieChart() {
-
-      $("#loader-pie").show();
-
-      valueTOTAL = 0;
-      arraygraph = [];
-      params = [];
-      params[0] = { name: 'stakeAddress', type: 'Object', input: '{{address}}', info: '' }
-
-      $.when(
-
-      $.post('/contract',
-         {
-             chain: 'main',
-             contract: 'energy',
-             method: 'GetStake',
-             params: JSON.stringify({
-               params
-             })
-         },
-         function (returnedData) {
-
-            stakesFormatted = (returnedData) / (Math.pow(10, 8));
-
-         }
-       ).fail(function(e) {
-          console.log(e)
-       }),
-       $.post('/contract',
-          {
-              chain: 'main',
-              contract: 'energy',
-              method: 'GetUnclaimed',
-              params: JSON.stringify({
-                params
-              })
-          },
-          function (returnedData) {
-
-             unclaimedFormatted = (returnedData) / (Math.pow(10, 10));
-
-          }
-        ).fail(function(e) {
-           console.log(e)
-        })
-
-      ).then(function() {
-
-        {{#each holdings}}
-          if ('{{Symbol}}' == 'SOUL') {
-            valueTOTAL += parseInt(('{{PriceFormated}}').replace(/,/g, ''));
-          }
-        {{/each}}
-
-        {{#each holdings}}
-          if ('{{Symbol}}' == 'SOUL') {
-            arraygraph.push({name: "{{Symbol}}", y: ({{PriceFormated}})/valueTOTAL, oldColor: "#E8E8E8", sliced: true})
-          }
-        {{/each}}
-
-      document.getElementById("totalportfolio").innerHTML = currencysymbol + numberWithCommas(valueTOTAL.toFixed(0));
-
-      Highcharts.chart('container-pie', {
-        chart: {
-            type: 'pie',
-            style: {
-                fontFamily: 'Rubik'
+            },
+            error: function(xhr, err) {
+              console.log(err)
             }
-        },
-        credits: {
-            enabled: !1
-        },
-        tooltip: {
-            pointFormat: '{series.name}: <b>{point.percentage:.2f}%</b>'
-        },
-        plotOptions: {
-            pie: {
-                allowPointSelect: !0,
-                cursor: 'pointer',
-                depth: 30,
-                colors: ['#E8E8E8', '#17B0E7', '#2f7ed8', '#434348', '#8bbc21', '#64E572', '#DDDF00', '#8085e9', '#f28f43', '#e4d354', '#f45b5b', '#77a1e5'],
-                slicedOffset: 10,
-                dataLabels: {
-                    enabled: !0,
-                    format: '{point.name}: {point.percentage:.2f} %',
-                    style: {
-                        textOutline: !1
-                    }
+          });
+
+  })
+
+}
+//function getPieChart
+function getPieChart() {
+
+  $("#loader-pie").show();
+
+  valueTOTAL = 0;
+  arraygraph = [];
+  params = [];
+  // build params for contract call
+  params[0] = { name: 'stakeAddress', type: 'Object', input: '{{address}}', info: '' }
+  // call both GetUnclaimed and GetStake for calculations
+  $.when(
+
+  $.post('/contract',
+     {
+         chain: 'main',
+         contract: 'energy',
+         method: 'GetStake',
+         params: JSON.stringify({
+           params
+         })
+     },
+     function (returnedData) {
+        // format soul based on decimals
+        stakesFormatted = (returnedData) / (Math.pow(10, 8));
+
+     }
+   ).fail(function(e) {
+      console.log(e)
+   }),
+   $.post('/contract',
+      {
+          chain: 'main',
+          contract: 'energy',
+          method: 'GetUnclaimed',
+          params: JSON.stringify({
+            params
+          })
+      },
+      function (returnedData) {
+         // format kcal based on decimals
+         unclaimedFormatted = (returnedData) / (Math.pow(10, 10));
+
+      }
+    ).fail(function(e) {
+       console.log(e)
+    })
+
+  ).then(function() {
+    // loop over holdings to build value total
+    {{#each holdings}}
+      if ('{{Symbol}}' == 'SOUL') {
+        valueTOTAL += parseInt(('{{PriceFormated}}').replace(/,/g, ''));
+      }
+    {{/each}}
+    // loop over holdings to build array for pie data
+    {{#each holdings}}
+      if ('{{Symbol}}' == 'SOUL') {
+        arraygraph.push({name: "{{Symbol}}", y: ({{PriceFormated}})/valueTOTAL, oldColor: "#E8E8E8", sliced: true})
+      }
+    {{/each}}
+
+  // add total portfolio once calculated
+  document.getElementById("totalportfolio").innerHTML = currencysymbol + numberWithCommas(valueTOTAL.toFixed(0));
+
+  Highcharts.chart('container-pie', {
+    chart: {
+        type: 'pie',
+        style: {
+            fontFamily: 'Rubik'
+        }
+    },
+    credits: {
+        enabled: !1
+    },
+    tooltip: {
+        pointFormat: '{series.name}: <b>{point.percentage:.2f}%</b>'
+    },
+    plotOptions: {
+        pie: {
+            allowPointSelect: !0,
+            cursor: 'pointer',
+            depth: 30,
+            colors: ['#E8E8E8', '#17B0E7', '#2f7ed8', '#434348', '#8bbc21', '#64E572', '#DDDF00', '#8085e9', '#f28f43', '#e4d354', '#f45b5b', '#77a1e5'],
+            slicedOffset: 10,
+            dataLabels: {
+                enabled: !0,
+                format: '{point.name}: {point.percentage:.2f} %',
+                style: {
+                    textOutline: !1
+                }
+            },
+            states: {
+                hover: {
+                    enabled: !1
                 },
-                states: {
-                    hover: {
-                        enabled: !1
+                inactive: {
+                    opacity: 1
+                }
+            },
+            point: {
+                events: {
+                    mouseOver: function() {
+                        this.options.oldColor = this.color;
+                        this.graphic.attr("fill", "#17B0E7");
+                        var point = this,
+                            points = this.series.points;
+                        for (var key in points) {
+                            if (points[key].sliced) {
+                                points[key].slice(!1)
+                            }
+                        }
+                        if (!point.selected) {
+                            point.slice(!0)
+                        }
                     },
-                    inactive: {
-                        opacity: 1
-                    }
-                },
-                point: {
-                    events: {
-                        mouseOver: function() {
-                            this.options.oldColor = this.color;
-                            this.graphic.attr("fill", "#17B0E7");
-                            var point = this,
-                                points = this.series.points;
-                            for (var key in points) {
-                                if (points[key].sliced) {
-                                    points[key].slice(!1)
-                                }
-                            }
-                            if (!point.selected) {
-                                point.slice(!0)
-                            }
-                        },
-                        mouseOut: function() {
-                            this.graphic.attr("fill", this.options.oldColor);
-                            for (var key in this.points) {
-                                if (this.points[key].sliced) {
-                                    this.points[key].slice(!1)
-                                }
+                    mouseOut: function() {
+                        this.graphic.attr("fill", this.options.oldColor);
+                        for (var key in this.points) {
+                            if (this.points[key].sliced) {
+                                this.points[key].slice(!1)
                             }
                         }
                     }
                 }
             }
-        },
-        series: [{
-            title: 'test',
-            type: 'pie',
-            name: 'Portfolio',
-            data: arraygraph
-        }],
-        title: {
-            text: 'Portfolio composition',
-            //text: '',
-            style: {
-                fontSize: '16px'
-            }
         }
-    })
+    },
+    series: [{
+        title: 'test',
+        type: 'pie',
+        name: 'Portfolio',
+        data: arraygraph
+    }],
+    title: {
+        text: 'Portfolio composition',
+        //text: '',
+        style: {
+            fontSize: '16px'
+        }
+    }
+})
 
-    $("#loader-pie").hide();
-    $("#container-pie").fadeIn(1000);
+$("#loader-pie").hide();
+$("#container-pie").fadeIn(1000);
 
-  })
+})
 
-  }
+}
 
 // Handles historical-value change
 $("#historical-value").change(function() {
@@ -1013,15 +1083,14 @@ $("#historical-value").change(function() {
 
 })
 
+// function CheckMultisignature (popup event)
 function CheckMultisignature() {
 
-  console.log('CheckMultisignature')
-
   $('#sendSpinner').show();
+
   bootbox.confirm({
       title: "New multisignature withdrawal request!",
-      message: "- Initiator: P5ySorAXMaJLwe6AqTsshW3XD8ahkwNpWHU9KLX9CwkYd<br>" +
-          '- Amount: 123 SOUL<br>' +
+      message: '- Amount: 123 SOUL<br>' +
           '- From: P5ySorAXMaJLwe6AqTsshW3XD8ahkwNpWHU9KLX9CwkYd<br>'+
           '- To: P5ySorAXMaJLwe6AqTsshW3XD8ahkwNpWHU9KLX9CwkYd<br>'+
           '- Signatures: 2 out of 3 signed',
@@ -1035,8 +1104,8 @@ function CheckMultisignature() {
       },
       callback: function(result) {
 
-
         $('#sendSpinner').hide();
+
       }
   })
 
