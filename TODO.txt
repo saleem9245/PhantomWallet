@@ -1,12 +1,10 @@
 Important:
 
-Packaging
-
-1. Multisig stuff
+1. Packaging (script launch linux / mac / windows)
 
 2. change link like "http://localhost:7072/tx/{{Hash}}" to a dynamic one based on network selected (ie either http://localhost:7072/tx/{{Hash}} or https://explorer.phantasma.io/tx/{{Hash}} for example) in context
 
-3. write documentation
+3. Multisig stuff
 
 
 Wait for new ABI:
@@ -18,9 +16,9 @@ Wait for new ABI:
 
 For later:
 
-1. i want to be able to go through like /send/P14ZWsVcCckk9jGS74ici57Vp6F5fZGLVMiKJmdFYnF88 and that gets me to the send screen with the address prefilled
+1. account type login (db + logic + view)
 
-2. account type login (db + logic + view)
+2. Account import/export/swap
 
-3. Account import/export/swap
+3. Swap to/from NEO/native SOUL
 
