@@ -45,17 +45,22 @@ The wallet can be launched either from the latest binaries, or can be built manu
 ### Required Tools and Dependencies
 
 .NET Core 2.2 (https://dotnet.microsoft.com/download/dotnet-core/2.2)
+
 PhantomWallet
+
 PhantasmaSpook (only required for Simnet)
+
 PhantasmaChain (only required for Simnet)
+
 PhantasmaExplorer (only required for Simnet)
+
 PhantasmaRpcClient (only required for Simnet)
 
 ### Launch from binaries
 
 1) MAC
 - chmod +x phantom-wallet
-- ./phantom-wallet --path=PhantomWallet/www --port=7071
+- `./phantom-wallet --path=PhantomWallet/www --port=7071`
 
 2) Windows
 
@@ -64,10 +69,10 @@ PhantasmaRpcClient (only required for Simnet)
 ### Manual build
 
 1) PhantasmaSpook
-- dotnet Spook.CLI/bin/Debug/netcoreapp2.0/Spook.dll -node.wif=L2LGgkZAdupN2ee8Rs6hpkc65zaGcLbxhbSDGq8oh6umUxxzeW25 -nexus.name=simnet -rpc.enabled=true -gui.enabled=false
+- `dotnet Spook.CLI/bin/Debug/netcoreapp2.0/Spook.dll -node.wif=L2LGgkZAdupN2ee8Rs6hpkc65zaGcLbxhbSDGq8oh6umUxxzeW25 -nexus.name=simnet -rpc.enabled=true -gui.enabled=false`
 
 2) PhantasmaExplorer
-- dotnet Phantasma.Explorer.dll --path=/pathtoexplorer/PhantasmaExplorer/PhantasmaExplorer/www --port=7072
+- `dotnet Phantasma.Explorer.dll --path=/pathtoexplorer/PhantasmaExplorer/PhantasmaExplorer/www --port=7072`
 
 3) PhantomWallet
-- dotnet Phantom.Wallet.dll --path=/pathtowallet/PhantomWallet/www/ --port=7071
+- `dotnet Phantom.Wallet.dll --path=/pathtowallet/PhantomWallet/www/ --port=7071`
