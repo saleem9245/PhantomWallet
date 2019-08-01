@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <img src="./PhantomWallet/www/public/img/wallet.png" width="125px;">
+  <img src="./PhantomWallet/www/public/img/wallet.png">
 </p>
 
 ## Overview
