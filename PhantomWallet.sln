@@ -19,8 +19,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Phantasma.RpcClient", "..\P
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhantomCli", "PhantomCli\PhantomCli.csproj", "{F3E20079-796A-4C05-A582-1951382A6E94}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Phantasma.Tests", "..\PhantasmaChain\Phantasma.Tests\Phantasma.Tests.csproj", "{F3E20079-796A-4C05-A582-1951382A6E94}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,3 +73,8 @@ Global
 		SolutionGuid = {A7FA4231-F6D7-4B93-9BAB-6B8ED0DFD04F}
 	EndGlobalSection
 EndGlobal
+
+<msbuild project="Hardcopy.sln">
+  <property name="Platform" value="Any Cpu" />
+  <property name="OutputPath" value="bin" />
+</msbuild>

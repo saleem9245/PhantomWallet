@@ -20,8 +20,6 @@ using Newtonsoft.Json;
 using Phantasma.RpcClient.DTOs;
 using Phantasma.CodeGen.Assembler;
 
-using Phantasma.Tests; //TODO remove
-
 using Serilog;
 using Serilog.Core;
 
@@ -54,7 +52,7 @@ namespace PhantomCli
         {
             string version = "0.1-alpha";
             prompt = config == null ? "phantom> ": config.Prompt;
-            var startupMsg =  config.StartupMsg + " " + version;
+            var startupMsg =  config == null ? "PhantomCli " + version : config.StartupMsg + " " + version;
 
             //Logger.Information(startupMsg);
 
