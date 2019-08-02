@@ -15,6 +15,12 @@ namespace Phantom.Wallet.DTOs
         [JsonProperty("theme")]
         public string Theme { get; set; } = "light";
 
+        [JsonProperty("rpc_url")]
+        public string RpcUrl { get; set; } = "http://localhost:7077/rpc";
+
+        [JsonProperty("explorer_url")]
+        public string ExplorerUrl { get; set; } = "http://localhost:7072";
+
         public static WalletConfigDto FromJson(string json) => JsonConvert.DeserializeObject<WalletConfigDto>(json, JsonUtils.Settings);
         public string ToJson() => JsonConvert.SerializeObject(this, JsonUtils.Settings);
     }

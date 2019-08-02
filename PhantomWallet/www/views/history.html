@@ -3,7 +3,7 @@
 
   {{#if confirmedHash}}
   <div class="alert alert-success" style="overflow: auto">
-      The transaction <a href="http://localhost:7072/tx/{{confirmedHash}}">{{confirmedHash}}</a> was sent with <strong>success</strong>!
+      The transaction <a href="{{explorer}}/tx/{{confirmedHash}}">{{confirmedHash}}</a> was sent with <strong>success</strong>!
   </div>
   {{/if}}
 
@@ -34,7 +34,7 @@
                     {{/if}}
                   </td>
                   <td class="col-2">{{#date Date}}</td>
-                  <td class="col-3"><small><a href="http://localhost:7072/tx/{{Hash}}" target="_blank" title="View Transaction">{{Hash}}</a></small></td>
+                  <td class="col-3"><small><a href="{{explorer}}/tx/{{Hash}}" target="_blank" title="View Transaction">{{Hash}}</a></small></td>
                   <td class="col-4">{{Amount}}</td>
                   <td class="col-5">{{Description}}</td>
               </tr>

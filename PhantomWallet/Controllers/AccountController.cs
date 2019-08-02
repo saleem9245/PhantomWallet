@@ -34,14 +34,21 @@ namespace Phantom.Wallet.Controllers
 
         public string AccountName { get; set; }
 
-        public WalletConfigDto WalletConfig { get; set; }
+        public static WalletConfigDto WalletConfig { get; set; }
 
         private static Serilog.Core.Logger Log = new LoggerConfiguration()
             .MinimumLevel.Debug().WriteTo.File(Utils.LogPath).CreateLogger();
 
         public AccountController()
         {
+            Backend.Init();
             _phantasmaRpcService = (IPhantasmaRpcService)Backend.AppServices.GetService(typeof(IPhantasmaRpcService));
+        }
+
+        public static void ReInit()
+        {
+            Log.Information("Reinit backend now...");
+            Backend.Init(true);
         }
 
         public void UpdateConfig(WalletConfigDto cfg)

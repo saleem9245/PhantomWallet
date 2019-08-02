@@ -14,6 +14,20 @@
       </div>
     </div>
     <div class="settings-row">
+      <div class="settings-row-icon"><i class="fas fa-cog"></i></div>
+      <span class="settings-row-name">RPC URL</span>
+      <div class="settings-row-item">
+        <input type="text" class="form-control" id="rpcurl">
+      </div>
+    </div>
+    <div class="settings-row">
+      <div class="settings-row-icon"><i class="fas fa-globe"></i></div>
+      <span class="settings-row-name">EXPLORER URL</span>
+      <div class="settings-row-item">
+        <input type="text" class="form-control" id="explurl">
+      </div>
+    </div>
+    <div class="settings-row">
       <div class="settings-row-icon"><i class="fas fa-dollar-sign"></i></div>
       <span class="settings-row-name">CURRENCY</span>
       <div class="settings-row-item">
@@ -98,6 +112,10 @@ function getSettings() {
          // if returned data, get network and currency
          var e = document.getElementById("selectnetwork");
          var f = document.getElementById("selectcurrency");
+         var g = document.getElementById("rpcurl");
+         g.value = JSON.parse(returnedData).rpc_url;
+         var h = document.getElementById("explurl");
+         h.value = JSON.parse(returnedData).explorer_url;
          function setSelectedIndex(s, v) {
           for ( var i = 0; i < s.options.length; i++ ) {
               if ( s.options[i].text == v ) {
@@ -119,13 +137,17 @@ function getSettings() {
   $("#selectnetwork").change(function () {
     var e = document.getElementById("selectnetwork");
     var network = e.options[e.selectedIndex].value;
+    var g = document.getElementById("rpcurl");
+    var url = g.value;
+    var h = document.getElementById("explurl");
+    var expl = h.value;
     var f = document.getElementById("selectcurrency");
     var currency = f.options[f.selectedIndex].value;
     var selecttheme = document.getElementById('cb4').checked;
     if (selecttheme = true) {
-      config = {network: network, currency: currency, theme: 'dark'}
+      config = {network: network, currency: currency, theme: 'dark', rpc_url: url, explorer_url: expl}
     } else {
-      config = {network: network, currency: currency, theme: 'light'}
+      config = {network: network, currency: currency, theme: 'light', rpc_url: url, explorer_url: expl}
     }
     // post new config
     $.post('/config',

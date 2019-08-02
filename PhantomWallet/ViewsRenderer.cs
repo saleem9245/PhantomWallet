@@ -37,6 +37,11 @@ namespace Phantom.Wallet
             AccountController = new AccountController();
         }
 
+        public void InitAccountController()
+        {
+            AccountController.ReInit();
+        }
+
         private AccountController AccountController { get; set; }
 
         public TemplateEngine TemplateEngine { get; set; }
@@ -150,8 +155,11 @@ namespace Phantom.Wallet
                 request.session.Remove("error");
             }
 
+            var config = AccountController.WalletConfig;
+
             context["menu"] = MenuEntries;
             context["networks"] = Networks;
+            context["explorer"] =  config != null ? config.ExplorerUrl : "http://localhost:7072";
 
             if (HasLogin(request))
             {
@@ -255,6 +263,11 @@ namespace Phantom.Wallet
             var key = request.GetVariable("key");
 
             AccountController.UpdateConfig(Utils.ReadConfig<WalletConfigDto>(Utils.CfgPath));
+
+            // very ugly needs to be changed
+            Settings.SetRPCServerUrl();
+            InitAccountController();
+            SetupControllers();
 
             try
             {
@@ -648,6 +661,11 @@ namespace Phantom.Wallet
                 Utils.WriteConfig<WalletConfigDto>(config, Utils.CfgPath);
 
                 AccountController.UpdateConfig(config);
+
+                // very ugly needs to be changed
+                Settings.SetRPCServerUrl();
+                InitAccountController();
+                SetupControllers();
 
                 var keyPair = GetLoginKey(request);
                 InvalidateCache(keyPair.Address);

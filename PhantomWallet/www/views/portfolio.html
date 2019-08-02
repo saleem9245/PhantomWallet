@@ -29,9 +29,9 @@
               {{#each holdings}}
               <tr class="token-shadow">
                   {{#if Symbol == 'SOUL'}}
-                    <td class="col-6"><img class="token-icon" src="img/{{Icon}}.png" />{{Name}} - <a href="http://localhost:7072/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
+                  <td class="col-6"><img class="token-icon" src="img/{{Icon}}.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
                   {{#else}}
-                    <td class="col-6"><img class="token-icon" src="img/soulmasters_logo.png" />{{Name}} - <a href="http://localhost:7072/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
+                  <td class="col-6"><img class="token-icon" src="img/soulmasters_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
                   {{/if}}
                   <td class="col-6">{{ChainName}}</td>
                   <td class="col-3" id="{{Symbol}}-amount">{{Amount}}</td>
@@ -224,7 +224,7 @@ function Claim() {
                   getUnclaimed();
                 }, 2000);
                 // If it works, returns the tx link
-                document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="http://localhost:7072/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
                 $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
               }
             }).fail(function(e) {
@@ -343,7 +343,7 @@ function Stake() {
                             GetSoulmastersDetails();
                           }, 1000);
                         }, 2000);
-                        document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="http://localhost:7072/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                        document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
                         $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
                       }
                     }).fail(function(e) {
@@ -461,7 +461,7 @@ function Unstake() {
                             GetSoulmastersDetails();
                           }, 1000);
                         }, 2000);
-                        document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="http://localhost:7072/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                          document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
                         $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
                       }
                     }).fail(function(e) {
@@ -556,7 +556,7 @@ function MasterClaim() {
                     GetSoulmastersDetails();
                   }, 1000);
                 }, 2000);
-                document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="http://localhost:7072/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
                 $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
               }
             }).fail(function(e) {
