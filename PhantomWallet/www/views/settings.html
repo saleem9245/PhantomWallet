@@ -266,6 +266,11 @@ function getSettings() {
 // confirm conversion to multisig
 function confirmRun(quantity) {
 
+  if (1 == 1) {
+      bootbox.alert("Functionality coming soon!");
+      return;
+  }
+
   var e = document.getElementById("multisig-qty");
   qty = e.options[e.selectedIndex].value;
   max = document.getElementById("multisig-max").value;

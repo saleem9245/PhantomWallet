@@ -51,7 +51,7 @@ namespace Phantom.Wallet.Helpers
                             senderAddress = Address.FromText(evt.EventAddress);
                             senderToken = data.symbol;
                             var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == senderToken).Decimals);
-                            amountsymbol = $"{amountDecimal.ToString("0,0.####")} {senderToken}";
+                            amountsymbol = $"{amountDecimal.ToString("0,0.##########")} {senderToken}";
                         }
                         break;
 
@@ -63,7 +63,7 @@ namespace Phantom.Wallet.Helpers
                             receiverChain = data.chainAddress;
                             receiverToken = data.symbol;
                             var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == receiverToken).Decimals);
-                            amountsymbol = $"{amountDecimal.ToString("0,0.####")} {receiverToken}";
+                            amountsymbol = $"{amountDecimal.ToString("0,0.##########")} {receiverToken}";
                         }
                         break;
 
@@ -74,7 +74,7 @@ namespace Phantom.Wallet.Helpers
                             receiverAddress = Address.FromText(evt.EventAddress);
                             receiverChain = data.chainAddress;
                             var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.symbol).Decimals);
-                            amountsymbol = $"{amountDecimal.ToString("0,0.####")} {data.symbol}";
+                            amountsymbol = $"{amountDecimal.ToString("0,0.##########")} {data.symbol}";
                         }
                         break;
                 }
@@ -312,7 +312,7 @@ namespace Phantom.Wallet.Helpers
                 }
             }
 
-            return new MultisigSettings 
+            return new MultisigSettings
             {
                 addressCount = addressList.Count,
                 signeeCount = minSignees,

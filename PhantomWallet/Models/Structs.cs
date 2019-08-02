@@ -31,7 +31,7 @@ namespace Phantom.Wallet.Models
         public decimal Amount;
         public decimal Rate;
         public decimal Price => (Amount * Rate);
-        public string AmountFormated => Amount.ToString("0,0.####");
+        public string AmountFormated => Amount.ToString("#,#.###########");
         public string PriceFormated => Price.ToString("0,0");
         public string CurrencySymbol;
         public string Currency;
@@ -60,7 +60,7 @@ namespace Phantom.Wallet.Models
         public string ErrorCode;
     }
 
-    public struct MultisigSettings 
+    public struct MultisigSettings
     {
         public int addressCount;
         public int signeeCount;

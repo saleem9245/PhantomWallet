@@ -4,13 +4,13 @@
   <div id="sendSpinner" class="loading">Loading&#8230;</div>
   <div class="top-portfolio col-md-12">
     <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/kcal_logo.png" /><span>ENERGY</span><br><span id="unclaimed-kcal" class="top-portfolio-col-highlight">KCAL</span><br><span id="rewards-kcal" class="top-portfolio-col-small">KCAL / DAY</span></div>
-    <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/phantasma_logo.png" /><span>STAKES</span><br><span id="stake-soul" class="top-portfolio-col-highlight">SOUL</span><br><span id="rewards-soulmasters" class="top-portfolio-col-small">SOUL / MONTH</span></div>
-    <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/soulmasters_logo.png" /><span>SOULMASTERS</span><br><span><span id="count-soulmasters" class="top-portfolio-col-highlight">SOULMASTER</span></span><br><span><span id="count-soulmasters-total" class="top-portfolio-col-small">OUT OF SOULMASTER</span></span></div>
+    <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/phantasma_logo.png" /><span>STAKES</span><br><span id="stake-soul" class="top-portfolio-col-highlight">SOUL</span><br><span id="count-soulmasters" class="top-portfolio-col-small">SOULMASTER</span></div>
+    <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/soulmasters_logo.png" /><span>SOULMASTERS</span><br><span><span id="count-soulmasters-total" class="top-portfolio-col-highlight">SOULMASTER</span></span><br><span><span id="rewards-soulmasters" class="top-portfolio-col-small">SOUL / MONTH / SM</span></span></div>
 </div>
     <div class="wrapper-portfolio">
       <div><button type="button" id="claim-kcal" class="button" onclick="Claim()">CLAIM<BR>KCAL</button></div>
       <div><input id="manageinput" type="number" min="1" class="form-control center" placeholder="Amount" style="display:inline-block;width: 22%;display:inline-block;margin-right: 1em;"><button type="button" class="button" style="border-radius: 0;" onclick="Stake()">STAKE</button><button type="button" id="unstake-soul" class="button" style="border-radius: 0;margin-left: .1em;display:none;" onclick="Unstake()">UNSTAKE</button></div>
-      <div><button type="button" class="button"onclick="MasterClaim()">CLAIM<BR>REWARDS</button></div>
+      <div><button type="button" id="claim-rewards" class="button"onclick="MasterClaim()">CLAIM<BR>REWARDS</button></div>
     </div>
     <div id="wrapper-portfolio-confirm" style="opacity:0;">
       Transaction
@@ -34,7 +34,7 @@
                     <td class="col-6"><img class="token-icon" src="img/soulmasters_logo.png" />{{Name}} - <a href="http://localhost:7072/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
                   {{/if}}
                   <td class="col-6">{{ChainName}}</td>
-                  <td class="col-3" id="{{Symbol}}-amount">{{AmountFormated}}</td>
+                  <td class="col-3" id="{{Symbol}}-amount">{{Amount}}</td>
                   {{#if Symbol == 'SOUL'}}
                     <td class="col-3" id="{{Symbol}}-price">{{CurrencySymbol}}{{PriceFormated}}</td>
                   {{#else}}
@@ -76,7 +76,7 @@
   </div>
 </div>
 </div>
-<div class="multisig-event" onclick="CheckMultisignature();">
+<div class="multisig-event" onclick="CheckMultisignature();" style="display:none">
   <i class="fas fa-exclamation-circle"></i><br>
   <span>NEW<br>EVENT</span>
 </div>
@@ -183,7 +183,6 @@ function Claim() {
 
   $("#wrapper-portfolio-confirm").fadeTo(1, 0);
   var params = [];
-  fetchValuesManage = '';
   // calculate amount/changedamount/futureamount
   currentkcalamount = parseFloat((document.getElementById("KCAL-amount").innerHTML).replace(/\,/g,''));
   changedamount = parseFloat(document.getElementById("unclaimed-kcal").innerHTML.slice(0, -5));
@@ -212,10 +211,11 @@ function Claim() {
                 document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
                 $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
               } else {
-                // if amount exist and changed, flash the value
                 setTimeout(function() {
-                  if (document.getElementById("KCAL-amount").innerHTML != numberWithCommas(futureamount)) {
-                    document.getElementById("KCAL-amount").innerHTML = numberWithCommas(futureamount);
+                  // if amount exist and changed and update kcal based on fees, flash the value
+                  numberWithCommas(futureamount)
+                  if (document.getElementById("KCAL-amount").innerHTML != numberWithCommas((futureamount - ((JSON.parse(returnedDataTX).fee) / Math.pow(10,10))).toFixed(10))) {
+                    document.getElementById("KCAL-amount").innerHTML = numberWithCommas((futureamount - ((JSON.parse(returnedDataTX).fee) / Math.pow(10,10))).toFixed(10));
                     $(document.getElementById("KCAL-amount")).addClass('flash-portfolio').delay(300).queue(function(next){
                          $(this).removeClass('flash-portfolio');
                          next();
@@ -249,7 +249,6 @@ function Stake() {
 
   $("#wrapper-portfolio-confirm").fadeTo(1, 0);
   var params = [];
-  fetchValuesManage = '';
   // calculate amount/changedamount/futureamount
   currentsoulamount = parseFloat((document.getElementById("SOUL-amount").innerHTML).replace(/\,/g,''));
   if (localStorage.getItem('currency') == 'CAD') {
@@ -308,8 +307,15 @@ function Stake() {
                         document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
                         $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
                       } else {
-                        // if amount exist and changed, flash the value
+                        //console.log(returnedDataTX)
                         setTimeout(function() {
+                          // update kcal based on fees
+                          document.getElementById("KCAL-amount").innerHTML = numberWithCommas((document.getElementById("KCAL-amount").innerHTML - ((JSON.parse(returnedDataTX).fee) / Math.pow(10,10))).toFixed(10));
+                          $(document.getElementById("KCAL-amount")).addClass('flash-portfolio').delay(300).queue(function(next){
+                               $(this).removeClass('flash-portfolio');
+                               next();
+                          });
+                          // if amount exist and changed, flash the value
                           if (document.getElementById("SOUL-amount").innerHTML != numberWithCommas(futureamount)) {
                             document.getElementById("SOUL-amount").innerHTML = numberWithCommas(futureamount);
                             $(document.getElementById("SOUL-amount")).addClass('flash-portfolio').delay(300).queue(function(next){
@@ -362,7 +368,6 @@ function Unstake() {
 
   $("#wrapper-portfolio-confirm").fadeTo(1, 0);
   var params = [];
-  fetchValuesManage = '';
   // calculate amount/changedamount/futureamount
   currentsoulamount = parseFloat((document.getElementById("SOUL-amount").innerHTML).replace(/\,/g,''));
   if (localStorage.getItem('currency') == 'CAD') {
@@ -422,6 +427,12 @@ function Unstake() {
                         $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
                       } else {
                         setTimeout(function() {
+                          // update kcal based on fees
+                          document.getElementById("KCAL-amount").innerHTML = numberWithCommas((document.getElementById("KCAL-amount").innerHTML - ((JSON.parse(returnedDataTX).fee) / Math.pow(10,10))).toFixed(10));
+                          $(document.getElementById("KCAL-amount")).addClass('flash-portfolio').delay(300).queue(function(next){
+                               $(this).removeClass('flash-portfolio');
+                               next();
+                          });
                           // if amount exist and changed, flash the value
                           if (document.getElementById("SOUL-amount").innerHTML != numberWithCommas(futureamount)) {
                             document.getElementById("SOUL-amount").innerHTML = numberWithCommas(futureamount);
@@ -475,6 +486,14 @@ function MasterClaim() {
 
   $("#wrapper-portfolio-confirm").fadeTo(1, 0);
   var params = [];
+  // calculate amount/changedamount/futureamount
+  currentsoulamount = parseFloat((document.getElementById("SOUL-amount").innerHTML).replace(/\,/g,''));
+  if (localStorage.getItem('currency') == 'CAD') {
+    currentsoulprice = parseFloat((document.getElementById("SOUL-price").innerHTML).substr(2).replace(/\,/g,''));
+  } else {
+    currentsoulprice = parseFloat((document.getElementById("SOUL-price").innerHTML).substr(1).replace(/\,/g,''));
+  }
+  currentsoulpriceunit = currentsoulprice/currentsoulamount;
   // build params for contract call
   params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
 
@@ -495,9 +514,48 @@ function MasterClaim() {
               //console.log(returnedDataTX)
               if ((JSON.parse(returnedDataTX).error) != undefined) {
                 // If .error defined, returns the custom error message
-                document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction rejected: allowed only once per month starting on the 1st day of each month following staking';
+                document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
                 $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
               } else {
+                console.log(returnedDataTX)
+                //changedamount = JSON.parse(returnedDataTX);
+                //futureamount = currentsoulamount + changedamount;
+                //futuresoulprice = futureamount * currentsoulpriceunit;
+                setTimeout(function() {
+                  // update kcal based on fees
+                  document.getElementById("KCAL-amount").innerHTML = numberWithCommas((document.getElementById("KCAL-amount").innerHTML - ((JSON.parse(returnedDataTX).fee) / Math.pow(10,10))).toFixed(10));
+                  $(document.getElementById("KCAL-amount")).addClass('flash-portfolio').delay(300).queue(function(next){
+                       $(this).removeClass('flash-portfolio');
+                       next();
+                  });
+                  // if amount exist and changed, flash the value
+                  //if (document.getElementById("SOUL-amount").innerHTML != numberWithCommas(futureamount)) {
+                  //  document.getElementById("SOUL-amount").innerHTML = numberWithCommas(futureamount);
+                  //  $(document.getElementById("SOUL-amount")).addClass('flash-portfolio').delay(300).queue(function(next){
+                  //       $(this).removeClass('flash-portfolio');
+                  //       next();
+                  //  });
+                  //}
+                  // if price exist and changed, flash the value
+                  //if (document.getElementById("SOUL-price").innerHTML != numberWithCommas(futuresoulprice)) {
+                  //  document.getElementById("SOUL-price").innerHTML = currencysymbol + numberWithCommas(futuresoulprice.toFixed(0));
+                  //  $(document.getElementById("SOUL-price")).addClass('flash-portfolio').delay(300).queue(function(next){
+                  //       $(this).removeClass('flash-portfolio');
+                  //       next();
+                  //  });
+                    // if total price exist and changed, flash the value
+                  //  document.getElementById("totalportfolio").innerHTML = currencysymbol + numberWithCommas(futuresoulprice.toFixed(0));
+                  //  $(document.getElementById("totalportfolio")).addClass('flash-portfolio').delay(300).queue(function(next){
+                  //       $(this).removeClass('flash-portfolio');
+                  //       next();
+                  //  });
+                  //}
+                  // call getstake and getsoulmastersdetails after all other refresh
+                  getStake();
+                  setTimeout(function() {
+                    GetSoulmastersDetails();
+                  }, 1000);
+                }, 2000);
                 document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="http://localhost:7072/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
                 $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
               }
@@ -585,8 +643,8 @@ function getStake() {
           });
         }
         // if kcal per day exist and changed, flash the value
-        if (document.getElementById("rewards-kcal").innerHTML != numberWithCommas(stakesFormatted/500) + ' KCAL / DAY') {
-          document.getElementById("rewards-kcal").innerHTML = numberWithCommas(stakesFormatted/500) + ' KCAL / DAY';
+        if (document.getElementById("rewards-kcal").innerHTML != numberWithCommas((stakesFormatted/500).toFixed(10)) + ' KCAL / DAY') {
+          document.getElementById("rewards-kcal").innerHTML = numberWithCommas((stakesFormatted/500).toFixed(10)) + ' KCAL / DAY';
           $(document.getElementById("rewards-kcal")).addClass('flash-portfolio').delay(300).queue(function(next){
                $(this).removeClass('flash-portfolio');
                next();
@@ -647,37 +705,30 @@ function GetSoulmastersDetails() {
         })
 
      ).then(function() {
-       // calculate address mastercount
-       mastercount = Math.floor(stakeamount/(Math.pow(10,8))/50000);
-       // calculate total mastercount
+       // check if address is master
+       if (stakeamount/(Math.pow(10,8)) > 50000) {
+         mastercount = 1;
+       } else {
+         mastercount = 0;
+       }
+       // calculate total soulmasters
        if (mastertotalcount > 0) {
          rewards = 125000/mastertotalcount;
        } else {
          rewards = 0;
        }
-       // if amount 0 or 1 soulmaster exist and changed, flash the value
-       if (mastercount == 0 || mastercount == 1) {
-         if (document.getElementById("count-soulmasters").innerHTML != mastercount + ' SOULMASTER') {
-           document.getElementById("count-soulmasters").innerHTML = mastercount + ' SOULMASTER';
-           $(document.getElementById("count-soulmasters")).addClass('flash-portfolio').delay(300).queue(function(next){
-                $(this).removeClass('flash-portfolio');
-                next();
-           });
-         }
-       } else {
-         // if amount >1 soulmaster exist and changed, flash the value
-         if (document.getElementById("count-soulmasters").innerHTML != mastercount + ' SOULMASTERS') {
-           document.getElementById("count-soulmasters").innerHTML = mastercount + ' SOULMASTERS';
-           $(document.getElementById("count-soulmasters")).addClass('flash-portfolio').delay(300).queue(function(next){
-                $(this).removeClass('flash-portfolio');
-                next();
-           });
-         }
+       // if soulmaster exist and changed, flash the value
+       if (document.getElementById("count-soulmasters").innerHTML != mastercount + ' SOULMASTER') {
+         document.getElementById("count-soulmasters").innerHTML = mastercount + ' SOULMASTER';
+         $(document.getElementById("count-soulmasters")).addClass('flash-portfolio').delay(300).queue(function(next){
+              $(this).removeClass('flash-portfolio');
+              next();
+         });
        }
        // if amount 0 or 1 total soulmaster exist and changed, flash the value
        if (mastertotalcount == 0 || mastertotalcount == 1) {
-         if (document.getElementById("count-soulmasters-total").innerHTML != 'OUT OF ' + mastertotalcount + ' SOULMASTER') {
-           document.getElementById("count-soulmasters-total").innerHTML = 'OUT OF ' + mastertotalcount + ' SOULMASTER';
+         if (document.getElementById("count-soulmasters-total").innerHTML != mastertotalcount + ' SOULMASTER') {
+           document.getElementById("count-soulmasters-total").innerHTML = mastertotalcount + ' SOULMASTER';
            $(document.getElementById("count-soulmasters-total")).addClass('flash-portfolio').delay(300).queue(function(next){
                 $(this).removeClass('flash-portfolio');
                 next();
@@ -685,8 +736,8 @@ function GetSoulmastersDetails() {
          }
        } else {
          // if amount >1 total soulmaster exist and changed, flash the value
-         if (document.getElementById("count-soulmasters-total").innerHTML != 'OUT OF ' + mastertotalcount + ' SOULMASTERS') {
-           document.getElementById("count-soulmasters-total").innerHTML = 'OUT OF ' + mastertotalcount + ' SOULMASTERS';
+         if (document.getElementById("count-soulmasters-total").innerHTML != mastertotalcount + ' SOULMASTERS') {
+           document.getElementById("count-soulmasters-total").innerHTML = mastertotalcount + ' SOULMASTERS';
            $(document.getElementById("count-soulmasters-total")).addClass('flash-portfolio').delay(300).queue(function(next){
                 $(this).removeClass('flash-portfolio');
                 next();
@@ -694,11 +745,19 @@ function GetSoulmastersDetails() {
          }
        }
        // if amount rewards soulmaster exist and changed, flash the value
-       if (document.getElementById("rewards-soulmasters").innerHTML != numberWithCommas(rewards) + ' SOUL / MONTH') {
-         document.getElementById("rewards-soulmasters").innerHTML = numberWithCommas(rewards) + ' SOUL / MONTH';
+       if (document.getElementById("rewards-soulmasters").innerHTML != numberWithCommas(rewards) + ' SOUL / MONTH / SM') {
+         document.getElementById("rewards-soulmasters").innerHTML = numberWithCommas(rewards) + ' SOUL / MONTH / SM';
          $(document.getElementById("rewards-soulmasters")).addClass('flash-portfolio').delay(300).queue(function(next){
               $(this).removeClass('flash-portfolio');
               next();
+         });
+       }
+       // if getstake < 50000 disable claim rewards button
+       if (mastercount == 0) {
+         $(document.getElementById("claim-rewards")).addClass('button-disabled').delay(300).queue(function(next){
+         });
+       } else {
+         $(document.getElementById("claim-rewards")).removeClass('button-disabled').delay(300).queue(function(next){
          });
        }
      })
@@ -736,6 +795,7 @@ function getPortfolioChart(timeframe) {
      }
    ).fail(function(e) {
       console.log(e)
+      $("#loader-historical").hide();
    }),
    $.post('/contract',
       {
@@ -971,6 +1031,7 @@ function getPieChart() {
       }
     ).fail(function(e) {
        console.log(e)
+       $("#loader-pie").hide();
     })
 
   ).then(function() {
