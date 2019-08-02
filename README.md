@@ -18,8 +18,8 @@
 ### Current features
 
 - Create a new wallet
-- Login with an existing wallet (private key)
-- View wallet/smart contract balance (SOUL, KCAL, other, unclaimed KCAL, staked SOUL, rewards SOULMASTER)
+- Login with an existing wallet (via private key)
+- View wallet/smart contract balance (SOUL, KCAL, token, unclaimed KCAL, staked SOUL)
 - View portfolio split in percentage and portfolio historical value over time
 - Claim KCAL
 - Stake/Unstake SOUL
@@ -29,12 +29,13 @@
 - Switch between network type (Simnet/Testnet/Mainnet)
 - Switch between Dark theme / Light theme
 - Switch between multiple currencies (USD/CAD/EUR/etc.)
+- Connect to custom Explorer URL and custom RPC URL
 - Read/Write generic contract calls, for all chain/sidechain
 - PhantomCli, which does everything PhantomWallet does, but from CLI
 
 ### Upcoming features
 
-- Multisignature wallet conversion/support
+- Multisignature wallet conversion (with custom signature count and custom withdrawal per day)
 - Login with a local account
 - Import/Export account
 - Swap to/from NEO and native SOUL
@@ -55,6 +56,8 @@ Dependencies (if using on Simnet):
 - PhantasmaChain (https://github.com/phantasma-io/PhantasmaChain)
 - PhantasmaExplorer (https://github.com/phantasma-io/PhantasmaExplorer)
 - PhantasmaRpcClient (https://github.com/phantasma-io/PhantasmaRpcClient)
+
+If using the wallet on Simnet, you have to go to the Settings Page, and define your own explorer and RPC URLs (which should be http://localhost:7077/rpc for the rpc and http://localhost:7072 for the explorer).
 
 ### Launch from binaries
 
