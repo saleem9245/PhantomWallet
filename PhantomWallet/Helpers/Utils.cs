@@ -291,7 +291,7 @@ namespace Phantom.Wallet.Helpers
         public static MultisigSettings GetMultisigSettings(string scriptString)
         {
             //HACK TODO (!!!) this method is a very ugly hack, this needs to improve badly
-            List<string> addressList = new List<string>();
+            List<Address> addressList = new List<Address>();
             string[] str = scriptString.Split(' ');
             Regex regex = new Regex(@"LOAD\s*r4,\s(\d*)");
             Match match = regex.Match(scriptString);
@@ -305,7 +305,7 @@ namespace Phantom.Wallet.Helpers
                     {
                         try
                         {
-                            addressList.Add(Address.FromText(tempStr).ToString());
+                            addressList.Add(Address.FromText(tempStr));
                         }
                         catch {}
                     }

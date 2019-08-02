@@ -55,7 +55,7 @@
         <PackageReference Include="System.Runtime.Handles" Version="4.0.1">
             <NoWarn>NU1605</NoWarn>
         </PackageReference>
-        <PackageReference Include="System.Runtime.InteropServices" Version="4.0.10">
+        <PackageReference Include="System.Runtime.InteropServices" Version="4.1.0">
             <NoWarn>NU1605</NoWarn>
         </PackageReference>
         <PackageReference Include="System.Text.Encoding.Extensions" Version="4.0.11">

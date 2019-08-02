@@ -1,5 +1,6 @@
 ﻿using System;
 using Phantasma.RpcClient.DTOs;
+using Phantasma.Cryptography;
 
 namespace Phantom.Wallet.Models
 {
@@ -64,7 +65,7 @@ namespace Phantom.Wallet.Models
     {
         public int addressCount;
         public int signeeCount;
-        public string[] addressArray;
+        public Address[] addressArray;
     }
 
     public struct MultisigTx
