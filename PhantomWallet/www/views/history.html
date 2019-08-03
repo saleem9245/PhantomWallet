@@ -23,13 +23,25 @@
               {{#each transactions}}
               <tr>
                   <td class="col-1">
-                    {{#if Type == 'Custom'}}
-                      <i class="fas fa-file-signature"><span style="display:none;">{{Type}}</span></i>
+                    {{#if Type == 'Mint'}}
+                      <i class="fas fa-coins" style="color:#7cacff"><span style="display:none;">{{Type}}</span></i>
                     {{#else}}
-                      {{#if Type == address}}
-                      <i class="fas fa-sign-out-alt"><span style="display:none;">{{Type}}</i>
+                      {{#if Type == 'Stake'}}
+                        <i class="fas fa-lock" style="color:#f1cea5"><span style="display:none;">{{Type}}</span></i>
                       {{#else}}
-                      <i class="fas fa-sign-in-alt"><span style="display:none;">{{Type}}</i>
+                        {{#if Type == 'Unstake'}}
+                          <i class="fas fa-lock-open" style="color:#f1cea5"><span style="display:none;">{{Type}}</span></i>
+                        {{#else}}
+                          {{#if Type == address}}
+                            <i class="fas fa-sign-out-alt" style="color:#e3637d"><span style="display:none;">{{Type}}</span></i>
+                          {{#else}}
+                            {{#if Type == 'Custom'}}
+                              <i class="fas fa-file-signature" style="color:#c9c1ed"><span style="display:none;">{{Type}}</span></i>
+                            {{#else}}
+                              <i class="fas fa-sign-in-alt" style="color:#4edb6a"><span style="display:none;">{{Type}}</span></i>
+                            {{/if}}
+                          {{/if}}
+                        {{/if}}
                       {{/if}}
                     {{/if}}
                   </td>

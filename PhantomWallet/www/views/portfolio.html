@@ -34,9 +34,9 @@
                   <td class="col-6"><img class="token-icon" src="img/soulmasters_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
                   {{/if}}
                   <td class="col-6">{{ChainName}}</td>
-                  <td class="col-3" id="{{Symbol}}-amount">{{Amount}}</td>
+                  <td class="col-3" id="{{Symbol}}-amount">{{AmountFormated}}</td>
                   {{#if Symbol == 'SOUL'}}
-                    <td class="col-3" id="{{Symbol}}-price">{{CurrencySymbol}}{{PriceFormated}}</td>
+                    <td class="col-3" id="{{Symbol}}-price">{{CurrencySymbol}}{{Price}}</td>
                   {{#else}}
                     <td class="col-3" id="{{Symbol}}-price">N/A</td>
                   {{/if}}
@@ -706,7 +706,7 @@ function GetSoulmastersDetails() {
 
      ).then(function() {
        // check if address is master
-       if (stakeamount/(Math.pow(10,8)) > 50000) {
+       if (stakeamount/(Math.pow(10,8)) >= 50000) {
          mastercount = 1;
        } else {
          mastercount = 0;
@@ -975,6 +975,8 @@ function getPortfolioChart(timeframe) {
                   $("#dropdown-historical-value").fadeIn(1000);
                   // add currency to graph title
                   document.getElementById("portfolio-currency-title").innerHTML = currency;
+                } else {
+                  $("#loader-historical").hide();
                 }
             },
             error: function(xhr, err) {
@@ -1038,13 +1040,13 @@ function getPieChart() {
     // loop over holdings to build value total
     {{#each holdings}}
       if ('{{Symbol}}' == 'SOUL') {
-        valueTOTAL += parseInt(('{{PriceFormated}}').replace(/,/g, ''));
+        valueTOTAL += parseInt(('{{Price}}').replace(/,/g, ''));
       }
     {{/each}}
     // loop over holdings to build array for pie data
     {{#each holdings}}
       if ('{{Symbol}}' == 'SOUL') {
-        arraygraph.push({name: "{{Symbol}}", y: ({{PriceFormated}})/valueTOTAL, oldColor: "#E8E8E8", sliced: true})
+        arraygraph.push({name: "{{Symbol}}", y: ({{Price}})/valueTOTAL, oldColor: "#E8E8E8", sliced: true})
       }
     {{/each}}
 
@@ -1131,6 +1133,10 @@ function getPieChart() {
 
 $("#loader-pie").hide();
 $("#container-pie").fadeIn(1000);
+
+if (valueTOTAL == 0) {
+  $("#container-pie").hide();
+}
 
 })
 

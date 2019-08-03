@@ -33,7 +33,7 @@ namespace Phantom.Wallet.Models
         public decimal Rate;
         public decimal Price => (Amount * Rate);
         public string AmountFormated => Amount.ToString("#,#.###########");
-        public string PriceFormated => Price.ToString("0,0");
+        public string PriceFormated => Price.ToString("#,#");
         public string CurrencySymbol;
         public string Currency;
     }

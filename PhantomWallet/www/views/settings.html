@@ -14,17 +14,23 @@
       </div>
     </div>
     <div class="settings-row">
-      <div class="settings-row-icon"><i class="fas fa-cog"></i></div>
+      <div class="settings-row-icon"><i class="fas fa-globe"></i></div>
       <span class="settings-row-name">RPC URL</span>
       <div class="settings-row-item">
-        <input type="text" class="form-control" id="rpcurl">
+        <input type="text" class="form-control" id="rpcurl" style="margin-top: -0.25em;">
+      </div>
+      <div class="settings-row-item">
+        <button type="button" id="rpc-url-update" class="button" onclick="updateRPC()">SAVE</button>
       </div>
     </div>
     <div class="settings-row">
       <div class="settings-row-icon"><i class="fas fa-globe"></i></div>
       <span class="settings-row-name">EXPLORER URL</span>
       <div class="settings-row-item">
-        <input type="text" class="form-control" id="explurl">
+        <input type="text" class="form-control" id="explurl" style="margin-top: -0.25em;">
+      </div>
+      <div class="settings-row-item">
+        <button type="button" id="explorer-url-update" class="button" onclick="updateExplorer()">SAVE</button>
       </div>
     </div>
     <div class="settings-row">
@@ -133,6 +139,7 @@ function getSettings() {
     });
 }
 
+
   // On network change event
   $("#selectnetwork").change(function () {
     var e = document.getElementById("selectnetwork");
@@ -162,17 +169,84 @@ function getSettings() {
       });
    })
 
-   // On currency change event
-   $("#selectcurrency").change(function () {
+   // On rpc url click event
+   function updateRPC() {
+
+       console.log('click')
+       var e = document.getElementById("selectnetwork");
+       var network = e.options[e.selectedIndex].value;
+       var g = document.getElementById("rpcurl");
+       var url = g.value;
+       var h = document.getElementById("explurl");
+       var expl = h.value;
+       var f = document.getElementById("selectcurrency");
+       var currency = f.options[f.selectedIndex].value;
+       var selecttheme = document.getElementById('cb4').checked;
+       if (selecttheme = true) {
+         config = {network: network, currency: currency, theme: 'dark', rpc_url: url, explorer_url: expl}
+       } else {
+         config = {network: network, currency: currency, theme: 'light', rpc_url: url, explorer_url: expl}
+       }
+       // post new config
+       $.post('/config',
+         {
+             mode: 'set',
+             config: JSON.stringify(config)
+         },
+         function (returnedData) {
+
+         }).fail(function(e) {
+            console.log(e);
+         });
+
+   }
+
+   // On explorer url click event
+   function updateExplorer() {
+
      var e = document.getElementById("selectnetwork");
      var network = e.options[e.selectedIndex].value;
+     var g = document.getElementById("rpcurl");
+     var url = g.value;
+     var h = document.getElementById("explurl");
+     var expl = h.value;
      var f = document.getElementById("selectcurrency");
      var currency = f.options[f.selectedIndex].value;
      var selecttheme = document.getElementById('cb4').checked;
      if (selecttheme = true) {
-       config = {network: network, currency: currency, theme: 'dark'}
+       config = {network: network, currency: currency, theme: 'dark', rpc_url: url, explorer_url: expl}
      } else {
-       config = {network: network, currency: currency, theme: 'light'}
+       config = {network: network, currency: currency, theme: 'light', rpc_url: url, explorer_url: expl}
+     }
+     // post new config
+     $.post('/config',
+       {
+           mode: 'set',
+           config: JSON.stringify(config)
+       },
+       function (returnedData) {
+
+       }).fail(function(e) {
+          console.log(e);
+       });
+
+   }
+
+   // On currency change event
+   $("#selectcurrency").change(function () {
+     var e = document.getElementById("selectnetwork");
+     var network = e.options[e.selectedIndex].value;
+     var g = document.getElementById("rpcurl");
+     var url = g.value;
+     var h = document.getElementById("explurl");
+     var expl = h.value;
+     var f = document.getElementById("selectcurrency");
+     var currency = f.options[f.selectedIndex].value;
+     var selecttheme = document.getElementById('cb4').checked;
+     if (selecttheme = true) {
+       config = {network: network, currency: currency, theme: 'dark', rpc_url: url, explorer_url: expl}
+     } else {
+       config = {network: network, currency: currency, theme: 'light', rpc_url: url, explorer_url: expl}
      }
      // set session storage currency
      localStorage.setItem('currency', currency);
@@ -198,9 +272,13 @@ function getSettings() {
     if (event.target.checked) {
       var e = document.getElementById("selectnetwork");
       var network = e.options[e.selectedIndex].value;
+      var g = document.getElementById("rpcurl");
+      var url = g.value;
+      var h = document.getElementById("explurl");
+      var expl = h.value;
       var f = document.getElementById("selectcurrency");
       var currency = f.options[f.selectedIndex].value;
-      config = {network: network, currency: currency, theme: 'dark'}
+      config = {network: network, currency: currency, theme: 'dark', rpc_url: url, explorer_url: expl}
       // post new config
       $.post('/config',
         {
@@ -216,9 +294,13 @@ function getSettings() {
       // if input not already checked
       var e = document.getElementById("selectnetwork");
       var network = e.options[e.selectedIndex].value;
+      var g = document.getElementById("rpcurl");
+      var url = g.value;
+      var h = document.getElementById("explurl");
+      var expl = h.value;
       var f = document.getElementById("selectcurrency");
       var currency = f.options[f.selectedIndex].value;
-      config = {network: network, currency: currency, theme: 'light'}
+      config = {network: network, currency: currency, theme: 'light', rpc_url: url, explorer_url: expl}
       // post new config
       $.post('/config',
         {
