@@ -524,7 +524,8 @@ namespace Phantom.Wallet.Controllers
 
             try
             {
-                result = await _phantasmaRpcService.GetEvents.SendRequestAsync(address);
+                //result = await _phantasmaRpcService.GetEvents.SendRequestAsync(address);
+		throw new Exception("Not yet Implemented");
             }
             catch (RpcResponseException rpcEx)
             {
@@ -542,8 +543,9 @@ namespace Phantom.Wallet.Controllers
         {
             try
             {
-                var result = await _phantasmaRpcService.RelaySend.SendRequestAsync(script);
-                return result;
+                //var result = await _phantasmaRpcService.RelaySend.SendRequestAsync(script);
+                //return result;
+		throw new Exception("Not yet Implemented");
             }
             catch (RpcResponseException rpcEx)
             {
