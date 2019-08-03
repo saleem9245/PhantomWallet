@@ -100,7 +100,7 @@ on Windows:
 
 `.\PhantomWallet.exe --path=www --port=7071`
 
-4) Open a browser and go to http://localhost:7071
+3) Open a browser and go to http://localhost:7071
 
 *Phantom Cli:*
 
