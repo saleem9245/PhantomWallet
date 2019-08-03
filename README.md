@@ -13,7 +13,7 @@
   <img src="./PhantomWallet/www/public/img/wallet1.png">
 </p>
 
-## Overview
+## Phantom Wallet Overview
 
 ### Current features
 
@@ -43,7 +43,7 @@
 - Add feature swap to/from NEO/native SOUL
 - Add dashboard statistic swapping progress (supply on NEO/native)
 - Add dashboard statistics soulmasters / BP
-_ Build generic script parser
+- Build generic script parser
 - Fix when new ABI: with complex types, adjust TokenInfo contract parameter as it does not work yet
 - Fix when new ABI: Overall logic check when/if call require signed tx (currently it does call both all the time because of that)
 
@@ -53,23 +53,21 @@ The wallet can be launched either from the latest binaries, or can be built manu
 
 ### Required Tools and Dependencies
 
-Dependency:
+Dependencies (to build with testnet or mainnet):
 
 - .NET Core 2.0 (current release: https://dotnet.microsoft.com/download/dotnet-core/)
+- PhantasmaChain (https://github.com/phantasma-io/PhantasmaChain)
+- PhantasmaRpcClient (https://github.com/phantasma-io/PhantasmaRpcClient)
 
-Dependencies (if using on Simnet):
+Dependencies (to build with simnet):
 
+- .NET Core 2.0 (current release: https://dotnet.microsoft.com/download/dotnet-core/)
+- PhantasmaChain (https://github.com/phantasma-io/PhantasmaChain)
+- PhantasmaRpcClient (https://github.com/phantasma-io/PhantasmaRpcClient)
 - PhantasmaSpook (https://github.com/phantasma-io/PhantasmaSpook)
-- PhantasmaChain (https://github.com/phantasma-io/PhantasmaChain)
 - PhantasmaExplorer (https://github.com/phantasma-io/PhantasmaExplorer)
-- PhantasmaRpcClient (https://github.com/phantasma-io/PhantasmaRpcClient)
 
-Dependencies to build:
-
-- PhantasmaRpcClient (https://github.com/phantasma-io/PhantasmaRpcClient)
-- PhantasmaChain (https://github.com/phantasma-io/PhantasmaChain)
-
-If using the wallet on Simnet, you have to go to the Settings Page, and define your own explorer and RPC URLs (which should be http://localhost:7077/rpc for the rpc and http://localhost:7072 for the explorer).
+In any network type selected (Simnet/Testnet/Mainnet), you have the possibility to define your own RPC node and Explorer. Just go to the Settings Page, and define your own explorer and RPC URLs (which should be http://localhost:7077/rpc for the rpc and http://localhost:7072 for the explorer by default, which are used for a local spook and local explorer).
 
 ### Launch from binaries
 
@@ -80,11 +78,13 @@ If using the wallet on Simnet, you have to go to the Settings Page, and define y
 2) Launch the program 
 
 on Linux or MacOS: 
+
 `./PhantomWallet --path=www --port=7071`
 
 `./PhantomCli`
 
 on Windows:
+
 `.\PhantomWallet.exe --path=www --port=7071`
 
 `.\PhantomCli.exe --path=www --port=7071`
@@ -110,22 +110,24 @@ on Windows:
 ### Manual build
 
 *Phantom Wallet:*
+
 Go to PhantomWallet directory and type:
 
 `ddotnet build`
 `dotnet PhantomWallet/www/bin/netcoreapp2.0/PhantomWallet.dll --path=/pathtowallet/PhantomWallet/www/ --port=7071`
 
 *Phantom Cli:*
+
 Go to PhantomCli directory and type:
 
 `ddotnet build`
 `dotnet PhantomCli/bin/netcoreapp2.0/PhantomCli.dll`
 
-### PhantomCli
+## Phantom Cli Overview
 
-PhantomCli is a cli interface that allows quick queries on transactions or to check a contracts abi. It has a history and autocompletion for the built in commands and on historized patterns. Not everything might work smothly as I abused it a bit to test a few things, but in the future PhantomCli will be a full featured Phantasma cli wallet with extended functionality.
+PhantomCli is a cli interface that allows quick queries on transactions or to check a contract abi. It has a history and autocompletion for the built in commands and on historized patterns. Not everything might work smoothly as I abused it a bit to test a few things, but in the future PhantomCli will be a full featured Phantasma CLI wallet with extended functionalities.
 
-##### Upcoming features
+#### Upcoming features
 
 - simple scripting within the cli
 - file read write
@@ -134,21 +136,21 @@ PhantomCli is a cli interface that allows quick queries on transactions or to ch
 - passthrough to your OS shell (Linux and OSX, not sure about Windows yet)
 - output in nicely formatted text tables
 
-### Multisig
+## Multisignature
 
-Currently multi signature addresses are being tested and we are almost there. After finishing we will provide a seamless expirience almost identical to standard transactions.
+Currently, multisignature addresses are being tested and we are almost there. After finishing we will provide a seamless experience almost identical to standard transactions.
 
-If you wnat to run the current multisignature tests feel free to head over to `Phantom.Tests` and type:
+If you want to run the current multisignature tests feel free to head over to `Phantom.Tests` and type:
 
 `dotnet test`
 
-#### How does multisig work with PhantomWallet
+### How does multisig work with PhantomWallet
 
 Phantasma addresses have a feature which allows you to attach a script onto your address which is executed before every action (receive, send, mint, burn). To convert you address to a multisig address you have to attach a script that does the verification, means it verifies how many participants have signed the transaction. 
 
-If enough have signed the script returns normally and the transaction is allowed to be executed. If to less have signed the transaction the script will return with an error which results in a fail during transaction processing. 
+If enough have signed, the script returns normally and the transaction is allowed to be executed. If not enough wallets have signed the transaction, the script will return with an error which results in a fail during transaction processing. 
 
-Currently addrss scripts are immutable, so think twice or better three times if you want to attach a script to your address, it could result in a loss of funds if the script is faulty.
+Currently address scripts are immutable, so think twice or better three times if you want to attach a script to your address, it could result in a loss of funds if the script is faulty.
 
 The current multisig script used for the tests:
 
