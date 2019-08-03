@@ -47,7 +47,22 @@
 - Fix when new ABI: with complex types, adjust TokenInfo contract parameter as it does not work yet
 - Fix when new ABI: Overall logic check when/if call require signed tx (currently it does call both all the time because of that)
 
-## Phantom Wallet Installation
+## Phantom Cli Overview
+
+### Current features
+
+PhantomCli is a cli interface that allows quick queries on transactions or to check a contract abi. It has a history and autocompletion for the built in commands and on historized patterns. Not everything might work smoothly as I abused it a bit to test a few things, but in the future PhantomCli will be a full featured Phantasma CLI wallet with extended functionalities.
+
+#### Upcoming features
+
+- simple scripting within the cli
+- file read write
+- transaction/block export
+- standard wallet features (send/receive)
+- passthrough to your OS shell (Linux and OSX, not sure about Windows yet)
+- output in nicely formatted text tables
+
+## Phantom Wallet & CLI Installation
 
 The wallet can be launched either from the latest binaries, or can be built manually
 
@@ -81,17 +96,11 @@ on Linux or MacOS:
 
 `./PhantomWallet --path=www --port=7071`
 
-`./PhantomCli`
-
 on Windows:
 
 `.\PhantomWallet.exe --path=www --port=7071`
 
-`.\PhantomCli.exe --path=www --port=7071`
-
 4) Open a browser and go to http://localhost:7071
-
-The procedure is the same on all operating systems.
 
 *Phantom Cli:*
 
@@ -113,28 +122,17 @@ on Windows:
 
 Go to PhantomWallet directory and type:
 
-`ddotnet build`
+`dotnet build`
+
 `dotnet PhantomWallet/www/bin/netcoreapp2.0/PhantomWallet.dll --path=/pathtowallet/PhantomWallet/www/ --port=7071`
 
 *Phantom Cli:*
 
 Go to PhantomCli directory and type:
 
-`ddotnet build`
+`dotnet build`
+
 `dotnet PhantomCli/bin/netcoreapp2.0/PhantomCli.dll`
-
-## Phantom Cli Overview
-
-PhantomCli is a cli interface that allows quick queries on transactions or to check a contract abi. It has a history and autocompletion for the built in commands and on historized patterns. Not everything might work smoothly as I abused it a bit to test a few things, but in the future PhantomCli will be a full featured Phantasma CLI wallet with extended functionalities.
-
-#### Upcoming features
-
-- simple scripting within the cli
-- file read write
-- transaction/block export
-- standard wallet features (send/receive)
-- passthrough to your OS shell (Linux and OSX, not sure about Windows yet)
-- output in nicely formatted text tables
 
 ## Multisignature
 
