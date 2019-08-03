@@ -33,7 +33,7 @@
 - Read/Write generic contract calls, for all chain/sidechain
 - PhantomCli
 
-### Upcoming features
+### Roadmap
 
 - Migrate to a full native UI, or keep a web based UI like Electron
 - Improve logic RPC selection (load balance based on response time?)
@@ -53,14 +53,14 @@
 
 PhantomCli is a cli interface that allows quick queries on transactions or to check a contract abi. It has a history and autocompletion for the built in commands and on historized patterns. Not everything might work smoothly as I abused it a bit to test a few things, but in the future PhantomCli will be a full featured Phantasma CLI wallet with extended functionalities.
 
-#### Upcoming features
+### Roadmap
 
-- simple scripting within the cli
-- file read write
-- transaction/block export
-- standard wallet features (send/receive)
-- passthrough to your OS shell (Linux and OSX, not sure about Windows yet)
-- output in nicely formatted text tables
+- Simple scripting within the cli
+- File read write
+- Transaction/block export
+- Standard wallet features (send/receive)
+- Passthrough to your OS shell (Linux and OSX, not sure about Windows yet)
+- Output in nicely formatted text tables
 
 ## Phantom Wallet & CLI Installation
 
