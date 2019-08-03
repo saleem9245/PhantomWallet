@@ -35,10 +35,17 @@
 
 ### Upcoming features
 
-- Multisignature wallet conversion (with custom signature count and custom withdrawal per day)
-- Login with a local account
-- Import/Export account
-- Swap to/from NEO and native SOUL
+- Migrate to a full native UI, or keep a web based UI like Electron
+- Improve logic RPC selection (load balance based on response time?)
+- Finalize & improve multisignature (revoke conversion / set a max amount per day with no multisig required / trigger events)
+- Add feature account Import/Export/login with user/pw (requires db + logic + view)
+- Add feature contacts addresses
+- Add feature swap to/from NEO/native SOUL
+- Add dashboard statistic swapping progress (supply on NEO/native)
+- Add dashboard statistics soulmasters / BP
+_ Build generic script parser
+- Fix when new ABI: with complex types, adjust TokenInfo contract parameter as it does not work yet
+- Fix when new ABI: Overall logic check when/if call require signed tx (currently it does call both all the time because of that)
 
 ## Phantom Wallet Installation
 
