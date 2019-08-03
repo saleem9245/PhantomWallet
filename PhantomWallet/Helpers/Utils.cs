@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Net.Http;
 using LunarLabs.Parser.JSON;
 using Phantasma.Blockchain.Contracts.Native;
 using Phantasma.Cryptography;
@@ -410,11 +412,10 @@ namespace Phantom.Wallet.Helpers
 
             try
             {
-                using (var wc = new WebClient())
+                using (var httpClient = new HttpClient())
                 {
-                    json = wc.DownloadString(url);
+                  json = httpClient.GetStringAsync(new Uri(url)).Result;
                 }
-
                 var root = JSONReader.ReadFromString(json);
 
                 root = root[ticker];
@@ -423,8 +424,9 @@ namespace Phantom.Wallet.Helpers
 
                 return price;
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"Exception occurred: {ex}");
                 return 0;
             }
         }
