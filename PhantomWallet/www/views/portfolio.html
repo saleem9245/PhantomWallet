@@ -251,7 +251,7 @@ function Stake() {
   var params = [];
   // calculate amount/changedamount/futureamount
   currentsoulamount = parseFloat((document.getElementById("SOUL-amount").innerHTML).replace(/\,/g,''));
-  if (localStorage.getItem('currency') == 'CAD') {
+  if (localStorage.getItem('currency') == 'CAD' || localStorage.getItem('currency') == 'AUD') {
     currentsoulprice = parseFloat((document.getElementById("SOUL-price").innerHTML).substr(2).replace(/\,/g,''));
   } else {
     currentsoulprice = parseFloat((document.getElementById("SOUL-price").innerHTML).substr(1).replace(/\,/g,''));
@@ -370,7 +370,7 @@ function Unstake() {
   var params = [];
   // calculate amount/changedamount/futureamount
   currentsoulamount = parseFloat((document.getElementById("SOUL-amount").innerHTML).replace(/\,/g,''));
-  if (localStorage.getItem('currency') == 'CAD') {
+  if (localStorage.getItem('currency') == 'CAD' || localStorage.getItem('currency') == 'AUD') {
     currentsoulprice = parseFloat((document.getElementById("SOUL-price").innerHTML).substr(2).replace(/\,/g,''));
   } else {
     currentsoulprice = parseFloat((document.getElementById("SOUL-price").innerHTML).substr(1).replace(/\,/g,''));
@@ -488,7 +488,7 @@ function MasterClaim() {
   var params = [];
   // calculate amount/changedamount/futureamount
   currentsoulamount = parseFloat((document.getElementById("SOUL-amount").innerHTML).replace(/\,/g,''));
-  if (localStorage.getItem('currency') == 'CAD') {
+  if (localStorage.getItem('currency') == 'CAD' || localStorage.getItem('currency') == 'AUD') {
     currentsoulprice = parseFloat((document.getElementById("SOUL-price").innerHTML).substr(2).replace(/\,/g,''));
   } else {
     currentsoulprice = parseFloat((document.getElementById("SOUL-price").innerHTML).substr(1).replace(/\,/g,''));
