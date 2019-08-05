@@ -1037,10 +1037,18 @@ function getPieChart() {
     })
 
   ).then(function() {
+    // add stakes to holdings
+    if (localStorage.getItem('currency') == 'CAD' || localStorage.getItem('currency') == 'AUD') {
+      currentsoulprice = parseFloat((document.getElementById("soulprice").innerHTML).substr(2).replace(/\,/g,''));
+    } else {
+      currentsoulprice = parseFloat((document.getElementById("soulprice").innerHTML).substr(1).replace(/\,/g,''));
+    }
+    stakesPrice = currentsoulprice * stakesFormatted;
     // loop over holdings to build value total
     {{#each holdings}}
       if ('{{Symbol}}' == 'SOUL') {
         valueTOTAL += parseInt(('{{Price}}').replace(/,/g, ''));
+        valueTOTAL += parseInt(stakesPrice);
       }
     {{/each}}
     // loop over holdings to build array for pie data
@@ -1135,7 +1143,7 @@ $("#loader-pie").hide();
 $("#container-pie").fadeIn(1000);
 
 if (valueTOTAL == 0) {
-  $("#container-pie").hide();
+  //$("#container-pie").hide();
 }
 
 })
