@@ -187,7 +187,7 @@ namespace Phantom.Wallet.Controllers
                         Date = new Timestamp(tx.Timestamp),
                         Hash = tx.Txid,
                         Amount = Utils.GetTxAmount(tx, PhantasmaChains, PhantasmaTokens),
-                        Description = Utils.GetTxDescription(tx, PhantasmaChains, PhantasmaTokens)
+                        Description = Utils.GetTxDescription(tx, PhantasmaChains, PhantasmaTokens, address)
                     });
                 }
                 return txs.ToArray();
@@ -338,7 +338,7 @@ namespace Phantom.Wallet.Controllers
                 //
                 //if (settings.addressCount != null)
                 //{
-                //    
+                //
 
                 //}
                var txResult = await _phantasmaRpcService.SendRawTx.SendRequestAsync(tx.ToByteArray(true).Encode());

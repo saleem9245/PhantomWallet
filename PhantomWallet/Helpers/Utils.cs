@@ -180,7 +180,7 @@ namespace Phantom.Wallet.Helpers
             return typetx;
         }
 
-        public static string GetTxDescription(TransactionDto tx, List<ChainDto> phantasmaChains, List<TokenDto> phantasmaTokens)
+        public static string GetTxDescription(TransactionDto tx, List<ChainDto> phantasmaChains, List<TokenDto> phantasmaTokens, string addressfrom)
         {
             string description = null;
 
@@ -287,8 +287,17 @@ namespace Phantom.Wallet.Helpers
                 {
                     var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == senderToken).Decimals);
 
-                    description =
-                        $"Sent from {senderAddress.ToString()} to {receiverAddress.ToString()}";
+                    if (addressfrom == senderAddress.ToString())
+                    {
+                      description =
+                          $"Sent to {receiverAddress.ToString()}";
+                    }
+                    else
+                    {
+                      description =
+                          $"Received from {senderAddress.ToString()}";
+                    }
+
                 }
                 else if (amount > 0 && receiverAddress != Address.Null && receiverToken != null)
                 {
