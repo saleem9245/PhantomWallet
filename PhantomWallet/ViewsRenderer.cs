@@ -574,8 +574,8 @@ namespace Phantom.Wallet
 
             if (context["holdings"] is Holding[] balance)
             {
-                var soulBalance = balance.SingleOrDefault(b => b.Symbol == "SOUL");
-                if (soulBalance.Amount > 0.1m)
+                var kcalBalance = balance.SingleOrDefault(b => b.Symbol == "KCAL");
+                if (kcalBalance.Amount > 0.1m)
                 {
                     var keyPair = GetLoginKey(request);
                     InvalidateCache(keyPair.Address);
@@ -587,7 +587,7 @@ namespace Phantom.Wallet
                     {
                         return JsonConvert.SerializeObject(result, Formatting.Indented);
                     }
-                    
+
                     var contractTx = (string)result;
 
                     if (SendUtils.IsTxHashValid(contractTx))
@@ -599,7 +599,7 @@ namespace Phantom.Wallet
                 }
                 else
                 {
-                    PushError(request, "You need a small drop of SOUL (+0.1) to call a contract.");
+                    PushError(request, "You need a small drop of KCAL (+0.1) to call a contract.");
                 }
             }
             return null;
@@ -622,21 +622,13 @@ namespace Phantom.Wallet
 
             if (context["holdings"] is Holding[] balance)
             {
-                var soulBalance = balance.SingleOrDefault(b => b.Symbol == "SOUL");
-                if (soulBalance.Amount > 0.1m)
-                {
-                    var keyPair = GetLoginKey(request);
-                    var result = AccountController.InvokeContractGeneric(keyPair, chain, contract, method, paramList.ToArray()).Result;
+                var keyPair = GetLoginKey(request);
+                var result = AccountController.InvokeContractGeneric(keyPair, chain, contract, method, paramList.ToArray()).Result;
 
-                    if (result != null && result.GetType() == typeof(BigInteger)) {
-                        return result.ToString();
-                    }
-                    return JsonConvert.SerializeObject(result, Formatting.Indented);
+                if (result != null && result.GetType() == typeof(BigInteger)) {
+                    return result.ToString();
                 }
-                else
-                {
-                    PushError(request, "You need a small drop of SOUL (+0.1) to call a contract.");
-                }
+                return JsonConvert.SerializeObject(result, Formatting.Indented);
             }
             return null;
         }
@@ -698,8 +690,8 @@ namespace Phantom.Wallet
             {
                 if (context["holdings"] is Holding[] balance)
                 {
-                    var soulBalance = balance.SingleOrDefault(b => b.Symbol == "SOUL");
-                    if (soulBalance.Amount > 0.1m) //RegistrationCost
+                    var kcalBalance = balance.SingleOrDefault(b => b.Symbol == "KCAL");
+                    if (kcalBalance.Amount > 0.1m) //RegistrationCost
                     {
                         var keyPair = GetLoginKey(request);
                         var result = AccountController.RegisterName(keyPair, name).Result;
@@ -720,7 +712,7 @@ namespace Phantom.Wallet
                     }
                     else
                     {
-                        PushError(request, "You need a small drop of SOUL (+0.1) to register a name.");
+                        PushError(request, "You need a small drop of KCAL (+0.1) to register a name.");
                     }
                 }
             }

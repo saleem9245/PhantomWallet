@@ -31,7 +31,11 @@
                   {{#if Symbol == 'SOUL'}}
                   <td class="col-6"><img class="token-icon" src="img/{{Icon}}.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
                   {{#else}}
-                  <td class="col-6"><img class="token-icon" src="img/soulmasters_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
+                    {{#if Symbol == 'KCAL'}}
+                    <td class="col-6"><img class="token-icon" src="img/kcal_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
+                    {{#else}}
+                    <td class="col-6"><img class="token-icon" src="img/soulmasters_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
+                    {{/if}}
                   {{/if}}
                   <td class="col-6">{{ChainName}}</td>
                   <td class="col-3" id="{{Symbol}}-amount">{{AmountFormated}}</td>
@@ -185,7 +189,7 @@ function Claim() {
   var params = [];
   // calculate amount/changedamount/futureamount
   currentkcalamount = parseFloat((document.getElementById("KCAL-amount").innerHTML).replace(/\,/g,''));
-  changedamount = parseFloat(document.getElementById("unclaimed-kcal").innerHTML.slice(0, -5));
+  changedamount = parseFloat((document.getElementById("unclaimed-kcal").innerHTML.slice(0, -5)).replace(/\,/g,''));
   futureamount = currentkcalamount + changedamount;
   // build params for contract call
   params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
@@ -213,7 +217,6 @@ function Claim() {
               } else {
                 setTimeout(function() {
                   // if amount exist and changed and update kcal based on fees, flash the value
-                  numberWithCommas(futureamount)
                   if (document.getElementById("KCAL-amount").innerHTML != numberWithCommas((futureamount - ((JSON.parse(returnedDataTX).fee) / Math.pow(10,10))).toFixed(10))) {
                     document.getElementById("KCAL-amount").innerHTML = numberWithCommas((futureamount - ((JSON.parse(returnedDataTX).fee) / Math.pow(10,10))).toFixed(10));
                     $(document.getElementById("KCAL-amount")).addClass('flash-portfolio').delay(300).queue(function(next){
@@ -250,13 +253,16 @@ function Stake() {
   $("#wrapper-portfolio-confirm").fadeTo(1, 0);
   var params = [];
   // calculate amount/changedamount/futureamount
-  currentsoulamount = parseFloat((document.getElementById("SOUL-amount").innerHTML).replace(/\,/g,''));
-  if (localStorage.getItem('currency') == 'CAD' || localStorage.getItem('currency') == 'AUD') {
-    currentsoulprice = parseFloat((document.getElementById("SOUL-price").innerHTML).substr(2).replace(/\,/g,''));
+  if (document.getElementById("SOUL-amount")) {
+    currentsoulamount = parseFloat((document.getElementById("SOUL-amount").innerHTML).replace(/\,/g,''));
   } else {
-    currentsoulprice = parseFloat((document.getElementById("SOUL-price").innerHTML).substr(1).replace(/\,/g,''));
+    currentsoulamount = 0;
   }
-  currentsoulpriceunit = currentsoulprice/currentsoulamount;
+  if (localStorage.getItem('currency') == 'CAD' || localStorage.getItem('currency') == 'AUD') {
+    currentsoulpriceunit = parseFloat((document.getElementById("soulprice").innerHTML).substr(2).replace(/\,/g,''));
+  } else {
+    currentsoulpriceunit = parseFloat((document.getElementById("soulprice").innerHTML).substr(1).replace(/\,/g,''));
+  }
   changedamount = parseFloat(document.getElementById("manageinput").value);
   futureamount = currentsoulamount - changedamount;
   futuresoulprice = futureamount * currentsoulpriceunit;
@@ -264,7 +270,7 @@ function Stake() {
   params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
   params[1] = { name: 'stakeAmount', type: 'Number', input: toFixed((changedamount)*(Math.pow(10,8))), info: '' }
 
-  if (toFixed((changedamount)) < 1) {
+  if (toFixed((changedamount)) < 1 || Number.isNaN(changedamount)) {
         bootbox.alert("Minimum amount to stake is 1 SOUL!");
         return;
   }
@@ -363,19 +369,22 @@ function Stake() {
          }
      })
 }
-
+// on click stake on portfolio
 function Unstake() {
 
   $("#wrapper-portfolio-confirm").fadeTo(1, 0);
   var params = [];
   // calculate amount/changedamount/futureamount
-  currentsoulamount = parseFloat((document.getElementById("SOUL-amount").innerHTML).replace(/\,/g,''));
-  if (localStorage.getItem('currency') == 'CAD' || localStorage.getItem('currency') == 'AUD') {
-    currentsoulprice = parseFloat((document.getElementById("SOUL-price").innerHTML).substr(2).replace(/\,/g,''));
+  if (document.getElementById("SOUL-amount")) {
+    currentsoulamount = parseFloat((document.getElementById("SOUL-amount").innerHTML).replace(/\,/g,''));
   } else {
-    currentsoulprice = parseFloat((document.getElementById("SOUL-price").innerHTML).substr(1).replace(/\,/g,''));
+    currentsoulamount = 0;
   }
-  currentsoulpriceunit = currentsoulprice/currentsoulamount;
+  if (localStorage.getItem('currency') == 'CAD' || localStorage.getItem('currency') == 'AUD') {
+    currentsoulpriceunit = parseFloat((document.getElementById("soulprice").innerHTML).substr(2).replace(/\,/g,''));
+  } else {
+    currentsoulpriceunit = parseFloat((document.getElementById("soulprice").innerHTML).substr(1).replace(/\,/g,''));
+  }
   changedamount = parseFloat(document.getElementById("manageinput").value);
   futureamount = currentsoulamount + changedamount;
   futuresoulprice = futureamount * currentsoulpriceunit;
@@ -383,7 +392,7 @@ function Unstake() {
   params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
   params[1] = { name: 'stakeAmount', type: 'Number', input: toFixed((changedamount)*(Math.pow(10,8))), info: '' }
 
-  if (toFixed((changedamount)) < 1) {
+  if (toFixed((changedamount)) < 1 || Number.isNaN(changedamount)) {
         bootbox.alert("Minimum amount to stake is 1 SOUL!");
         return;
   }
@@ -481,19 +490,22 @@ function Unstake() {
        }
      })
 }
-
+// on click claim rewards on portfolio
 function MasterClaim() {
 
   $("#wrapper-portfolio-confirm").fadeTo(1, 0);
   var params = [];
   // calculate amount/changedamount/futureamount
-  currentsoulamount = parseFloat((document.getElementById("SOUL-amount").innerHTML).replace(/\,/g,''));
-  if (localStorage.getItem('currency') == 'CAD' || localStorage.getItem('currency') == 'AUD') {
-    currentsoulprice = parseFloat((document.getElementById("SOUL-price").innerHTML).substr(2).replace(/\,/g,''));
+  if (document.getElementById("SOUL-amount")) {
+    currentsoulamount = parseFloat((document.getElementById("SOUL-amount").innerHTML).replace(/\,/g,''));
   } else {
-    currentsoulprice = parseFloat((document.getElementById("SOUL-price").innerHTML).substr(1).replace(/\,/g,''));
+    currentsoulamount = 0;
   }
-  currentsoulpriceunit = currentsoulprice/currentsoulamount;
+  if (localStorage.getItem('currency') == 'CAD' || localStorage.getItem('currency') == 'AUD') {
+    currentsoulpriceunit = parseFloat((document.getElementById("soulprice").innerHTML).substr(2).replace(/\,/g,''));
+  } else {
+    currentsoulpriceunit = parseFloat((document.getElementById("soulprice").innerHTML).substr(1).replace(/\,/g,''));
+  }
   // build params for contract call
   params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
 
@@ -643,8 +655,8 @@ function getStake() {
           });
         }
         // if kcal per day exist and changed, flash the value
-        if (document.getElementById("rewards-kcal").innerHTML != numberWithCommas((stakesFormatted/500).toFixed(10)) + ' KCAL / DAY') {
-          document.getElementById("rewards-kcal").innerHTML = numberWithCommas((stakesFormatted/500).toFixed(10)) + ' KCAL / DAY';
+        if (document.getElementById("rewards-kcal").innerHTML != numberWithCommas(parseFloat((stakesFormatted/500).toFixed(10))) + ' KCAL / DAY') {
+          document.getElementById("rewards-kcal").innerHTML = numberWithCommas(parseFloat((stakesFormatted/500).toFixed(10))) + ' KCAL / DAY';
           $(document.getElementById("rewards-kcal")).addClass('flash-portfolio').delay(300).queue(function(next){
                $(this).removeClass('flash-portfolio');
                next();
@@ -745,8 +757,8 @@ function GetSoulmastersDetails() {
          }
        }
        // if amount rewards soulmaster exist and changed, flash the value
-       if (document.getElementById("rewards-soulmasters").innerHTML != numberWithCommas(rewards) + ' SOUL / MONTH / SM') {
-         document.getElementById("rewards-soulmasters").innerHTML = numberWithCommas(rewards) + ' SOUL / MONTH / SM';
+       if (document.getElementById("rewards-soulmasters").innerHTML != numberWithCommas(parseFloat((rewards).toFixed(8))) + ' SOUL / MONTH / SM') {
+         document.getElementById("rewards-soulmasters").innerHTML = numberWithCommas(parseFloat((rewards).toFixed(8))) + ' SOUL / MONTH / SM';
          $(document.getElementById("rewards-soulmasters")).addClass('flash-portfolio').delay(300).queue(function(next){
               $(this).removeClass('flash-portfolio');
               next();
@@ -822,6 +834,12 @@ function getPortfolioChart(timeframe) {
         amountsoulcombined = {{Amount}} + stakesFormatted
         urlforcombined = urlforcombined + '&{{Symbol}}=' + amountsoulcombined;
       }
+
+      if (!document.getElementById("SOUL-amount") && stakesFormatted != 0) {
+        amountsoulcombined = stakesFormatted
+        urlforcombined = urlforcombined + '&SOUL=' + amountsoulcombined;
+      }
+
       if ('{{Symbol}}' == 'KCAL') {
         amountkcalcombined = {{Amount}} + unclaimedFormatted
         urlforcombined = urlforcombined + '&{{Symbol}}=' + amountkcalcombined;
@@ -993,6 +1011,7 @@ function getPieChart() {
   $("#loader-pie").show();
 
   valueTOTAL = 0;
+  valueTOTALWithoutStakes = 0;
   arraygraph = [];
   params = [];
   // build params for contract call
@@ -1048,6 +1067,9 @@ function getPieChart() {
     {{#each holdings}}
       if ('{{Symbol}}' == 'SOUL') {
         valueTOTAL += parseInt(('{{Price}}').replace(/,/g, ''));
+        valueTOTALWithoutStakes += parseInt(('{{Price}}').replace(/,/g, ''));
+      }
+      if (stakesPrice != 0) {
         valueTOTAL += parseInt(stakesPrice);
       }
     {{/each}}
@@ -1058,8 +1080,13 @@ function getPieChart() {
       }
     {{/each}}
 
+    // add stakes to array
+    if (stakesPrice != 0) {
+      arraygraph.push({name: "SOUL - stakes", y: (stakesPrice)/valueTOTAL, oldColor: "#E8E8E8", sliced: true})
+    }
+
   // add total portfolio once calculated
-  document.getElementById("totalportfolio").innerHTML = currencysymbol + numberWithCommas(valueTOTAL.toFixed(0));
+  document.getElementById("totalportfolio").innerHTML = currencysymbol + numberWithCommas(valueTOTALWithoutStakes.toFixed(0));
 
   Highcharts.chart('container-pie', {
     chart: {
@@ -1143,7 +1170,7 @@ $("#loader-pie").hide();
 $("#container-pie").fadeIn(1000);
 
 if (valueTOTAL == 0) {
-  //$("#container-pie").hide();
+  $("#container-pie").hide();
 }
 
 })
