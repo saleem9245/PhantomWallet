@@ -1,10 +1,9 @@
 #/bin/bash
 
 platform=$1
-cleanup=$2
 
-if [ -z $platform ]; then 
-    echo "Please add platform parameter [osx|linux]"; 
+if [ -z $platform ]; then
+    echo "Please add platform parameter [osx|linux]";
     exit 1
 fi
 
@@ -47,14 +46,8 @@ third-party/warp-packer_$platform --arch linux-x64 --input_dir PhantomCli/bin/Re
 third-party/warp-packer_$platform --arch macos-x64 --input_dir PhantomCli/bin/Release/netcoreapp2.0/osx-x64/publish/ --exec PhantomCli --output bin/osx/PhantomCli
 third-party/warp-packer_$platform --arch windows-x64 --input_dir PhantomCli/bin/Release/netcoreapp2.0/win-x64/publish/ --exec PhantomCli.exe --output bin/win/PhantomCli.exe
 
-# zip 
-zip -r bin/release/linux.zip bin/linux 
+# zip
+zip -r bin/release/linux.zip bin/linux
 zip -r bin/release/windows.zip bin/win
 zip -r bin/release/osx.zip bin/osx
-
-if [ $cleanup = "true" ]; then
-    rm -rf bin/linux
-    rm -rf bin/osx
-    rm -rf bin/win
-fi
 

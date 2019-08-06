@@ -371,7 +371,8 @@ namespace Phantom.Wallet.Helpers
             path = FixPath(path, true);
             if (!File.Exists(path))
             {
-                File.CreateText(path);
+                var file = File.CreateText(path);
+                file.Close();
             }
 
             return (T) JsonConvert.DeserializeObject<T>(File.ReadAllText(path));
