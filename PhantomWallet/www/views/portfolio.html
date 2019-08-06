@@ -315,8 +315,8 @@ function Stake() {
                       } else {
                         //console.log(returnedDataTX)
                         setTimeout(function() {
-                          // update kcal based on fees
-                          document.getElementById("KCAL-amount").innerHTML = numberWithCommas((document.getElementById("KCAL-amount").innerHTML - ((JSON.parse(returnedDataTX).fee) / Math.pow(10,10))).toFixed(10));
+                          // update kcal based on features
+                          document.getElementById("KCAL-amount").innerHTML = numberWithCommas(((document.getElementById("KCAL-amount").innerHTML).replace(/\,/g,'') - ((JSON.parse(returnedDataTX).fee) / Math.pow(10,10))).toFixed(10));
                           $(document.getElementById("KCAL-amount")).addClass('flash-portfolio').delay(300).queue(function(next){
                                $(this).removeClass('flash-portfolio');
                                next();
@@ -343,8 +343,9 @@ function Stake() {
                                  next();
                             });
                           }
-                          // call getstake and getsoulmastersdetails after all other refresh
+                          // call getstake and getpie getsoulmastersdetails after all other refresh
                           getStake();
+                          getPieChart()
                           setTimeout(function() {
                             GetSoulmastersDetails();
                           }, 1000);
@@ -464,8 +465,9 @@ function Unstake() {
                                  next();
                             });
                           }
-                          // call getstake and getsoulmastersdetails after all other refresh
+                          // call getstake and getpie and getsoulmastersdetails after all other refresh
                           getStake();
+                          getPieChart();
                           setTimeout(function() {
                             GetSoulmastersDetails();
                           }, 1000);
@@ -1069,10 +1071,10 @@ function getPieChart() {
         valueTOTAL += parseInt(('{{Price}}').replace(/,/g, ''));
         valueTOTALWithoutStakes += parseInt(('{{Price}}').replace(/,/g, ''));
       }
-      if (stakesPrice != 0) {
-        valueTOTAL += parseInt(stakesPrice);
-      }
     {{/each}}
+    if (stakesPrice != 0) {
+      valueTOTAL += parseInt(stakesPrice);
+    }
     // loop over holdings to build array for pie data
     {{#each holdings}}
       if ('{{Symbol}}' == 'SOUL') {
