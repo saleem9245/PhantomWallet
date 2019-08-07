@@ -116,7 +116,6 @@ $(document).ready(function() {
   $("#historical-value").val('3M');
   $("#loader-pie").hide();
   $("#loader-historical").hide();
-  $("#container-pie").hide();
   $("#container-historical-value").hide();
 
   getPieChart();
@@ -194,6 +193,11 @@ function Claim() {
   // build params for contract call
   params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
   params[1] = { name: 'stakeAddress', type: 'Object', input: '{{address}}', info: '' }
+
+  if (toFixed((changedamount)) == 0 || Number.isNaN(changedamount)) {
+        bootbox.alert("Nothing to claim yet!");
+        return;
+  }
 
   $.post('/contract/tx',
      {
@@ -345,8 +349,8 @@ function Stake() {
                           }
                           // call getstake and getpie getsoulmastersdetails after all other refresh
                           getStake();
-                          getPieChart()
                           setTimeout(function() {
+                            getPieChart();
                             GetSoulmastersDetails();
                           }, 1000);
                         }, 2000);
@@ -467,8 +471,8 @@ function Unstake() {
                           }
                           // call getstake and getpie and getsoulmastersdetails after all other refresh
                           getStake();
-                          getPieChart();
                           setTimeout(function() {
+                            getPieChart();
                             GetSoulmastersDetails();
                           }, 1000);
                         }, 2000);
@@ -510,6 +514,11 @@ function MasterClaim() {
   }
   // build params for contract call
   params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
+
+  if (document.getElementById("count-soulmasters").innerHTML == '1 SOULMASTER') {
+        bootbox.alert("Nothing to claim yet!");
+        return;
+  }
 
   $.post('/contract/tx',
      {
@@ -566,7 +575,10 @@ function MasterClaim() {
                   //}
                   // call getstake and getsoulmastersdetails after all other refresh
                   getStake();
+                  $("#container-historical-value").hide();
+                  getPortfolioChart('3M');
                   setTimeout(function() {
+                    getPieChart();
                     GetSoulmastersDetails();
                   }, 1000);
                 }, 2000);
@@ -621,6 +633,14 @@ function getUnclaimed() {
            });
          } else {
            $(document.getElementById("claim-kcal")).removeClass('button-disabled').delay(300).queue(function(next){
+           });
+         }
+         // temporary until real function getmasterrewards
+         if (document.getElementById("count-soulmasters").innerHTML == '1 SOULMASTER') {
+           $(document.getElementById("claim-rewards")).addClass('button-disabled').delay(300).queue(function(next){
+           });
+         } else {
+           $(document.getElementById("claim-rewards")).removeClass('button-disabled').delay(300).queue(function(next){
            });
          }
      }).fail(function(e) {
@@ -778,7 +798,7 @@ function GetSoulmastersDetails() {
 
 }
 
-// function getPortfolioChart based on timegrame
+// function getPortfolioChart based on timeframe
 function getPortfolioChart(timeframe) {
 
   $("#loader-historical").show();
@@ -1000,7 +1020,8 @@ function getPortfolioChart(timeframe) {
                 }
             },
             error: function(xhr, err) {
-              console.log(err)
+              console.log(err);
+              $("#loader-historical").hide();
             }
           });
 
@@ -1010,172 +1031,176 @@ function getPortfolioChart(timeframe) {
 //function getPieChart
 function getPieChart() {
 
-  $("#loader-pie").show();
+    $("#loader-pie").show();
+    $("#container-pie").hide();
 
-  valueTOTAL = 0;
-  valueTOTALWithoutStakes = 0;
-  arraygraph = [];
-  params = [];
-  // build params for contract call
-  params[0] = { name: 'stakeAddress', type: 'Object', input: '{{address}}', info: '' }
-  // call both GetUnclaimed and GetStake for calculations
-  $.when(
+    valueTOTAL = 0;
+    valueTOTALWithoutStakes = 0;
+    arraygraph = [];
+    params = [];
+    // build params for contract call
+    params[0] = { name: 'stakeAddress', type: 'Object', input: '{{address}}', info: '' }
+    // call both GetUnclaimed and GetStake for calculations
+    $.when(
 
-  $.post('/contract',
-     {
-         chain: 'main',
-         contract: 'energy',
-         method: 'GetStake',
-         params: JSON.stringify({
-           params
-         })
-     },
-     function (returnedData) {
-        // format soul based on decimals
-        stakesFormatted = (returnedData) / (Math.pow(10, 8));
+    $.post('/contract',
+       {
+           chain: 'main',
+           contract: 'energy',
+           method: 'GetStake',
+           params: JSON.stringify({
+             params
+           })
+       },
+       function (returnedData) {
+          // format soul based on decimals
+          stakesFormatted = (returnedData) / (Math.pow(10, 8));
 
-     }
-   ).fail(function(e) {
-      console.log(e)
-   }),
-   $.post('/contract',
-      {
-          chain: 'main',
-          contract: 'energy',
-          method: 'GetUnclaimed',
-          params: JSON.stringify({
-            params
-          })
+       }
+     ).fail(function(e) {
+        console.log(e)
+     }),
+     $.post('/contract',
+        {
+            chain: 'main',
+            contract: 'energy',
+            method: 'GetUnclaimed',
+            params: JSON.stringify({
+              params
+            })
+        },
+        function (returnedData) {
+           // format kcal based on decimals
+           unclaimedFormatted = (returnedData) / (Math.pow(10, 10));
+
+        }
+      ).fail(function(e) {
+         console.log(e)
+         $("#loader-pie").hide();
+      })
+
+    ).then(function() {
+      // add stakes to holdings
+      if (localStorage.getItem('currency') == 'CAD' || localStorage.getItem('currency') == 'AUD') {
+        currentsoulprice = parseFloat((document.getElementById("soulprice").innerHTML).substr(2).replace(/\,/g,''));
+      } else {
+        currentsoulprice = parseFloat((document.getElementById("soulprice").innerHTML).substr(1).replace(/\,/g,''));
+      }
+      stakesPrice = currentsoulprice * stakesFormatted;
+      // loop over holdings to build value total
+      {{#each holdings}}
+        if ('{{Symbol}}' == 'SOUL') {
+          valueTOTAL += parseInt(('{{Price}}').replace(/,/g, ''));
+          valueTOTALWithoutStakes += parseInt(('{{Price}}').replace(/,/g, ''));
+        }
+      {{/each}}
+      if (stakesPrice != 0) {
+        valueTOTAL += parseInt(stakesPrice);
+      }
+      // loop over holdings to build array for pie data
+      {{#each holdings}}
+        if ('{{Symbol}}' == 'SOUL') {
+          arraygraph.push({name: "{{Symbol}}", y: ({{Price}})/valueTOTAL, oldColor: "#E8E8E8", sliced: true})
+        }
+      {{/each}}
+
+      // add stakes to array
+      if (stakesPrice != 0) {
+        arraygraph.push({name: "SOUL - stakes", y: (stakesPrice)/valueTOTAL, oldColor: "#E8E8E8", sliced: true})
+      }
+
+    // add total portfolio once calculated
+    document.getElementById("totalportfolio").innerHTML = currencysymbol + numberWithCommas(valueTOTALWithoutStakes.toFixed(0));
+
+    Highcharts.chart('container-pie', {
+      chart: {
+          type: 'pie',
+          style: {
+              fontFamily: 'Rubik'
+          }
       },
-      function (returnedData) {
-         // format kcal based on decimals
-         unclaimedFormatted = (returnedData) / (Math.pow(10, 10));
-
+      credits: {
+          enabled: !1
+      },
+      tooltip: {
+          pointFormat: '{series.name}: <b>{point.percentage:.2f}%</b>'
+      },
+      plotOptions: {
+          pie: {
+              allowPointSelect: !0,
+              cursor: 'pointer',
+              depth: 30,
+              colors: ['#E8E8E8', '#17B0E7', '#2f7ed8', '#434348', '#8bbc21', '#64E572', '#DDDF00', '#8085e9', '#f28f43', '#e4d354', '#f45b5b', '#77a1e5'],
+              slicedOffset: 10,
+              dataLabels: {
+                  enabled: !0,
+                  format: '{point.name}: {point.percentage:.2f} %',
+                  style: {
+                      textOutline: !1
+                  }
+              },
+              states: {
+                  hover: {
+                      enabled: !1
+                  },
+                  inactive: {
+                      opacity: 1
+                  }
+              },
+              point: {
+                  events: {
+                      mouseOver: function() {
+                          this.options.oldColor = this.color;
+                          this.graphic.attr("fill", "#17B0E7");
+                          var point = this,
+                              points = this.series.points;
+                          for (var key in points) {
+                              if (points[key].sliced) {
+                                  points[key].slice(!1)
+                              }
+                          }
+                          if (!point.selected) {
+                              point.slice(!0)
+                          }
+                      },
+                      mouseOut: function() {
+                          this.graphic.attr("fill", this.options.oldColor);
+                          for (var key in this.points) {
+                              if (this.points[key].sliced) {
+                                  this.points[key].slice(!1)
+                              }
+                          }
+                      }
+                  }
+              }
+          }
+      },
+      series: [{
+          title: 'test',
+          type: 'pie',
+          name: 'Portfolio',
+          data: arraygraph
+      }],
+      title: {
+          text: 'Portfolio composition',
+          //text: '',
+          style: {
+              fontSize: '16px'
+          }
       }
-    ).fail(function(e) {
-       console.log(e)
-       $("#loader-pie").hide();
-    })
+  })
 
-  ).then(function() {
-    // add stakes to holdings
-    if (localStorage.getItem('currency') == 'CAD' || localStorage.getItem('currency') == 'AUD') {
-      currentsoulprice = parseFloat((document.getElementById("soulprice").innerHTML).substr(2).replace(/\,/g,''));
-    } else {
-      currentsoulprice = parseFloat((document.getElementById("soulprice").innerHTML).substr(1).replace(/\,/g,''));
-    }
-    stakesPrice = currentsoulprice * stakesFormatted;
-    // loop over holdings to build value total
-    {{#each holdings}}
-      if ('{{Symbol}}' == 'SOUL') {
-        valueTOTAL += parseInt(('{{Price}}').replace(/,/g, ''));
-        valueTOTALWithoutStakes += parseInt(('{{Price}}').replace(/,/g, ''));
-      }
-    {{/each}}
-    if (stakesPrice != 0) {
-      valueTOTAL += parseInt(stakesPrice);
-    }
-    // loop over holdings to build array for pie data
-    {{#each holdings}}
-      if ('{{Symbol}}' == 'SOUL') {
-        arraygraph.push({name: "{{Symbol}}", y: ({{Price}})/valueTOTAL, oldColor: "#E8E8E8", sliced: true})
-      }
-    {{/each}}
+  $("#loader-pie").hide();
+  $("#container-pie").fadeIn(1000);
 
-    // add stakes to array
-    if (stakesPrice != 0) {
-      arraygraph.push({name: "SOUL - stakes", y: (stakesPrice)/valueTOTAL, oldColor: "#E8E8E8", sliced: true})
-    }
+  if (valueTOTAL == 0 || Number.isNaN(valueTOTAL)) {
+    $("#container-pie").hide();
+  }
 
-  // add total portfolio once calculated
-  document.getElementById("totalportfolio").innerHTML = currencysymbol + numberWithCommas(valueTOTALWithoutStakes.toFixed(0));
-
-  Highcharts.chart('container-pie', {
-    chart: {
-        type: 'pie',
-        style: {
-            fontFamily: 'Rubik'
-        }
-    },
-    credits: {
-        enabled: !1
-    },
-    tooltip: {
-        pointFormat: '{series.name}: <b>{point.percentage:.2f}%</b>'
-    },
-    plotOptions: {
-        pie: {
-            allowPointSelect: !0,
-            cursor: 'pointer',
-            depth: 30,
-            colors: ['#E8E8E8', '#17B0E7', '#2f7ed8', '#434348', '#8bbc21', '#64E572', '#DDDF00', '#8085e9', '#f28f43', '#e4d354', '#f45b5b', '#77a1e5'],
-            slicedOffset: 10,
-            dataLabels: {
-                enabled: !0,
-                format: '{point.name}: {point.percentage:.2f} %',
-                style: {
-                    textOutline: !1
-                }
-            },
-            states: {
-                hover: {
-                    enabled: !1
-                },
-                inactive: {
-                    opacity: 1
-                }
-            },
-            point: {
-                events: {
-                    mouseOver: function() {
-                        this.options.oldColor = this.color;
-                        this.graphic.attr("fill", "#17B0E7");
-                        var point = this,
-                            points = this.series.points;
-                        for (var key in points) {
-                            if (points[key].sliced) {
-                                points[key].slice(!1)
-                            }
-                        }
-                        if (!point.selected) {
-                            point.slice(!0)
-                        }
-                    },
-                    mouseOut: function() {
-                        this.graphic.attr("fill", this.options.oldColor);
-                        for (var key in this.points) {
-                            if (this.points[key].sliced) {
-                                this.points[key].slice(!1)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    },
-    series: [{
-        title: 'test',
-        type: 'pie',
-        name: 'Portfolio',
-        data: arraygraph
-    }],
-    title: {
-        text: 'Portfolio composition',
-        //text: '',
-        style: {
-            fontSize: '16px'
-        }
-    }
-})
-
-$("#loader-pie").hide();
-$("#container-pie").fadeIn(1000);
-
-if (valueTOTAL == 0) {
-  $("#container-pie").hide();
-}
-
-})
+  }).fail(function(e) {
+     console.log(e)
+     $("#container-pie").hide();
+  })
 
 }
 

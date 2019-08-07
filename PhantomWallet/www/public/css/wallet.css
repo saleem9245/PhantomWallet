@@ -132,10 +132,6 @@
     font-size: 1em !important;
   }
 
-  .wrapper-settings {
-      width: 60% !important;
-  }
-
 }
 
 @media screen and (min-width: 1281px) and (max-width: 1700px) {
@@ -908,7 +904,7 @@ ul.nav.nav-pills {
 }
 
 .wrapper-settings {
-    width: 50%;
+    width: 60%;
     margin: 0 auto;
     font-size: 1.3em;
     margin-top: 4em;
