@@ -46,6 +46,7 @@
 - Build generic script parser
 - Fix when new ABI: with complex types, adjust TokenInfo contract parameter as it does not work yet
 - Fix when new ABI: Overall logic check when/if call require signed tx (currently it does call both all the time because of that)
+- Offline mode
 
 ## Phantom Cli Overview
 
