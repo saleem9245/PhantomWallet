@@ -1205,6 +1205,14 @@ table.dataTable thead .sorting {
     text-align: center;
 }
 
+.dataTables_paginate .paginate_button.current {
+    color: #333;
+}
+
+.dark-mode .dataTables_paginate .paginate_button.current {
+    color: #fff;
+}
+
 .dataTables_filter input {
     width: 350px;
     background-color: initial;
