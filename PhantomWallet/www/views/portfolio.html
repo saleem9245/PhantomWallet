@@ -358,13 +358,13 @@ function Stake() {
                         $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
                       }
                     }).fail(function(e) {
-                      console.log(e)
-                      document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
+                      console.log(JSON.stringify(e.statusText))
+                      document.getElementById("wrapper-portfolio-confirm").innerHTML = JSON.stringify(e.statusText);
                       $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
                     });
              }).fail(function(e) {
-                console.log(e)
-                document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
+                console.log(JSON.stringify(e.statusText))
+                document.getElementById("wrapper-portfolio-confirm").innerHTML = JSON.stringify(e.statusText);
                 $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
              })
 
@@ -628,7 +628,7 @@ function getUnclaimed() {
            });
          }
          // if kcal value 0 disable button
-         if (unclaimedFormatted == 0) {
+         if (unclaimedFormatted == 0 || Number.isNaN(unclaimedFormatted)) {
            $(document.getElementById("claim-kcal")).addClass('button-disabled').delay(300).queue(function(next){
            });
          } else {
@@ -1130,7 +1130,7 @@ function getPieChart() {
               allowPointSelect: !0,
               cursor: 'pointer',
               depth: 30,
-              colors: ['#E8E8E8', '#17B0E7', '#2f7ed8', '#434348', '#8bbc21', '#64E572', '#DDDF00', '#8085e9', '#f28f43', '#e4d354', '#f45b5b', '#77a1e5'],
+              colors: ['#17B0E7', '#E8E8E8', '#2f7ed8', '#434348', '#8bbc21', '#64E572', '#DDDF00', '#8085e9', '#f28f43', '#e4d354', '#f45b5b', '#77a1e5'],
               slicedOffset: 10,
               dataLabels: {
                   enabled: !0,
