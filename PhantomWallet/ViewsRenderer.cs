@@ -178,7 +178,7 @@ namespace Phantom.Wallet
                 entry.Count = cache.Transactions.Length;
 
                 context["transactions"] = cache.Transactions;
-                context["holdings"] = cache.Holdings;
+                context["holdings"] = AccountController.GetAccountHoldings(keyPair.Address.Text).Result;
 
                 Console.WriteLine("NAME: " + AccountController.AccountName);
                 if (string.IsNullOrEmpty(AccountController.AccountName))
@@ -613,24 +613,23 @@ namespace Phantom.Wallet
             var param = request.GetVariable("params");
             var context = InitContext(request);
 
-            if (param == null) {
+            if (param == null) 
+	    {
                 PushError(request, "Parameters cannot be null!");
                 return null;
             }
 
             List<object> paramList = SendUtils.BuildParamList(param);
 
-            if (context["holdings"] is Holding[] balance)
-            {
-                var keyPair = GetLoginKey(request);
-                var result = AccountController.InvokeContractGeneric(keyPair, chain, contract, method, paramList.ToArray()).Result;
+            var keyPair = GetLoginKey(request);
+            var result = AccountController.InvokeContractGeneric(keyPair, chain, contract, method, paramList.ToArray()).Result;
 
-                if (result != null && result.GetType() == typeof(BigInteger)) {
-                    return result.ToString();
-                }
-                return JsonConvert.SerializeObject(result, Formatting.Indented);
+            if (result != null && result.GetType() == typeof(BigInteger)) 
+	    {
+                return result.ToString();
             }
-            return null;
+
+            return JsonConvert.SerializeObject(result, Formatting.Indented);
         }
 
         private object RouteChains(HTTPRequest request)
