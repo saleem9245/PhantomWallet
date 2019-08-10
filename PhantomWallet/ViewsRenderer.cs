@@ -574,7 +574,7 @@ namespace Phantom.Wallet
 
             if (context["holdings"] is Holding[] balance)
             {
-                var kcalBalance = balance.SingleOrDefault(b => b.Symbol == "KCAL");
+                var kcalBalance = balance.SingleOrDefault(b => b.Symbol == "KCAL" && b.Chain == chain);
                 if (kcalBalance.Amount > 0.1m)
                 {
                     var keyPair = GetLoginKey(request);
@@ -690,7 +690,7 @@ namespace Phantom.Wallet
             {
                 if (context["holdings"] is Holding[] balance)
                 {
-                    var kcalBalance = balance.SingleOrDefault(b => b.Symbol == "KCAL");
+                    var kcalBalance = balance.SingleOrDefault(b => b.Symbol == "KCAL" && b.Chain == "main");
                     if (kcalBalance.Amount > 0.1m) //RegistrationCost
                     {
                         var keyPair = GetLoginKey(request);
