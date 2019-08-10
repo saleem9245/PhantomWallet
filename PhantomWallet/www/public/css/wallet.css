@@ -933,7 +933,7 @@ ul.nav.nav-pills {
 }
 
 .bootstrap-select {
-    background-color: inherit;
+    background-color: initial;
     outline: 0;
 }
 
@@ -1223,7 +1223,7 @@ table.dataTable thead .sorting {
     border-radius: 30px;
     padding-right: 1em;
     padding-left: 1em;
-    line-height: inherit;
+    line-height: initial;
     margin: 2em 0;
 }
 
@@ -1431,13 +1431,13 @@ input[type="search"]::-webkit-search-cancel-button {
 }
 
 .dark-mode select {
-    background-color: inherit;
+    background-color: initial;
 }
 
 .dark-mode .button {
     color: #fff;
     border: 2px solid #fff;
-    background-color: inherit;
+    background-color: initial;
 }
 
 .dark-mode input, .dark-mode pre {
