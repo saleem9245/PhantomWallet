@@ -361,8 +361,10 @@ namespace Phantom.Wallet.Controllers
         {
             try
             {
-                var txConfirmation = await _phantasmaRpcService.GetTxByHash.SendRequestAsync(txHash);
-                return txConfirmation;
+                var result = await _phantasmaRpcService.GetTxByHash.SendRequestAsync(txHash);
+                byte[] decodedResult = Base16.Decode((string)result.Result);
+                VMObject output = Serialization.Unserialize<VMObject>(decodedResult);
+                return output.ToObject();
             }
             catch (RpcResponseException rpcEx)
             {
