@@ -89,6 +89,7 @@ $(document).ready(function() {
     if (document.getElementById("soulprice")) {
       document.getElementById("soulprice").innerHTML = localStorage.getItem('lastsoulprice');
     }
+    getPricing();
     var pathname = window.location.pathname;
     // on all pages except login and create, getChains every 2 sec and getPricing every minute
     if (pathname != '/login' && pathname != '/create') {
@@ -126,7 +127,7 @@ function getChains() {
 function getPricing() {
 
   // if session storage currency values not set, set them to USD / $
-  if (localStorage.getItem('currency') !== 'null') {
+  if (localStorage.getItem('currency') !== null) {
     currency = localStorage.getItem('currency');
     if (localStorage.getItem('currency') == 'EUR') {
       currencysymbol = '€';
@@ -144,8 +145,8 @@ function getPricing() {
   } else {
     currency = 'USD';
     currencysymbol = '$';
+    localStorage.setItem('currency', currency);
   }
-
    $.get('https://api.coingecko.com/api/v3/simple/price?ids=phantasma&vs_currencies=' + currency.toLowerCase(),
        function (returnedData) {
          soulprice = currencysymbol + numberWithCommas(returnedData.phantasma[currency.toLowerCase()]);
