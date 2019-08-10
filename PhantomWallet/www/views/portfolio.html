@@ -677,8 +677,8 @@ function getStake() {
           });
         }
         // if kcal per day exist and changed, flash the value
-        if (document.getElementById("rewards-kcal").innerHTML != numberWithCommas(parseFloat((stakesFormatted/500).toFixed(10))) + ' KCAL / DAY') {
-          document.getElementById("rewards-kcal").innerHTML = numberWithCommas(parseFloat((stakesFormatted/500).toFixed(10))) + ' KCAL / DAY';
+        if (document.getElementById("rewards-kcal").innerHTML != numberWithCommas(parseFloat((stakesFormatted/500).toFixed(0))) + ' KCAL / DAY') {
+          document.getElementById("rewards-kcal").innerHTML = numberWithCommas(parseFloat((stakesFormatted/500).toFixed(0))) + ' KCAL / DAY';
           $(document.getElementById("rewards-kcal")).addClass('flash-portfolio').delay(300).queue(function(next){
                $(this).removeClass('flash-portfolio');
                next();
@@ -779,8 +779,8 @@ function GetSoulmastersDetails() {
          }
        }
        // if amount rewards soulmaster exist and changed, flash the value
-       if (document.getElementById("rewards-soulmasters").innerHTML != numberWithCommas(parseFloat((rewards).toFixed(8))) + ' SOUL / MONTH / SM') {
-         document.getElementById("rewards-soulmasters").innerHTML = numberWithCommas(parseFloat((rewards).toFixed(8))) + ' SOUL / MONTH / SM';
+       if (document.getElementById("rewards-soulmasters").innerHTML != numberWithCommas(parseFloat((rewards).toFixed(0))) + ' SOUL / MONTH / SM') {
+         document.getElementById("rewards-soulmasters").innerHTML = numberWithCommas(parseFloat((rewards).toFixed(0))) + ' SOUL / MONTH / SM';
          $(document.getElementById("rewards-soulmasters")).addClass('flash-portfolio').delay(300).queue(function(next){
               $(this).removeClass('flash-portfolio');
               next();
