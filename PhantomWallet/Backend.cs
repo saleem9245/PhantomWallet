@@ -1,6 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Diagnostics;
+using System.Linq;
+using System.Runtime.InteropServices;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Phantasma.RpcClient;
 using Phantasma.RpcClient.Interfaces;
@@ -18,10 +23,13 @@ namespace Phantom.Wallet
         private static Application _app; //= new Application(serviceCollection);
         private static Logger Logger = new LoggerConfiguration().MinimumLevel.Debug()
                                     .WriteTo.File(Utils.LogPath).CreateLogger();
+	public static string Port { get; set; }
+	public static string Path { get; set; }
 
         static void Main(string[] args)
         {
             Init();
+	    ParseArgs(args);
             var server = HostBuilder.CreateServer(args);
             var viewsRenderer = new ViewsRenderer(server, "views");
             Console.WriteLine("UTILS LOGPATH: " + Utils.LogPath);
@@ -29,6 +37,7 @@ namespace Phantom.Wallet
             viewsRenderer.SetupHandlers();
             viewsRenderer.SetupControllers();
 
+	    OpenBrowser("http://localhost:"+Port);
             server.Run();
         }
 
@@ -40,6 +49,56 @@ namespace Phantom.Wallet
                 _app = new Application(serviceCollection);
             }
         }
+
+	public static void ParseArgs(String[] args) {
+	    // code from LunarServer
+	    foreach (var arg in args)
+            {
+                if (!arg.StartsWith("--"))
+                {
+                    continue;
+                }
+
+                var temp = arg.Substring(2).Split(new char[] { '=' }, 2);
+                var key = temp[0].ToLower();
+                var val = temp.Length > 1 ? temp[1] : "";
+
+                switch (key)
+                {
+                    case "path": Path = val; break;
+                    case "port": Port = val; break;
+                }
+            }
+  	}
+
+	public static void OpenBrowser(string url)
+	{
+	    try
+	    {
+	        Process.Start(url);
+	    }
+	    catch
+	    {
+	        // hack because of this: https://github.com/dotnet/corefx/issues/10361
+	        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+	        {
+	            url = url.Replace("&", "^&");
+	            Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
+	        }
+	        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+	        {
+	            Process.Start("xdg-open", url);
+	        }
+	        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+	        {
+	            Process.Start("open", url);
+	        }
+	        else
+	        {
+	            throw;
+	        }
+	    }
+	}
     }
 
     public class Application

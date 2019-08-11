@@ -41,6 +41,10 @@ cp -r PhantomWallet/www/public bin/linux/www
 cp -r PhantomWallet/www/public bin/win/www
 cp -r PhantomWallet/www/public bin/osx/www
 
+cp third-party/start.command bin/osx/
+cp third-party/start.sh bin/linux/
+cp third-party/start.bat bin/win/
+
 # package cli
 third-party/warp-packer_$platform --arch linux-x64 --input_dir PhantomCli/bin/Release/netcoreapp2.0/linux-x64/publish/ --exec PhantomCli --output bin/linux/PhantomCli
 third-party/warp-packer_$platform --arch macos-x64 --input_dir PhantomCli/bin/Release/netcoreapp2.0/osx-x64/publish/ --exec PhantomCli --output bin/osx/PhantomCli
