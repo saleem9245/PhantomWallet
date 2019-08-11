@@ -124,7 +124,7 @@ namespace Phantom.Wallet.Controllers
                         Currency = currency,
                         CurrencySymbol = currencysymbol,
                         Rate = rate,
-			Chain = token.ChainName,
+                        Chain = token.ChainName,
                         ChainName = token.ChainName.FirstLetterToUpper()
                     };
                     decimal amount = 0;

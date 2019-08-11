@@ -38,14 +38,14 @@
                     </div>
                 </div>
                 <br />
-                <h6 class="center" style="font-size: 1.2em;"><em>Wallet connected</em></h6>
+                <h6 class="center"><em>Wallet connected</em></h6>
                 {{#if name == 'anonymous'}}
-                <h5 class="center" style="color: darkslategrey;font-size: 1.2em;">
+                <h5 class="center" style="color: darkslategrey;">
                     {{name}}
                     <a href="#" class="editbutton" id="editPencil"><i class="fa fa-pencil-alt" aria-hidden="true"></i></a>
                 </h5>
                 {{#else}}
-                <h5 class="center" style="color: darkslategrey;font-size: 1.2em;"><em>{{name}}</em></h5>
+                <h5 class="center" style="color: darkslategrey;"><em>{{name}}</em></h5>
                 {{/if}}
 
                 <ul class="nav nav-pills nav-stacked">
@@ -69,7 +69,7 @@
                 </ul>
                 <div class="center"><div class="blockheight" id="blockheightparent">MAIN CHAIN BLOCK</div><div class="blockheight" id="blockheight" style="margin-left:.5em;"></div></div>
                 <div class="center" style="margin-top:-1em;"><div class="blockheight" id="soulpriceparent" style="font-size: 1em;">SOUL/USD</div><div class="blockheight" id="soulprice" style="margin-left:.5em;font-size: 1em;;"></div></div>
-                <div class="version" style="margin-top:-.3em;">version 0.1.2</div>
+                <div class="version" style="margin-top:-.3em;">version 0.1.4</div>
             </div>
             <div class="col-md-10 col-sm-8">
                 <div class="well">{{#body}}</div>
