@@ -17,7 +17,7 @@
       <div class="settings-row-icon"><i class="fas fa-globe"></i></div>
       <span class="settings-row-name">RPC URL</span>
       <div class="settings-row-item">
-        <input type="text" class="form-control" id="rpcurl" style="margin-top: -0.25em;">
+        <input type="text" class="form-control" id="rpcurl">
       </div>
       <div class="settings-row-item">
         <button type="button" id="rpc-url-update" class="button" onclick="updateRPC()">SAVE</button>
@@ -27,7 +27,7 @@
       <div class="settings-row-icon"><i class="fas fa-globe"></i></div>
       <span class="settings-row-name">EXPLORER URL</span>
       <div class="settings-row-item">
-        <input type="text" class="form-control" id="explurl" style="margin-top: -0.25em;">
+        <input type="text" class="form-control" id="explurl">
       </div>
       <div class="settings-row-item">
         <button type="button" id="explorer-url-update" class="button" onclick="updateExplorer()">SAVE</button>
@@ -172,7 +172,6 @@ function getSettings() {
    // On rpc url click event
    function updateRPC() {
 
-       console.log('click')
        var e = document.getElementById("selectnetwork");
        var network = e.options[e.selectedIndex].value;
        var g = document.getElementById("rpcurl");
@@ -335,7 +334,6 @@ function getSettings() {
     var multisigqty = [];
     // start building the future dropdown for signature count based on qty
     for (i = 0; i < e.options.length;i++) {
-      console.log(e.options[i].value)
       // build array up to signature count <= number of addresses
       if (e.options[i].value <= eselected) {
         multisigqty.push(e.options[i].value)

@@ -5,11 +5,11 @@
   <div class="top-portfolio col-md-12">
     <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/kcal_logo.png" /><span>ENERGY</span><br><span id="unclaimed-kcal" class="top-portfolio-col-highlight">KCAL</span><br><span id="rewards-kcal" class="top-portfolio-col-small">KCAL / DAY</span></div>
     <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/phantasma_logo.png" /><span>STAKES</span><br><span id="stake-soul" class="top-portfolio-col-highlight">SOUL</span><br><span id="count-soulmasters" class="top-portfolio-col-small">SOULMASTER</span></div>
-    <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/soulmasters_logo.png" /><span>SOULMASTERS</span><br><span><span id="count-soulmasters-total" class="top-portfolio-col-highlight">SOULMASTER</span></span><br><span><span id="rewards-soulmasters" class="top-portfolio-col-small">SOUL / MONTH / SM</span></span></div>
+    <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/soulmasters_logo.png" /><span>SOULMASTERS</span><br><span><span id="count-soulmasters-total" class="top-portfolio-col-highlight">SOULMASTER</span></span><br><span><span id="rewards-soulmasters" class="top-portfolio-col-small">SOUL / MONTH</span></span></div>
 </div>
     <div class="wrapper-portfolio">
       <div><button type="button" id="claim-kcal" class="button" onclick="Claim()">CLAIM<BR>KCAL</button></div>
-      <div><input id="manageinput" type="number" min="1" class="form-control center" placeholder="Amount" style="display:inline-block;width: 22%;display:inline-block;margin-right: 1em;"><button type="button" class="button" style="border-radius: 0;" onclick="Stake()">STAKE</button><button type="button" id="unstake-soul" class="button" style="border-radius: 0;margin-left: .1em;display:none;" onclick="Unstake()">UNSTAKE</button></div>
+      <div><input id="manageinput" type="number" min="1" class="form-control center" placeholder="Amount" style="display:inline-block;width: 25%;display:inline-block;margin-right: 1em;"><button type="button" class="button" style="border-radius: 0;" onclick="Stake()">STAKE</button><button type="button" id="unstake-soul" class="button" style="border-radius: 0;margin-left: .1em;display:none;" onclick="Unstake()">UNSTAKE</button></div>
       <div><button type="button" id="claim-rewards" class="button"onclick="MasterClaim()">CLAIM<BR>REWARDS</button></div>
     </div>
     <div id="wrapper-portfolio-confirm" style="opacity:0;">
@@ -29,12 +29,12 @@
               {{#each holdings}}
               <tr class="token-shadow">
                   {{#if Symbol == 'SOUL'}}
-                  <td class="col-6"><img class="token-icon" src="img/{{Icon}}.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
+                  <td class="col-6 aligned-row"><img class="token-icon" src="img/{{Icon}}.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
                   {{#else}}
                     {{#if Symbol == 'KCAL'}}
-                    <td class="col-6"><img class="token-icon" src="img/kcal_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
+                    <td class="col-6 aligned-row"><img class="token-icon" src="img/kcal_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
                     {{#else}}
-                    <td class="col-6"><img class="token-icon" src="img/soulmasters_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
+                    <td class="col-6 aligned-row"><img class="token-icon" src="img/soulmasters_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
                     {{/if}}
                   {{/if}}
                   <td class="col-6">{{ChainName}}</td>
@@ -118,7 +118,8 @@ $(document).ready(function() {
   $("#loader-historical").hide();
   $("#container-historical-value").hide();
 
-  getPieChart();
+  valueTOTAL = 0;
+  GetPieChart();
   // init portfolio chart on 3M
   getPortfolioChart('3M')
   // get all three smart contract call
@@ -350,7 +351,7 @@ function Stake() {
                           // call getstake and getpie getsoulmastersdetails after all other refresh
                           getStake();
                           setTimeout(function() {
-                            getPieChart();
+                            GetPieChart();
                             GetSoulmastersDetails();
                           }, 1000);
                         }, 2000);
@@ -472,7 +473,7 @@ function Unstake() {
                           // call getstake and getpie and getsoulmastersdetails after all other refresh
                           getStake();
                           setTimeout(function() {
-                            getPieChart();
+                            GetPieChart();
                             GetSoulmastersDetails();
                           }, 1000);
                         }, 2000);
@@ -515,7 +516,7 @@ function MasterClaim() {
   // build params for contract call
   params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
 
-  if (document.getElementById("count-soulmasters").innerHTML == '1 SOULMASTER') {
+  if (document.getElementById("count-soulmasters-total").innerHTML > 0) {
         bootbox.alert("Nothing to claim yet!");
         return;
   }
@@ -578,7 +579,7 @@ function MasterClaim() {
                   $("#container-historical-value").hide();
                   getPortfolioChart('3M');
                   setTimeout(function() {
-                    getPieChart();
+                    GetPieChart();
                     GetSoulmastersDetails();
                   }, 1000);
                 }, 2000);
@@ -633,14 +634,6 @@ function getUnclaimed() {
            });
          } else {
            $(document.getElementById("claim-kcal")).removeClass('button-disabled').delay(300).queue(function(next){
-           });
-         }
-         // temporary until real function getmasterrewards
-         if (document.getElementById("count-soulmasters").innerHTML == '1 SOULMASTER') {
-           $(document.getElementById("claim-rewards")).addClass('button-disabled').delay(300).queue(function(next){
-           });
-         } else {
-           $(document.getElementById("claim-rewards")).removeClass('button-disabled').delay(300).queue(function(next){
            });
          }
      }).fail(function(e) {
@@ -779,8 +772,8 @@ function GetSoulmastersDetails() {
          }
        }
        // if amount rewards soulmaster exist and changed, flash the value
-       if (document.getElementById("rewards-soulmasters").innerHTML != numberWithCommas(parseFloat((rewards).toFixed(0))) + ' SOUL / MONTH / SM') {
-         document.getElementById("rewards-soulmasters").innerHTML = numberWithCommas(parseFloat((rewards).toFixed(0))) + ' SOUL / MONTH / SM';
+       if (document.getElementById("rewards-soulmasters").innerHTML != numberWithCommas(parseFloat((rewards).toFixed(0))) + ' SOUL / MONTH') {
+         document.getElementById("rewards-soulmasters").innerHTML = numberWithCommas(parseFloat((rewards).toFixed(0))) + ' SOUL / MONTH';
          $(document.getElementById("rewards-soulmasters")).addClass('flash-portfolio').delay(300).queue(function(next){
               $(this).removeClass('flash-portfolio');
               next();
@@ -1028,13 +1021,12 @@ function getPortfolioChart(timeframe) {
   })
 
 }
-//function getPieChart
-function getPieChart() {
+//function GetPieChart
+function GetPieChart() {
 
     $("#loader-pie").show();
     $("#container-pie").hide();
 
-    valueTOTAL = 0;
     valueTOTALWithoutStakes = 0;
     arraygraph = [];
     params = [];
@@ -1091,7 +1083,6 @@ function getPieChart() {
       {{#each holdings}}
         if ('{{Symbol}}' == 'SOUL') {
           valueTOTAL += parseInt(('{{Price}}').replace(/,/g, ''));
-          valueTOTALWithoutStakes += parseInt(('{{Price}}').replace(/,/g, ''));
         }
       {{/each}}
       if (stakesPrice != 0) {
@@ -1185,7 +1176,7 @@ function getPieChart() {
           text: 'Portfolio composition',
           //text: '',
           style: {
-              fontSize: '1em'
+              fontSize: '14px'
           }
       }
   })

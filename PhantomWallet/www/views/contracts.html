@@ -203,7 +203,7 @@ function getMethodParams(method) {
       $("#parametersinput-title").hide();
       document.getElementById("parametersinput").innerHTML = '<div style="margin:2em auto;">No parameters required.</div>'
     }
-    document.getElementById("wrapper-confirmrun").innerHTML = '<button id="confirmrun-'+method+'" type="button" style="border-radius:0;font-size:1.2em;" class="button" onclick="confirmRun(this.id)">RUN</button>';
+    document.getElementById("wrapper-confirmrun").innerHTML = '<button id="confirmrun-'+method+'" type="button" style="border-radius:0;" class="button" onclick="confirmRun(this.id)">RUN</button>';
     $("#loader-parameters").hide();
 
 }

@@ -62,13 +62,13 @@
                         <h4 class="control-label send-label">Step 4) Select destination address</h4>
                         <input maxlength="100" class="form-control parameters-input" type="text" required="required" id="destination" placeholder="Enter destination address" />
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" style="display:none;">
                         <button type="button" class="btn-primary btn-normal button" data-toggle="modal" data-target="#scanModal">SCAN</button>
                         <br>
                     </div>
                     <div class="form-group">
                         <h4 class="control-label send-label">Step 5) Select destination chain</h4>
-                        <select id="destinationChain">
+                        <select id="destinationChain" style="margin-top: 0;">
                             {{#each chains}}
                             <option>{{Name}}</option>
                             {{/each}}
