@@ -152,7 +152,7 @@
   }
 
   .history, .settings, .send {
-      font-size: 0.8em !important;
+      font-size: 0.75em !important;
   }
 
   .send, .portfolio {
@@ -190,6 +190,25 @@
   #rpc-url-update, #explorer-url-update {
       margin-top: -.2em !important;
   }
+
+  .token-icon {
+      width: 25px !important;
+      height: 25px !important;
+      margin-right: 12px;
+  }
+
+  .portfolio-token-icon {
+      width: 35px !important;
+      height: 35px !important;
+  }
+
+  .highcharts-title {
+      font-size: 1em !important;
+  }
+
+  .settings-row-item input {
+      font-size: .8em;
+}
 
 }
 
@@ -449,6 +468,8 @@ ul.nav.nav-pills {
     -moz-box-shadow: 0px 0px 15px 10px rgba(216,216,216,0.25);
     box-shadow: 0px 0px 15px 10px rgba(216,216,216,0.25);
     border: 4px solid #17B0E7;
+    -ms-overflow-style: none;  // IE 10+
+    scrollbar-width: none;  // Firefox
 }
 
 .content {
@@ -476,6 +497,11 @@ ul.nav.nav-pills {
     background-color: transparent;
     color: transparent;
     padding: 10px;
+}
+
+.table-responsive .aligned-row {
+    text-align: left;
+    padding-left: 10%;
 }
 
 .borderless-input {
@@ -977,8 +1003,7 @@ ul.nav.nav-pills {
     display: flex;
     border-bottom: 1px solid #17B0E7;
     padding-bottom: 1em;
-    height: 45px;
-    margin: 1em;
+    padding-top: 1em;
 }
 
 .settings-row-icon {
@@ -987,6 +1012,11 @@ ul.nav.nav-pills {
     align-items: center;
     width: 20%;
     justify-content: center;
+}
+
+.settings-row-item input {
+    height: 1.95em;
+    width: 15em;
 }
 
 .settings-row-name {
@@ -1027,15 +1057,15 @@ ul.nav.nav-pills {
 .tgl + .tgl-btn {
     outline: 0;
     display: block;
-    width: 4em;
-    height: 2em;
+    width: 3em;
+    height: 1.5em;
     position: relative;
     cursor: pointer;
     -webkit-user-select: none;
        -moz-user-select: none;
         -ms-user-select: none;
             user-select: none;
-    margin-top: -.4em;
+    margin: 0em;
 }
 
 .tgl + .tgl-btn:after, .tgl + .tgl-btn:before {
@@ -1341,10 +1371,10 @@ input[type="search"]::-webkit-search-cancel-button {
 }
 
 #rpc-url-update, #explorer-url-update {
-    padding: 0.5em !important;
+    padding: 0.25em !important;
     border-radius: 0 !important;
     margin-left: 1em;
-    margin-top: -.5em;
+    font-size: .65em;
 }
 
 .portfolio .dataTables_filter {
@@ -1437,6 +1467,10 @@ input[type="search"]::-webkit-search-cancel-button {
     font-size: 1.2em;
     width: 24%;
     display: inline-block;
+}
+
+.dropdown-custom {
+    font-size: 1.1em !important;
 }
 
 .portfolio {
