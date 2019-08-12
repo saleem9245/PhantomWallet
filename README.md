@@ -91,9 +91,17 @@ In any network type selected (Simnet/Testnet/Mainnet), you have the possibility 
 
 1) Download here (https://github.com/merl111/PhantomWallet/releases)
 
-2) Launch the program 
+2.1) One click launch
 
-on Linux or MacOS: 
+`start.[sh,command,bat]`
+
+The wallet runs locally, but its ui is currently in the browser, executing the start script opens a shell or cmd, and a browser with the wallets login page, you have to close the shell, cmd window after you closed the browser window to fully close the wallet.
+
+2.2) Manual two step launch
+
+Within the unzipped directory type the following command:
+
+on Linux or MacOS:
 
 `./PhantomWallet --path=www --port=7071`
 
@@ -101,15 +109,15 @@ on Windows:
 
 `.\PhantomWallet.exe --path=www --port=7071`
 
-3) Open a browser and go to http://localhost:7071
+Then open a browser and go to http://localhost:7071
 
 *Phantom Cli:*
 
 1) Download here (https://github.com/merl111/PhantomWallet/releases)
 
-2) Launch the program 
+2) Launch the program
 
-on Linux or MacOS: 
+on Linux or MacOS:
 
 `./PhantomCli`
 
@@ -145,9 +153,9 @@ If you want to run the current multisignature tests feel free to head over to `P
 
 ### How does multisig work with PhantomWallet
 
-Phantasma addresses have a feature which allows you to attach a script onto your address which is executed before every action (receive, send, mint, burn). To convert you address to a multisig address you have to attach a script that does the verification, means it verifies how many participants have signed the transaction. 
+Phantasma addresses have a feature which allows you to attach a script onto your address which is executed before every action (receive, send, mint, burn). To convert you address to a multisig address you have to attach a script that does the verification, means it verifies how many participants have signed the transaction.
 
-If enough have signed, the script returns normally and the transaction is allowed to be executed. If not enough wallets have signed the transaction, the script will return with an error which results in a fail during transaction processing. 
+If enough have signed, the script returns normally and the transaction is allowed to be executed. If not enough wallets have signed the transaction, the script will return with an error which results in a fail during transaction processing.
 
 Currently address scripts are immutable, so think twice or better three times if you want to attach a script to your address, it could result in a loss of funds if the script is faulty.
 
@@ -185,7 +193,7 @@ The current multisig script used for the tests:
  load $signed 0
  load $true True
  load $i 0
- @loop: 
+ @loop:
  lt $i $addrCount $loopResult
  jmpnot $loopResult @checkSigned
  get r3 $temp $i
@@ -200,7 +208,7 @@ The current multisig script used for the tests:
  inc $signed
  inc $i
  jmp @loop
- @checkSigned: 
+ @checkSigned:
  gte $signed $minSigned $result
  jmpif $result @finish
  jmpnot $result @break
@@ -213,7 +221,7 @@ The current multisig script used for the tests:
  ret
  @break:
  throw
- @checkWitness: 
+ @checkWitness:
  extcall "CheckWitness()"
  pop $interResult
  ret
