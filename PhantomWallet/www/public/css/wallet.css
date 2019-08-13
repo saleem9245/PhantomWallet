@@ -468,8 +468,12 @@ ul.nav.nav-pills {
     -moz-box-shadow: 0px 0px 15px 10px rgba(216,216,216,0.25);
     box-shadow: 0px 0px 15px 10px rgba(216,216,216,0.25);
     border: 4px solid #17B0E7;
-    -ms-overflow-style: none;  // IE 10+
-    scrollbar-width: none;  // Firefox
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.well::-webkit-scrollbar {
+    display: none;
 }
 
 .content {
@@ -1528,7 +1532,7 @@ input[type="search"]::-webkit-search-cancel-button {
 }
 
 .dark-mode select {
-    background-color: initial;
+    background-color: #2C2E34;
 }
 
 .dark-mode .button {
