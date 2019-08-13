@@ -8,9 +8,9 @@
     <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/soulmasters_logo.png" /><span>SOULMASTERS</span><br><span><span id="count-soulmasters-total" class="top-portfolio-col-highlight">SOULMASTER</span></span><br><span><span id="rewards-soulmasters" class="top-portfolio-col-small">SOUL / MONTH</span></span></div>
 </div>
     <div class="wrapper-portfolio">
-      <div><button type="button" id="claim-kcal" class="button" onclick="Claim()">CLAIM<BR>KCAL</button></div>
+      <div><button type="button" id="claim-kcal" class="button button-disabled" onclick="Claim()">CLAIM<BR>KCAL</button></div>
       <div><input id="manageinput" type="number" min="1" class="form-control center" placeholder="Amount" style="display:inline-block;width: 25%;display:inline-block;margin-right: 1em;"><button type="button" class="button" style="border-radius: 0;" onclick="Stake()">STAKE</button><button type="button" id="unstake-soul" class="button" style="border-radius: 0;margin-left: .1em;display:none;" onclick="Unstake()">UNSTAKE</button></div>
-      <div><button type="button" id="claim-rewards" class="button"onclick="MasterClaim()">CLAIM<BR>REWARDS</button></div>
+      <div><button type="button" id="claim-rewards" class="button button-disabled"onclick="MasterClaim()">CLAIM<BR>REWARDS</button></div>
     </div>
     <div id="wrapper-portfolio-confirm" style="opacity:0;">
       Transaction
@@ -118,7 +118,6 @@ $(document).ready(function() {
   $("#loader-historical").hide();
   $("#container-historical-value").hide();
 
-  valueTOTAL = 0;
   GetPieChart();
   // init portfolio chart on 3M
   getPortfolioChart('3M')
@@ -1026,7 +1025,7 @@ function GetPieChart() {
 
     $("#loader-pie").show();
     $("#container-pie").hide();
-
+    valueTOTAL = 0;
     valueTOTALWithoutStakes = 0;
     arraygraph = [];
     params = [];
@@ -1083,6 +1082,7 @@ function GetPieChart() {
       {{#each holdings}}
         if ('{{Symbol}}' == 'SOUL') {
           valueTOTAL += parseInt(('{{Price}}').replace(/,/g, ''));
+          valueTOTALWithoutStakes += parseInt(('{{Price}}').replace(/,/g, ''));
         }
       {{/each}}
       if (stakesPrice != 0) {

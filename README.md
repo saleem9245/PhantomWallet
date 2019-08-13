@@ -91,13 +91,13 @@ In any network type selected (Simnet/Testnet/Mainnet), you have the possibility 
 
 1) Download here (https://github.com/merl111/PhantomWallet/releases)
 
-2.1) One click launch
+2.1) One step launch
 
 `start.[sh,command,bat]`
 
 The wallet runs locally, but its ui is currently in the browser, executing the start script opens a shell or cmd, and a browser with the wallets login page, you have to close the shell, cmd window after you closed the browser window to fully close the wallet.
 
-2.2) Manual two step launch
+2.2) Two steps launch
 
 Within the unzipped directory type the following command:
 
