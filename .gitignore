@@ -15,5 +15,4 @@ www/session
 PhantomWallet/www/session
 *.config
 *.walletconfig
-
-
+bin/
