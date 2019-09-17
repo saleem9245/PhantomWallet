@@ -366,7 +366,7 @@ function Stake() {
                             onLoad = 0;
                             getStake();
                             setTimeout(function() {
-                              GetPieChart();
+                              GetPieChart(changedamount);
                               GetSoulmastersDetails();
                             }, 1000);
                           }, 2000);
@@ -445,7 +445,7 @@ function Stake() {
                             onLoad = 0;
                             getStake();
                             setTimeout(function() {
-                              GetPieChart();
+                              GetPieChart(changedamount);
                               GetSoulmastersDetails();
                             }, 1000);
                           }, 2000);
@@ -568,7 +568,7 @@ function Unstake() {
                           // call getstake and getpie and getsoulmastersdetails after all other refresh
                           getStake();
                           setTimeout(function() {
-                            GetPieChart();
+                            GetPieChart(changedamount);
                             GetSoulmastersDetails();
                           }, 1000);
                         }, 2000);
@@ -1130,7 +1130,7 @@ function getPortfolioChart(timeframe) {
 
 }
 //function GetPieChart
-function GetPieChart() {
+function GetPieChart(changedamount) {
 
     $("#loader-pie").show();
     $("#container-pie").hide();
@@ -1197,29 +1197,38 @@ function GetPieChart() {
       if (stakesPrice != 0) {
         valueTOTAL += parseInt(stakesPrice);
       }
-      // loop over holdings to build array for pie data
-      {{#each holdings}}
-        if ('{{Symbol}}' == 'SOUL') {
-          arraygraph.push({name: "{{Symbol}}", y: ({{Price}})/valueTOTAL, oldColor: "#E8E8E8", sliced: true})
-        }
-      {{/each}}
-
+      // if not on load, substract changed amount
+      if (changedamount) {
+        valueTOTAL -= (changedamount*currentsoulprice);
+        // loop over holdings to build array for pie data
+        {{#each holdings}}
+          if ('{{Symbol}}' == 'SOUL') {
+            arraygraph.push({name: "{{Symbol}}", y: ({{Price}}-(changedamount*currentsoulprice))/valueTOTAL, oldColor: "#E8E8E8", sliced: true})
+          }
+        {{/each}}
+      } else {
+        // loop over holdings to build array for pie data
+        {{#each holdings}}
+          if ('{{Symbol}}' == 'SOUL') {
+            arraygraph.push({name: "{{Symbol}}", y: ({{Price}})/valueTOTAL, oldColor: "#E8E8E8", sliced: true})
+          }
+        {{/each}}
+      }
       // add stakes to array
       if (stakesPrice != 0) {
         arraygraph.push({name: "SOUL - stakes", y: (stakesPrice)/valueTOTAL, oldColor: "#E8E8E8", sliced: true})
       }
-
-    // add total portfolio once calculated (on load only)
-    if (onLoad == 1) {
-      document.getElementById("totalportfolio").innerHTML = currencysymbol + numberWithCommas(valueTOTALWithoutStakes.toFixed(0));
-      // Handle price difference and rounding issue
-      currentsoulamount = parseFloat((document.getElementById("SOUL-amount").innerHTML).replace(/\,/g,''));
-      if ((valueTOTALWithoutStakes/currentsoulprice) < currentsoulamount) {
-        document.getElementById("totalportfoliosats").innerHTML =  numberWithCommas(currentsoulamount) + ' SOUL';
-      } else {
-        document.getElementById("totalportfoliosats").innerHTML =  numberWithCommas((valueTOTALWithoutStakes/currentsoulprice).toFixed(0)) + ' SOUL';
+      // add total portfolio once calculated (on load only)
+      if (onLoad == 1) {
+        document.getElementById("totalportfolio").innerHTML = currencysymbol + numberWithCommas(valueTOTALWithoutStakes.toFixed(0));
+        // Handle price difference and rounding issue
+        currentsoulamount = parseFloat((document.getElementById("SOUL-amount").innerHTML).replace(/\,/g,''));
+        if ((valueTOTALWithoutStakes/currentsoulprice) < currentsoulamount) {
+          document.getElementById("totalportfoliosats").innerHTML =  numberWithCommas(currentsoulamount) + ' SOUL';
+        } else {
+          document.getElementById("totalportfoliosats").innerHTML =  numberWithCommas((valueTOTALWithoutStakes/currentsoulprice).toFixed(0)) + ' SOUL';
+        }
       }
-    }
 
     Highcharts.chart('container-pie', {
       chart: {
