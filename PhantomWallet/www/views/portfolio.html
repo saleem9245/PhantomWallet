@@ -302,82 +302,169 @@ function Stake() {
 
         if (result) {
 
-          $.post('/stake',
-             {
-                 stakeAmount: numberWithCommas(toFixed((changedamount*100000000)))
-             },
-             function (returnedData) {
-                //console.log(returnedData)
-                // If /contract/tx works, call /tx/hash to check if the tx worked
-                $.get('/tx/' + returnedData,
-                    function (returnedDataTX) {
-                      //console.log(returnedDataTX)
-                      if ((JSON.parse(returnedDataTX).error) != undefined) {
-                        // If .error defined, returns the custom error message
-                        document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
-                        $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
-                      } else {
-                        //console.log(returnedDataTX)
-                        setTimeout(function() {
-                          // update kcal based on features
-                          if (document.getElementById("KCAL-amount") !== null) {
-                            document.getElementById("KCAL-amount").innerHTML = numberWithCommas(((document.getElementById("KCAL-amount").innerHTML).replace(/\,/g,'') - ((JSON.parse(returnedDataTX).fee) / Math.pow(10,10))).toFixed(10));
-                            $(document.getElementById("KCAL-amount")).addClass('flash-portfolio').delay(300).queue(function(next){
-                                 $(this).removeClass('flash-portfolio');
-                                 next();
-                            });
-                          }
-                          // if amount exist and changed, flash the value
-                          if (document.getElementById("SOUL-amount").innerHTML != numberWithCommas(futureamount)) {
-                            document.getElementById("SOUL-amount").innerHTML = numberWithCommas(futureamount);
-                            $(document.getElementById("SOUL-amount")).addClass('flash-portfolio').delay(300).queue(function(next){
-                                 $(this).removeClass('flash-portfolio');
-                                 next();
-                            });
-                          }
-                          // if price exist and changed, flash the value
-                          if (document.getElementById("SOUL-price").innerHTML != numberWithCommas(futuresoulprice)) {
-                            document.getElementById("SOUL-price").innerHTML = currencysymbol + numberWithCommas(futuresoulprice.toFixed(0));
-                            $(document.getElementById("SOUL-price")).addClass('flash-portfolio').delay(300).queue(function(next){
-                                 $(this).removeClass('flash-portfolio');
-                                 next();
-                            });
-                            // if total price exist and changed, flash the value
-                            document.getElementById("totalportfolio").innerHTML = currencysymbol + numberWithCommas(futuresoulprice.toFixed(0));
-                            $(document.getElementById("totalportfolio")).addClass('flash-portfolio').delay(300).queue(function(next){
-                                 $(this).removeClass('flash-portfolio');
-                                 next();
-                            });
-                            // if total price sats exist and changed, flash the value
-                            document.getElementById("totalportfoliosats").innerHTML = numberWithCommas((document.getElementById("totalportfoliosats").innerHTML).slice(0, -5).replace(/\,/g,'') - changedamount) + ' SOUL';
-                            $(document.getElementById("totalportfoliosats")).addClass('flash-portfolio').delay(300).queue(function(next){
-                                 $(this).removeClass('flash-portfolio');
-                                 next();
-                            });
-                          }
-                          // call getstake and getpie getsoulmastersdetails after all other refresh
-                          onLoad = 0;
-                          getStake();
-                          setTimeout(function() {
-                            GetPieChart();
-                            GetSoulmastersDetails();
-                          }, 1000);
-                        }, 2000);
-                        document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
-                        $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
-                      }
-                    }).fail(function(e) {
-                      console.log(JSON.stringify(e.statusText))
-                      document.getElementById("wrapper-portfolio-confirm").innerHTML = JSON.stringify(e.statusText);
-                      $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
-                    });
-             }).fail(function(e) {
-                console.log(JSON.stringify(e.statusText))
-                document.getElementById("wrapper-portfolio-confirm").innerHTML = JSON.stringify(e.statusText);
-                $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
-             })
+          if (((document.getElementById("KCAL-amount").innerHTML).replace(/\,/g,'')) > 0) {
 
-             document.getElementById("manageinput").value = '';
+            $.post('/contract/tx',
+               {
+                  chain: 'main',
+                  contract: 'energy',
+                  method: 'Stake',
+                  params: JSON.stringify({
+                    params
+                  })
+               },
+               function (returnedData) {
+                  //console.log(returnedData)
+                  // If /contract/tx works, call /tx/hash to check if the tx worked
+                  $.get('/tx/' + returnedData,
+                      function (returnedDataTX) {
+                        //console.log(returnedDataTX)
+                        if ((JSON.parse(returnedDataTX).error) != undefined) {
+                          // If .error defined, returns the custom error message
+                          document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
+                          $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                        } else {
+                          //console.log(returnedDataTX)
+                          setTimeout(function() {
+                            // update kcal based on features
+                            if (document.getElementById("KCAL-amount") !== null) {
+                              document.getElementById("KCAL-amount").innerHTML = numberWithCommas(((document.getElementById("KCAL-amount").innerHTML).replace(/\,/g,'') - ((JSON.parse(returnedDataTX).fee) / Math.pow(10,10))).toFixed(10));
+                              $(document.getElementById("KCAL-amount")).addClass('flash-portfolio').delay(300).queue(function(next){
+                                   $(this).removeClass('flash-portfolio');
+                                   next();
+                              });
+                            }
+                            // if amount exist and changed, flash the value
+                            if (document.getElementById("SOUL-amount").innerHTML != numberWithCommas(futureamount)) {
+                              document.getElementById("SOUL-amount").innerHTML = numberWithCommas(futureamount);
+                              $(document.getElementById("SOUL-amount")).addClass('flash-portfolio').delay(300).queue(function(next){
+                                   $(this).removeClass('flash-portfolio');
+                                   next();
+                              });
+                            }
+                            // if price exist and changed, flash the value
+                            if (document.getElementById("SOUL-price").innerHTML != numberWithCommas(futuresoulprice)) {
+                              document.getElementById("SOUL-price").innerHTML = currencysymbol + numberWithCommas(futuresoulprice.toFixed(0));
+                              $(document.getElementById("SOUL-price")).addClass('flash-portfolio').delay(300).queue(function(next){
+                                   $(this).removeClass('flash-portfolio');
+                                   next();
+                              });
+                              // if total price exist and changed, flash the value
+                              document.getElementById("totalportfolio").innerHTML = currencysymbol + numberWithCommas(futuresoulprice.toFixed(0));
+                              $(document.getElementById("totalportfolio")).addClass('flash-portfolio').delay(300).queue(function(next){
+                                   $(this).removeClass('flash-portfolio');
+                                   next();
+                              });
+                              // if total price sats exist and changed, flash the value
+                              document.getElementById("totalportfoliosats").innerHTML = numberWithCommas((document.getElementById("totalportfoliosats").innerHTML).slice(0, -5).replace(/\,/g,'') - changedamount) + ' SOUL';
+                              $(document.getElementById("totalportfoliosats")).addClass('flash-portfolio').delay(300).queue(function(next){
+                                   $(this).removeClass('flash-portfolio');
+                                   next();
+                              });
+                            }
+                            // call getstake and getpie getsoulmastersdetails after all other refresh
+                            onLoad = 0;
+                            getStake();
+                            setTimeout(function() {
+                              GetPieChart();
+                              GetSoulmastersDetails();
+                            }, 1000);
+                          }, 2000);
+                          document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                          $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                        }
+                      }).fail(function(e) {
+                        console.log(JSON.stringify(e.statusText))
+                        document.getElementById("wrapper-portfolio-confirm").innerHTML = JSON.stringify(e.statusText);
+                        $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                      });
+               }).fail(function(e) {
+                  console.log(JSON.stringify(e.statusText))
+                  document.getElementById("wrapper-portfolio-confirm").innerHTML = JSON.stringify(e.statusText);
+                  $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+               })
+
+               document.getElementById("manageinput").value = '';
+
+          } else {
+
+            $.post('/stake',
+               {
+                   stakeAmount: numberWithCommas(toFixed((changedamount*100000000)))
+               },
+               function (returnedData) {
+                  //console.log(returnedData)
+                  // If /contract/tx works, call /tx/hash to check if the tx worked
+                  $.get('/tx/' + returnedData,
+                      function (returnedDataTX) {
+                        //console.log(returnedDataTX)
+                        if ((JSON.parse(returnedDataTX).error) != undefined) {
+                          // If .error defined, returns the custom error message
+                          document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
+                          $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                        } else {
+                          //console.log(returnedDataTX)
+                          setTimeout(function() {
+                            // update kcal based on features
+                            if (document.getElementById("KCAL-amount") !== null) {
+                              document.getElementById("KCAL-amount").innerHTML = numberWithCommas(((document.getElementById("KCAL-amount").innerHTML).replace(/\,/g,'') - ((JSON.parse(returnedDataTX).fee) / Math.pow(10,10))).toFixed(10));
+                              $(document.getElementById("KCAL-amount")).addClass('flash-portfolio').delay(300).queue(function(next){
+                                   $(this).removeClass('flash-portfolio');
+                                   next();
+                              });
+                            }
+                            // if amount exist and changed, flash the value
+                            if (document.getElementById("SOUL-amount").innerHTML != numberWithCommas(futureamount)) {
+                              document.getElementById("SOUL-amount").innerHTML = numberWithCommas(futureamount);
+                              $(document.getElementById("SOUL-amount")).addClass('flash-portfolio').delay(300).queue(function(next){
+                                   $(this).removeClass('flash-portfolio');
+                                   next();
+                              });
+                            }
+                            // if price exist and changed, flash the value
+                            if (document.getElementById("SOUL-price").innerHTML != numberWithCommas(futuresoulprice)) {
+                              document.getElementById("SOUL-price").innerHTML = currencysymbol + numberWithCommas(futuresoulprice.toFixed(0));
+                              $(document.getElementById("SOUL-price")).addClass('flash-portfolio').delay(300).queue(function(next){
+                                   $(this).removeClass('flash-portfolio');
+                                   next();
+                              });
+                              // if total price exist and changed, flash the value
+                              document.getElementById("totalportfolio").innerHTML = currencysymbol + numberWithCommas(futuresoulprice.toFixed(0));
+                              $(document.getElementById("totalportfolio")).addClass('flash-portfolio').delay(300).queue(function(next){
+                                   $(this).removeClass('flash-portfolio');
+                                   next();
+                              });
+                              // if total price sats exist and changed, flash the value
+                              document.getElementById("totalportfoliosats").innerHTML = numberWithCommas((document.getElementById("totalportfoliosats").innerHTML).slice(0, -5).replace(/\,/g,'') - changedamount) + ' SOUL';
+                              $(document.getElementById("totalportfoliosats")).addClass('flash-portfolio').delay(300).queue(function(next){
+                                   $(this).removeClass('flash-portfolio');
+                                   next();
+                              });
+                            }
+                            // call getstake and getpie getsoulmastersdetails after all other refresh
+                            onLoad = 0;
+                            getStake();
+                            setTimeout(function() {
+                              GetPieChart();
+                              GetSoulmastersDetails();
+                            }, 1000);
+                          }, 2000);
+                          document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                          $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                        }
+                      }).fail(function(e) {
+                        console.log(JSON.stringify(e.statusText))
+                        document.getElementById("wrapper-portfolio-confirm").innerHTML = JSON.stringify(e.statusText);
+                        $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                      });
+               }).fail(function(e) {
+                  console.log(JSON.stringify(e.statusText))
+                  document.getElementById("wrapper-portfolio-confirm").innerHTML = JSON.stringify(e.statusText);
+                  $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+               })
+
+               document.getElementById("manageinput").value = '';
+             }
            }
            $('#sendSpinner').hide();
          }
