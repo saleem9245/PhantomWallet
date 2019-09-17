@@ -214,6 +214,8 @@ namespace Phantom.Wallet
 
             TemplateEngine.Server.Post("/register", RouteRegisterName);
 
+            TemplateEngine.Server.Post("/stake", RouteStake);
+
             TemplateEngine.Server.Post("/contract", RouteInvokeContract);
 
             TemplateEngine.Server.Post("/contract/tx", RouteInvokeContractTx);
@@ -605,6 +607,42 @@ namespace Phantom.Wallet
             return null;
         }
 
+        private object RouteStake(HTTPRequest request)
+        {
+            var stakeAmount = request.GetVariable("stakeAmount");
+            var context = InitContext(request);
+
+            if (stakeAmount == null) {
+                PushError(request, "stakeAmount cannot be null!");
+                return null;
+            }
+
+            if (context["holdings"] is Holding[] balance)
+            {
+              var keyPair = GetLoginKey(request);
+              InvalidateCache(keyPair.Address);
+              var result = AccountController.CreateStakeSoulTransactionWithClaim(
+                      keyPair, stakeAmount
+                      ).Result;
+
+              if (result.GetType() == typeof(ErrorResult))
+              {
+                  return JsonConvert.SerializeObject(result, Formatting.Indented);
+              }
+
+              var contractTx = (string)result;
+
+              if (SendUtils.IsTxHashValid(contractTx))
+              {
+                  return contractTx;
+              }
+
+              PushError(request, contractTx);
+
+            }
+            return null;
+        }
+
         private object RouteInvokeContract(HTTPRequest request)
         {
             var chain = request.GetVariable("chain");
@@ -613,7 +651,7 @@ namespace Phantom.Wallet
             var param = request.GetVariable("params");
             var context = InitContext(request);
 
-            if (param == null) 
+            if (param == null)
 	    {
                 PushError(request, "Parameters cannot be null!");
                 return null;
@@ -624,7 +662,7 @@ namespace Phantom.Wallet
             var keyPair = GetLoginKey(request);
             var result = AccountController.InvokeContractGeneric(keyPair, chain, contract, method, paramList.ToArray()).Result;
 
-            if (result != null && result.GetType() == typeof(BigInteger)) 
+            if (result != null && result.GetType() == typeof(BigInteger))
 	    {
                 return result.ToString();
             }

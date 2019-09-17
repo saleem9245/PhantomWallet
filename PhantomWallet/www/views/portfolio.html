@@ -199,6 +199,11 @@ function Claim() {
         return;
   }
 
+  if (toFixed((changedamount)) < 0.1) {
+        bootbox.alert("You need a small drop of KCAL (+0.1) to be able to claim!");
+        return;
+  }
+
   $.post('/contract/tx',
      {
          chain: 'main',
@@ -213,7 +218,7 @@ function Claim() {
         // If /contract/tx works, call /tx/hash to check if the tx worked
         $.get('/tx/' + returnedData,
             function (returnedDataTX) {
-              //console.log(returnedDataTX)
+              console.log(returnedDataTX)
               // If .error defined, returns the custom error message
               if ((JSON.parse(returnedDataTX).error) != undefined) {
                 document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
@@ -240,8 +245,8 @@ function Claim() {
               $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
             });
      }).fail(function(e) {
-        console.log(e)
-        document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
+        console.log(JSON.stringify(e))
+        document.getElementById("wrapper-portfolio-confirm").innerHTML = JSON.stringify(e);
         $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
      })
 
@@ -297,14 +302,9 @@ function Stake() {
 
         if (result) {
 
-          $.post('/contract/tx',
+          $.post('/stake',
              {
-                 chain: 'main',
-                 contract: 'energy',
-                 method: 'Stake',
-                 params: JSON.stringify({
-                   params
-                 })
+                 stakeAmount: numberWithCommas(toFixed((changedamount*100000000)))
              },
              function (returnedData) {
                 //console.log(returnedData)
@@ -320,11 +320,13 @@ function Stake() {
                         //console.log(returnedDataTX)
                         setTimeout(function() {
                           // update kcal based on features
-                          document.getElementById("KCAL-amount").innerHTML = numberWithCommas(((document.getElementById("KCAL-amount").innerHTML).replace(/\,/g,'') - ((JSON.parse(returnedDataTX).fee) / Math.pow(10,10))).toFixed(10));
-                          $(document.getElementById("KCAL-amount")).addClass('flash-portfolio').delay(300).queue(function(next){
-                               $(this).removeClass('flash-portfolio');
-                               next();
-                          });
+                          if (document.getElementById("KCAL-amount") !== null) {
+                            document.getElementById("KCAL-amount").innerHTML = numberWithCommas(((document.getElementById("KCAL-amount").innerHTML).replace(/\,/g,'') - ((JSON.parse(returnedDataTX).fee) / Math.pow(10,10))).toFixed(10));
+                            $(document.getElementById("KCAL-amount")).addClass('flash-portfolio').delay(300).queue(function(next){
+                                 $(this).removeClass('flash-portfolio');
+                                 next();
+                            });
+                          }
                           // if amount exist and changed, flash the value
                           if (document.getElementById("SOUL-amount").innerHTML != numberWithCommas(futureamount)) {
                             document.getElementById("SOUL-amount").innerHTML = numberWithCommas(futureamount);
@@ -540,7 +542,7 @@ function MasterClaim() {
                 document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
                 $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
               } else {
-                console.log(returnedDataTX)
+                //console.log(returnedDataTX)
                 //changedamount = JSON.parse(returnedDataTX);
                 //futureamount = currentsoulamount + changedamount;
                 //futuresoulprice = futureamount * currentsoulpriceunit;

@@ -470,6 +470,40 @@ namespace Phantom.Wallet.Controllers
             }
         }
 
+        public async Task<object> CreateStakeSoulTransactionWithClaim(
+                KeyPair keyPair, string stakeAmount)
+        {
+          try
+          {
+            var bigIntAmount = UnitConversion.ToBigInteger(decimal.Parse(stakeAmount), 0);
+            var script = ScriptUtils.BeginScript()
+                  .CallContract("energy", "Stake", keyPair.Address, bigIntAmount)
+                  .CallContract("energy", "Claim", keyPair.Address, keyPair.Address)
+                  .AllowGas(keyPair.Address, Address.Null, 1, 9999)
+                  .SpendGas(keyPair.Address)
+                  .EndScript();
+
+            var nexusName = WalletConfig.Network;
+            var stakeTx = new Phantasma.Blockchain.Transaction(nexusName, "main", script, DateTime.UtcNow + TimeSpan.FromHours(1));
+
+            stakeTx.Sign(keyPair);
+
+            var txResult = await _phantasmaRpcService.SendRawTx.SendRequestAsync(stakeTx.ToByteArray(true).Encode());
+            Log.Information("txResult: " + txResult);
+            return txResult;
+          }
+          catch (RpcResponseException rpcEx)
+          {
+              Log.Error($"RPC Exception occurred: {rpcEx.RpcError.Message}");
+              return new ErrorResult { error = rpcEx.RpcError.Message };
+          }
+          catch (Exception ex)
+          {
+              Log.Error($"Exception occurred: {ex.Message}");
+              return new ErrorResult { error = ex.Message };
+          }
+        }
+
         public byte[] GetAddressScript(KeyPair keyPair)
         {
             List<object> param = new List<object>() { keyPair.Address };
