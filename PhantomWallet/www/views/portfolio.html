@@ -52,7 +52,7 @@
                 <td class="col-6"></td>
                 <td class="col-6"></td>
                 <td class="col-3"></td>
-                <td class="col-3" id="totalportfolio"></td>
+                <td class="col-3"><span id="totalportfolio"></span><br><span style="color:grey;font-size:.7em;display:block;" id="totalportfoliosats"></span></td>
               </tr>
           </tfoot>
       </table>
@@ -117,7 +117,7 @@ $(document).ready(function() {
   $("#loader-pie").hide();
   $("#loader-historical").hide();
   $("#container-historical-value").hide();
-
+  onLoad = 1;
   GetPieChart();
   // init portfolio chart on 3M
   getPortfolioChart('3M')
@@ -218,7 +218,7 @@ function Claim() {
         // If /contract/tx works, call /tx/hash to check if the tx worked
         $.get('/tx/' + returnedData,
             function (returnedDataTX) {
-              console.log(returnedDataTX)
+              //console.log(returnedDataTX)
               // If .error defined, returns the custom error message
               if ((JSON.parse(returnedDataTX).error) != undefined) {
                 document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
@@ -348,8 +348,15 @@ function Stake() {
                                  $(this).removeClass('flash-portfolio');
                                  next();
                             });
+                            // if total price sats exist and changed, flash the value
+                            document.getElementById("totalportfoliosats").innerHTML = numberWithCommas((document.getElementById("totalportfoliosats").innerHTML).slice(0, -5).replace(/\,/g,'') - changedamount) + ' SOUL';
+                            $(document.getElementById("totalportfoliosats")).addClass('flash-portfolio').delay(300).queue(function(next){
+                                 $(this).removeClass('flash-portfolio');
+                                 next();
+                            });
                           }
                           // call getstake and getpie getsoulmastersdetails after all other refresh
+                          onLoad = 0;
                           getStake();
                           setTimeout(function() {
                             GetPieChart();
@@ -798,7 +805,10 @@ function getPortfolioChart(timeframe) {
   $("#loader-historical").show();
 
   // start url pricing
-  urlforcombined = 'https://api.o3.network/v1/historical?currency=' + currency;
+  /// Temporary until o3 api points to cryptocompare
+  //urlforcombined = 'https://api.o3.network/v1/historical&currency=' + currency;
+  urlforcombined = 'https://api.o3.network/v1/price/SOUL?source=cryptocompare&currency=' + currency;
+  ///
   arraygraph = [];
   params = [];
   // build params for contract call
@@ -861,7 +871,6 @@ function getPortfolioChart(timeframe) {
         urlforcombined = urlforcombined + '&{{Symbol}}=' + amountkcalcombined;
       }
     {{/each}}
-
         $.ajax({
             xhrFields: {
                 withCredentials: !1
@@ -880,6 +889,8 @@ function getPortfolioChart(timeframe) {
                 var ohlc = [],
                     dataLength = parsedJson.result.data.data.length,
                     i = dataLength - 1;
+                /// Temporary until o3 api points to cryptocompare
+                /*
                 for (i; i >= 0; --i) {
                     // build array graph portfolio
                     ohlc.push([
@@ -891,6 +902,15 @@ function getPortfolioChart(timeframe) {
                       positivebal = true;
                     }
                 }
+                */
+                for (i; i >= 0; --i) {
+                    ohlc.push([
+                        (new Date(parsedJson.result.data.data[i].time).getTime()),
+                        (parsedJson.result.data.data[i].averageUSD) * amountsoulcombined
+                    ]);
+                    positivebal = true;
+                }
+                ///
                 if (positivebal == true) {
                   Highcharts.stockChart('container-historical-value', {
                       chart: {
@@ -1003,10 +1023,10 @@ function getPortfolioChart(timeframe) {
                   });
                   $("#loader-historical").hide();
                   // show portfolio graph
-                  $("#container-historical-value").fadeIn(1000);
+                  $("#container-historical-value").fadeIn(100);
                   // change dropdown balue based on timeframe selected
                   $("#historical-value").val(timeframe);
-                  $("#dropdown-historical-value").fadeIn(1000);
+                  $("#dropdown-historical-value").fadeIn(100);
                   // add currency to graph title
                   document.getElementById("portfolio-currency-title").innerHTML = currency;
                 } else {
@@ -1102,8 +1122,17 @@ function GetPieChart() {
         arraygraph.push({name: "SOUL - stakes", y: (stakesPrice)/valueTOTAL, oldColor: "#E8E8E8", sliced: true})
       }
 
-    // add total portfolio once calculated
-    document.getElementById("totalportfolio").innerHTML = currencysymbol + numberWithCommas(valueTOTALWithoutStakes.toFixed(0));
+    // add total portfolio once calculated (on load only)
+    if (onLoad == 1) {
+      document.getElementById("totalportfolio").innerHTML = currencysymbol + numberWithCommas(valueTOTALWithoutStakes.toFixed(0));
+      // Handle price difference and rounding issue
+      currentsoulamount = parseFloat((document.getElementById("SOUL-amount").innerHTML).replace(/\,/g,''));
+      if ((valueTOTALWithoutStakes/currentsoulprice) < currentsoulamount) {
+        document.getElementById("totalportfoliosats").innerHTML =  numberWithCommas(currentsoulamount) + ' SOUL';
+      } else {
+        document.getElementById("totalportfoliosats").innerHTML =  numberWithCommas((valueTOTALWithoutStakes/currentsoulprice).toFixed(0)) + ' SOUL';
+      }
+    }
 
     Highcharts.chart('container-pie', {
       chart: {
@@ -1184,7 +1213,7 @@ function GetPieChart() {
   })
 
   $("#loader-pie").hide();
-  $("#container-pie").fadeIn(1000);
+  $("#container-pie").fadeIn(100);
 
   if (valueTOTAL == 0 || Number.isNaN(valueTOTAL)) {
     $("#container-pie").hide();
