@@ -275,17 +275,17 @@ namespace Phantom.Wallet.Helpers
                         }
                         break;
 
-                    case EventKind.AddFriend:
+                    case EventKind.AddressLink:
                         {
                             var address = Serialization.Unserialize<Address>(evt.Data.Decode());
-                            description = $"{evt.EventAddress} added '{address.ToString()} to friends.'";
+                            description = $"{evt.EventAddress} linked to '{address.ToString()}'";
                         }
                         break;
 
-                    case EventKind.RemoveFriend:
+                    case EventKind.AddressUnlink:
                         {
                             var address = Serialization.Unserialize<Address>(evt.Data.Decode());
-                            description = $"{evt.EventAddress} removed '{address.ToString()} from friends.'";
+                            description = $"{evt.EventAddress} unlinked from '{address.ToString()}'";
                         }
                         break;
                 }
