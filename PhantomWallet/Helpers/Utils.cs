@@ -246,7 +246,7 @@ namespace Phantom.Wallet.Helpers
                             var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
                             amount = data.value;
                             var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.symbol).Decimals);
-                            description = $"Stake & Claim transaction: {amountDecimal.ToString("0,0.##########")} {data.symbol} staked in total";
+                            description = $"Stake & Claim transaction: {amountDecimal.ToString("#,0.##########")} {data.symbol} staked in total";
                         }
                         break;
 
@@ -255,7 +255,7 @@ namespace Phantom.Wallet.Helpers
                             var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
                             amount = data.value;
                             var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.symbol).Decimals);
-                            description = $"Unstake transaction: {amountDecimal.ToString("0,0.##########")} {data.symbol} staked in total";
+                            description = $"Unstake transaction: {amountDecimal.ToString("#,0.##########")} {data.symbol} staked in total";
                         }
                         break;
 
