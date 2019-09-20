@@ -36,6 +36,8 @@ namespace Phantom.Wallet.Controllers
 
         public static WalletConfigDto WalletConfig { get; set; }
 
+        public BigInteger MinimumFee = 100000;
+
         private static Serilog.Core.Logger Log = new LoggerConfiguration()
             .MinimumLevel.Debug().WriteTo.File(Utils.LogPath).CreateLogger();
 
@@ -219,7 +221,7 @@ namespace Phantom.Wallet.Controllers
 
                 var settleTxScript = ScriptUtils.BeginScript()
                     .CallContract("token", "SettleBlock", sourceChain, block)
-                    .AllowGas(keyPair.Address, Address.Null, 1, 9999)
+                    .AllowGas(keyPair.Address, Address.Null, MinimumFee, 9999)
                     .SpendGas(keyPair.Address)
                     .EndScript();
 
@@ -255,7 +257,7 @@ namespace Phantom.Wallet.Controllers
 
                 var script = isFungible
                     ? ScriptUtils.BeginScript()
-                        .AllowGas(keyPair.Address, Address.Null, 1, 9999)
+                        .AllowGas(keyPair.Address, Address.Null, MinimumFee, 9999)
                         .CrossTransferToken(Address.FromText(toChain.Address), symbol, keyPair.Address,
                             keyPair.Address, fee)
                         .CrossTransferToken(Address.FromText(toChain.Address), symbol, keyPair.Address,
@@ -264,7 +266,7 @@ namespace Phantom.Wallet.Controllers
                         .EndScript()
 
                     : ScriptUtils.BeginScript()
-                        .AllowGas(keyPair.Address, Address.Null, 1, 9999)
+                        .AllowGas(keyPair.Address, Address.Null, MinimumFee, 9999)
                         .CrossTransferNFT(Address.FromText(toChain.Address), symbol, keyPair.Address,
                             destinationAddress, bigIntAmount)
                         .SpendGas(keyPair.Address)
@@ -320,12 +322,12 @@ namespace Phantom.Wallet.Controllers
 
                 var script = isFungible
                     ? ScriptUtils.BeginScript()
-                        .AllowGas(keyPair.Address, Address.Null, 1, 9999)
+                        .AllowGas(keyPair.Address, Address.Null, MinimumFee, 9999)
                         .TransferTokens(symbol, keyPair.Address, destinationAddress, bigIntAmount)
                         .SpendGas(keyPair.Address)
                         .EndScript()
                     : ScriptUtils.BeginScript()
-                        .AllowGas(keyPair.Address, Address.Null, 1, 9999)
+                        .AllowGas(keyPair.Address, Address.Null, MinimumFee, 9999)
                         .TransferNFT(symbol, keyPair.Address, destinationAddress, bigIntAmount)
                         .SpendGas(keyPair.Address)
                         .EndScript();
@@ -383,7 +385,7 @@ namespace Phantom.Wallet.Controllers
                 var multisigScript = SendUtils.GenerateMultisigScript(settings);
 
                 var script = ScriptUtils.BeginScript()
-                       .AllowGas(keyPair.Address, Address.Null, 1, 9999)
+                       .AllowGas(keyPair.Address, Address.Null, MinimumFee, 9999)
                        .CallContract("account", "RegisterScript", keyPair.Address, multisigScript)
                        .SpendGas(keyPair.Address)
                        .EndScript();
@@ -413,7 +415,7 @@ namespace Phantom.Wallet.Controllers
             try
             {
                 var script = ScriptUtils.BeginScript()
-                       .AllowGas(keyPair.Address, Address.Null, 1, 9999)
+                       .AllowGas(keyPair.Address, Address.Null, MinimumFee, 9999)
                        .CallContract("account", "RegisterName", keyPair.Address, name)
                        .SpendGas(keyPair.Address)
                        .EndScript();
@@ -444,7 +446,7 @@ namespace Phantom.Wallet.Controllers
             try
             {
                 var script = ScriptUtils.BeginScript()
-                       .AllowGas(keyPair.Address, Address.Null, 1, 9999)
+                       .AllowGas(keyPair.Address, Address.Null, MinimumFee, 9999)
                         .CallContract(contract, method, paramArray)
                        .SpendGas(keyPair.Address)
                        .EndScript();
@@ -479,7 +481,7 @@ namespace Phantom.Wallet.Controllers
             var script = ScriptUtils.BeginScript()
                   .CallContract("energy", "Claim", keyPair.Address, keyPair.Address)
                   .CallContract("energy", "Stake", keyPair.Address, bigIntAmount)
-                  .AllowGas(keyPair.Address, Address.Null, 1, 9999)
+                  .AllowGas(keyPair.Address, Address.Null, MinimumFee, 9999)
                   .SpendGas(keyPair.Address)
                   .EndScript();
 
@@ -529,7 +531,7 @@ namespace Phantom.Wallet.Controllers
             {
                 var script = ScriptUtils
                         .BeginScript()
-                        .AllowGas(keyPair.Address, Address.Null, 1, 9999)
+                        .AllowGas(keyPair.Address, Address.Null, MinimumFee, 9999)
                         .CallContract(contract, method, paramArray)
                         .SpendGas(keyPair.Address)
                         .EndScript();

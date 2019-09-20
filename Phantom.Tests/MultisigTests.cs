@@ -23,7 +23,7 @@ using static Phantasma.Blockchain.Contracts.Native.TokenContract;
 namespace Phantom.Tests
 {
     [TestClass]
-    public class MultisigTests 
+    public class MultisigTests
     {
 
         public static byte[] GenerateMultisigScript(MultisigSettings settings)
@@ -154,7 +154,7 @@ namespace Phantom.Tests
             var simulator = new ChainSimulator(owner, 1234);
             var minSignees = 3;
 
-            List<Address> addressList = new List<Address>() { 
+            List<Address> addressList = new List<Address>() {
                 multiAddr.Address,
                 signee1.Address,
                 signee2.Address
@@ -176,7 +176,7 @@ namespace Phantom.Tests
 
             // register script
             simulator.GenerateCustomTransaction(multiAddr,
-                () => ScriptUtils.BeginScript().AllowGas(multiAddr.Address, Address.Null, 1, 9999)
+                () => ScriptUtils.BeginScript().AllowGas(multiAddr.Address, Address.Null, 100000, 9999)
                     .CallContract("account", "RegisterScript", multiAddr.Address, script).SpendGas(multiAddr.Address)
                     .EndScript());
             simulator.EndBlock();
@@ -222,7 +222,7 @@ namespace Phantom.Tests
             var simulator = new ChainSimulator(owner, 1234);
             var minSignees = 2;
 
-            List<Address> addressList = new List<Address>() { 
+            List<Address> addressList = new List<Address>() {
                 multiAddr.Address,
                 signee1.Address,
                 signee2.Address
@@ -290,7 +290,7 @@ namespace Phantom.Tests
             var simulator = new ChainSimulator(owner, 1234);
             var minSignees = 4;
 
-            List<Address> addressList = new List<Address>() { 
+            List<Address> addressList = new List<Address>() {
                 multiAddr.Address,
                 signee1.Address,
                 signee2.Address
@@ -356,7 +356,7 @@ namespace Phantom.Tests
             var simulator = new ChainSimulator(owner, 1234);
             var minSignees = 2;
 
-            List<Address> addressList = new List<Address>() { 
+            List<Address> addressList = new List<Address>() {
                 multiAddr.Address,
                 signee1.Address,
                 signee2.Address
@@ -420,7 +420,7 @@ namespace Phantom.Tests
 
             var minSignees = 2;
 
-            List<Address> addressList = new List<Address>() { 
+            List<Address> addressList = new List<Address>() {
                 multiAddr.Address,
                 signee1.Address,
                 signee2.Address
@@ -488,7 +488,7 @@ namespace Phantom.Tests
 
             var minSignees = 4;
 
-            List<Address> addressList = new List<Address>() { 
+            List<Address> addressList = new List<Address>() {
                 multiAddr.Address,
                 signee1.Address,
                 signee2.Address,
@@ -558,7 +558,7 @@ namespace Phantom.Tests
 
             var minSignees = 4;
 
-            List<Address> addressList = new List<Address>() { 
+            List<Address> addressList = new List<Address>() {
                 multiAddr.Address,
                 signee1.Address,
                 signee2.Address,
@@ -628,7 +628,7 @@ namespace Phantom.Tests
 
             var minSignees = 4;
 
-            List<Address> addressList = new List<Address>() { 
+            List<Address> addressList = new List<Address>() {
                 multiAddr.Address,
                 signee1.Address,
                 signee2.Address,
