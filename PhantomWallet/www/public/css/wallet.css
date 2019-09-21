@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Rubik');
 
 .nav > li > a {
-    padding: 20px;
+    padding: 15px;
     align-content: left;
 }
 
@@ -104,7 +104,7 @@
       font-size: 0.75em !important;
   }
 
-  .portfolio {
+  .portfolio, .swap {
       margin-top: initial !important;
   }
 
@@ -208,7 +208,7 @@
 
   .settings-row-item input {
       font-size: .8em;
-}
+  }
 
 }
 
@@ -305,6 +305,11 @@ body {
 .icon-bar {
     background-color: white;
 }
+
+.fa-sync:before {
+    color: #337ab7;
+}
+
 
 .wallet-title {
     font-size: 2em;
@@ -960,6 +965,10 @@ ul.nav.nav-pills {
     }
 }
 
+.dark-mode .public-address {
+    color: #7C95AB !important;
+}
+
 .public-address {
     color: #7C95AB;
     font-size: 20px;
@@ -1027,6 +1036,10 @@ ul.nav.nav-pills {
     display: flex;
     width: 40%;
     flex: 1;
+}
+
+.highlighted {
+    color: #17B0E7;
 }
 
 .bootstrap-select {
@@ -1119,6 +1132,14 @@ ul.nav.nav-pills {
     text-align: center;
 }
 
+.pause-spinner {
+    animation-play-state: paused;
+}
+
+#chainswapdiv i:hover {
+    cursor: pointer;
+}
+
 .wrapper-chains {
     padding: 1em;
     border-radius: 1em;
@@ -1145,6 +1166,10 @@ ul.nav.nav-pills {
     font-size: 1.3em;
 }
 
+.swap h4 {
+    font-size: 1.5em;
+}
+
 .contracts .wrapper, .contracts select, .contracts input, .send select, .send input {
     margin: 2em 0;
 }
@@ -1155,7 +1180,17 @@ ul.nav.nav-pills {
     font-size: 1.2em;
 }
 
-.contracts .button:hover, .portfolio .button:hover, .settings .button:hover, .send .button:hover, .contracts .selected-chain, .contracts .selected-method {
+.swap select {
+    margin-bottom: 1em;
+    width: 25em;
+    height: 2.5em;
+}
+
+.swap input {
+
+}
+
+.contracts .button:hover, .portfolio .button:hover, .settings .button:hover, .send .button:hover, .swap .button:hover, .contracts .selected-chain, .contracts .selected-method {
     background-color: #17B0E7 !important;
     color: #fff !important;
 }
@@ -1173,7 +1208,7 @@ ul.nav.nav-pills {
     font-size: .8em;
 }
 
-.send .button {
+.send .button, .swap .button {
     padding: 1em 1em;
     color: #17B0E7;
     border: 2px solid #17B0E7;
@@ -1190,6 +1225,12 @@ ul.nav.nav-pills {
     width: 20%;
     text-align: center;
     margin: 0em auto 2em !important;
+}
+
+.parameters-swap-input {
+    width: 70%;
+    text-align: center;
+    margin: 0 auto;
 }
 
 .button:focus, select:focus, th:focus {
@@ -1478,6 +1519,10 @@ input[type="search"]::-webkit-search-cancel-button {
 
 .portfolio {
     margin-top: -5em;
+}
+
+.swap {
+    margin-top: -2.5em;
 }
 
 .flash-portfolio {

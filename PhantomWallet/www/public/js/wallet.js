@@ -188,6 +188,51 @@ function toggleNightMode() {
   }
 }
 
+// function toggle on/off cosmic/chain swap
+function toggleSwap() {
+  $('#cosmicswap').toggleClass('highlighted');
+  $('#chainswap').toggleClass('highlighted');
+
+  if($('#cosmicswapdiv').css('display') === 'none')
+  {
+    $('#cosmicswapdiv').show();
+    $('#chainswapdiv').hide();
+  }
+  else
+  {
+    $('#cosmicswapdiv').hide();
+    $('#chainswapdiv').show();
+  }
+}
+
+// function toggle neo/phantasma chains
+function toggleChains() {
+  if ($('#neotophantasma').css('display') === 'none')
+    {
+      $('#neotophantasma').show();
+      $('#phantasmatoneo').hide();
+      $(".fa-sync").addClass("fa-spin");
+      document.getElementById("chainswapdesc").innerHTML = 'From NEO Blockchain to Phantasma Blockchain';
+      setTimeout(function() {
+        $(".fa-sync").removeClass("fa-spin");
+      }, 1000);
+    }
+    else
+    {
+      $('#neotophantasma').hide();
+      $('#phantasmatoneo').show();
+      $(".fa-sync").addClass("fa-spin");
+      document.getElementById("chainswapdesc").innerHTML = 'From Phantasma Blockchain to NEO Blockchain';
+      setTimeout(function() {
+        $(".fa-sync").removeClass("fa-spin");
+      }, 1000);
+    }
+    $('#neoaddresslink').val('');
+    $('#neohash').val('');
+    $('#neoamount').val('');
+    $('#neodstaddress').val('');
+}
+
 // function fixed decimals value
 function toFixed(x) {
   if (Math.abs(x) < 1.0) {

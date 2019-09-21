@@ -1,0 +1,164 @@
+<h3 class="tab-title">Swap assets</h3>
+
+<div class="swap">
+    <div id="sendSpinner" class="loading">Loading&#8230;</div>
+    <div style="font-size:2em;display:flex;justify-content: center;">
+      <span style="margin:1em;display:inline-block;" id="cosmicswap">Cosmic Swap</span>
+      <div style="margin-top:1em;display:inline-block;">
+        <input class="tgl tgl-flat" id="cb4" type="checkbox" onclick="toggleSwap()">
+        <label class="tgl-btn" style="margin: 0 auto;" for="cb4"></label>
+      </div>
+      <span style="margin:1em;display:inline-block;" id="chainswap" class="highlighted">Chain Swap</span>
+    </div>
+    <div id="chainswapdiv" class="container" style="margin-top:0">
+      <div id="chainswapdesc" style="margin:1em 1em 2em 1em;font-style:italic;color:#17B0E7;display:inline-block;font-size:1.2em;">From NEO Blockchain to Phantasma Blockchain</div>
+      <i style="display:inline-block;font-size: 1.5em;" class="fas fa-sync" onclick="toggleChains()"></i>
+      <div id="neotophantasma">
+          <div class="row setup-content">
+              <div class="col-xs-12">
+                  <div class="col-md-12">
+                      <div>
+                          <h4 class="control-label">Step 1) Link NEO address</h4>
+                          <h5 style="font-size: 1.15em;">Current NEO address: <span id="currentlink">Ae2d6qj91YL3LVUMkza7WQsaTYjzjHm4z1</span></h5>
+                          <input type="text" class="form-control parameters-swap-input" id="neoaddresslink" style="text-align:center;" placeholder="Enter address">
+                          <button class="btn-primary nextBtn btn-lg button" type="button" onclick="updateLink()">UPDATE</button>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="row setup-content">
+              <div class="col-xs-12">
+                  <div class="col-md-12">
+                      <h4 class="control-label">Step 2) Send NEP-5 SOUL</h4>
+                      <div class="center">
+                          <p class="public-address" style="display:inline-block;">
+                              <em><span id="currentinteropaddress">AQVh2pG732YvtNaxEGkQUei3YA4cvo7d2i</span></em>
+                          </p>
+                          <span class="copy-pad" style="font-size: 20px;">
+                              <a href="#">
+                                  <i class="fas fa-copy"></i>
+                              </a>
+                          </span>
+                      </div>
+                   </div>
+               </div>
+          </div>
+          <div class="row setup-content">
+              <div class="col-xs-12">
+                  <div class="col-md-12">
+                      <h4 class="control-label">Step 3) Enter transaction hash</h4>
+                      <input type="text" class="form-control parameters-swap-input" id="neohash" style="text-align:center;" placeholder="Enter hash">
+                      <button class="btn-primary nextBtn btn-lg button" type="button" onclick="swapNEOToPhantasma()">SWAP ASSETS</button>
+                      <div id="wrapper-swapneo-confirm" style="opacity: 1;display:none;">Transaction pending</div>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <div id="phantasmatoneo" style="display:none;">
+            <div class="row setup-content">
+                <div class="col-xs-12">
+                    <div class="col-md-12">
+                        <h4 class="control-label">Step 1) Select token</h4>
+                        <select id="select-token-form"></select>
+                        <h4 class="control-label">Step 2) Enter amount</h4>
+                        <input class="form-control parameters-swap-input" id="neoamount" type="number" style="text-align:center;" placeholder="Enter amount">
+                    </div>
+                </div>
+            </div>
+            <div class="row setup-content">
+                <div class="col-xs-12">
+                    <div class="col-md-12">
+                        <h4 class="control-label" style="margin-top:1em;">Step 3) Enter NEO address</h4>
+                        <input type="text" class="form-control parameters-swap-input" id="neodstaddress" style="text-align:center;" placeholder="Enter address">
+                        <button class="btn-success btn-lg button" type="button" onclick="swapPhantasmaToNEO()">SWAP ASSETS</button>
+                        <div id="wrapper-swapphantasma-confirm" style="opacity: 1;display:none;">Transaction pending</div>
+                    </div>
+                </div>
+            </div>
+      </div>
+    </div>
+</div>
+<div id="cosmicswapdiv" class="container" style="margin-top:1em;display:none;">
+  <h4>Not available yet, coming soon!</h4>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+
+        $('#sendSpinner').hide();
+
+        let tokenBox = $('#select-token-form');
+        tokenBox.find('option').remove();
+
+        {{#each chainTokens}}
+        if ('{{Symbol}}' == 'SOUL' || '{{Symbol}}' == 'NEO' || '{{Symbol}}' == 'GAS') {
+          formatedAmount = numberWithCommas('{{Amount}}');
+          tokenBox.append($('<option>', {value:'{{Symbol}}', text:'{{Name}} ({{Symbol}}) - ' + formatedAmount}));
+        }
+        {{/each}}
+
+    })
+
+
+    function swapPhantasmaToNEO() {
+
+      let amount = $("#neoamount").val().replace(/\,/g,'');
+      let target_address = $("#neodstaddress").val();
+
+      if (parseInt(amount) <= 0) {
+          bootbox.alert("Please insert a valid amount!");
+          return;
+      }
+
+      if (target_address.length < 34 || !target_address.startsWith('A')) {
+          bootbox.alert("Please insert a valid address!");
+          return;
+      }
+
+    }
+
+    function swapNEOToPhantasma() {
+
+      let hash = $("#neohash").val();
+
+      if (hash.length == 0) {
+          bootbox.alert("Please insert a valid transaction hash!");
+          return;
+      }
+
+    }
+
+    function updateLink() {
+
+      let target_address_link = $("#neoaddresslink").val();
+
+      if (target_address_link.length < 34 || !target_address_link.startsWith('A')) {
+          bootbox.alert("Please insert a valid address!");
+          return;
+      }
+
+      var params = [];
+      // build params for contract call
+      params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
+      params[1] = { name: 'target', type: 'Object', input: target_address_link, info: '' }
+
+      $.post('/contract/tx',
+         {
+             chain: 'main',
+             contract: 'interop',
+             method: 'RegisterLink',
+             params: JSON.stringify({
+               params
+             })
+         },
+         function (returnedData) {
+            console.log(returnedData)
+         }
+       ).fail(function(e) {
+          console.log(e)
+       })
+
+    }
+
+</script>

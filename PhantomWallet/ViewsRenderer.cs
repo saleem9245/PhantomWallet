@@ -349,6 +349,10 @@ namespace Phantom.Wallet
                     UpdateSendContext(context, keyPair, request);
                     break;
 
+                case "swap":
+                    UpdateSendContext(context, keyPair, request);
+                    break;
+
                 default: break;
             }
 
@@ -801,6 +805,7 @@ namespace Phantom.Wallet
             new MenuEntry(){ Id = "portfolio", Icon = "fa-wallet", Caption = "Portfolio", Enabled = true, IsSelected = true},
             new MenuEntry(){ Id = "send", Icon = "fa-paper-plane", Caption = "Send", Enabled = true, IsSelected = false},
             new MenuEntry(){ Id = "receive", Icon = "fa-qrcode", Caption = "Receive", Enabled = true, IsSelected = false},
+            new MenuEntry(){ Id = "swap", Icon = "fa-random", Caption = "Swap", Enabled = true, IsSelected = false},
             new MenuEntry(){ Id = "history", Icon = "fa-receipt", Caption = "History", Enabled = true, IsSelected = false},
             //new MenuEntry(){ Id = "storage", Icon = "fa-hdd", Caption = "Storage", Enabled = true, IsSelected = false},
             //new MenuEntry(){ Id = "exchange", Icon = "fa-chart-bar", Caption = "Exchange", Enabled = true, IsSelected = false},
