@@ -20,7 +20,7 @@
                       <div>
                           <h4 class="control-label">Step 1) Link NEO address</h4>
                           <h5 style="font-size: 1.15em;">Current NEO address: <span id="currentlink">Ae2d6qj91YL3LVUMkza7WQsaTYjzjHm4z1</span></h5>
-                          <input type="text" class="form-control parameters-swap-input" id="neoaddresslink" style="text-align:center;" placeholder="Enter address">
+                          <input type="search" class="form-control parameters-swap-input" id="neoaddresslink" style="text-align:center;" placeholder="Enter address">
                           <button class="btn-primary nextBtn btn-lg button" type="button" onclick="updateLink()">UPDATE</button>
                       </div>
                   </div>
@@ -29,10 +29,10 @@
           <div class="row setup-content">
               <div class="col-xs-12">
                   <div class="col-md-12">
-                      <h4 class="control-label">Step 2) Send NEP-5 SOUL</h4>
+                      <h4 class="control-label">Step 2) Send NEO, GAS or NEP-5 SOUL</h4>
                       <div class="center">
                           <p class="public-address" style="display:inline-block;">
-                              <em><span id="currentinteropaddress">AQVh2pG732YvtNaxEGkQUei3YA4cvo7d2i</span></em>
+                              <em><span id="currentplatformaddress"></span></em>
                           </p>
                           <span class="copy-pad" style="font-size: 20px;">
                               <a href="#">
@@ -47,7 +47,7 @@
               <div class="col-xs-12">
                   <div class="col-md-12">
                       <h4 class="control-label">Step 3) Enter transaction hash</h4>
-                      <input type="text" class="form-control parameters-swap-input" id="neohash" style="text-align:center;" placeholder="Enter hash">
+                      <input type="search" class="form-control parameters-swap-input" id="neohash" style="text-align:center;" placeholder="Enter hash">
                       <button class="btn-primary nextBtn btn-lg button" type="button" onclick="swapNEOToPhantasma()">SWAP ASSETS</button>
                       <div id="wrapper-swapneo-confirm" style="opacity: 1;display:none;">Transaction pending</div>
                   </div>
@@ -69,7 +69,7 @@
                 <div class="col-xs-12">
                     <div class="col-md-12">
                         <h4 class="control-label" style="margin-top:1em;">Step 3) Enter NEO address</h4>
-                        <input type="text" class="form-control parameters-swap-input" id="neodstaddress" style="text-align:center;" placeholder="Enter address">
+                        <input type="search" class="form-control parameters-swap-input" id="neodstaddress" style="text-align:center;" placeholder="Enter address">
                         <button class="btn-success btn-lg button" type="button" onclick="swapPhantasmaToNEO()">SWAP ASSETS</button>
                         <div id="wrapper-swapphantasma-confirm" style="opacity: 1;display:none;">Transaction pending</div>
                     </div>
@@ -97,6 +97,20 @@
           tokenBox.append($('<option>', {value:'{{Symbol}}', text:'{{Name}} ({{Symbol}}) - ' + formatedAmount}));
         }
         {{/each}}
+
+        $.get('/platforms/',
+            function (returnedDataPlatforms) {
+              //console.log(returnedDataTX)
+              var pLength = (JSON.parse(returnedDataPlatforms)).length,
+                  dstaddress = '',
+                  i = 0;
+              for (i; i < pLength; i += 1) {
+                if (JSON.parse(returnedDataPlatforms)[i].platform == 'neo') {
+                  dstaddress = JSON.parse(returnedDataPlatforms)[i].address
+                }
+              }
+              document.getElementById("currentplatformaddress").innerHTML = dstaddress;
+            })
 
     })
 

@@ -224,6 +224,8 @@ namespace Phantom.Wallet
 
             TemplateEngine.Server.Get("/chains", RouteChains);
 
+            TemplateEngine.Server.Get("/platforms", RoutePlatforms);
+
             TemplateEngine.Server.Post("/config", RouteConfig);
 
             TemplateEngine.Server.Get("/tx/{txhash}", RouteTransaction);
@@ -681,6 +683,13 @@ namespace Phantom.Wallet
             return json;
         }
 
+        private object RoutePlatforms(HTTPRequest request)
+        {
+            var platforms = AccountController.PhantasmaPlatforms;
+            string json = JsonConvert.SerializeObject(platforms, Formatting.Indented);
+            return json;
+        }
+
         private object RouteConfig(HTTPRequest request)
         {
             var mode = request.GetVariable("mode");
@@ -727,36 +736,35 @@ namespace Phantom.Wallet
         {
             var name = request.GetVariable("name");
             var context = InitContext(request);
-            if (AccountContract.ValidateName(name))
+
+            if (context["holdings"] is Holding[] balance)
             {
-                if (context["holdings"] is Holding[] balance)
+                var kcalBalance = balance.SingleOrDefault(b => b.Symbol == "KCAL" && b.Chain == "main");
+                if (kcalBalance.Amount > 0.1m) //RegistrationCost
                 {
-                    var kcalBalance = balance.SingleOrDefault(b => b.Symbol == "KCAL" && b.Chain == "main");
-                    if (kcalBalance.Amount > 0.1m) //RegistrationCost
+                    var keyPair = GetLoginKey(request);
+                    var result = AccountController.RegisterName(keyPair, name).Result;
+
+                    if (result.GetType() == typeof(ErrorResult))
                     {
-                        var keyPair = GetLoginKey(request);
-                        var result = AccountController.RegisterName(keyPair, name).Result;
-
-                        if (result.GetType() == typeof(ErrorResult))
-                        {
-                            return JsonConvert.SerializeObject(result, Formatting.Indented);
-                        }
-
-                        var registerTx = (string) result;
-
-                        if (SendUtils.IsTxHashValid(registerTx))
-                        {
-                            return registerTx;
-                        }
-
-                        PushError(request, registerTx);
+                        return JsonConvert.SerializeObject(result, Formatting.Indented);
                     }
-                    else
+
+                    var registerTx = (string) result;
+
+                    if (SendUtils.IsTxHashValid(registerTx))
                     {
-                        PushError(request, "You need a small drop of KCAL (+0.1) to register a name.");
+                        return registerTx;
                     }
+
+                    PushError(request, registerTx);
+                }
+                else
+                {
+                    PushError(request, "You need a small drop of KCAL (+0.1) to register a name.");
                 }
             }
+
             else
             {
                 PushError(request, "Error while registering name.");

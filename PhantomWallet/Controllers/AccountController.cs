@@ -636,6 +636,22 @@ namespace Phantom.Wallet.Controllers
 
         private List<ChainDto> _phantasmaChains;
 
+        public List<PlatformDto> PhantasmaPlatforms
+        {
+            get
+            {
+                if (_phantasmaPlatforms != null && _phantasmaPlatforms.Any())
+                {
+                    return _phantasmaPlatforms;
+                }
+
+                _phantasmaPlatforms = GetPhantasmaPlatforms();
+                return _phantasmaPlatforms;
+            }
+        }
+
+        private List<PlatformDto> _phantasmaPlatforms;
+
         public List<TokenDto> PhantasmaTokens
         {
             get
@@ -668,6 +684,24 @@ namespace Phantom.Wallet.Controllers
                 Debug.WriteLine($"Exception occurred: {ex.Message}");
             }
             return chains;
+        }
+
+        private List<PlatformDto> GetPhantasmaPlatforms()
+        {
+            List<PlatformDto> platforms = null;
+            try
+            {
+                platforms = _phantasmaRpcService.GetPlatforms.SendRequestAsync().Result.ToList();
+            }
+            catch (RpcResponseException rpcEx)
+            {
+                Debug.WriteLine($"RPC Exception occurred: {rpcEx.RpcError.Message}");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Exception occurred: {ex.Message}");
+            }
+            return platforms;
         }
 
         private List<TokenDto> GetPhantasmaTokens()
