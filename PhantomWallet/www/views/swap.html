@@ -34,10 +34,10 @@
                           <p class="public-address" style="display:inline-block;">
                               <em><span id="currentplatformaddress"></span></em>
                           </p>
-                          <span class="copy-pad" style="font-size: 20px;">
-                              <a href="#">
-                                  <i class="fas fa-copy"></i>
-                              </a>
+                          <span id="padcurrentplatformaddress" class="copy-pad" style="font-size: 20px;">
+                            <a href="#">
+                                <i class="fas fa-copy"></i>
+                            </a>
                           </span>
                       </div>
                    </div>
@@ -110,6 +110,7 @@
                 }
               }
               document.getElementById("currentplatformaddress").innerHTML = dstaddress;
+              document.getElementById("padcurrentplatformaddress").addEventListener('click', function(){ copyText(dstaddress, 'Address');}, false);
             })
 
     })
