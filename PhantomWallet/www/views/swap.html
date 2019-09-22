@@ -22,6 +22,9 @@
                           <h5 style="font-size: 1.15em;">Current NEO address<br><span id="currentlink" class="public-address">Ae2d6qj91YL3LVUMkza7WQsaTYjzjHm4z1</span><br></h5>
                           <input type="search" class="form-control parameters-swap-input" id="neoaddresslink" style="text-align:center;" placeholder="Enter NEO address">
                           <button class="btn-primary nextBtn btn-lg button" type="button" onclick="updateLink()">UPDATE</button>
+                          <div id="wrapper-link-confirm" style="opacity:0;margin-bottom:1em;">
+                            Transaction
+                          </div>
                       </div>
                   </div>
               </div>
@@ -29,7 +32,7 @@
           <div class="row setup-content">
               <div class="col-xs-12">
                   <div class="col-md-12">
-                      <h4 class="control-label">Step 2) Send NEO, GAS or NEP-5 SOUL</h4>
+                      <h4 class="control-label">Step 2) Send NEO, GAS or SOUL</h4>
                       <div class="center">
                           <p class="public-address" style="display:inline-block;">
                               <em><span id="currentplatformaddress"></span></em>
@@ -49,7 +52,7 @@
                       <h4 class="control-label">Step 3) Enter transaction hash</h4>
                       <input type="search" class="form-control parameters-swap-input" id="neohash" style="text-align:center;" placeholder="Enter transaction hash">
                       <button class="btn-primary nextBtn btn-lg button" type="button" onclick="swapNEOToPhantasma()">SWAP ASSETS</button>
-                      <div id="wrapper-swapneo-confirm" style="opacity: 1;display:none;">Transaction pending</div>
+                      <div id="wrapper-swapneo-confirm" style="opacity:0;">Transaction</div>
                   </div>
               </div>
           </div>
@@ -71,7 +74,7 @@
                         <h4 class="control-label" style="margin-top:1em;">Step 3) Enter NEO address</h4>
                         <input type="search" class="form-control parameters-swap-input" id="neodstaddress" style="text-align:center;" placeholder="Enter NEO address">
                         <button class="btn-success btn-lg button" type="button" onclick="swapPhantasmaToNEO()">SWAP ASSETS</button>
-                        <div id="wrapper-swapphantasma-confirm" style="opacity: 1;display:none;">Transaction pending</div>
+                        <div id="wrapper-swapphantasma-confirm" style="opacity:0;">Transaction</div>
                     </div>
                 </div>
             </div>
@@ -118,6 +121,8 @@
 
     function swapPhantasmaToNEO() {
 
+      $("#wrapper-swapphantasma-confirm").fadeTo(1, 0);
+
       let token = $("#select-token-form").val();
       let amount = $("#neoamount").val().replace(/\,/g,'');
       let target_address = $("#neodstaddress").val();
@@ -137,9 +142,66 @@
           return;
       }
 
+      $('#sendSpinner').show();
+      bootbox.confirm({
+          title: "Swap confirmation",
+          message: "Swap <strong>" +
+              numberWithCommas(amount) +
+              " " +
+              token +
+              "</strong> to NEO address <strong>" +
+              target_address +
+              "</strong>?",
+          buttons: {
+              cancel: {
+                  label: '<i class="fa fa-times"></i> Cancel'
+              },
+              confirm: {
+                  label: '<i class="fa fa-check"></i> Confirm'
+              }
+          },
+          callback: function(result) {
+
+            if (result) {
+              $.post('/sendrawtx',
+                  {
+                      fungible: 'True', token: token, amount: amount, dest: target_address, chain: 'main' , destChain: 'main'
+                  },
+                  function (returnedData) {
+                    //console.log(returnedData)
+                    // If /contract/tx works, call /tx/hash to check if the tx worked
+                    $.get('/tx/' + returnedData,
+                        function (returnedDataTX) {
+                          //console.log(returnedDataTX)
+                          // If .error defined, returns the custom error message
+                          if ((JSON.parse(returnedDataTX).error) != undefined) {
+                            document.getElementById("wrapper-swapphantasma-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
+                            $("#wrapper-swapphantasma-confirm").fadeTo("slow", 1);
+                          } else {
+                            // If it works, returns the tx link
+                            document.getElementById("wrapper-swapphantasma-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                            $("#wrapper-swapphantasma-confirm").fadeTo("slow", 1);
+                          }
+                        }).fail(function(e) {
+                          console.log(JSON.stringify(e))
+                          document.getElementById("wrapper-swapphantasma-confirm").innerHTML = e;
+                          $("#wrapper-swapphantasma-confirm").fadeTo("slow", 1);
+                        });
+                  }).fail(function() {
+                    console.log(JSON.stringify(e.statusText))
+                    document.getElementById("wrapper-swapphantasma-confirm").innerHTML = JSON.stringify(e.statusText);
+                    $("#wrapper-swapphantasma-confirm").fadeTo("slow", 1);
+                  });
+            }
+            $('#sendSpinner').hide();
+          }
+      });
+
     }
 
     function swapNEOToPhantasma() {
+
+      $("#wrapper-swapneo-confirm").fadeTo(1, 0);
 
       let hash = $("#neohash").val();
 
@@ -158,25 +220,71 @@
       params[1] = { name: 'platform', type: 'String', input: 'neo', info: '' }
       params[2] = { name: 'hash', type: 'Object', input: hash, info: '' }
 
-      $.post('/contract',
-         {
-             chain: 'main',
-             contract: 'interop',
-             method: 'SettleTransaction',
-             params: JSON.stringify({
-               params
-             })
-         },
-         function (returnedData) {
-            console.log(returnedData)
-         }
-       ).fail(function(e) {
-          console.log(e)
-       })
+      $('#sendSpinner').show();
+      bootbox.confirm({
+          title: "Swap confirmation",
+          message: "Validate <strong>" +
+              hash +
+              "<br>and release the corresponding assets on Phantasma" +
+              "</strong>?",
+          buttons: {
+              cancel: {
+                  label: '<i class="fa fa-times"></i> Cancel'
+              },
+              confirm: {
+                  label: '<i class="fa fa-check"></i> Confirm'
+              }
+          },
+          callback: function(result) {
+
+            if (result) {
+
+              $.post('/contract/tx',
+                 {
+                     chain: 'main',
+                     contract: 'interop',
+                     method: 'SettleTransaction',
+                     params: JSON.stringify({
+                       params
+                     })
+                 },
+                 function (returnedData) {
+                   //console.log(returnedData)
+                   // If /contract/tx works, call /tx/hash to check if the tx worked
+                   $.get('/tx/' + returnedData,
+                       function (returnedDataTX) {
+                         //console.log(returnedDataTX)
+                         // If .error defined, returns the custom error message
+                         if ((JSON.parse(returnedDataTX).error) != undefined) {
+                           document.getElementById("wrapper-swapneo-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
+                           $("#wrapper-swapneo-confirm").fadeTo("slow", 1);
+                         } else {
+                           // If it works, returns the tx link
+                           document.getElementById("wrapper-swapneo-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                           $("#wrapper-swapneo-confirm").fadeTo("slow", 1);
+                         }
+                       }).fail(function(e) {
+                         console.log(JSON.stringify(e))
+                         document.getElementById("wrapper-swapneo-confirm").innerHTML = e;
+                         $("#wrapper-swapneo-confirm").fadeTo("slow", 1);
+                       });
+                 }
+               ).fail(function(e) {
+                 console.log(JSON.stringify(e.statusText))
+                 document.getElementById("wrapper-swapneo-confirm").innerHTML = JSON.stringify(e.statusText);
+                 $("#wrapper-swapneo-confirm").fadeTo("slow", 1);
+               })
+
+             }
+             $('#sendSpinner').hide();
+           }
+        });
 
     }
 
     function updateLink() {
+
+      $("#wrapper-link-confirm").fadeTo(1, 0);
 
       let target_address_link = $("#neoaddresslink").val();
 
@@ -190,21 +298,66 @@
       params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
       params[1] = { name: 'target', type: 'Object', input: target_address_link, info: '' }
 
-      $.post('/contract/tx',
-         {
-             chain: 'main',
-             contract: 'interop',
-             method: 'RegisterLink',
-             params: JSON.stringify({
-               params
-             })
-         },
-         function (returnedData) {
-            console.log(returnedData)
-         }
-       ).fail(function(e) {
-          console.log(e)
-       })
+      $('#sendSpinner').show();
+      bootbox.confirm({
+          title: "Address link confirmation",
+          message: "Link <strong>" +
+              target_address_link +
+              " on NEO Blockchain with " +
+              " {{address}} on Phantasma Blockchain" +
+              "</strong>?",
+          buttons: {
+              cancel: {
+                  label: '<i class="fa fa-times"></i> Cancel'
+              },
+              confirm: {
+                  label: '<i class="fa fa-check"></i> Confirm'
+              }
+          },
+          callback: function(result) {
+
+            if (result) {
+
+              $.post('/contract/tx',
+                 {
+                     chain: 'main',
+                     contract: 'interop',
+                     method: 'RegisterLink',
+                     params: JSON.stringify({
+                       params
+                     })
+                 },
+                 function (returnedData) {
+                   //console.log(returnedData)
+                   // If /contract/tx works, call /tx/hash to check if the tx worked
+                   $.get('/tx/' + returnedData,
+                       function (returnedDataTX) {
+                         //console.log(returnedDataTX)
+                         // If .error defined, returns the custom error message
+                         if ((JSON.parse(returnedDataTX).error) != undefined) {
+                           document.getElementById("wrapper-link-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
+                           $("#wrapper-link-confirm").fadeTo("slow", 1);
+                         } else {
+                           // If it works, returns the tx link
+                           document.getElementById("wrapper-link-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                           $("#wrapper-link-confirm").fadeTo("slow", 1);
+                         }
+                       }).fail(function(e) {
+                         console.log(JSON.stringify(e))
+                         document.getElementById("wrapper-link-confirm").innerHTML = e;
+                         $("#wrapper-link-confirm").fadeTo("slow", 1);
+                       });
+                 }
+               ).fail(function(e) {
+                 console.log(JSON.stringify(e.statusText))
+                 document.getElementById("wrapper-swapneo-confirm").innerHTML = JSON.stringify(e.statusText);
+                 $("#wrapper-link-confirm").fadeTo("slow", 1);
+               })
+
+             }
+             $('#sendSpinner').hide();
+           }
+        });
 
     }
 
