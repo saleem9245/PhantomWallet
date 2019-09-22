@@ -172,6 +172,9 @@ namespace Phantom.Wallet.Helpers
                             BigInteger num = new BigInteger(input, 10);
                             result = num;
                             break;
+                        case "Hash":
+                            result = Hash.Parse(input);
+                            break;
                         case "Timestamp":
                             DateTime date = DateTime.ParseExact(input, "MM/dd/yyyy HH:mm:ss",
                                     System.Globalization.CultureInfo.InvariantCulture);

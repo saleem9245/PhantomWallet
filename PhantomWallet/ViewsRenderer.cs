@@ -134,7 +134,8 @@ namespace Phantom.Wallet
                 LastUpdated = currentTime,
                 Holdings = AccountController.GetAccountHoldings(address.Text).Result,
                 Tokens = AccountController.GetAccountTokens(address.Text).Result.ToArray(),
-                Transactions = AccountController.GetAccountTransactions(address.Text).Result
+                Transactions = AccountController.GetAccountTransactions(address.Text).Result,
+                Interops = AccountController.GetAccountInterops(address.Text).Result.ToArray()
             };
 
             _accountCaches[address] = cache;
@@ -179,8 +180,8 @@ namespace Phantom.Wallet
 
                 context["transactions"] = cache.Transactions;
                 context["holdings"] = AccountController.GetAccountHoldings(keyPair.Address.Text).Result;
+                context["interops"] = cache.Interops;
 
-                Console.WriteLine("NAME: " + AccountController.AccountName);
                 if (string.IsNullOrEmpty(AccountController.AccountName))
                 {
                     context["name"] = "Anonymous";
@@ -225,6 +226,8 @@ namespace Phantom.Wallet
             TemplateEngine.Server.Get("/chains", RouteChains);
 
             TemplateEngine.Server.Get("/platforms", RoutePlatforms);
+
+            TemplateEngine.Server.Post("/registerlink", RouteRegisterLink);
 
             TemplateEngine.Server.Post("/config", RouteConfig);
 
@@ -658,7 +661,7 @@ namespace Phantom.Wallet
             var context = InitContext(request);
 
             if (param == null)
-	    {
+	        {
                 PushError(request, "Parameters cannot be null!");
                 return null;
             }
@@ -669,7 +672,7 @@ namespace Phantom.Wallet
             var result = AccountController.InvokeContractGeneric(keyPair, chain, contract, method, paramList.ToArray()).Result;
 
             if (result != null && result.GetType() == typeof(BigInteger))
-	    {
+	        {
                 return result.ToString();
             }
 
@@ -730,6 +733,48 @@ namespace Phantom.Wallet
             var result = JsonConvert.SerializeObject(AccountController
                     .GetContractABI(chain, contract).Result, Formatting.Indented);
             return result;
+        }
+
+        private object RouteRegisterLink(HTTPRequest request)
+        {
+            var targetAddr = request.GetVariable("target");
+            var context = InitContext(request);
+
+            if (context["holdings"] is Holding[] balance)
+            {
+                var kcalBalance = balance.SingleOrDefault(b => b.Symbol == "KCAL" && b.Chain == "main");
+                if (kcalBalance.Amount > 0.1m) //RegistrationCost
+                {
+                    var keyPair = GetLoginKey(request);
+                    var result = AccountController.RegisterLink(keyPair, targetAddr).Result;
+
+                    // invalidate cache as account has changed
+                    InvalidateCache(keyPair.Address);
+
+                    if (result.GetType() == typeof(ErrorResult))
+                    {
+                        return JsonConvert.SerializeObject(result, Formatting.Indented);
+                    }
+
+                    var registerTx = (string) result;
+
+                    if (SendUtils.IsTxHashValid(registerTx))
+                    {
+                        return registerTx;
+                    }
+
+                    PushError(request, registerTx);
+                }
+                else
+                {
+                    PushError(request, "You need a small drop of KCAL (+0.1) to register a name.");
+                }
+            }
+            else
+            {
+                PushError(request, "Error while registering name.");
+            }
+            return "";
         }
 
         private object RouteRegisterName(HTTPRequest request)

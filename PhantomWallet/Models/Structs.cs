@@ -20,6 +20,7 @@ namespace Phantom.Wallet.Models
         public Transaction[] Transactions;
         public Holding[] Holdings;
         public BalanceSheetDto[] Tokens;
+        public InteropAccountDto[] Interops;
     }
 
     public struct Holding
@@ -79,6 +80,13 @@ namespace Phantom.Wallet.Models
         public string ChainName;
         public string ChainAddress;
         public string DestinationChainAddress;
+    }
+
+    public struct InteropData
+    {
+        public string platform;
+        public string address;
+        public string interop;
     }
 
     public struct TransferTx

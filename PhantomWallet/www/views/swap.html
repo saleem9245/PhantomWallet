@@ -318,14 +318,9 @@
 
             if (result) {
 
-              $.post('/contract/tx',
+              $.post('/registerlink',
                  {
-                     chain: 'main',
-                     contract: 'interop',
-                     method: 'RegisterLink',
-                     params: JSON.stringify({
-                       params
-                     })
+                     target: target_address_link,
                  },
                  function (returnedData) {
                    //console.log(returnedData)

@@ -16,6 +16,8 @@ using Phantasma.RpcClient.Interfaces;
 using Phantasma.VM.Utils;
 using Phantasma.VM;
 using Phantasma.Storage;
+using Phantasma.Pay;
+using Phantasma.Neo.Utils;
 using Phantom.Wallet.Helpers;
 using Phantom.Wallet.Models;
 using TokenFlags = Phantasma.RpcClient.DTOs.TokenFlags;
@@ -155,6 +157,25 @@ namespace Phantom.Wallet.Controllers
             }
 
             return new Holding[0];
+        }
+
+        public async Task<List<InteropAccountDto>> GetAccountInterops(string address)
+        {
+            try
+            {
+                var account = await _phantasmaRpcService.GetAccount.SendRequestAsync(address);
+                return account.Interops;
+            }
+            catch (RpcResponseException rpcEx)
+            {
+                Log.Error($"RPC Exception occurred: {rpcEx.RpcError.Message}");
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Exception occurred: {ex.Message}");
+            }
+
+            return new List<InteropAccountDto>();
         }
 
         public async Task<List<BalanceSheetDto>> GetAccountTokens(string address)
@@ -365,6 +386,40 @@ namespace Phantom.Wallet.Controllers
             {
                 var txConfirmation = await _phantasmaRpcService.GetTxByHash.SendRequestAsync(txHash);
                 return txConfirmation;
+            }
+            catch (RpcResponseException rpcEx)
+            {
+                Log.Error($"RPC Exception occurred: {rpcEx.RpcError.Message}");
+                return new ErrorResult { error = rpcEx.RpcError.Message };
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Exception occurred: {ex.Message}");
+                return new ErrorResult { error = ex.Message };
+            }
+        }
+
+        public async Task<object> RegisterLink(KeyPair keyPair, string addressStr)
+        {
+            Address linkedAddr = WalletUtils.EncodeAddress(addressStr, "neo"); // for now only NEO
+            try
+            {
+                var script = ScriptUtils.BeginScript()
+                       .AllowGas(keyPair.Address, Address.Null, MinimumFee, 9999)
+                       .CallContract("interop", "RegisterLink", keyPair.Address, linkedAddr)
+                       .SpendGas(keyPair.Address)
+                       .EndScript();
+
+                var nexusName = WalletConfig.Network;
+                var tx = new Phantasma.Blockchain.Transaction(nexusName, "main", script, DateTime.UtcNow + TimeSpan.FromHours(1));
+
+                tx.Sign(keyPair);
+
+                Log.Information($"Try to register link, from: {keyPair.Address.Text} to: {linkedAddr.Text}");
+
+                var result = await _phantasmaRpcService.SendRawTx.SendRequestAsync(tx.ToByteArray(true).Encode());
+
+                return result;
             }
             catch (RpcResponseException rpcEx)
             {
