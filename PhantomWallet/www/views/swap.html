@@ -152,7 +152,27 @@
           hash = '0x' + hash;
       }
 
-      console.log(hash)
+      params = [];
+      // build params for contract call
+      params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
+      params[1] = { name: 'platform', type: 'String', input: 'neo', info: '' }
+      params[2] = { name: 'hash', type: 'Object', input: hash, info: '' }
+
+      $.post('/contract',
+         {
+             chain: 'main',
+             contract: 'interop',
+             method: 'SettleTransaction',
+             params: JSON.stringify({
+               params
+             })
+         },
+         function (returnedData) {
+            console.log(returnedData)
+         }
+       ).fail(function(e) {
+          console.log(e)
+       })
 
     }
 
