@@ -209,7 +209,7 @@ function Claim() {
   $.post('/contract/tx',
      {
          chain: 'main',
-         contract: 'energy',
+         contract: 'stake',
          method: 'Claim',
          params: JSON.stringify({
            params
@@ -312,7 +312,7 @@ function Stake() {
             $.post('/contract/tx',
                {
                   chain: 'main',
-                  contract: 'energy',
+                  contract: 'stake',
                   method: 'Stake',
                   params: JSON.stringify({
                     params
@@ -531,7 +531,7 @@ function Unstake() {
           $.post('/contract/tx',
              {
                  chain: 'main',
-                 contract: 'energy',
+                 contract: 'stake',
                  method: 'Unstake',
                  params: JSON.stringify({
                    params
@@ -638,7 +638,7 @@ function MasterClaim() {
   $.post('/contract/tx',
      {
          chain: 'main',
-         contract: 'energy',
+         contract: 'stake',
          method: 'MasterClaim',
          params: JSON.stringify({
            params
