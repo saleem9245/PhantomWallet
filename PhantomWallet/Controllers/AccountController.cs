@@ -569,8 +569,8 @@ namespace Phantom.Wallet.Controllers
           {
             var bigIntAmount = UnitConversion.ToBigInteger(decimal.Parse(stakeAmount), 0);
             var script = ScriptUtils.BeginScript()
-                  .CallContract("energy", "Claim", keyPair.Address, keyPair.Address)
-                  .CallContract("energy", "Stake", keyPair.Address, bigIntAmount)
+                  .CallContract("stake", "Claim", keyPair.Address, keyPair.Address)
+                  .CallContract("stake", "Stake", keyPair.Address, bigIntAmount)
                   .AllowGas(keyPair.Address, Address.Null, MinimumFee, 9999)
                   .SpendGas(keyPair.Address)
                   .EndScript();
