@@ -812,14 +812,14 @@ function GetSoulmastersDetails() {
   var params = [];
   var params2 = [];
 
-  // call both GetCurrentMasterCount and GetStake for calculations
+  // call both GetMasterCount and GetStake for calculations
   $.when(
 
     $.post('/contract',
        {
            chain: 'main',
            contract: 'stake',
-           method: 'GetCurrentMasterCount',
+           method: 'GetMasterCount',
            params: JSON.stringify({
              params
            })
