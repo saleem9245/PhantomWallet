@@ -1132,6 +1132,10 @@ ul.nav.nav-pills {
     text-align: center;
 }
 
+.ml33p {
+    margin-left: 33.33%;
+}
+
 .pause-spinner {
     animation-play-state: paused;
 }

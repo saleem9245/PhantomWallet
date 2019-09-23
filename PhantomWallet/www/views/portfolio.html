@@ -204,6 +204,8 @@ function Claim() {
         return;
   }
 
+  $('#sendSpinner').show();
+
   $.post('/contract/tx',
      {
          chain: 'main',
@@ -239,12 +241,15 @@ function Claim() {
                 document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
                 $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
               }
+              $('#sendSpinner').hide();
             }).fail(function(e) {
+              $('#sendSpinner').hide();
               console.log(e)
               document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
               $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
             });
      }).fail(function(e) {
+       $('#sendSpinner').hide();
         console.log(JSON.stringify(e))
         document.getElementById("wrapper-portfolio-confirm").innerHTML = JSON.stringify(e);
         $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
@@ -365,20 +370,24 @@ function Stake() {
                             // call getstake and getpie getsoulmastersdetails after all other refresh
                             onLoad = 0;
                             getStake();
+                            getUnclaimed();
                             setTimeout(function() {
                               GetPieChart(changedamount);
                               GetSoulmastersDetails();
                             }, 1000);
                           }, 2000);
+                          $('#sendSpinner').hide();
                           document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
                           $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
                         }
                       }).fail(function(e) {
+                        $('#sendSpinner').hide();
                         console.log(JSON.stringify(e.statusText))
                         document.getElementById("wrapper-portfolio-confirm").innerHTML = JSON.stringify(e.statusText);
                         $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
                       });
                }).fail(function(e) {
+                  $('#sendSpinner').hide();
                   console.log(JSON.stringify(e.statusText))
                   document.getElementById("wrapper-portfolio-confirm").innerHTML = JSON.stringify(e.statusText);
                   $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
@@ -449,24 +458,27 @@ function Stake() {
                               GetSoulmastersDetails();
                             }, 1000);
                           }, 2000);
+                          $('#sendSpinner').hide();
                           document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
                           $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
                         }
                       }).fail(function(e) {
+                        $('#sendSpinner').hide();
                         console.log(JSON.stringify(e.statusText))
                         document.getElementById("wrapper-portfolio-confirm").innerHTML = JSON.stringify(e.statusText);
                         $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
                       });
                }).fail(function(e) {
+                  $('#sendSpinner').hide();
                   console.log(JSON.stringify(e.statusText))
                   document.getElementById("wrapper-portfolio-confirm").innerHTML = JSON.stringify(e.statusText);
                   $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
                })
-
                document.getElementById("manageinput").value = '';
              }
+           } else {
+             $('#sendSpinner').hide();
            }
-           $('#sendSpinner').hide();
          }
      })
 }
@@ -567,28 +579,33 @@ function Unstake() {
                           }
                           // call getstake and getpie and getsoulmastersdetails after all other refresh
                           getStake();
+                          getUnclaimed();
                           setTimeout(function() {
                             GetPieChart(changedamount);
                             GetSoulmastersDetails();
                           }, 1000);
                         }, 2000);
+                          $('#sendSpinner').show();
                           document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
                         $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
                       }
                     }).fail(function(e) {
+                      $('#sendSpinner').show();
                       console.log(e)
                       document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
                       $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
                     });
              }).fail(function(e) {
+                $('#sendSpinner').show();
                 console.log(e)
                 document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
                 $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
              })
 
              document.getElementById("manageinput").value = '';
+         } else {
+           $('#sendSpinner').hide();
          }
-         $('#sendSpinner').hide();
        }
      })
 }
@@ -615,6 +632,8 @@ function MasterClaim() {
         bootbox.alert("Nothing to claim yet!");
         return;
   }
+
+  $('#sendSpinner').show();
 
   $.post('/contract/tx',
      {
@@ -681,12 +700,15 @@ function MasterClaim() {
                 document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
                 $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
               }
+              $('#sendSpinner').hide();
             }).fail(function(e) {
+              $('#sendSpinner').hide();
               console.log(e)
               document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
               $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
             });
      }).fail(function(e) {
+        $('#sendSpinner').hide();
         console.log(e)
         document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
         $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
@@ -706,7 +728,7 @@ function getUnclaimed() {
   $.post('/contract',
      {
          chain: 'main',
-         contract: 'energy',
+         contract: 'stake',
          method: 'GetUnclaimed',
          params: JSON.stringify({
            params
@@ -747,7 +769,7 @@ function getStake() {
   $.post('/contract',
      {
          chain: 'main',
-         contract: 'energy',
+         contract: 'stake',
          method: 'GetStake',
          params: JSON.stringify({
            params
@@ -796,7 +818,7 @@ function GetSoulmastersDetails() {
     $.post('/contract',
        {
            chain: 'main',
-           contract: 'energy',
+           contract: 'stake',
            method: 'GetCurrentMasterCount',
            params: JSON.stringify({
              params
@@ -814,7 +836,7 @@ function GetSoulmastersDetails() {
      $.post('/contract',
         {
             chain: 'main',
-            contract: 'energy',
+            contract: 'stake',
             method: 'GetStake',
             params: JSON.stringify({
               params2
@@ -907,7 +929,7 @@ function getPortfolioChart(timeframe) {
   $.post('/contract',
      {
          chain: 'main',
-         contract: 'energy',
+         contract: 'stake',
          method: 'GetStake',
          params: JSON.stringify({
            params
@@ -925,7 +947,7 @@ function getPortfolioChart(timeframe) {
    $.post('/contract',
       {
           chain: 'main',
-          contract: 'energy',
+          contract: 'stake',
           method: 'GetUnclaimed',
           params: JSON.stringify({
             params
@@ -1078,7 +1100,7 @@ function getPortfolioChart(timeframe) {
                                 var s = Highcharts.dateFormat('%A, %b %d, %Y', this.x);
                               }
                               $.each(this.points, function(i, point) {
-                                  s += '<br/><span style="color:' + point.color + '">\u25CF</span> ' + point.series.name + ' <b>' + currencysymbol + Highcharts.numberFormat(point.y, 0, '.', ',') + '</b>';
+                                  s += '<br/><span style="color:' + point.color + '">\u25CF</span> ' + point.series.name + ' <b>' + currencysymbol + Highcharts.numberFormat(point.y, 2, '.', ',') + '</b>';
                               });
                               return s;
                           }
@@ -1146,7 +1168,7 @@ function GetPieChart(changedamount) {
     $.post('/contract',
        {
            chain: 'main',
-           contract: 'energy',
+           contract: 'stake',
            method: 'GetStake',
            params: JSON.stringify({
              params
@@ -1163,7 +1185,7 @@ function GetPieChart(changedamount) {
      $.post('/contract',
         {
             chain: 'main',
-            contract: 'energy',
+            contract: 'stake',
             method: 'GetUnclaimed',
             params: JSON.stringify({
               params
@@ -1222,7 +1244,11 @@ function GetPieChart(changedamount) {
       if (onLoad == 1) {
         document.getElementById("totalportfolio").innerHTML = currencysymbol + numberWithCommas(valueTOTALWithoutStakes.toFixed(0));
         // Handle price difference and rounding issue
-        currentsoulamount = parseFloat((document.getElementById("SOUL-amount").innerHTML).replace(/\,/g,''));
+        if (document.getElementById("SOUL-amount")) {
+          currentsoulamount = parseFloat((document.getElementById("SOUL-amount").innerHTML).replace(/\,/g,''));
+        } else {
+          currentsoulamount = 0;
+        }
         if ((valueTOTALWithoutStakes/currentsoulprice) < currentsoulamount) {
           document.getElementById("totalportfoliosats").innerHTML =  numberWithCommas(currentsoulamount) + ' SOUL';
         } else {
@@ -1313,6 +1339,8 @@ function GetPieChart(changedamount) {
 
   if (valueTOTAL == 0 || Number.isNaN(valueTOTAL)) {
     $("#container-pie").hide();
+    $(document.getElementById("container-historical-value")).addClass('ml33p')
+    $(document.getElementById("dropdown-historical-value")).addClass('ml33p')
   }
 
   }).fail(function(e) {
