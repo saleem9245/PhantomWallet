@@ -336,7 +336,7 @@ namespace Phantom.Wallet.Helpers
                 {
                     var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == receiverToken).Decimals);
 
-                    description = $"Received on {receiverAddress.Text} ";
+                    description = $"Received from {senderAddress.Text} ";
                 }
                 else
                 {
@@ -345,8 +345,8 @@ namespace Phantom.Wallet.Helpers
 
                 if (receiverChain != Address.Null && receiverChain != senderChain)
                 {
-                    description +=
-                        $"From {GetChainName(senderChain.Text, phantasmaChains)} chain to {GetChainName(receiverChain.Text, phantasmaChains)} chain";
+                    //description +=
+                        //$"From {GetChainName(senderChain.Text, phantasmaChains)} chain to {GetChainName(receiverChain.Text, phantasmaChains)} chain";
                 }
             }
 
