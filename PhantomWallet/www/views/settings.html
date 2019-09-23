@@ -318,6 +318,8 @@ function getSettings() {
   const selectadvanced = document.getElementById('check-advanced');
   selectadvanced.addEventListener('change', (event) => {
     if (event.target.checked) {
+      // Temp multisig disabled
+      document.getElementById("toggle-advanced").innerHTML = '<h4 style="margin-top:2em;">Not available yet, coming soon!</h4>'
       $("#toggle-advanced").fadeIn();
     } else {
       $("#toggle-advanced").fadeOut();
