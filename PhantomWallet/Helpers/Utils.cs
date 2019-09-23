@@ -293,21 +293,21 @@ namespace Phantom.Wallet.Helpers
                     case EventKind.AddressRegister:
                         {
                             var name = Serialization.Unserialize<string>(evt.Data.Decode());
-                            description = $"{evt.EventAddress} registered the name '{name}'";
+                            description = $"{evt.EventAddress} registered the name {name}";
                         }
                         break;
 
                     case EventKind.AddressLink:
                         {
                             var address = Serialization.Unserialize<Address>(evt.Data.Decode());
-                            description = $"{evt.EventAddress} linked to '{address.ToString()}'";
+                            description = $"{evt.EventAddress} linked to {address.ToString()}";
                         }
                         break;
 
                     case EventKind.AddressUnlink:
                         {
                             var address = Serialization.Unserialize<Address>(evt.Data.Decode());
-                            description = $"{evt.EventAddress} unlinked from '{address.ToString()}'";
+                            description = $"{evt.EventAddress} unlinked from {address.ToString()}";
                         }
                         break;
                 }
