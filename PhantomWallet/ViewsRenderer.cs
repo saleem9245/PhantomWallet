@@ -217,6 +217,8 @@ namespace Phantom.Wallet
 
             TemplateEngine.Server.Post("/stake", RouteStake);
 
+            TemplateEngine.Server.Post("/settle/tx", RouteInvokeSettleTx);
+
             TemplateEngine.Server.Post("/contract", RouteInvokeContract);
 
             TemplateEngine.Server.Post("/contract/tx", RouteInvokeContractTx);
@@ -733,6 +735,19 @@ namespace Phantom.Wallet
             var result = JsonConvert.SerializeObject(AccountController
                     .GetContractABI(chain, contract).Result, Formatting.Indented);
             return result;
+        }
+
+        private object RouteInvokeSettleTx(HTTPRequest request)
+        {
+            var neoTxHash = request.GetVariable("neoTxHash");
+            var context = InitContext(request);
+            if (context["holdings"] is Holding[] balance)
+            {
+              var keyPair = GetLoginKey(request);
+              var result = AccountController.InvokeSettleTx(keyPair, neoTxHash).Result;
+              return result;
+            }
+            return null;
         }
 
         private object RouteRegisterLink(HTTPRequest request)

@@ -126,7 +126,6 @@
 
     })
 
-
     function swapPhantasmaToNEO() {
 
       $("#wrapper-swapphantasma-confirm").fadeTo(1, 0);
@@ -237,14 +236,9 @@
 
             if (result) {
 
-              $.post('/contract/tx',
+              $.post('/settle/tx',
                  {
-                     chain: 'main',
-                     contract: 'interop',
-                     method: 'SettleTransaction',
-                     params: JSON.stringify({
-                       params
-                     })
+                     target: hash,
                  },
                  function (returnedData) {
                    if (returnedData !== "") {
@@ -325,20 +319,22 @@
                            $("#wrapper-link-confirm").fadeTo("slow", 1);
                            $('#neoaddresslink').val('');
                          }
+                         $('#sendSpinner').hide();
                        }).fail(function(e) {
+                         $('#sendSpinner').hide();
                          console.log(JSON.stringify(e))
                          document.getElementById("wrapper-link-confirm").innerHTML = e;
                          $("#wrapper-link-confirm").fadeTo("slow", 1);
                        });
                  }
                ).fail(function(e) {
+                 $('#sendSpinner').hide();
                  console.log(JSON.stringify(e.statusText))
                  document.getElementById("wrapper-swapneo-confirm").innerHTML = JSON.stringify(e.statusText);
                  $("#wrapper-link-confirm").fadeTo("slow", 1);
                })
 
              }
-             $('#sendSpinner').hide();
            }
         });
 
