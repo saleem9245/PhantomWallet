@@ -44,6 +44,10 @@
                       <div id="loader-interopaddress" class="block-loader center">
                         <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
                       </div>
+                      <div class="alert alert-warning" style="overflow: auto;">
+                          Do NOT link your address and send assets from an exchange wallet.<br>
+                          Please link and send assets from the same <strong> personal wallet only</strong>!
+                      </div>
                       <h4 class="control-label">Step 2) Send NEO, GAS or SOUL</h4>
                       <div class="center">
                           <p class="public-address" style="display:inline-block;">
@@ -73,6 +77,10 @@
             <div class="row setup-content">
                 <div class="col-xs-12">
                     <div class="col-md-12">
+                      <div class="alert alert-warning" style="overflow: auto;">
+                          Do NOT link your wallet to an exchange wallet.<br>
+                          Please link a <strong> personal wallet only</strong>!
+                      </div>
                         <h4 class="control-label">Step 2) Select token</h4>
                         <select id="select-token-form"></select>
                         <h4 class="control-label" style="margin-top:1em;">Step 3) Enter amount</h4>
@@ -132,7 +140,8 @@
 
       let token = $("#select-token-form").val();
       let amount = $("#neoamount").val().replace(/\,/g,'');
-
+      let target_address_neo = '';
+      let target_address_interop = '';
       {{#if interops}}
       {{#each interops}}
       target_address_interop = '{{InteropAddress}}';
@@ -148,6 +157,11 @@
 
       if (parseInt(amount) <= 0) {
           bootbox.alert("Please insert a valid amount!");
+          return;
+      }
+
+      if (target_address_neo == '' || target_address_interop == '') {
+          bootbox.alert("Please link a NEO address first!");
           return;
       }
 
@@ -229,7 +243,7 @@
                   label: '<i class="fa fa-times"></i> Cancel'
               },
               confirm: {
-                  label: '<i class="fa fa-check"></i> Confirm'
+                  label: '<i class="fa fa-check"></i> Confirm (personal wallet only, no exchange!)'
               }
           },
           callback: function(result) {
@@ -268,7 +282,7 @@
       let target_address_link = $("#neoaddresslink").val();
 
       if (target_address_link.length < 34 || !target_address_link.startsWith('A')) {
-          bootbox.alert("Please insert a valid address!");
+          bootbox.alert("Please insert a valid NEO address!");
           return;
       }
 

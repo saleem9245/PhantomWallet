@@ -498,7 +498,6 @@ ul.nav.nav-pills {
     font-size: 2em;
     padding-bottom: 20px;
     font-family: "Rubik";
-    color: #7C95AB;
 }
 
 .table-responsive {
@@ -1190,10 +1189,6 @@ ul.nav.nav-pills {
     height: 2.5em;
 }
 
-.swap input {
-
-}
-
 .contracts .button:hover, .portfolio .button:hover, .settings .button:hover, .send .button:hover, .swap .button:hover, .contracts .selected-chain, .contracts .selected-method {
     background-color: #17B0E7 !important;
     color: #fff !important;
@@ -1526,7 +1521,7 @@ input[type="search"]::-webkit-search-cancel-button {
 }
 
 .swap {
-    margin-top: -2.5em;
+    margin-top: -4.5em;
 }
 
 .flash-portfolio {
