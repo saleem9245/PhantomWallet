@@ -216,13 +216,9 @@
 
       let hash = $("#neohash").val();
 
-      if (hash.length < 64 || hash.length > 66 || hash.length == 65) {
+      if (hash.length < 64 || hash.length > 64) {
           bootbox.alert("Please insert a valid transaction hash!");
           return;
-      }
-
-      if (hash.length == 64) {
-          hash = '0x' + hash;
       }
 
       params = [];
@@ -252,7 +248,7 @@
 
               $.post('/settle/tx',
                  {
-                     target: hash,
+                     neoTxHash: hash,
                  },
                  function (returnedData) {
                    if (returnedData !== "") {
