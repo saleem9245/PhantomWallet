@@ -328,6 +328,7 @@ function Stake() {
                           // If .error defined, returns the custom error message
                           document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
                           $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                          $('#sendSpinner').hide();
                         } else {
                           //console.log(returnedDataTX)
                           setTimeout(function() {
