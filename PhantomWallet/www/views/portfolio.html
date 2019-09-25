@@ -307,7 +307,7 @@ function Stake() {
 
         if (result) {
 
-          if (((document.getElementById("KCAL-amount").innerHTML).replace(/\,/g,'')) > 0) {
+          if (document.getElementById("KCAL-amount")) {
 
             $.post('/contract/tx',
                {
@@ -412,6 +412,7 @@ function Stake() {
                           // If .error defined, returns the custom error message
                           document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
                           $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                          $('#sendSpinner').hide();
                         } else {
                           //console.log(returnedDataTX)
                           setTimeout(function() {
@@ -548,6 +549,7 @@ function Unstake() {
                         // If .error defined, returns the custom error message
                         document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
                         $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                        $('#sendSpinner').hide();
                       } else {
                         setTimeout(function() {
                           // update kcal based on fees
@@ -629,7 +631,7 @@ function MasterClaim() {
   // build params for contract call
   params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
 
-  if (document.getElementById("count-soulmasters-total").innerHTML > 0) {
+  if (document.getElementById("count-soulmasters").innerHTML == '0 SOULMASTER' || document.getElementById("count-soulmasters-total").innerHTML == '0 SOULMASTER') {
         bootbox.alert("Nothing to claim yet!");
         return;
   }
@@ -898,7 +900,7 @@ function GetSoulmastersDetails() {
          });
        }
        // if getstake < 50000 disable claim rewards button
-       if (mastercount == 0) {
+       if (mastercount == 0 || mastertotalcount == 0) {
          $(document.getElementById("claim-rewards")).addClass('button-disabled').delay(300).queue(function(next){
          });
        } else {
