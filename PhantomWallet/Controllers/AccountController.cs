@@ -502,8 +502,10 @@ namespace Phantom.Wallet.Controllers
         {
             try
             {
+                Hash txHash = Hash.FromString(neoTxHash);
+
                 var script = ScriptUtils.BeginScript()
-                    .CallContract("interop", "SettleTransaction", keyPair.Address, NeoWallet.NeoPlatform, neoTxHash)
+                    .CallContract("interop", "SettleTransaction", keyPair.Address, NeoWallet.NeoPlatform, txHash)
                     .CallContract("swap", "SwapTokens", keyPair.Address, "SOUL", "KCAL", UnitConversion.ToBigInteger(0.1m, 8))
                     .AllowGas(keyPair.Address, Address.Null, MinimumFee, 9999)
                     .SpendGas(keyPair.Address)
