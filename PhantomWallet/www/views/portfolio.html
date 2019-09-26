@@ -305,6 +305,11 @@ function Stake() {
         return;
   }
 
+  if (toFixed(changedamount > currentsoulamount)) {
+        bootbox.alert("Not enough SOUL!");
+        return;
+  }
+
   $('#sendSpinner').show();
   bootbox.confirm({
       title: "Staking confirmation",
@@ -566,6 +571,11 @@ function Unstake() {
 
   if (toFixed((changedamount)) < 1 || Number.isNaN(changedamount)) {
         bootbox.alert("Minimum amount to stake is 1 SOUL!");
+        return;
+  }
+
+  if (toFixed(changedamount > parseFloat((document.getElementById("stake-soul").innerHTML).replace(/\,/g,'').slice(0, -3)))) {
+        bootbox.alert("Not enough SOUL staked!");
         return;
   }
 
