@@ -42,6 +42,7 @@ namespace Phantom.Wallet.Helpers
 
             BigInteger amount = 0;
 
+            tx.Events.Reverse();
             foreach (var evt in tx.Events) //todo move this
             {
                 switch (evt.EventKind)
@@ -185,6 +186,18 @@ namespace Phantom.Wallet.Helpers
                             typetx = $"Mint";
                         }
                         break;
+
+                    case EventKind.BlockCreate:
+                        {
+                            typetx = $"Custom";
+                        }
+                        break;
+
+                    case EventKind.BlockClose:
+                        {
+                            typetx = $"{senderAddress.ToString()}";
+                        }
+                        break;
                 }
             }
 
@@ -263,6 +276,15 @@ namespace Phantom.Wallet.Helpers
                         }
                         break;
 
+                    case EventKind.TokenMint:
+                        {
+                            var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
+                            amount = data.value;
+                            var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.symbol).Decimals);
+                            description = $"Claim transaction";
+                        }
+                        break;
+
                     case EventKind.TokenStake:
                         {
                             var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
@@ -278,15 +300,6 @@ namespace Phantom.Wallet.Helpers
                             amount = data.value;
                             var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.symbol).Decimals);
                             description = $"Unstake transaction";
-                        }
-                        break;
-
-                    case EventKind.TokenMint:
-                        {
-                            var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
-                            amount = data.value;
-                            var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.symbol).Decimals);
-                            description = $"Claim transaction";
                         }
                         break;
 
@@ -308,6 +321,18 @@ namespace Phantom.Wallet.Helpers
                         {
                             var address = Serialization.Unserialize<Address>(evt.Data.Decode());
                             description = $"{evt.EventAddress} unlinked from {address.ToString()}";
+                        }
+                        break;
+
+                    case EventKind.BlockCreate:
+                        {
+                            description = $"BlockCreate transaction";
+                        }
+                        break;
+
+                    case EventKind.BlockClose:
+                        {
+                            description = $"BlockClose transaction";
                         }
                         break;
                 }
