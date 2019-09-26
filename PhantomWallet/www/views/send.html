@@ -62,10 +62,6 @@
                         <h4 class="control-label send-label">Step 4) Select destination address</h4>
                         <input maxlength="100" class="form-control parameters-input" type="text" required="required" id="destination" placeholder="Enter destination address" />
                     </div>
-                    <div class="form-group" style="display:none;">
-                        <button type="button" class="btn-primary btn-normal button" data-toggle="modal" data-target="#scanModal">SCAN</button>
-                        <br>
-                    </div>
                     <div class="form-group">
                         <h4 class="control-label send-label">Step 5) Select destination chain</h4>
                         <select id="destinationChain" style="margin-top: 0;">
@@ -80,28 +76,6 @@
             </div>
         </div>
     </form>
-</div>
-
-<!-- Modal -->
-<div id="scanModal" class="modal fade" role="dialog">
-    <div class="modal-dialog">
-
-        <!-- Modal content-->
-        <div class="modal-content col-xs-12">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Address Scanner</h4>
-            </div>
-            <div class="modal-body" style="overflow: hidden;">
-                <p>Scan a valid Phantasma QR code.</p>
-                <video id="preview"></video>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-
-    </div>
 </div>
 
 <script>
@@ -189,46 +163,6 @@
 
         $('div.setup-panel div a.btn-primary').trigger('click');
     });
-
-    $('#scanModal').on('shown.bs.modal',
-        function(e) {
-            startScan();
-        })
-
-    function stopScan(scanner) {
-        scanner.stop();
-        $('#scanModal').modal('hide');
-    }
-
-    function startScan() {
-        let tag = "phantasma://";
-        let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
-
-        scanner.addListener('scan',
-            function(content) {
-                if (content.startsWith(tag)) {
-                    var address = content.substring(tag.length);
-                    $("#destination").val(address);
-                } else {
-                    bootbox.alert("A QR code was read but does not seem to be a valid Phantasma QR code.");
-                }
-
-                stopScan(scanner);
-            });
-
-        Instascan.Camera.getCameras().then(function(cameras) {
-            if (cameras.length > 0) {
-                scanner.start(cameras[0]);
-            } else {
-                bootbox.alert("Sorry, camera not found.");
-                $('#scanModal').modal('hide');
-
-                return;
-            }
-        }).catch(function(e) {
-            console.error(e);
-        });
-    }
 
     function pickMax() {
         $("#amount").val(max_amount.replace(/\,/g,''));
