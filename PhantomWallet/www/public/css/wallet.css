@@ -540,6 +540,11 @@ ul.nav.nav-pills {
         border: none !important;
         white-space: normal;
         width: auto;
+        font-weight: 400;
+    }
+
+    .table-general th:after {
+        font-weight: 600;
     }
 
     .table-general tbody tr > td {
@@ -566,9 +571,13 @@ ul.nav.nav-pills {
 
     .table-striped th {
         font-size: 14px;
-        font-weight: 600;
+        font-weight: 400;
         color: #7C95AB;
         border-bottom: 1px solid #17B0E7 !important;
+    }
+
+    .table-striped th:after {
+        font-weight: 600;
     }
 
 
@@ -746,7 +755,6 @@ ul.nav.nav-pills {
     left: 0;
     right: 0;
     width: 350px;
-    font-weight: bold;
     margin-bottom: 10px;
     display: inline-flex;
 }
@@ -980,7 +988,7 @@ ul.nav.nav-pills {
 .public-address-label {
     color: #7C95AB;
     font-size: 20px;
-    font-weight: 600;
+    font-weight: 400;
     text-align: center;
     padding: 40px;
 }
