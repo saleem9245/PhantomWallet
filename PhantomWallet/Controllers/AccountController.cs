@@ -198,7 +198,7 @@ namespace Phantom.Wallet.Controllers
             return new List<BalanceSheetDto>();
         }
 
-        public async Task<Transaction[]> GetAccountTransactions(string address, int amount = 100)
+        public async Task<Transaction[]> GetAccountTransactions(string address, int amount = 1000)
         {
             try
             {
@@ -571,9 +571,9 @@ namespace Phantom.Wallet.Controllers
           {
             var bigIntAmount = UnitConversion.ToBigInteger(decimal.Parse(stakeAmount), 0);
             var script = ScriptUtils.BeginScript()
-                  .CallContract("stake", "Claim", keyPair.Address, keyPair.Address)
                   .CallContract("stake", "Stake", keyPair.Address, bigIntAmount)
-                  .AllowGas(keyPair.Address, Address.Null, MinimumFee, 9999)
+                  .CallContract("stake", "Claim", keyPair.Address, keyPair.Address)
+                  .AllowGas(keyPair.Address, Address.Null, MinimumFee, 200)
                   .SpendGas(keyPair.Address)
                   .EndScript();
 
