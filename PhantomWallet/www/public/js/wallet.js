@@ -150,17 +150,19 @@ function getPricing() {
    $.get('https://api.coingecko.com/api/v3/simple/price?ids=phantasma&vs_currencies=' + currency.toLowerCase(),
        function (returnedData) {
          soulprice = currencysymbol + numberWithCommas(returnedData.phantasma[currency.toLowerCase()]);
-         // if price exist and changed, flash price
-         if (document.getElementById("soulprice").innerHTML != soulprice) {
-           document.getElementById("soulprice").innerHTML = soulprice;
-           $(document.getElementById("soulprice")).addClass('flash').delay(150).queue(function(next){
-                $(this).removeClass('flash');
-                next();
-           });
+         if (document.getElementById("soulprice")) {
+           // if price exist and changed, flash price
+           if (document.getElementById("soulprice").innerHTML != soulprice) {
+             document.getElementById("soulprice").innerHTML = soulprice;
+             $(document.getElementById("soulprice")).addClass('flash').delay(150).queue(function(next){
+                  $(this).removeClass('flash');
+                  next();
+             });
+           }
+           // store price for later
+           cachesoulprice = document.getElementById("soulprice").innerHTML;
+           localStorage.setItem('lastsoulprice', cachesoulprice);
          }
-         // store price for later
-         cachesoulprice = document.getElementById("soulprice").innerHTML;
-         localStorage.setItem('lastsoulprice', cachesoulprice);
        }).fail(function(e) {
           console.log(e);
        });
