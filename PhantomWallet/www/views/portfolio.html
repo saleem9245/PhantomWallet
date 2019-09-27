@@ -34,7 +34,11 @@
                     {{#if Symbol == 'KCAL'}}
                     <td class="col-6 aligned-row"><img class="token-icon" src="img/kcal_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
                     {{#else}}
-                    <td class="col-6 aligned-row"><img class="token-icon" src="img/soulmasters_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
+                      {{#if Symbol == 'NACHO'}}
+                      <td class="col-6 aligned-row"><img class="token-icon" src="img/nacho_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
+                      {{#else}}
+                      <td class="col-6 aligned-row"><img class="token-icon" src="img/soulmasters_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
+                      {{/if}}
                     {{/if}}
                   {{/if}}
                   <td class="col-6">{{ChainName}}</td>
