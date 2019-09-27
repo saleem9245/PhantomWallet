@@ -134,7 +134,7 @@ namespace Phantom.Wallet
                 LastUpdated = currentTime,
                 Holdings = AccountController.GetAccountHoldings(address.Text).Result,
                 Tokens = AccountController.GetAccountTokens(address.Text).Result.ToArray(),
-                Transactions = AccountController.GetAccountTransactions(address.Text).Result,
+                //Transactions = AccountController.GetAccountTransactions(address.Text).Result,
                 Interops = AccountController.GetAccountInterops(address.Text).Result.ToArray()
             };
 
@@ -176,9 +176,10 @@ namespace Phantom.Wallet
                 var cache = FindCache(keyPair.Address);
 
                 var entry = MenuEntries.FirstOrDefault(e => e.Id == "history");
-                entry.Count = cache.Transactions.Length;
+                //entry.Count = cache.Transactions.Length;
 
-                context["transactions"] = cache.Transactions;
+                //context["transactions"] = cache.Transactions;
+                context["transactions"] = AccountController.GetAccountTransactions(keyPair.Address.Text).Result;
                 context["holdings"] = AccountController.GetAccountHoldings(keyPair.Address.Text).Result;
                 context["interops"] = cache.Interops;
 
@@ -215,7 +216,7 @@ namespace Phantom.Wallet
 
             TemplateEngine.Server.Post("/register", RouteRegisterName);
 
-            TemplateEngine.Server.Get("/lookupname", RouteLookUpName);
+            TemplateEngine.Server.Post("/lookupname", RouteLookUpName);
 
             TemplateEngine.Server.Post("/stake", RouteStake);
 
