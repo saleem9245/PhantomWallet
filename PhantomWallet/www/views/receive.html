@@ -11,6 +11,13 @@
                   <i class="fas fa-copy"></i>
               </a>
           </span>
+          <p>
+            <em>
+              {{#if name !== 'anonymous'}}
+                  mapped to "{{name}}"
+              {{/if}}
+            </em>
+          </p>
       </div>
       <input type="hidden" value="{{address}}" id="myAddress">
   </div>
