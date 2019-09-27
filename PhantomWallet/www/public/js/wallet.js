@@ -10,10 +10,12 @@ function copyText(text, name) {
 
 function RegisterName() {
     bootbox.prompt({
-        title: "Insert a name for your address:",
+        title: "Insert a name for your address.<br>This can only be done once.",
         message: "It might take a while to update your name.",
         callback:
             function (result) {
+
+              if (result) {
                 var name = result;
                 if (name === "") {
                     bootbox.alert("Name can not be empty");
@@ -63,6 +65,10 @@ function RegisterName() {
                         console.log("error registering name");
                         $('#nameSpinner').hide();
                     });
+
+                  } else {
+                    $('#nameSpinner').hide();
+                  }
             }
     });
 }

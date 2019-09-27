@@ -187,9 +187,33 @@
         var isValid = false;
 
         if (target_address.length == 0) {
-            bootbox.alert("Please insert an destination address!");
-            return;
+            //bootbox.alert("Please insert an destination address!");
+            //return;
         }
+
+        var params = [];
+        // build params for contract call
+        params[0] = { name: 'name', type: 'String', input: target_address, info: '' }
+        $.post('/contract',
+           {
+               chain: 'main',
+               contract: 'account',
+               method: 'LookUpName',
+               params: JSON.stringify({
+                 params
+               })
+           },
+           function (returnedData) {
+             console.log(returnedData)
+             $.get('/lookupname',
+                function (returnedDataaddress) {
+                  console.log(returnedDataaddress)
+                })
+                .fail(function(e) {
+                console.log("error");
+                });
+           })
+
 
         if (target_address.length != 45) {
             bootbox.alert("Please insert a valid destination address!");

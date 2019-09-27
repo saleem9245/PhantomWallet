@@ -215,6 +215,8 @@ namespace Phantom.Wallet
 
             TemplateEngine.Server.Post("/register", RouteRegisterName);
 
+            TemplateEngine.Server.Get("/lookupname", RouteLookUpName);
+
             TemplateEngine.Server.Post("/stake", RouteStake);
 
             TemplateEngine.Server.Post("/settle/tx", RouteInvokeSettleTx);
@@ -695,6 +697,12 @@ namespace Phantom.Wallet
             return json;
         }
 
+        private object RouteLookUpName(HTTPRequest request)
+        {
+            var addressName = request.GetVariable("addressName");
+            return "addressName";
+        }
+
         private object RouteConfig(HTTPRequest request)
         {
             var mode = request.GetVariable("mode");
@@ -887,8 +895,8 @@ namespace Phantom.Wallet
         private static readonly Net[] Networks =
         {
             new Net{Name = "simnet", IsEnabled = true, Value = 1},
-            new Net{Name = "testnet", IsEnabled = true, Value = 2},
-            new Net{Name = "mainnet", IsEnabled = true, Value = 3},
+            new Net{Name = "testnet", IsEnabled = false, Value = 2},
+            new Net{Name = "mainnet", IsEnabled = false, Value = 3},
         };
         #endregion
     }
