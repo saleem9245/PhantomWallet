@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using LunarLabs.WebServer.HTTP;
 using LunarLabs.WebServer.Templates;
-using Phantasma.Blockchain.Contracts.Native;
+using Phantasma.Blockchain.Contracts;
 using Phantasma.Cryptography;
 using Phantasma.RpcClient.DTOs;
 using Phantasma.Numerics;

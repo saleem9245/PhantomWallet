@@ -12,7 +12,6 @@ using Phantasma.Numerics;
 using Phantasma.VM;
 using System.Linq;
 using Phantasma.Blockchain.Contracts;
-using Phantasma.Blockchain.Contracts.Native;
 using Phantasma.Blockchain.Tokens;
 using Phantasma.Blockchain.Utils;
 using Phantasma.Storage.Context;

@@ -7,7 +7,8 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Net.Http;
 using LunarLabs.Parser.JSON;
-using Phantasma.Blockchain.Contracts.Native;
+using Phantasma.Blockchain.Contracts;
+using TokenEventData = Phantasma.Domain.TokenEventData;
 using Phantasma.Cryptography;
 using Phantasma.Numerics;
 using Phantasma.RpcClient.DTOs;
@@ -446,6 +447,12 @@ namespace Phantom.Wallet.Helpers
             }
 
             File.WriteAllText(path, JsonConvert.SerializeObject(walletConfig));
+        }
+
+        public static string LookUpName(string addressSerialized)
+        {
+          var address = Serialization.Unserialize<Address>(addressSerialized.Decode());
+          return $"{address.ToString()}";
         }
 
         public static string FixPath(string path, bool final)
