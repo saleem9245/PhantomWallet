@@ -481,9 +481,25 @@ namespace Phantom.Wallet.Helpers
 
         public static decimal GetCoinRate(string ticker, string symbol)
         {
-            var url = $"https://api.coingecko.com/api/v3/simple/price?ids={ticker}&vs_currencies={symbol}";
-
             string json;
+            string baseticker;
+            switch (ticker)
+            {
+                case "SOUL":
+                    baseticker = "phantasma";
+                    break;
+                case "NEO":
+                    baseticker = "neo";
+                    break;
+                case "GAS":
+                    baseticker = "gas";
+                    break;
+                default:
+                    baseticker = "phantasma";
+                    break;
+            }
+
+            var url = $"https://api.coingecko.com/api/v3/simple/price?ids={baseticker}&vs_currencies={symbol}";
 
             try
             {

@@ -46,7 +46,15 @@
                   {{#if Symbol == 'SOUL'}}
                     <td class="col-3" id="{{Symbol}}-price">{{CurrencySymbol}}{{PriceFormated}}</td>
                   {{#else}}
-                    <td class="col-3" id="{{Symbol}}-price">N/A</td>
+                    {{#if Symbol == 'GAS'}}
+                      <td class="col-3" id="{{Symbol}}-price">N/A</td>
+                    {{#else}}
+                      {{#if Symbol == 'NEO'}}
+                        <td class="col-3" id="{{Symbol}}-price">N/A</td>
+                      {{#else}}
+                        <td class="col-3" id="{{Symbol}}-price">N/A</td>
+                      {{/if}}
+                    {{/if}}
                   {{/if}}
               </tr>
               {{/each}}
