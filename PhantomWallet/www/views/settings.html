@@ -193,7 +193,7 @@ function getSettings() {
              config: JSON.stringify(config)
          },
          function (returnedData) {
-
+           bootbox.alert("RPC URL updated!");
          }).fail(function(e) {
             console.log(e);
          });
@@ -224,12 +224,30 @@ function getSettings() {
            config: JSON.stringify(config)
        },
        function (returnedData) {
-
+          bootbox.alert("Explorer URL updated!");
        }).fail(function(e) {
           console.log(e);
        });
 
    }
+
+   // Trigger update button on press enter
+   var inputrpc = document.getElementById("rpcurl");
+   inputrpc.addEventListener("keyup", function(event) {
+       if (event.keyCode === 13) {
+           //event.preventDefault();
+           document.getElementById("rpc-url-update").click();
+       }
+   });
+
+   // Trigger update button on press enter
+   var inputexplorer = document.getElementById("explurl");
+   inputexplorer.addEventListener("keyup", function(event) {
+       if (event.keyCode === 13) {
+           //event.preventDefault();
+           document.getElementById("explorer-url-update").click();
+       }
+   });
 
    // On currency change event
    $("#selectcurrency").change(function () {
