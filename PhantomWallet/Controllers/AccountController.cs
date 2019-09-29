@@ -9,6 +9,8 @@ using Phantasma.Blockchain.Contracts;
 using Phantasma.Blockchain;
 using Phantasma.Core.Types;
 using Phantasma.Cryptography;
+using Phantasma.Neo.Cryptography;
+using Phantasma.Neo.Core;
 using Phantasma.Numerics;
 using Phantasma.RpcClient.Client;
 using Phantasma.RpcClient.DTOs;
@@ -159,25 +161,6 @@ namespace Phantom.Wallet.Controllers
             return new Holding[0];
         }
 
-        public async Task<List<InteropAccountDto>> GetAccountInterops(string address)
-        {
-            try
-            {
-                var account = await _phantasmaRpcService.GetAccount.SendRequestAsync(address);
-                return account.Interops;
-            }
-            catch (RpcResponseException rpcEx)
-            {
-                Log.Error($"RPC Exception occurred: {rpcEx.RpcError.Message}");
-            }
-            catch (Exception ex)
-            {
-                Log.Error($"Exception occurred: {ex.Message}");
-            }
-
-            return new List<InteropAccountDto>();
-        }
-
         public async Task<List<BalanceSheetDto>> GetAccountTokens(string address)
         {
             try
@@ -228,7 +211,7 @@ namespace Phantom.Wallet.Controllers
             return new Transaction[0];
         }
 
-        public async Task<string> SettleBlockTransfer(KeyPair keyPair, string sourceChainAddress, string blockHash,
+        public async Task<string> SettleBlockTransfer(PhantasmaKeys keyPair, string sourceChainAddress, string blockHash,
             string destinationChainAddress)
         {
             try
@@ -265,7 +248,7 @@ namespace Phantom.Wallet.Controllers
             }
         }
 
-        public async Task<string> CrossChainTransferToken(bool isFungible, KeyPair keyPair, string addressTo,
+        public async Task<string> CrossChainTransferToken(bool isFungible, PhantasmaKeys keyPair, string addressTo,
             string chainName, string destinationChain, string symbol, string amountId)
         {
             try
@@ -332,7 +315,7 @@ namespace Phantom.Wallet.Controllers
             }
         }
 
-        public async Task<string> TransferTokens(bool isFungible, KeyPair keyPair, string addressTo, string chainName, string symbol, string amountId, bool isName, MultisigSettings settings = new MultisigSettings())
+        public async Task<string> TransferTokens(bool isFungible, PhantasmaKeys keyPair, string addressTo, string chainName, string symbol, string amountId, bool isName, MultisigSettings settings = new MultisigSettings())
         {
             try
             {
@@ -403,43 +386,7 @@ namespace Phantom.Wallet.Controllers
             }
         }
 
-        public async Task<object> RegisterLink(KeyPair keyPair, string addressStr)
-        {
-            Address linkedAddr = WalletUtils.EncodeAddress(addressStr, "neo"); // for now only NEO
-            try
-            {
-                var script = ScriptUtils.BeginScript()
-                       .LoanGas(keyPair.Address, MinimumFee, 400)
-                       .AllowGas(keyPair.Address, Address.Null, MinimumFee, 400)
-                       .CallContract("interop", "RegisterLink", keyPair.Address, linkedAddr)
-                       .SpendGas(keyPair.Address)
-                       .EndScript();
-
-                var nexusName = WalletConfig.Network;
-                var tx = new Phantasma.Blockchain.Transaction(nexusName, "main", script, DateTime.UtcNow + TimeSpan.FromHours(1));
-
-                tx.Mine((int)ProofOfWork.Moderate);
-                tx.Sign(keyPair);
-
-                Log.Information($"Try to register link, from: {keyPair.Address.Text} to: {linkedAddr.Text}");
-
-                var result = await _phantasmaRpcService.SendRawTx.SendRequestAsync(tx.ToByteArray(true).Encode());
-
-                return result;
-            }
-            catch (RpcResponseException rpcEx)
-            {
-                Log.Error($"RPC Exception occurred: {rpcEx.RpcError.Message}");
-                return new ErrorResult { error = rpcEx.RpcError.Message };
-            }
-            catch (Exception ex)
-            {
-                Log.Error($"Exception occurred: {ex.Message}");
-                return new ErrorResult { error = ex.Message };
-            }
-        }
-
-        public async Task<object> CreateMultisigWallet(KeyPair keyPair, MultisigSettings settings)
+        public async Task<object> CreateMultisigWallet(PhantasmaKeys keyPair, MultisigSettings settings)
         {
             try
             {
@@ -471,7 +418,7 @@ namespace Phantom.Wallet.Controllers
             }
         }
 
-        public async Task<object> RegisterName(KeyPair keyPair, string name)
+        public async Task<object> RegisterName(PhantasmaKeys keyPair, string name)
         {
             try
             {
@@ -501,12 +448,12 @@ namespace Phantom.Wallet.Controllers
             }
         }
 
-        public async Task<object> InvokeSettleTx(KeyPair keyPair, string neoTxHash, string neoKey, string neoPassphrase)
+        public async Task<object> InvokeSettleTx(NeoKeys keyPair, string neoTxHash)
         {
             try
             {
                 Hash txHash = Hash.Parse(neoTxHash);
-                var outputAddress = new Address(neoKey.PublicKey);
+                var outputAddress = new Address(neoKeys.PublicKey);
 
                 var script = ScriptUtils.BeginScript()
                     .CallContract("interop", "SettleTransaction", outputAddress, NeoWallet.NeoPlatform, txHash)
@@ -519,14 +466,7 @@ namespace Phantom.Wallet.Controllers
                 var nexusName = WalletConfig.Network;
                 var tx = new Phantasma.Blockchain.Transaction(nexusName, "main", script, DateTime.UtcNow + TimeSpan.FromHours(1));
 
-                if (neoPassphrase != "")
-                {
-                    var neoKeys = Phantasma.Neo.Core.NeoKeys.FromNEP2(neoKey, neoPassphrase);
-                }
-                else {
-                    var neoKeys = Phantasma.Neo.Core.NeoKeys.FromWIF(neoKey);
-                }
-                tx.Sign(neoKeys);
+                tx.Sign(neoKeysConverted);
 
                 var txResult = await _phantasmaRpcService.SendRawTx.SendRequestAsync(tx.ToByteArray(true).Encode());
                 Log.Information("txResult: " + txResult);
@@ -545,7 +485,7 @@ namespace Phantom.Wallet.Controllers
         }
 
         public async Task<object> InvokeContractTxGeneric(
-                KeyPair keyPair, string chain, string contract, string method, object[] paramArray)
+                PhantasmaKeys keyPair, string chain, string contract, string method, object[] paramArray)
         {
             try
             {
@@ -577,7 +517,7 @@ namespace Phantom.Wallet.Controllers
         }
 
         public async Task<object> CreateStakeSoulTransactionWithClaim(
-                KeyPair keyPair, string stakeAmount)
+                PhantasmaKeys keyPair, string stakeAmount)
         {
           try
           {
@@ -610,7 +550,7 @@ namespace Phantom.Wallet.Controllers
           }
         }
 
-        public byte[] GetAddressScript(KeyPair keyPair)
+        public byte[] GetAddressScript(PhantasmaKeys keyPair)
         {
             List<object> param = new List<object>() { keyPair.Address };
 
@@ -622,14 +562,14 @@ namespace Phantom.Wallet.Controllers
             return (byte[])result;
         }
 
-        public MultisigSettings CheckMultisig(KeyPair keyPair, byte[] addressScript)
+        public MultisigSettings CheckMultisig(PhantasmaKeys keyPair, byte[] addressScript)
         {
             string scriptString = Utils.DisassembleScript(addressScript);
             return Utils.GetMultisigSettings(scriptString);
         }
 
         public async Task<object> InvokeContractGeneric(
-                KeyPair keyPair, string chain, string contract, string method, object[] paramArray)
+                PhantasmaKeys keyPair, string chain, string contract, string method, object[] paramArray)
         {
             try
             {

@@ -20,7 +20,6 @@ namespace Phantom.Wallet.Models
         public Transaction[] Transactions;
         public Holding[] Holdings;
         public BalanceSheetDto[] Tokens;
-        public InteropAccountDto[] Interops;
     }
 
     public struct Holding

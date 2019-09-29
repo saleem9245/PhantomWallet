@@ -51,10 +51,10 @@ namespace Phantom.Wallet
             return TemplateEngine.Render(context, templateList);
         }
 
-        static KeyPair GetLoginKey(HTTPRequest request)
+        static PhantasmaKeys GetLoginKey(HTTPRequest request)
         {
             var wif = request.session.GetString("wif");
-            var keyPair = KeyPair.FromWIF(wif);
+            var keyPair = PhantasmaKeys.FromWIF(wif);
             return keyPair;
         }
 
@@ -77,7 +77,7 @@ namespace Phantom.Wallet
             }
         }
 
-        void UpdateSendContext(Dictionary<string, object> context, KeyPair keyPair, HTTPRequest request)
+        void UpdateSendContext(Dictionary<string, object> context, PhantasmaKeys keyPair, HTTPRequest request)
         {
             var cache = FindCache(keyPair.Address);
 
@@ -181,8 +181,6 @@ namespace Phantom.Wallet
                 //context["transactions"] = cache.Transactions;
                 context["transactions"] = AccountController.GetAccountTransactions(keyPair.Address.Text).Result;
                 context["holdings"] = AccountController.GetAccountHoldings(keyPair.Address.Text).Result;
-                //context["interops"] = cache.Interops;
-                context["interops"] = AccountController.GetAccountInterops(keyPair.Address.Text).Result.ToArray();
 
                 if (string.IsNullOrEmpty(AccountController.AccountName))
                 {
@@ -230,8 +228,6 @@ namespace Phantom.Wallet
             TemplateEngine.Server.Get("/chains", RouteChains);
 
             TemplateEngine.Server.Get("/platforms", RoutePlatforms);
-
-            TemplateEngine.Server.Post("/registerlink", RouteRegisterLink);
 
             TemplateEngine.Server.Post("/config", RouteConfig);
 
@@ -303,7 +299,7 @@ namespace Phantom.Wallet
 
         private string RouteCreateAccount(HTTPRequest request)
         {
-            var keyPair = KeyPair.Generate();
+            var keyPair = PhantasmaKeys.Generate();
 
             var context = InitContext(request);
             context["WIF"] = keyPair.ToWIF();
@@ -750,52 +746,17 @@ namespace Phantom.Wallet
             var context = InitContext(request);
             if (context["holdings"] is Holding[] balance)
             {
-              var keyPair = GetLoginKey(request);
-              InvalidateCache(keyPair.Address);
-              var result = AccountController.InvokeSettleTx(keyPair, neoTxHash, neoKey, neoPassphrase).Result;
+              if (neoPassphrase != "")
+              {
+                  var neoKeyConverted = Phantasma.Neo.Core.NeoKeys.FromNEP2(neoKey, neoPassphrase);
+              }
+              else {
+                  var neoKeysConverted = Phantasma.Neo.Core.NeoKeys.FromWIF(neoKey);
+              }
+              var result = AccountController.InvokeSettleTx(neoKeysConverted, neoTxHash).Result;
               return result;
             }
             return null;
-        }
-
-        private object RouteRegisterLink(HTTPRequest request)
-        {
-            var targetAddr = request.GetVariable("target");
-            var context = InitContext(request);
-
-            if (context["holdings"] is Holding[] balance)
-            {
-                var kcalBalance = balance.SingleOrDefault(b => b.Symbol == "KCAL" && b.Chain == "main");
-                if (kcalBalance.Amount > 0.1m) //RegistrationCost
-                {
-                    var keyPair = GetLoginKey(request);
-                    InvalidateCache(keyPair.Address);
-                    var result = AccountController.RegisterLink(keyPair, targetAddr).Result;
-
-                    if (result.GetType() == typeof(ErrorResult))
-                    {
-                        return JsonConvert.SerializeObject(result, Formatting.Indented);
-                    }
-
-                    var registerTx = (string) result;
-
-                    if (SendUtils.IsTxHashValid(registerTx))
-                    {
-                        return registerTx;
-                    }
-
-                    PushError(request, registerTx);
-                }
-                else
-                {
-                    PushError(request, "You need a small drop of KCAL (+0.1) to register a name.");
-                }
-            }
-            else
-            {
-                PushError(request, "Error while registering name.");
-            }
-            return "";
         }
 
         private object RouteRegisterName(HTTPRequest request)

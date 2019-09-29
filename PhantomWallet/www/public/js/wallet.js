@@ -261,7 +261,8 @@ function toggleKeyType() {
         $(".fa-sync").removeClass("fa-spin");
       }, 1000);
     }
-    $('#neoaddresslink').val('');
+    $('#neopassword').val('');
+    $('#neoprivatekey').val('');
 }
 
 // function fixed decimals value
