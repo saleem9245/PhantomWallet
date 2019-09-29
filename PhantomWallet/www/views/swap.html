@@ -229,12 +229,12 @@
 
       if (!hash.length == 64) {
           bootbox.alert("Please insert a valid transaction hash!");
-          return;
+          //return;
       }
 
       if (!neokey.length == 52 || !neokey.length == 58) {
           bootbox.alert("Please insert a valid private key or encrypted key!");
-          return;
+          //return;
       }
 
       $('#sendSpinner').show();
@@ -256,25 +256,33 @@
 
             if (result) {
 
-              $.post('/settle/tx',
-                 {
-                     neoTxHash: hash,
-                     neoKey: neokey,
-                     neoPassphrase: neopassphrase
-                 },
-                 function (returnedData) {
-                   if (returnedData !== "") {
-                       window.location.replace("/waiting/" + returnedData);
-                   } else {
-                       window.location.replace("/error");
-                   }
-                   //console.log(returnedData);
-                 }
-               ).fail(function(e) {
-                 console.log(JSON.stringify(e.statusText))
+               $.get('api.neoscan.io/api/main_net/v1/get_transaction/' + hash,
+               function (returnedData) {
+                 console.log(returnedData)
+                 /*
+                 $.post('/settle/tx',
+                    {
+                        neoTxHash: hash,
+                        neoKey: neokey,
+                        neoPassphrase: neopassphrase
+                    },
+                    function (returnedData) {
+                      if (returnedData !== "") {
+                          window.location.replace("/waiting/" + returnedData);
+                      } else {
+                          window.location.replace("/error");
+                      }
+                      //console.log(returnedData);
+                    }
+                  ).fail(function(e) {
+                    console.log(JSON.stringify(e.statusText))
+                  })
+                  */
                })
 
-             }
+               }
+
+            }
              $('#sendSpinner').hide();
            }
         });
