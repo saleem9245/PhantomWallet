@@ -29,7 +29,7 @@
                         <br>
                       </h5>
                       <input type="search" class="form-control parameters-swap-input" id="neoaddresslink" style="text-align:center;" placeholder="Enter NEO address">
-                      <button class="btn-primary nextBtn btn-lg button" type="button" onclick="updateLink()">UPDATE</button>
+                      <button class="btn-primary nextBtn btn-lg button" type="button" onclick="updateLink()" id="updatelinkbutton">UPDATE</button>
                       <div id="wrapper-link-confirm" style="opacity:0;margin-bottom:1em;">
                         Transaction
                       </div>
@@ -67,7 +67,7 @@
                   <div class="col-md-12">
                       <h4 class="control-label">Step 3) Enter transaction hash</h4>
                       <input type="search" class="form-control parameters-swap-input" id="neohash" style="text-align:center;" placeholder="Enter transaction hash">
-                      <button class="btn-primary nextBtn btn-lg button" type="button" onclick="swapNEOToPhantasma()">SWAP ASSETS</button>
+                      <button class="btn-primary nextBtn btn-lg button" type="button" onclick="swapNEOToPhantasma()" id="neotophantasmabutton">SWAP ASSETS</button>
                       <div id="wrapper-swapneo-confirm" style="opacity:0;">Transaction</div>
                   </div>
               </div>
@@ -85,7 +85,7 @@
                         <select id="select-token-form"></select>
                         <h4 class="control-label" style="margin-top:1em;">Step 3) Enter amount</h4>
                         <input class="form-control parameters-swap-input" id="neoamount" type="number" style="text-align:center;" placeholder="Enter amount">
-                        <button class="btn-success btn-lg button" type="button" onclick="swapPhantasmaToNEO()">SWAP ASSETS</button>
+                        <button class="btn-success btn-lg button" type="button" onclick="swapPhantasmaToNEO()" id="phantasmatoneobutton">SWAP ASSETS</button>
                         <div id="wrapper-swapphantasma-confirm" style="opacity:0;">Transaction</div>
                     </div>
                 </div>
@@ -131,6 +131,33 @@
               $("#step-2").show();
               $("#step-3").show();
             })
+
+        // Trigger update button on press enter
+        var inputneoaddress = document.getElementById("neoaddresslink");
+        inputneoaddress.addEventListener("keyup", function(event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                document.getElementById("updatelinkbutton").click();
+            }
+        });
+
+        // Trigger update button on press enter
+        var inputrpc = document.getElementById("neohash");
+        inputrpc.addEventListener("keyup", function(event) {
+            if (event.keyCode === 13) {
+                //event.preventDefault();
+                document.getElementById("neotophantasmabutton").click();
+            }
+        });
+
+        // Trigger update button on press enter
+        var inputrpc = document.getElementById("neoamount");
+        inputrpc.addEventListener("keyup", function(event) {
+            if (event.keyCode === 13) {
+                //event.preventDefault();
+                document.getElementById("phantasmatoneobutton").click();
+            }
+        });
 
     })
 
@@ -232,8 +259,8 @@
           title: "Swap confirmation",
           message: "Validate <strong>" +
               hash +
-              "</strong><br>from NEO Blockchain and release the corresponding assets on Phantasma Blockchain" +
-              "</strong>?",
+              "</strong><br>from NEO Blockchain and release the corresponding assets on Phantasma Blockchain?<br>Please note that you need attach a drop of GAS as network fee to the transaction" +
+              "</strong>.",
           buttons: {
               cancel: {
                   label: '<i class="fa fa-times"></i> Cancel'
