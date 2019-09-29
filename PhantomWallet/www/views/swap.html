@@ -43,7 +43,6 @@
                   <div class="col-md-12">
                       <h4 class="control-label">Step 2) Enter transaction hash</h4>
                       <input type="search" class="form-control parameters-swap-input" id="neohash" style="text-align:center;" placeholder="Enter transaction hash">
-                      <div id="wrapper-swapneo-confirm" style="opacity:0;">Transaction</div>
                   </div>
               </div>
           </div>
@@ -123,15 +122,6 @@
               $("#step-2").show();
               $("#step-3").show();
             })
-
-        // Trigger update button on press enter
-        var inputneoaddress = document.getElementById("neoaddresslink");
-        inputneoaddress.addEventListener("keyup", function(event) {
-            if (event.keyCode === 13) {
-                event.preventDefault();
-                document.getElementById("updatelinkbutton").click();
-            }
-        });
 
         // Trigger update button on press enter
         var inputrpc = document.getElementById("neohash");
@@ -242,7 +232,7 @@
           return;
       }
 
-      if (!neokey.length == 52) {
+      if (!neokey.length == 52 || !neokey.length == 64) {
           bootbox.alert("Please insert a valid private key!");
           return;
       }
@@ -282,8 +272,6 @@
                  }
                ).fail(function(e) {
                  console.log(JSON.stringify(e.statusText))
-                 document.getElementById("wrapper-swapneo-confirm").innerHTML = JSON.stringify(e.statusText);
-                 $("#wrapper-swapneo-confirm").fadeTo("slow", 1);
                })
 
              }
