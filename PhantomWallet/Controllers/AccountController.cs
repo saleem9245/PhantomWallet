@@ -118,7 +118,6 @@ namespace Phantom.Wallet.Controllers
                     default:
                         throw new Exception($"invalid currency: {currency}");
                 }
-                var rate = Utils.GetCoinRate("phantasma", currency);
                 foreach (var token in account.Tokens)
                 {
                     var holding = new Holding
@@ -128,7 +127,7 @@ namespace Phantom.Wallet.Controllers
                         Name = GetTokenName(token.Symbol),
                         Currency = currency,
                         CurrencySymbol = currencysymbol,
-                        Rate = rate,
+                        Rate = Utils.GetCoinRate("phantasma", currency),
                         Chain = token.ChainName,
                         ChainName = token.ChainName.FirstLetterToUpper()
                     };
@@ -333,12 +332,16 @@ namespace Phantom.Wallet.Controllers
             }
         }
 
-        public async Task<string> TransferTokens(bool isFungible, KeyPair keyPair, string addressTo, string chainName, string symbol, string amountId, MultisigSettings settings = new MultisigSettings())
+        public async Task<string> TransferTokens(bool isFungible, KeyPair keyPair, string addressTo, string chainName, string symbol, string amountId, bool isName, MultisigSettings settings = new MultisigSettings())
         {
             try
             {
-
+              //if (isName) {
+              //  var destinationAddress = addressTo;
+              //} else {
                 var destinationAddress = Address.FromText(addressTo);
+              //}
+
                 int decimals = PhantasmaTokens.SingleOrDefault(t => t.Symbol == symbol).Decimals;
                 var bigIntAmount = UnitConversion.ToBigInteger(decimal.Parse(amountId), decimals);
 
