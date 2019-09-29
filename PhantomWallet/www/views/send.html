@@ -27,7 +27,9 @@
                         <h4 class="control-label send-label">Step 1) Select chain</h4>
                         <select id="selectChain">
                             {{#each availableChains}}
-                            <option>{{this}}</option>
+                              {{#if this == 'main'}}
+                              <option>{{this}}</option>
+                              {{/if}}
                             {{/each}}
                         </select>
                     </div>
@@ -66,12 +68,14 @@
                         <h4 class="control-label send-label">Step 5) Select destination chain</h4>
                         <select id="destinationChain" style="margin-top: 0;">
                             {{#each chains}}
-                            <option>{{Name}}</option>
+                              {{#if Name == 'main'}}
+                              <option>{{Name}}</option>
+                              {{/if}}
                             {{/each}}
                         </select>
                     </div>
                     <button class="btn-primary prevBtn btn-lg button" type="button">PREVIOUS</button>
-                    <button class="btn-success btn-lg button" type="button" onclick="confirmSend()">SEND ASSETS</button>
+                    <button class="btn-success btn-lg button" type="button" onclick="confirmSend()" id="send-assets">SEND ASSETS</button>
                 </div>
             </div>
         </div>
@@ -162,6 +166,17 @@
         });
 
         $('div.setup-panel div a.btn-primary').trigger('click');
+
+
+        // Trigger send assets button on press enter
+        var input = document.getElementById("destination");
+        input.addEventListener("keyup", function(event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                document.getElementById("send-assets").click();
+            }
+        });
+
     });
 
     function pickMax() {
@@ -187,37 +202,13 @@
         var isValid = false;
 
         if (target_address.length == 0) {
-            //bootbox.alert("Please insert an destination address!");
-            //return;
+            bootbox.alert("Please insert an destination address!");
+            return;
         }
 
-        var params = [];
-        // build params for contract call
-        params[0] = { name: 'name', type: 'String', input: target_address, info: '' }
-        $.post('/contract',
-           {
-               chain: 'main',
-               contract: 'account',
-               method: 'LookUpName',
-               params: JSON.stringify({
-                 params
-               })
-           },
-           function (returnedData) {
-             console.log(returnedData)
-             $.get('/lookupname',
-                function (returnedDataaddress) {
-                  console.log(returnedDataaddress)
-                })
-                .fail(function(e) {
-                console.log("error");
-                });
-           })
-
-
         if (target_address.length != 45) {
-            bootbox.alert("Please insert a valid destination address!");
-            return;
+            //bootbox.alert("Please insert a valid destination address!");
+            //return;
         }
 
         if (selected_chain === selectedDestinationChain) {
