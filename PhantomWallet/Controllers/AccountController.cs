@@ -448,14 +448,12 @@ namespace Phantom.Wallet.Controllers
             }
         }
 
-        public async Task<object> InvokeSettleTx(NeoKeys keyPair, string neoTxHash)
+        public async Task<object> InvokeSettleTx(NeoKeys keyPair, string neoTxHash, string symbol)
         {
             try
             {
                 Hash txHash = Hash.Parse(neoTxHash);
                 var outputAddress = Address.FromKey(keyPair);
-
-                var symbol = "SOUL";
 
                 var script = ScriptUtils.BeginScript()
                     .CallContract("interop", "SettleTransaction", outputAddress, NeoWallet.NeoPlatform, txHash)
