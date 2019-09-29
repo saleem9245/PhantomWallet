@@ -160,7 +160,7 @@ namespace Phantom.Wallet
 
             context["menu"] = MenuEntries;
             context["networks"] = Networks;
-            context["explorer"] =  config != null ? config.ExplorerUrl : "http://localhost:7072";
+            context["explorer"] = config != null ? config.ExplorerUrl : "http://localhost:7072";
 
             if (HasLogin(request))
             {
@@ -497,7 +497,7 @@ namespace Phantom.Wallet
                 return JsonConvert.SerializeObject(result, Formatting.Indented);
             }
 
-            var txObject = (TransactionDto) result;
+            var txObject = (TransactionDto)result;
 
             if (txObject.Confirmations > 0)
             {
@@ -559,7 +559,7 @@ namespace Phantom.Wallet
                 return JsonConvert.SerializeObject(result, Formatting.Indented);
             }
 
-            var txObject = (TransactionDto) result;
+            var txObject = (TransactionDto)result;
 
             if (txObject.Confirmations > 0)
             {
@@ -567,7 +567,7 @@ namespace Phantom.Wallet
             }
 
             PushError(request, "Error sending tx.");
-            return JsonConvert.SerializeObject(new TransactionDto() {}, Formatting.Indented);
+            return JsonConvert.SerializeObject(new TransactionDto() { }, Formatting.Indented);
         }
 
         private object RouteInvokeContractTx(HTTPRequest request)
@@ -578,7 +578,8 @@ namespace Phantom.Wallet
             var param = request.GetVariable("params");
             var context = InitContext(request);
 
-            if (param == null) {
+            if (param == null)
+            {
                 PushError(request, "Parameters cannot be null!");
                 return null;
             }
@@ -623,32 +624,33 @@ namespace Phantom.Wallet
             var stakeAmount = request.GetVariable("stakeAmount");
             var context = InitContext(request);
 
-            if (stakeAmount == null) {
+            if (stakeAmount == null)
+            {
                 PushError(request, "stakeAmount cannot be null!");
                 return null;
             }
 
             if (context["holdings"] is Holding[] balance)
             {
-              var keyPair = GetLoginKey(request);
-              InvalidateCache(keyPair.Address);
-              var result = AccountController.CreateStakeSoulTransactionWithClaim(
-                      keyPair, stakeAmount
-                      ).Result;
+                var keyPair = GetLoginKey(request);
+                InvalidateCache(keyPair.Address);
+                var result = AccountController.CreateStakeSoulTransactionWithClaim(
+                        keyPair, stakeAmount
+                        ).Result;
 
-              if (result.GetType() == typeof(ErrorResult))
-              {
-                  return JsonConvert.SerializeObject(result, Formatting.Indented);
-              }
+                if (result.GetType() == typeof(ErrorResult))
+                {
+                    return JsonConvert.SerializeObject(result, Formatting.Indented);
+                }
 
-              var contractTx = (string)result;
+                var contractTx = (string)result;
 
-              if (SendUtils.IsTxHashValid(contractTx))
-              {
-                  return contractTx;
-              }
+                if (SendUtils.IsTxHashValid(contractTx))
+                {
+                    return contractTx;
+                }
 
-              PushError(request, contractTx);
+                PushError(request, contractTx);
 
             }
             return null;
@@ -663,7 +665,7 @@ namespace Phantom.Wallet
             var context = InitContext(request);
 
             if (param == null)
-	        {
+            {
                 PushError(request, "Parameters cannot be null!");
                 return null;
             }
@@ -675,7 +677,7 @@ namespace Phantom.Wallet
             var result = AccountController.InvokeContractGeneric(keyPair, chain, contract, method, paramList.ToArray()).Result;
 
             if (result != null && result.GetType() == typeof(BigInteger))
-	        {
+            {
                 return result.ToString();
             }
 
@@ -746,15 +748,19 @@ namespace Phantom.Wallet
             var context = InitContext(request);
             if (context["holdings"] is Holding[] balance)
             {
-              if (neoPassphrase != "")
-              {
-                  var neoKeyConverted = Phantasma.Neo.Core.NeoKeys.FromNEP2(neoKey, neoPassphrase);
-              }
-              else {
-                  var neoKeysConverted = Phantasma.Neo.Core.NeoKeys.FromWIF(neoKey);
-              }
-              var result = AccountController.InvokeSettleTx(neoKeysConverted, neoTxHash).Result;
-              return result;
+                Phantasma.Neo.Core.NeoKeys neoKeysConverted;
+
+                if (neoPassphrase != "")
+                {
+                    neoKeysConverted = Phantasma.Neo.Core.NeoKeys.FromNEP2(neoKey, neoPassphrase);
+                }
+                else
+                {
+                    neoKeysConverted = Phantasma.Neo.Core.NeoKeys.FromWIF(neoKey);
+                }
+
+                var result = AccountController.InvokeSettleTx(neoKeysConverted, neoTxHash).Result;
+                return result;
             }
             return null;
         }
@@ -777,7 +783,7 @@ namespace Phantom.Wallet
                         return JsonConvert.SerializeObject(result, Formatting.Indented);
                     }
 
-                    var registerTx = (string) result;
+                    var registerTx = (string)result;
 
                     if (SendUtils.IsTxHashValid(registerTx))
                     {

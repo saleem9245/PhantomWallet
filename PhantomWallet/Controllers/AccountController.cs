@@ -453,11 +453,13 @@ namespace Phantom.Wallet.Controllers
             try
             {
                 Hash txHash = Hash.Parse(neoTxHash);
-                var outputAddress = new Address(neoKeys.PublicKey);
+                var outputAddress = Address.FromKey(keyPair);
+
+                var symbol = "SOUL";
 
                 var script = ScriptUtils.BeginScript()
                     .CallContract("interop", "SettleTransaction", outputAddress, NeoWallet.NeoPlatform, txHash)
-                    .CallContract("swap", "SwapFee", outputAddress, "SOUL", UnitConversion.ToBigInteger(0.1m, 8))
+                    .CallContract("swap", "SwapFee", outputAddress, symbol, UnitConversion.ToBigInteger(0.1m, 8))
                     .CallInterop("Runtime.TransferBalance", outputAddress, keyPair.Address, symbol)
                     .AllowGas(outputAddress, Address.Null, MinimumFee, 500)
                     .SpendGas(outputAddress)
@@ -466,7 +468,7 @@ namespace Phantom.Wallet.Controllers
                 var nexusName = WalletConfig.Network;
                 var tx = new Phantasma.Blockchain.Transaction(nexusName, "main", script, DateTime.UtcNow + TimeSpan.FromHours(1));
 
-                tx.Sign(neoKeysConverted);
+                tx.Sign(keyPair);
 
                 var txResult = await _phantasmaRpcService.SendRawTx.SendRequestAsync(tx.ToByteArray(true).Encode());
                 Log.Information("txResult: " + txResult);

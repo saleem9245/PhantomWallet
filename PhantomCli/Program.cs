@@ -28,7 +28,7 @@ namespace PhantomCli
 {
     class PhantomCli
     {
-        private static KeyPair keyPair {get; set;} = null;
+        private static PhantasmaKeys keyPair {get; set;} = null;
 
         private static AccountController AccountController { get; set; }
 
@@ -302,7 +302,7 @@ namespace PhantomCli
             string chain = obj[0];
             string contract = obj[1];
             string method = obj[2];
-            KeyPair kp = GetLoginKey();
+            PhantasmaKeys kp = GetLoginKey();
             object[] paramArray = new object[] {kp.Address, kp.Address};
             var result = AccountController.InvokeContractTxGeneric(kp, chain, contract, method, paramArray).Result;
             if (result == null) {
@@ -319,7 +319,7 @@ namespace PhantomCli
             string chain = obj[0];
             string contract = obj[1];
             string method = obj[2];
-            KeyPair kp = GetLoginKey();
+            PhantasmaKeys kp = GetLoginKey();
             object[] paramArray = new object[] {kp.Address};
             var result = AccountController.InvokeContractGeneric(kp, chain, contract, method, paramArray).Result;
             if (result == null) {
@@ -346,13 +346,13 @@ namespace PhantomCli
             GetLoginKey();
         }
 
-        private static KeyPair GetLoginKey(bool changeWallet=false)
+        private static PhantasmaKeys GetLoginKey(bool changeWallet=false)
         {
             if (keyPair == null && !changeWallet) 
             {
                 CliLogger.Information("Enter private key: ");
                 var wif = Console.ReadLine();
-                var kPair = KeyPair.FromWIF(wif);
+                var kPair = PhantasmaKeys.FromWIF(wif);
                 keyPair = kPair;
             }
             return keyPair;
