@@ -134,8 +134,8 @@ namespace Phantom.Wallet
                 LastUpdated = currentTime,
                 Holdings = AccountController.GetAccountHoldings(address.Text).Result,
                 Tokens = AccountController.GetAccountTokens(address.Text).Result.ToArray(),
-                Transactions = AccountController.GetAccountTransactions(address.Text).Result,
-                Interops = AccountController.GetAccountInterops(address.Text).Result.ToArray()
+                //Transactions = AccountController.GetAccountTransactions(address.Text).Result,
+                //Interops = AccountController.GetAccountInterops(address.Text).Result.ToArray()
             };
 
             _accountCaches[address] = cache;
@@ -176,13 +176,13 @@ namespace Phantom.Wallet
                 var cache = FindCache(keyPair.Address);
 
                 var entry = MenuEntries.FirstOrDefault(e => e.Id == "history");
-                entry.Count = cache.Transactions.Length;
+                //entry.Count = cache.Transactions.Length;
 
-                context["transactions"] = cache.Transactions;
-                //context["transactions"] = AccountController.GetAccountTransactions(keyPair.Address.Text).Result;
+                //context["transactions"] = cache.Transactions;
+                context["transactions"] = AccountController.GetAccountTransactions(keyPair.Address.Text).Result;
                 context["holdings"] = AccountController.GetAccountHoldings(keyPair.Address.Text).Result;
-                context["interops"] = cache.Interops;
-                //context["interops"] = AccountController.GetAccountInterops(keyPair.Address.Text).Result.ToArray();
+                //context["interops"] = cache.Interops;
+                context["interops"] = AccountController.GetAccountInterops(keyPair.Address.Text).Result.ToArray();
 
                 if (string.IsNullOrEmpty(AccountController.AccountName))
                 {
@@ -216,8 +216,6 @@ namespace Phantom.Wallet
             TemplateEngine.Server.Get("/confirmations/{txhash}", RouteConfirmations);
 
             TemplateEngine.Server.Post("/register", RouteRegisterName);
-
-            TemplateEngine.Server.Post("/lookupname", RouteLookUpName);
 
             TemplateEngine.Server.Post("/stake", RouteStake);
 
@@ -386,6 +384,8 @@ namespace Phantom.Wallet
             var symbol = request.GetVariable("token");
             var amountOrId = request.GetVariable(isFungible ? "amount" : "id");
 
+            var isName = bool.Parse(request.GetVariable("isName"));
+
             var keyPair = GetLoginKey(request);
             string result;
 
@@ -415,7 +415,7 @@ namespace Phantom.Wallet
 
             if (chainName == destinationChain)
             {
-                result = AccountController.TransferTokens(isFungible, keyPair, addressTo, chainName, symbol, amountOrId).Result;
+                result = AccountController.TransferTokens(isFungible, keyPair, addressTo, chainName, symbol, amountOrId, isName).Result;
 
                 ResetSessionSendFields(request);
             }
@@ -698,15 +698,6 @@ namespace Phantom.Wallet
             var platforms = AccountController.PhantasmaPlatforms;
             string json = JsonConvert.SerializeObject(platforms, Formatting.Indented);
             return json;
-        }
-
-        private object RouteLookUpName(HTTPRequest request)
-        {
-            var addressName = request.GetVariable("addressName");
-            //var result = AccountController.LookUpName(addressName).Result;
-            //var addressDecoded = Serialization.Unserialize<Address>(result.Decode());
-            //var result = RootChain.InvokeContract(storage, Nexus.AccountContractName, addressName, name).AsAddress();
-            return addressName;
         }
 
         private object RouteConfig(HTTPRequest request)
