@@ -746,13 +746,13 @@ namespace Phantom.Wallet
         {
             var neoTxHash = request.GetVariable("neoTxHash");
             var neoKey = request.GetVariable("neoKey");
-            var neoPassword = request.GetVariable("neoPassword");
+            var neoPassphrase = request.GetVariable("neoPassphrase");
             var context = InitContext(request);
             if (context["holdings"] is Holding[] balance)
             {
               var keyPair = GetLoginKey(request);
               InvalidateCache(keyPair.Address);
-              var result = AccountController.InvokeSettleTx(keyPair, neoTxHash, neoKey, neoPassword).Result;
+              var result = AccountController.InvokeSettleTx(keyPair, neoTxHash, neoKey, neoPassphrase).Result;
               return result;
             }
             return null;

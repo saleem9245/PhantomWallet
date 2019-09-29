@@ -501,23 +501,32 @@ namespace Phantom.Wallet.Controllers
             }
         }
 
-        public async Task<object> InvokeSettleTx(KeyPair keyPair, string neoTxHash)
+        public async Task<object> InvokeSettleTx(KeyPair keyPair, string neoTxHash, string neoKey, string neoPassphrase)
         {
             try
             {
                 Hash txHash = Hash.Parse(neoTxHash);
+                var outputAddress = new Address(neoKey.PublicKey);
 
                 var script = ScriptUtils.BeginScript()
-                    .CallContract("interop", "SettleTransaction", keyPair.Address, NeoWallet.NeoPlatform, txHash)
-                    .CallContract("swap", "SwapFee", keyPair.Address, "SOUL", UnitConversion.ToBigInteger(0.1m, 8))
-                    .AllowGas(keyPair.Address, Address.Null, MinimumFee, 9999)
-                    .SpendGas(keyPair.Address)
+                    .CallContract("interop", "SettleTransaction", outputAddress, NeoWallet.NeoPlatform, txHash)
+                    .CallContract("swap", "SwapFee", outputAddress, "SOUL", UnitConversion.ToBigInteger(0.1m, 8))
+                    .CallInterop("Runtime.TransferBalance", outputAddress, keyPair.Address, symbol)
+                    .AllowGas(outputAddress, Address.Null, MinimumFee, 500)
+                    .SpendGas(outputAddress)
                     .EndScript();
 
                 var nexusName = WalletConfig.Network;
                 var tx = new Phantasma.Blockchain.Transaction(nexusName, "main", script, DateTime.UtcNow + TimeSpan.FromHours(1));
 
-                tx.Sign(keyPair);
+                if (neoPassphrase != "")
+                {
+                    var neoKeys = Phantasma.Neo.Core.NeoKeys.FromNEP2(neoKey, neoPassphrase);
+                }
+                else {
+                    var neoKeys = Phantasma.Neo.Core.NeoKeys.FromWIF(neoKey);
+                }
+                tx.Sign(neoKeys);
 
                 var txResult = await _phantasmaRpcService.SendRawTx.SendRequestAsync(tx.ToByteArray(true).Encode());
                 Log.Information("txResult: " + txResult);

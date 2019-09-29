@@ -54,7 +54,7 @@
                           <div id="keytypetoggle" style="margin:.5em;font-style:italic;color:#17B0E7;display:inline-block;">Private Key</div>
                           <i style="display:inline-block;" class="fas fa-sync" onclick="toggleKeyType()"></i>
                           <input type="search" class="form-control parameters-swap-input" id="neoprivatekey" style="text-align:center;" placeholder="Enter NEO key">
-                          <input type="search" class="form-control parameters-swap-input" id="neopassword" style="text-align:center;margin-top:1em;display:none;" placeholder="Enter NEO password">
+                          <input type="search" class="form-control parameters-swap-input" id="neopassphrase" style="text-align:center;margin-top:1em;display:none;" placeholder="Enter NEO passphrase">
                           <button class="btn-primary nextBtn btn-lg button" type="button" onclick="swapNEOToPhantasma()" id="neotophantasmabutton">SWAP ASSETS</button>
                           <div id="wrapper-link-confirm" style="opacity:0;margin-bottom:1em;">
                             Transaction
@@ -225,15 +225,15 @@
 
       let hash = $("#neohash").val();
       let neokey = $("#neoprivatekey").val();
-      let neopassword = $("#neopassword").val();
+      let neopassphrase = $("#neopassphrase").val();
 
       if (!hash.length == 64) {
           bootbox.alert("Please insert a valid transaction hash!");
           return;
       }
 
-      if (!neokey.length == 52 || !neokey.length == 64) {
-          bootbox.alert("Please insert a valid private key!");
+      if (!neokey.length == 52 || !neokey.length == 58) {
+          bootbox.alert("Please insert a valid private key or encrypted key!");
           return;
       }
 
@@ -260,7 +260,7 @@
                  {
                      neoTxHash: hash,
                      neoKey: neokey,
-                     neoPassword: neopassword
+                     neoPassphrase: neopassphrase
                  },
                  function (returnedData) {
                    if (returnedData !== "") {
