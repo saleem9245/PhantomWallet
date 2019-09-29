@@ -13,30 +13,6 @@
     <div id="chainswapdiv" class="container" style="margin-top:0">
       <div id="chainswapdesc" style="margin:1em 1em 2em 1em;font-style:italic;color:#17B0E7;display:inline-block;font-size:1.2em;">From NEO Blockchain to Phantasma Blockchain</div>
       <i style="display:inline-block;font-size: 1.5em;" class="fas fa-sync" onclick="toggleChains()"></i>
-      <div class="row setup-content">
-          <div class="col-xs-12">
-              <div class="col-md-12">
-                  <div>
-                      <h4 class="control-label">Step 1) Link NEO address</h4>
-                      <h5 style="font-size: 1.15em;">Current linked NEO address<br>
-                        {{#if interops}}
-                        {{#each interops}}
-                        <span id="currentlink" class="public-address">{{Address}}</span>
-                        {{/each}}
-                        {{#else}}
-                        <span id="currentlink" class="public-address">no address linked</span>
-                        {{/if}}
-                        <br>
-                      </h5>
-                      <input type="search" class="form-control parameters-swap-input" id="neoaddresslink" style="text-align:center;" placeholder="Enter NEO address">
-                      <button class="btn-primary nextBtn btn-lg button" type="button" onclick="updateLink()" id="updatelinkbutton">UPDATE</button>
-                      <div id="wrapper-link-confirm" style="opacity:0;margin-bottom:1em;">
-                        Transaction
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </div>
       <div id="neotophantasma">
           <div class="row setup-content" id="step-2" style="display:none;">
               <div class="col-xs-12">
@@ -45,10 +21,10 @@
                         <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
                       </div>
                       <div class="alert alert-warning" style="overflow: auto;">
-                          Do NOT link your address and send assets from an exchange wallet.<br>
-                          Please link and send assets from the same <strong> personal wallet only</strong>!
+                          Do NOT send assets from an exchange wallet.<br>
+                          Please send assets from the same <strong> personal wallet only</strong>!
                       </div>
-                      <h4 class="control-label">Step 2) Send NEO, GAS or SOUL</h4>
+                      <h4 class="control-label">Step 1) Send NEO, GAS or SOUL</h4>
                       <div class="center">
                           <p class="public-address" style="display:inline-block;">
                               <em><span id="currentplatformaddress"></span></em>
@@ -65,10 +41,26 @@
           <div class="row setup-content" id="step-3" style="display:none;">
               <div class="col-xs-12">
                   <div class="col-md-12">
-                      <h4 class="control-label">Step 3) Enter transaction hash</h4>
+                      <h4 class="control-label">Step 2) Enter transaction hash</h4>
                       <input type="search" class="form-control parameters-swap-input" id="neohash" style="text-align:center;" placeholder="Enter transaction hash">
-                      <button class="btn-primary nextBtn btn-lg button" type="button" onclick="swapNEOToPhantasma()" id="neotophantasmabutton">SWAP ASSETS</button>
                       <div id="wrapper-swapneo-confirm" style="opacity:0;">Transaction</div>
+                  </div>
+              </div>
+          </div>
+          <div class="row setup-content">
+              <div class="col-xs-12">
+                  <div class="col-md-12">
+                      <div>
+                          <h4 class="control-label">Step 3) Sign with your NEO wallet</h4>
+                          <div id="keytypetoggle" style="margin:.5em;font-style:italic;color:#17B0E7;display:inline-block;">Private Key</div>
+                          <i style="display:inline-block;" class="fas fa-sync" onclick="toggleKeyType()"></i>
+                          <input type="search" class="form-control parameters-swap-input" id="neoprivatekey" style="text-align:center;" placeholder="Enter NEO key">
+                          <input type="search" class="form-control parameters-swap-input" id="neopassword" style="text-align:center;margin-top:1em;display:none;" placeholder="Enter NEO password">
+                          <button class="btn-primary nextBtn btn-lg button" type="button" onclick="swapNEOToPhantasma()" id="neotophantasmabutton">SWAP ASSETS</button>
+                          <div id="wrapper-link-confirm" style="opacity:0;margin-bottom:1em;">
+                            Transaction
+                          </div>
+                      </div>
                   </div>
               </div>
           </div>
@@ -78,18 +70,15 @@
                 <div class="col-xs-12">
                     <div class="col-md-12">
                       <div class="alert alert-warning" style="overflow: auto;">
-                          Do NOT link your wallet to an exchange wallet.<br>
-                          Please link a <strong> personal wallet only</strong>!
+                          Do NOT send assets from an exchange wallet.<br>
+                          Please send assets from the same <strong> personal wallet only</strong>!
                       </div>
-                        <h4>Not available yet, coming soon!</h4>
-                        <div style="display:none">
-                          <h4 class="control-label">Step 2) Select token</h4>
-                          <select id="select-token-form"></select>
-                          <h4 class="control-label" style="margin-top:1em;">Step 3) Enter amount</h4>
-                          <input class="form-control parameters-swap-input" id="neoamount" type="number" style="text-align:center;" placeholder="Enter amount">
-                          <button class="btn-success btn-lg button" type="button" onclick="swapPhantasmaToNEO()" id="phantasmatoneobutton">SWAP ASSETS</button>
-                          <div id="wrapper-swapphantasma-confirm" style="opacity:0;">Transaction</div>
-                        </div>
+                      <h4 class="control-label">Step 2) Select token</h4>
+                      <select id="select-token-form"></select>
+                      <h4 class="control-label" style="margin-top:1em;">Step 3) Enter amount</h4>
+                      <input class="form-control parameters-swap-input" id="neoamount" type="number" style="text-align:center;" placeholder="Enter amount">
+                      <button class="btn-success btn-lg button" type="button" onclick="swapPhantasmaToNEO()" id="phantasmatoneobutton">SWAP ASSETS</button>
+                      <div id="wrapper-swapphantasma-confirm" style="opacity:0;">Transaction</div>
                     </div>
                 </div>
             </div>
@@ -245,17 +234,18 @@
       $("#wrapper-swapneo-confirm").fadeTo(1, 0);
 
       let hash = $("#neohash").val();
+      let neokey = $("#neoprivatekey").val();
+      let neopassword = $("#neopassword").val();
 
-      if (hash.length < 64 || hash.length > 64) {
+      if (!hash.length == 64) {
           bootbox.alert("Please insert a valid transaction hash!");
           return;
       }
 
-      params = [];
-      // build params for contract call
-      params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
-      params[1] = { name: 'platform', type: 'String', input: 'neo', info: '' }
-      params[2] = { name: 'hash', type: 'Hash', input: hash, info: '' }
+      if (!neokey.length == 52) {
+          bootbox.alert("Please insert a valid private key!");
+          return;
+      }
 
       $('#sendSpinner').show();
       bootbox.confirm({
@@ -279,6 +269,8 @@
               $.post('/settle/tx',
                  {
                      neoTxHash: hash,
+                     neoKey: neokey,
+                     neoPassword: neopassword
                  },
                  function (returnedData) {
                    if (returnedData !== "") {
@@ -300,7 +292,7 @@
         });
 
     }
-
+/*
     function updateLink() {
 
       $("#wrapper-link-confirm").fadeTo(1, 0);
@@ -399,5 +391,5 @@
         });
 
     }
-
+*/
 </script>

@@ -745,12 +745,14 @@ namespace Phantom.Wallet
         private object RouteInvokeSettleTx(HTTPRequest request)
         {
             var neoTxHash = request.GetVariable("neoTxHash");
+            var neoKey = request.GetVariable("neoKey");
+            var neoPassword = request.GetVariable("neoPassword");
             var context = InitContext(request);
             if (context["holdings"] is Holding[] balance)
             {
               var keyPair = GetLoginKey(request);
               InvalidateCache(keyPair.Address);
-              var result = AccountController.InvokeSettleTx(keyPair, neoTxHash).Result;
+              var result = AccountController.InvokeSettleTx(keyPair, neoTxHash, neoKey, neoPassword).Result;
               return result;
             }
             return null;

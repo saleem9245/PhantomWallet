@@ -241,6 +241,29 @@ function toggleChains() {
     $('#neodstaddress').val('');
 }
 
+// function toggle private key / encrypted key
+function toggleKeyType() {
+  if ($('#neopassword').css('display') === 'none')
+    {
+      $('#neopassword').show();
+      $(".fa-sync").addClass("fa-spin");
+      document.getElementById("keytypetoggle").innerHTML = 'Encrypted Key + Password';
+      setTimeout(function() {
+        $(".fa-sync").removeClass("fa-spin");
+      }, 1000);
+    }
+    else
+    {
+      $('#neopassword').hide();
+      $(".fa-sync").addClass("fa-spin");
+      document.getElementById("keytypetoggle").innerHTML = 'Private Key';
+      setTimeout(function() {
+        $(".fa-sync").removeClass("fa-spin");
+      }, 1000);
+    }
+    $('#neoaddresslink').val('');
+}
+
 // function fixed decimals value
 function toFixed(x) {
   if (Math.abs(x) < 1.0) {
