@@ -110,6 +110,7 @@ on Windows:
 `.\PhantomWallet.exe --path=www --port=7071`
 
 Then open a browser and go to http://localhost:7071
+If using on Windows, you might need to disable your antivirus before launching the wallet, as sometimes it gets detected as a false positive.
 
 *Phantom Cli:*
 
