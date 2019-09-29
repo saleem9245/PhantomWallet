@@ -198,7 +198,7 @@ namespace Phantom.Wallet.Controllers
             return new List<BalanceSheetDto>();
         }
 
-        public async Task<Transaction[]> GetAccountTransactions(string address, int amount = 1000)
+        public async Task<Transaction[]> GetAccountTransactions(string address, int amount = 500)
         {
             try
             {
