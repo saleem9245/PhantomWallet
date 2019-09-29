@@ -85,7 +85,7 @@
 <script>
     var selected_chain = null;
     var selected_symbol = null;
-    var isFungible = true;
+    var isFungible = 'True';
     var max_amount = 0;
 
     function validateForm(e)
@@ -206,9 +206,15 @@
             return;
         }
 
-        if (target_address.length != 45) {
-            //bootbox.alert("Please insert a valid destination address!");
-            //return;
+        if (target_address.length < 4) {
+            bootbox.alert("Please insert a valid destination address!");
+            return;
+        }
+
+        if (target_address.startsWith('P')) {
+            isName = 'True';
+        } else {
+            isName = 'False';
         }
 
         if (selected_chain === selectedDestinationChain) {
@@ -247,7 +253,7 @@
                     if (isFungible) {
                         $.post('/sendrawtx',
                             {
-                                fungible: 'True', token: symbol, amount: amount.value, dest: addressTo.value, chain: selected_chain , destChain: selectedDestinationChain
+                                fungible: 'True', token: symbol, amount: amount.value, dest: addressTo.value, chain: selected_chain , destChain: selectedDestinationChain, isName: isName
                             },
                             function (returnedData) {
                                 $('#sendSpinner').hide();
@@ -264,7 +270,7 @@
                         var nftId = $("#select-id").val();
                         $.post('/sendrawtx',
                             {
-                                fungible: 'False', token: symbol, id: nftId, dest: addressTo.value, chain: selected_chain , destChain: selectedDestinationChain
+                                fungible: 'False', token: symbol, id: nftId, dest: addressTo.value, chain: selected_chain , destChain: selectedDestinationChain, isName: isName
                             },
                             function (returnedData) {
                                 $('#sendSpinner').hide();
