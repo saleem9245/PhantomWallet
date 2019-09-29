@@ -38,7 +38,7 @@ namespace Phantom.Wallet.Helpers
             Address senderAddress = Address.Null;
 
             string receiverToken = null;
-            Address receiverChain = Address.Null;
+            string receiverChain = "";
             Address receiverAddress = Address.Null;
 
             BigInteger amount = 0;
@@ -51,9 +51,9 @@ namespace Phantom.Wallet.Helpers
                     case EventKind.TokenSend:
                         {
                             var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
-                            amount = data.value;
+                            amount = data.Value;
                             senderAddress = Address.FromText(evt.EventAddress);
-                            senderToken = data.symbol;
+                            senderToken = data.Symbol;
                             var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == senderToken).Decimals);
                             amountsymbol = $"{amountDecimal.ToString("#,0.##########")} {senderToken}";
                         }
@@ -62,10 +62,10 @@ namespace Phantom.Wallet.Helpers
                     case EventKind.TokenReceive:
                         {
                             var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
-                            amount = data.value;
+                            amount = data.Value;
                             receiverAddress = Address.FromText(evt.EventAddress);
-                            receiverChain = data.chainAddress;
-                            receiverToken = data.symbol;
+                            receiverChain = data.ChainName;
+                            receiverToken = data.Symbol;
                             var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == receiverToken).Decimals);
                             amountsymbol = $"{amountDecimal.ToString("#,0.##########")} {receiverToken}";
                         }
@@ -74,44 +74,44 @@ namespace Phantom.Wallet.Helpers
                     case EventKind.TokenEscrow:
                         {
                             var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
-                            amount = data.value;
+                            amount = data.Value;
                             receiverAddress = Address.FromText(evt.EventAddress);
-                            receiverChain = data.chainAddress;
-                            var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.symbol).Decimals);
-                            amountsymbol = $"{amountDecimal.ToString("#,0.##########")} {data.symbol}";
+                            receiverChain = data.ChainName;
+                            var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.Symbol).Decimals);
+                            amountsymbol = $"{amountDecimal.ToString("#,0.##########")} {data.Symbol}";
                         }
                         break;
 
                     case EventKind.TokenMint:
                         {
                             var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
-                            amount = data.value;
+                            amount = data.Value;
                             receiverAddress = Address.FromText(evt.EventAddress);
-                            receiverChain = data.chainAddress;
-                            var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.symbol).Decimals);
-                            amountsymbol = $"{amountDecimal.ToString("#,0.##########")} {data.symbol}";
+                            receiverChain = data.ChainName;
+                            var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.Symbol).Decimals);
+                            amountsymbol = $"{amountDecimal.ToString("#,0.##########")} {data.Symbol}";
                         }
                         break;
 
                     case EventKind.TokenStake:
                         {
                             var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
-                            amount = data.value;
+                            amount = data.Value;
                             receiverAddress = Address.FromText(evt.EventAddress);
-                            receiverChain = data.chainAddress;
-                            var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.symbol).Decimals);
-                            amountsymbol = $"{amountDecimal.ToString("#,0.##########")} {data.symbol}";
+                            receiverChain = data.ChainName;
+                            var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.Symbol).Decimals);
+                            amountsymbol = $"{amountDecimal.ToString("#,0.##########")} {data.Symbol}";
                         }
                         break;
 
                     case EventKind.TokenUnstake:
                         {
                             var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
-                            amount = data.value;
+                            amount = data.Value;
                             receiverAddress = Address.FromText(evt.EventAddress);
-                            receiverChain = data.chainAddress;
-                            var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.symbol).Decimals);
-                            amountsymbol = $"{amountDecimal.ToString("#,0.##########")} {data.symbol}";
+                            receiverChain = data.ChainName;
+                            var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.Symbol).Decimals);
+                            amountsymbol = $"{amountDecimal.ToString("#,0.##########")} {data.Symbol}";
                         }
                         break;
 
@@ -126,11 +126,11 @@ namespace Phantom.Wallet.Helpers
             string typetx = null;
 
             string senderToken = null;
-            Address senderChain = Address.FromText(tx.ChainAddress);
+            string senderChain = phantasmaChains.Where(x => x.Address == tx.ChainAddress).Select(x => x.Name).FirstOrDefault();
             Address senderAddress = Address.Null;
 
             string receiverToken = null;
-            Address receiverChain = Address.Null;
+            string receiverChain = "";
             Address receiverAddress = Address.Null;
 
             BigInteger amount = 0;
@@ -142,30 +142,28 @@ namespace Phantom.Wallet.Helpers
                     case EventKind.TokenSend:
                         {
                             var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
-                            amount = data.value;
+                            amount = data.Value;
                             senderAddress = Address.FromText(evt.EventAddress);
-                            senderToken = data.symbol;
+                            senderToken = data.Symbol;
                         }
                         break;
 
                     case EventKind.TokenReceive:
                         {
                             var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
-                            amount = data.value;
+                            amount = data.Value;
                             receiverAddress = Address.FromText(evt.EventAddress);
-                            receiverChain = data.chainAddress;
-                            receiverToken = data.symbol;
+                            receiverChain = data.ChainName;
+                            receiverToken = data.Symbol;
                         }
                         break;
 
                     case EventKind.TokenEscrow:
                         {
                             var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
-                            amount = data.value;
-                            var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.symbol).Decimals);
+                            amount = data.Value;
+                            var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.Symbol).Decimals);
                             receiverAddress = Address.FromText(evt.EventAddress);
-                            receiverChain = data.chainAddress;
-                            var chain = GetChainName(receiverChain.Text, phantasmaChains);
                             typetx = $"Custom";
                         }
                         break;
@@ -218,7 +216,7 @@ namespace Phantom.Wallet.Helpers
                     typetx = $"Custom";
                 }
 
-                if (receiverChain != Address.Null && receiverChain != senderChain)
+                if (!string.IsNullOrEmpty(receiverChain) && receiverChain != senderChain)
                 {
                     typetx = $"Custom";
                 }
@@ -232,11 +230,11 @@ namespace Phantom.Wallet.Helpers
             string description = null;
 
             string senderToken = null;
-            Address senderChain = Address.FromText(tx.ChainAddress);
+            string senderChain = phantasmaChains.Where(x => x.Address == tx.ChainAddress).Select(x => x.Name).FirstOrDefault();
             Address senderAddress = Address.Null;
 
             string receiverToken = null;
-            Address receiverChain = Address.Null;
+            string receiverChain = "";
             Address receiverAddress = Address.Null;
 
             BigInteger amount = 0;
@@ -248,40 +246,39 @@ namespace Phantom.Wallet.Helpers
                     case EventKind.TokenSend:
                         {
                             var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
-                            amount = data.value;
+                            amount = data.Value;
                             senderAddress = Address.FromText(evt.EventAddress);
-                            senderToken = data.symbol;
+                            senderToken = data.Symbol;
                         }
                         break;
 
                     case EventKind.TokenReceive:
                         {
                             var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
-                            amount = data.value;
+                            amount = data.Value;
                             receiverAddress = Address.FromText(evt.EventAddress);
-                            receiverChain = data.chainAddress;
-                            receiverToken = data.symbol;
+                            receiverChain = data.ChainName;
+                            receiverToken = data.Symbol;
                         }
                         break;
 
                     case EventKind.TokenEscrow:
                         {
                             var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
-                            amount = data.value;
-                            var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.symbol).Decimals);
+                            amount = data.Value;
+                            var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.Symbol).Decimals);
                             receiverAddress = Address.FromText(evt.EventAddress);
-                            receiverChain = data.chainAddress;
-                            var chain = GetChainName(receiverChain.Text, phantasmaChains);
+                            receiverChain = data.ChainName;
                             description =
-                                $"Escrowed for address {receiverAddress} in {chain}";
+                                $"Escrowed for address {receiverAddress} in {receiverChain}";
                         }
                         break;
 
                     case EventKind.TokenMint:
                         {
                             var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
-                            amount = data.value;
-                            var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.symbol).Decimals);
+                            amount = data.Value;
+                            var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.Symbol).Decimals);
                             description = $"Claim transaction";
                         }
                         break;
@@ -289,8 +286,8 @@ namespace Phantom.Wallet.Helpers
                     case EventKind.TokenStake:
                         {
                             var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
-                            amount = data.value;
-                            var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.symbol).Decimals);
+                            amount = data.Value;
+                            var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.Symbol).Decimals);
                             description = $"Stake transaction";
                         }
                         break;
@@ -298,8 +295,8 @@ namespace Phantom.Wallet.Helpers
                     case EventKind.TokenUnstake:
                         {
                             var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
-                            amount = data.value;
-                            var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.symbol).Decimals);
+                            amount = data.Value;
+                            var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.Symbol).Decimals);
                             description = $"Unstake transaction";
                         }
                         break;
@@ -369,7 +366,7 @@ namespace Phantom.Wallet.Helpers
                     description = "Custom transaction";
                 }
 
-                if (receiverChain != Address.Null && receiverChain != senderChain)
+                if (!string.IsNullOrEmpty(receiverChain) && receiverChain != senderChain)
                 {
                     //description +=
                         //$"From {GetChainName(senderChain.Text, phantasmaChains)} chain to {GetChainName(receiverChain.Text, phantasmaChains)} chain";
