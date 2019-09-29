@@ -134,7 +134,7 @@ namespace Phantom.Wallet
                 LastUpdated = currentTime,
                 Holdings = AccountController.GetAccountHoldings(address.Text).Result,
                 Tokens = AccountController.GetAccountTokens(address.Text).Result.ToArray(),
-                //Transactions = AccountController.GetAccountTransactions(address.Text).Result,
+                Transactions = AccountController.GetAccountTransactions(address.Text).Result,
                 Interops = AccountController.GetAccountInterops(address.Text).Result.ToArray()
             };
 
@@ -176,12 +176,13 @@ namespace Phantom.Wallet
                 var cache = FindCache(keyPair.Address);
 
                 var entry = MenuEntries.FirstOrDefault(e => e.Id == "history");
-                //entry.Count = cache.Transactions.Length;
+                entry.Count = cache.Transactions.Length;
 
-                //context["transactions"] = cache.Transactions;
-                context["transactions"] = AccountController.GetAccountTransactions(keyPair.Address.Text).Result;
+                context["transactions"] = cache.Transactions;
+                //context["transactions"] = AccountController.GetAccountTransactions(keyPair.Address.Text).Result;
                 context["holdings"] = AccountController.GetAccountHoldings(keyPair.Address.Text).Result;
                 context["interops"] = cache.Interops;
+                //context["interops"] = AccountController.GetAccountInterops(keyPair.Address.Text).Result.ToArray();
 
                 if (string.IsNullOrEmpty(AccountController.AccountName))
                 {
@@ -674,6 +675,7 @@ namespace Phantom.Wallet
             List<object> paramList = SendUtils.BuildParamList(param);
 
             var keyPair = GetLoginKey(request);
+            InvalidateCache(keyPair.Address);
             var result = AccountController.InvokeContractGeneric(keyPair, chain, contract, method, paramList.ToArray()).Result;
 
             if (result != null && result.GetType() == typeof(BigInteger))
@@ -701,7 +703,10 @@ namespace Phantom.Wallet
         private object RouteLookUpName(HTTPRequest request)
         {
             var addressName = request.GetVariable("addressName");
-            return "addressName";
+            //var result = AccountController.LookUpName(addressName).Result;
+            //var addressDecoded = Serialization.Unserialize<Address>(result.Decode());
+            //var result = RootChain.InvokeContract(storage, Nexus.AccountContractName, addressName, name).AsAddress();
+            return addressName;
         }
 
         private object RouteConfig(HTTPRequest request)
@@ -753,6 +758,7 @@ namespace Phantom.Wallet
             if (context["holdings"] is Holding[] balance)
             {
               var keyPair = GetLoginKey(request);
+              InvalidateCache(keyPair.Address);
               var result = AccountController.InvokeSettleTx(keyPair, neoTxHash).Result;
               return result;
             }
@@ -770,10 +776,8 @@ namespace Phantom.Wallet
                 if (kcalBalance.Amount > 0.1m) //RegistrationCost
                 {
                     var keyPair = GetLoginKey(request);
-                    var result = AccountController.RegisterLink(keyPair, targetAddr).Result;
-
-                    // invalidate cache as account has changed
                     InvalidateCache(keyPair.Address);
+                    var result = AccountController.RegisterLink(keyPair, targetAddr).Result;
 
                     if (result.GetType() == typeof(ErrorResult))
                     {
