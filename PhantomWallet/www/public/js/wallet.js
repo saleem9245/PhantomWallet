@@ -243,25 +243,25 @@ function toggleChains() {
 
 // function toggle private key / encrypted key
 function toggleKeyType() {
-  if ($('#neopassword').css('display') === 'none')
+  if ($('#neopassphrase').css('display') === 'none')
     {
-      $('#neopassword').show();
-      $(".fa-sync").addClass("fa-spin");
+      $('#neopassphrase').show();
+      $(".fa-sync-neo").addClass("fa-spin");
       document.getElementById("keytypetoggle").innerHTML = 'Encrypted Key + Password';
       setTimeout(function() {
-        $(".fa-sync").removeClass("fa-spin");
+        $(".fa-sync-neo").removeClass("fa-spin");
       }, 1000);
     }
     else
     {
-      $('#neopassword').hide();
-      $(".fa-sync").addClass("fa-spin");
+      $('#neopassphrase').hide();
+      $(".fa-sync-neo").addClass("fa-spin");
       document.getElementById("keytypetoggle").innerHTML = 'Private Key';
       setTimeout(function() {
-        $(".fa-sync").removeClass("fa-spin");
+        $(".fa-sync-neo").removeClass("fa-spin");
       }, 1000);
     }
-    $('#neopassword').val('');
+    $('#neopassphrase').val('');
     $('#neoprivatekey').val('');
 }
 

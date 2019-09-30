@@ -760,8 +760,7 @@ namespace Phantom.Wallet
                     neoKeysConverted = Phantasma.Neo.Core.NeoKeys.FromWIF(neoKey);
                 }
 
-                var symbol = "SOUL"; // TODO obtain this from the UI?
-                var result = AccountController.InvokeSettleTx(neoKeysConverted, neoTxHash, symbol).Result;
+                var result = AccountController.InvokeSettleTx(neoKeysConverted, neoTxHash, assetSymbol).Result;
                 return result;
             }
             return null;
