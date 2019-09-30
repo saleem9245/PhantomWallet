@@ -745,6 +745,7 @@ namespace Phantom.Wallet
             var neoTxHash = request.GetVariable("neoTxHash");
             var neoKey = request.GetVariable("neoKey");
             var neoPassphrase = request.GetVariable("neoPassphrase");
+            var assetSymbol = request.GetVariable("assetSymbol");
             var context = InitContext(request);
             if (context["holdings"] is Holding[] balance)
             {

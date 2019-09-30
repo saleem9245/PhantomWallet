@@ -50,7 +50,13 @@
               <div class="col-xs-12">
                   <div class="col-md-12">
                       <div>
-                          <h4 class="control-label">Step 3) Sign with your NEO wallet</h4>
+                          <h4 class="control-label">Step 3) Select token</h4>
+                          <select id="select-token-swap">
+                              <option value="SOUL">SOUL</option>
+                              <option value="NEO">NEO</option>
+                              <option value="GAS">GAS</option>
+                          </select>
+                          <h4 class="control-label">Step 4) Sign with your NEO wallet</h4>
                           <div id="keytypetoggle" style="margin:.5em;font-style:italic;color:#17B0E7;display:inline-block;">Private Key</div>
                           <i style="display:inline-block;" class="fas fa-sync" onclick="toggleKeyType()"></i>
                           <input type="search" class="form-control parameters-swap-input" id="neoprivatekey" style="text-align:center;" placeholder="Enter NEO key">
@@ -226,15 +232,16 @@
       let hash = $("#neohash").val();
       let neokey = $("#neoprivatekey").val();
       let neopassphrase = $("#neopassphrase").val();
+      let assetsymbol = $("#select-token-swap").val();
 
       if (!hash.length == 64) {
           bootbox.alert("Please insert a valid transaction hash!");
-          //return;
+          return;
       }
 
       if (!neokey.length == 52 || !neokey.length == 58) {
           bootbox.alert("Please insert a valid private key or encrypted key!");
-          //return;
+          return;
       }
 
       $('#sendSpinner').show();
@@ -256,33 +263,26 @@
 
             if (result) {
 
-               $.get('api.neoscan.io/api/main_net/v1/get_transaction/' + hash,
-               function (returnedData) {
-                 console.log(returnedData)
-                 /*
-                 $.post('/settle/tx',
-                    {
-                        neoTxHash: hash,
-                        neoKey: neokey,
-                        neoPassphrase: neopassphrase
-                    },
-                    function (returnedData) {
-                      if (returnedData !== "") {
-                          window.location.replace("/waiting/" + returnedData);
-                      } else {
-                          window.location.replace("/error");
-                      }
-                      //console.log(returnedData);
-                    }
-                  ).fail(function(e) {
-                    console.log(JSON.stringify(e.statusText))
-                  })
-                  */
+              $.post('/settle/tx',
+                 {
+                     neoTxHash: hash,
+                     neoKey: neokey,
+                     neoPassphrase: neopassphrase,
+                     assetSymbol: assetsymbol
+                 },
+                 function (returnedData) {
+                   if (returnedData !== "") {
+                       window.location.replace("/waiting/" + returnedData);
+                   } else {
+                       window.location.replace("/error");
+                   }
+                   //console.log(returnedData);
+                 }
+               ).fail(function(e) {
+                 console.log(JSON.stringify(e.statusText))
                })
 
-               }
-
-            }
+             }
              $('#sendSpinner').hide();
            }
         });
