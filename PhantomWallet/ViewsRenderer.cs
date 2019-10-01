@@ -460,6 +460,7 @@ namespace Phantom.Wallet
             if (!SendUtils.IsTxHashValid(result))
             {
                 PushError(request, result);
+                Log.Information("No valid result");
                 return "";
             }
 

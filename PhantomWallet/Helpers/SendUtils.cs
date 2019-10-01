@@ -135,6 +135,7 @@ namespace Phantom.Wallet.Helpers
 
         public static bool IsTxHashValid(string data)
         {
+            if (data == "" || String.IsNullOrEmpty(data)) return false;
             return Hash.TryParse(data, out Hash result);
         }
 

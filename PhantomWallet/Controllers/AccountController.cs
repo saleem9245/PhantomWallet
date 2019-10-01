@@ -319,26 +319,35 @@ namespace Phantom.Wallet.Controllers
         {
             try
             {
-              //if (isName) {
-              //  var destinationAddress = addressTo;
-              //} else {
-                var destinationAddress = Address.FromText(addressTo);
-              //}
 
                 int decimals = PhantasmaTokens.SingleOrDefault(t => t.Symbol == symbol).Decimals;
                 var bigIntAmount = UnitConversion.ToBigInteger(decimal.Parse(amountId), decimals);
+                byte[] script;
 
-                var script = isFungible
-                    ? ScriptUtils.BeginScript()
-                        .AllowGas(keyPair.Address, Address.Null, MinimumFee, 9999)
-                        .TransferTokens(symbol, keyPair.Address, destinationAddress, bigIntAmount)
-                        .SpendGas(keyPair.Address)
-                        .EndScript()
-                    : ScriptUtils.BeginScript()
-                        .AllowGas(keyPair.Address, Address.Null, MinimumFee, 9999)
-                        .TransferNFT(symbol, keyPair.Address, destinationAddress, bigIntAmount)
-                        .SpendGas(keyPair.Address)
-                        .EndScript();
+                if (isName) {
+                    Log.Information("Transfer to " + addressTo);
+                    script = ScriptUtils.BeginScript()
+                            .AllowGas(keyPair.Address, Address.Null, MinimumFee, 9999)
+                            .TransferTokens(symbol, keyPair.Address, addressTo, bigIntAmount)
+                            .SpendGas(keyPair.Address)
+                            .EndScript();
+                } 
+                else
+                {
+                    var destinationAddress = Address.FromText(addressTo);
+                    Log.Information("Transfer to " + destinationAddress.Text);
+                    script = isFungible
+                        ? ScriptUtils.BeginScript()
+                            .AllowGas(keyPair.Address, Address.Null, MinimumFee, 9999)
+                            .TransferTokens(symbol, keyPair.Address, destinationAddress, bigIntAmount)
+                            .SpendGas(keyPair.Address)
+                            .EndScript()
+                        : ScriptUtils.BeginScript()
+                            .AllowGas(keyPair.Address, Address.Null, MinimumFee, 9999)
+                            .TransferNFT(symbol, keyPair.Address, destinationAddress, bigIntAmount)
+                            .SpendGas(keyPair.Address)
+                            .EndScript();
+                }
 
                 var nexusName = WalletConfig.Network;
                 var tx = new Phantasma.Blockchain.Transaction(nexusName, chainName, script,
@@ -352,18 +361,19 @@ namespace Phantom.Wallet.Controllers
                 //
 
                 //}
-               var txResult = await _phantasmaRpcService.SendRawTx.SendRequestAsync(tx.ToByteArray(true).Encode());
+                var txResult = await _phantasmaRpcService.SendRawTx.SendRequestAsync(tx.ToByteArray(true).Encode());
+                Log.Information("txResult send: " + txResult);
                 return txResult;
             }
             catch (RpcResponseException rpcEx)
             {
-                Debug.WriteLine($"RPC Exception occurred: {rpcEx.RpcError.Message}");
-                return null;
+                Log.Information($"RPC Exception occurred: {rpcEx.RpcError.Message}");
+                return ""; 
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Exception occurred: {ex.Message}");
-                return null;
+                Log.Information($"Exception occurred: {ex.Message}");
+                return "";
             }
         }
 
