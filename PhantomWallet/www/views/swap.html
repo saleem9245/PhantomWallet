@@ -58,7 +58,7 @@
                           </select>
                           <h4 class="control-label">Step 4) Sign with your NEO wallet</h4>
                           <div id="keytypetoggle" style="margin:.5em;font-style:italic;color:#17B0E7;display:inline-block;">Private Key</div>
-                          <i style="display:inline-block;" class="fas fa-sync-neo" onclick="toggleKeyType()"></i>
+                          <i style="display:inline-block;" class="fas fa-sync fa-sync-neo" onclick="toggleKeyType()"></i>
                           <input type="search" class="form-control parameters-swap-input" id="neoprivatekey" style="text-align:center;" placeholder="Enter NEO key">
                           <input type="search" class="form-control parameters-swap-input" id="neopassphrase" style="text-align:center;margin-top:1em;display:none;" placeholder="Enter NEO passphrase">
                           <button class="btn-primary nextBtn btn-lg button" type="button" onclick="swapNEOToPhantasma()" id="neotophantasmabutton">SWAP ASSETS</button>
@@ -78,9 +78,9 @@
                           Do NOT send assets from an exchange wallet.<br>
                           Please send assets from the same <strong> personal wallet only</strong>!
                       </div>
-                      <h4 class="control-label">Step 2) Select token</h4>
+                      <h4 class="control-label">Step 1) Select token</h4>
                       <select id="select-token-form"></select>
-                      <h4 class="control-label" style="margin-top:1em;">Step 3) Enter amount</h4>
+                      <h4 class="control-label" style="margin-top:1em;">Step 2) Enter amount</h4>
                       <input class="form-control parameters-swap-input" id="neoamount" type="number" style="text-align:center;" placeholder="Enter amount">
                       <button class="btn-success btn-lg button" type="button" onclick="swapPhantasmaToNEO()" id="phantasmatoneobutton">SWAP ASSETS</button>
                       <div id="wrapper-swapphantasma-confirm" style="opacity:0;">Transaction</div>

@@ -135,7 +135,6 @@ namespace Phantom.Wallet
                 Holdings = AccountController.GetAccountHoldings(address.Text).Result,
                 Tokens = AccountController.GetAccountTokens(address.Text).Result.ToArray(),
                 //Transactions = AccountController.GetAccountTransactions(address.Text).Result,
-                //Interops = AccountController.GetAccountInterops(address.Text).Result.ToArray()
             };
 
             _accountCaches[address] = cache;

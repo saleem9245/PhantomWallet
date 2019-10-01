@@ -53,7 +53,7 @@
                         <select id="select-id"></select>
                     </div>
                     <button class="btn-primary prevBtn btn-lg button" type="button">PREVIOUS</button>
-                    <button class="btn-primary nextBtn btn-lg button" type="button">NEXT</button>
+                    <button class="btn-primary nextBtn btn-lg button" type="button" id="amount-next">NEXT</button>
                 </div>
             </div>
         </div>
@@ -174,6 +174,15 @@
             if (event.keyCode === 13) {
                 event.preventDefault();
                 document.getElementById("send-assets").click();
+            }
+        });
+
+        // Trigger next button on press enter
+        var input = document.getElementById("amount");
+        input.addEventListener("keyup", function(event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                document.getElementById("amount-next").click();
             }
         });
 
