@@ -46,9 +46,9 @@ cp third-party/start.sh bin/PhantomWallet-linux/
 cp third-party/start.bat bin/PhantomWallet-win/
 
 # package cli
-third-party/warp-packer_$platform --arch linux-x64 --input_dir PhantomCli/bin/Release/netcoreapp2.0/linux-x64/publish/ --exec PhantomCli --output bin/PhantomWallet-linux/PhantomCli
-third-party/warp-packer_$platform --arch macos-x64 --input_dir PhantomCli/bin/Release/netcoreapp2.0/osx-x64/publish/ --exec PhantomCli --output bin/PhantomWallet-osx/PhantomCli
-third-party/warp-packer_$platform --arch windows-x64 --input_dir PhantomCli/bin/Release/netcoreapp2.0/win-x64/publish/ --exec PhantomCli.exe --output bin/PhantomWallet-win/PhantomCli.exe
+#third-party/warp-packer_$platform --arch linux-x64 --input_dir PhantomCli/bin/Release/netcoreapp2.0/linux-x64/publish/ --exec PhantomCli --output bin/PhantomWallet-linux/PhantomCli
+#third-party/warp-packer_$platform --arch macos-x64 --input_dir PhantomCli/bin/Release/netcoreapp2.0/osx-x64/publish/ --exec PhantomCli --output bin/PhantomWallet-osx/PhantomCli
+#third-party/warp-packer_$platform --arch windows-x64 --input_dir PhantomCli/bin/Release/netcoreapp2.0/win-x64/publish/ --exec PhantomCli.exe --output bin/PhantomWallet-win/PhantomCli.exe
 
 # zip
 zip -r bin/release/PhantomWallet-linux.zip bin/PhantomWallet-linux
