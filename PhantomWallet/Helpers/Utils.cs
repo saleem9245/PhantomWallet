@@ -18,6 +18,7 @@ using Phantom.Wallet.Models;
 using Newtonsoft.Json;
 using Phantasma.CodeGen.Assembler;
 using Phantasma.VM;
+using System.Globalization;
 
 namespace Phantom.Wallet.Helpers
 {
@@ -55,7 +56,7 @@ namespace Phantom.Wallet.Helpers
                             senderAddress = Address.FromText(evt.EventAddress);
                             senderToken = data.Symbol;
                             var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == senderToken).Decimals);
-                            amountsymbol = $"{amountDecimal.ToString("#,0.##########")} {senderToken}";
+                            amountsymbol = $"{amountDecimal.ToString("#,0.##########", new CultureInfo("en-US"))} {senderToken}";
                         }
                         break;
 
@@ -67,7 +68,7 @@ namespace Phantom.Wallet.Helpers
                             receiverChain = data.ChainName;
                             receiverToken = data.Symbol;
                             var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == receiverToken).Decimals);
-                            amountsymbol = $"{amountDecimal.ToString("#,0.##########")} {receiverToken}";
+                            amountsymbol = $"{amountDecimal.ToString("#,0.##########", new CultureInfo("en-US"))} {receiverToken}";
                         }
                         break;
 
@@ -78,7 +79,7 @@ namespace Phantom.Wallet.Helpers
                             receiverAddress = Address.FromText(evt.EventAddress);
                             receiverChain = data.ChainName;
                             var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.Symbol).Decimals);
-                            amountsymbol = $"{amountDecimal.ToString("#,0.##########")} {data.Symbol}";
+                            amountsymbol = $"{amountDecimal.ToString("#,0.##########", new CultureInfo("en-US"))} {data.Symbol}";
                         }
                         break;
 
@@ -89,7 +90,7 @@ namespace Phantom.Wallet.Helpers
                             receiverAddress = Address.FromText(evt.EventAddress);
                             receiverChain = data.ChainName;
                             var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.Symbol).Decimals);
-                            amountsymbol = $"{amountDecimal.ToString("#,0.##########")} {data.Symbol}";
+                            amountsymbol = $"{amountDecimal.ToString("#,0.##########", new CultureInfo("en-US"))} {data.Symbol}";
                         }
                         break;
 
@@ -100,7 +101,7 @@ namespace Phantom.Wallet.Helpers
                             receiverAddress = Address.FromText(evt.EventAddress);
                             receiverChain = data.ChainName;
                             var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.Symbol).Decimals);
-                            amountsymbol = $"{amountDecimal.ToString("#,0.##########")} {data.Symbol}";
+                            amountsymbol = $"{amountDecimal.ToString("#,0.##########", new CultureInfo("en-US"))} {data.Symbol}";
                         }
                         break;
 
@@ -111,7 +112,7 @@ namespace Phantom.Wallet.Helpers
                             receiverAddress = Address.FromText(evt.EventAddress);
                             receiverChain = data.ChainName;
                             var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.Symbol).Decimals);
-                            amountsymbol = $"{amountDecimal.ToString("#,0.##########")} {data.Symbol}";
+                            amountsymbol = $"{amountDecimal.ToString("#,0.##########", new CultureInfo("en-US"))} {data.Symbol}";
                         }
                         break;
 
