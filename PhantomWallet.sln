@@ -17,8 +17,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Phantasma.Cryptography", ".
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Phantasma.RpcClient", "..\PhantasmaRpcClient\Phantasma.RpcClient\Phantasma.RpcClient.csproj", "{4F2084F5-06DC-4269-A2EC-A4875A92780B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhantomCli", "PhantomCli\PhantomCli.csproj", "{F3E20079-796A-4C05-A582-1951382A6E94}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Phantasma.Storage", "..\PhantasmaChain\Phantasma.Storage\Phantasma.Storage.csproj", "{95C037B7-977F-42D6-B77E-62EBA7A5C506}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Phantasma.Domain", "..\PhantasmaChain\Phantasma.Domain\Phantasma.Domain.csproj", "{9F2D2146-223B-4916-BBA9-D505DB39038C}"
