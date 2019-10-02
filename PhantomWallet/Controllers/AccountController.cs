@@ -535,7 +535,7 @@ namespace Phantom.Wallet.Controllers
             var script = ScriptUtils.BeginScript()
                   .CallContract("stake", "Stake", keyPair.Address, bigIntAmount)
                   .CallContract("stake", "Claim", keyPair.Address, keyPair.Address)
-                  .AllowGas(keyPair.Address, Address.Null, MinimumFee, 200)
+                  .AllowGas(keyPair.Address, Address.Null, MinimumFee, 400)
                   .SpendGas(keyPair.Address)
                   .EndScript();
 
