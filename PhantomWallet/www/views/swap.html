@@ -78,9 +78,11 @@
                           Do NOT send assets from an exchange wallet.<br>
                           Please send assets from the same <strong> personal wallet only</strong>!
                       </div>
-                      <h4 class="control-label">Step 1) Select token</h4>
+                      <h4 class="control-label">Step 1) Enter NEO address</h4>
+                      <input class="form-control parameters-swap-input" id="neoaddress" type="number" style="text-align:center;" placeholder="Enter NEO address">
+                      <h4 class="control-label" style="margin-top:1em;">Step 2) Select token</h4>
                       <select id="select-token-form"></select>
-                      <h4 class="control-label" style="margin-top:1em;">Step 2) Enter amount</h4>
+                      <h4 class="control-label" style="margin-top:1em;">Step 3) Enter amount</h4>
                       <input class="form-control parameters-swap-input" id="neoamount" type="number" style="text-align:center;" placeholder="Enter amount">
                       <button class="btn-success btn-lg button" type="button" onclick="swapPhantasmaToNEO()" id="phantasmatoneobutton">SWAP ASSETS</button>
                       <div id="wrapper-swapphantasma-confirm" style="opacity:0;">Transaction</div>
@@ -113,7 +115,7 @@
 
         $.get('/platforms/',
             function (returnedDataPlatforms) {
-              //console.log(returnedDataTX)
+              console.log(returnedDataPlatforms)
               var pLength = (JSON.parse(returnedDataPlatforms)).length,
                   dstaddress = '',
                   i = 0;
@@ -164,6 +166,8 @@
       {{/each}}
       {{#else}}
       {{/if}}
+
+      console.log(target_address_neo)
 
       if (token == null) {
           bootbox.alert("No assets available!");
