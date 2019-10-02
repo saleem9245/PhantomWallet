@@ -159,7 +159,7 @@ namespace Phantom.Wallet
 
             context["menu"] = MenuEntries;
             context["networks"] = Networks;
-            context["explorer"] = config != null ? config.ExplorerUrl : "http://localhost:7072";
+            context["explorer"] = config != null ? config.ExplorerUrl : "http://45.76.88.140:7072";
 
             if (HasLogin(request))
             {

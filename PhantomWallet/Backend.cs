@@ -29,7 +29,7 @@ namespace Phantom.Wallet
         static void Main(string[] args)
         {
             Init();
-	        ParseArgs(args);
+	          ParseArgs(args);
             var server = HostBuilder.CreateServer(args);
             var viewsRenderer = new ViewsRenderer(server, "views");
             Console.WriteLine("UTILS LOGPATH: " + Utils.LogPath);
