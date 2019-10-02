@@ -268,7 +268,8 @@ namespace Phantom.Wallet
         {
             var key = request.GetVariable("key");
 
-            AccountController.UpdateConfig(Utils.ReadConfig<WalletConfigDto>(Utils.CfgPath));
+            WalletConfigDto config = Utils.ReadConfig(Utils.CfgPath);
+            AccountController.UpdateConfig(config);
 
             // very ugly needs to be changed
             Settings.SetRPCServerUrl();
@@ -725,7 +726,7 @@ namespace Phantom.Wallet
             else if (mode == "get")
             {
 
-                config = Utils.ReadConfig<WalletConfigDto>(Utils.CfgPath);
+                config = Utils.ReadConfig(Utils.CfgPath);
             }
 
             return JsonConvert.SerializeObject(config);

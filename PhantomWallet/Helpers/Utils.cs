@@ -422,16 +422,15 @@ namespace Phantom.Wallet.Helpers
             return string.Empty;
         }
 
-        public static T ReadConfig<T>(string path)
+        public static WalletConfigDto ReadConfig(string path)
         {
             path = FixPath(path, true);
-            if (!File.Exists(path))
+            if (File.Exists(path))
             {
-                var file = File.CreateText(path);
-                file.Close();
+                return JsonConvert.DeserializeObject<WalletConfigDto>(File.ReadAllText(path));
             }
 
-            return (T) JsonConvert.DeserializeObject<T>(File.ReadAllText(path));
+            return new WalletConfigDto();
         }
 
         public static void WriteConfig<T>(T walletConfig, string path)
