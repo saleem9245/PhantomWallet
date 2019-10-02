@@ -320,6 +320,9 @@ namespace Phantom.Wallet.Controllers
             try
             {
 
+                //if (NeoWallet.IsValidAddress(addressTo)) {
+                //    var addressCheck = NeoWallet.EncodeAddress(addressTo);
+                //}
                 int decimals = PhantasmaTokens.SingleOrDefault(t => t.Symbol == symbol).Decimals;
                 var bigIntAmount = UnitConversion.ToBigInteger(decimal.Parse(amountId), decimals);
                 byte[] script;

@@ -17,12 +17,12 @@
           <div class="row setup-content" id="step-2" style="display:none;">
               <div class="col-xs-12">
                   <div class="col-md-12">
-                      <div id="loader-interopaddress" class="block-loader center">
-                        <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-                      </div>
                       <div class="alert alert-warning" style="overflow: auto;">
                           Do NOT send assets from an exchange wallet.<br>
                           Please send assets from the same <strong> personal wallet only</strong>!
+                      </div>
+                      <div id="loader-interopaddress" class="block-loader center">
+                        <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
                       </div>
                       <h4 class="control-label">Step 1) Send NEO, GAS or SOUL</h4>
                       <div class="center">
@@ -38,7 +38,7 @@
                    </div>
                </div>
           </div>
-          <div class="row setup-content" id="step-3" style="display:none;">
+          <div class="row setup-content" id="step-2" style="display:none;">
               <div class="col-xs-12">
                   <div class="col-md-12">
                       <h4 class="control-label">Step 2) Enter transaction hash</h4>
@@ -46,7 +46,7 @@
                   </div>
               </div>
           </div>
-          <div class="row setup-content">
+          <div class="row setup-content" id="step-3" >
               <div class="col-xs-12">
                   <div class="col-md-12">
                       <div>
@@ -62,9 +62,6 @@
                           <input type="search" class="form-control parameters-swap-input" id="neoprivatekey" style="text-align:center;" placeholder="Enter NEO key">
                           <input type="search" class="form-control parameters-swap-input" id="neopassphrase" style="text-align:center;margin-top:1em;display:none;" placeholder="Enter NEO passphrase">
                           <button class="btn-primary nextBtn btn-lg button" type="button" onclick="swapNEOToPhantasma()" id="neotophantasmabutton">SWAP ASSETS</button>
-                          <div id="wrapper-link-confirm" style="opacity:0;margin-bottom:1em;">
-                            Transaction
-                          </div>
                       </div>
                   </div>
               </div>
@@ -79,13 +76,12 @@
                           Please send assets from the same <strong> personal wallet only</strong>!
                       </div>
                       <h4 class="control-label">Step 1) Enter NEO address</h4>
-                      <input class="form-control parameters-swap-input" id="neoaddress" type="number" style="text-align:center;" placeholder="Enter NEO address">
+                      <input class="form-control parameters-swap-input" id="neoaddress" type="text" style="text-align:center;" placeholder="Enter NEO address">
                       <h4 class="control-label" style="margin-top:1em;">Step 2) Select token</h4>
                       <select id="select-token-form"></select>
                       <h4 class="control-label" style="margin-top:1em;">Step 3) Enter amount</h4>
                       <input class="form-control parameters-swap-input" id="neoamount" type="number" style="text-align:center;" placeholder="Enter amount">
                       <button class="btn-success btn-lg button" type="button" onclick="swapPhantasmaToNEO()" id="phantasmatoneobutton">SWAP ASSETS</button>
-                      <div id="wrapper-swapphantasma-confirm" style="opacity:0;">Transaction</div>
                     </div>
                 </div>
             </div>
@@ -115,7 +111,7 @@
 
         $.get('/platforms/',
             function (returnedDataPlatforms) {
-              console.log(returnedDataPlatforms)
+              //console.log(returnedDataPlatforms)
               var pLength = (JSON.parse(returnedDataPlatforms)).length,
                   dstaddress = '',
                   i = 0;
@@ -132,15 +128,6 @@
             })
 
         // Trigger update button on press enter
-        var inputrpc = document.getElementById("neohash");
-        inputrpc.addEventListener("keyup", function(event) {
-            if (event.keyCode === 13) {
-                //event.preventDefault();
-                document.getElementById("neotophantasmabutton").click();
-            }
-        });
-
-        // Trigger update button on press enter
         var inputrpc = document.getElementById("neoamount");
         inputrpc.addEventListener("keyup", function(event) {
             if (event.keyCode === 13) {
@@ -149,38 +136,40 @@
             }
         });
 
+        // Trigger update button on press enter
+        var inputneoprivatekey = document.getElementById("neoprivatekey");
+        inputneoprivatekey.addEventListener("keyup", function(event) {
+            if (event.keyCode === 13) {
+                //event.preventDefault();
+                document.getElementById("neotophantasmabutton").click();
+            }
+        });
+
     })
 
     function swapPhantasmaToNEO() {
 
-      $("#wrapper-swapphantasma-confirm").fadeTo(1, 0);
-
+      let target_address_neo = $("#neoaddress").val();
       let token = $("#select-token-form").val();
       let amount = $("#neoamount").val().replace(/\,/g,'');
-      let target_address_neo = '';
-      let target_address_interop = '';
-      {{#if interops}}
-      {{#each interops}}
-      target_address_interop = '{{InteropAddress}}';
-      target_address_neo = '{{Address}}';
-      {{/each}}
-      {{#else}}
-      {{/if}}
 
-      console.log(target_address_neo)
+      if (target_address_neo == '') {
+          bootbox.alert("Please enter a NEO address!");
+          return;
+      }
+
+      if (target_address_neo.length !== 34) {
+          bootbox.alert("Please enter a valid NEO address!");
+          return;
+      }
 
       if (token == null) {
           bootbox.alert("No assets available!");
           return;
       }
 
-      if (parseInt(amount) <= 0) {
+      if (toFixed((amount)) == 0 || Number.isNaN(amount)) {
           bootbox.alert("Please insert a valid amount!");
-          return;
-      }
-
-      if (target_address_neo == '' || target_address_interop == '') {
-          bootbox.alert("Please link a NEO address first!");
           return;
       }
 
@@ -207,7 +196,7 @@
             if (result) {
               $.post('/sendrawtx',
                   {
-                      fungible: 'True', token: token, amount: amount, dest: target_address_interop, chain: 'main' , destChain: 'main'
+                      fungible: 'True', token: token, amount: amount, dest: target_address_neo, chain: 'main' , destChain: 'main'
                   },
                   function (returnedData) {
                     if (returnedData !== "") {
@@ -219,8 +208,6 @@
                   })
                   .fail(function(e) {
                     console.log(JSON.stringify(e.statusText))
-                    document.getElementById("wrapper-swapphantasma-confirm").innerHTML = JSON.stringify(e.statusText);
-                    $("#wrapper-swapphantasma-confirm").fadeTo("slow", 1);
                   })
               }
               $('#sendSpinner').hide();
@@ -230,8 +217,6 @@
     }
 
     function swapNEOToPhantasma() {
-
-      $("#wrapper-swapneo-confirm").fadeTo(1, 0);
 
       let hash = $("#neohash").val();
       let neokey = $("#neoprivatekey").val();
@@ -253,7 +238,7 @@
           title: "Swap confirmation",
           message: "Validate <strong>" +
               hash +
-              "</strong><br>from NEO Blockchain and release the corresponding assets on Phantasma Blockchain" +
+              "</strong><br>from NEO Blockchain and release <strong>" + assetsymbol + " on Phantasma Blockchain" +
               "</strong>?",
           buttons: {
               cancel: {
@@ -292,104 +277,5 @@
         });
 
     }
-/*
-    function updateLink() {
 
-      $("#wrapper-link-confirm").fadeTo(1, 0);
-
-      let target_address_link = $("#neoaddresslink").val();
-
-      if (target_address_link.length < 34 || !target_address_link.startsWith('A')) {
-          bootbox.alert("Please insert a valid NEO address!");
-          return;
-      }
-
-      var params = [];
-      // build params for contract call
-      params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
-      params[1] = { name: 'target', type: 'Object', input: target_address_link, info: '' }
-
-      $('#sendSpinner').show();
-      bootbox.confirm({
-          title: "Address link confirmation",
-          message: "Link <strong>" +
-              target_address_link +
-              "</strong> on NEO Blockchain with <strong>" +
-              " {{address}}</strong> on Phantasma Blockchain" +
-              "?",
-          buttons: {
-              cancel: {
-                  label: '<i class="fa fa-times"></i> Cancel'
-              },
-              confirm: {
-                  label: '<i class="fa fa-check"></i> Confirm'
-              }
-          },
-          callback: function(result) {
-
-            if (result) {
-
-              $.post('/registerlink',
-                 {
-                     target: target_address_link,
-                 },
-                 function (returnedData) {
-                   //console.log(returnedData)
-                   // If /contract/tx works, call /tx/hash in a loop to check if the tx worked
-                   var counter = 0;
-                   getConfirmations();
-                   function getConfirmations() {
-
-                   $.get('/tx/' + returnedData,
-                       function (returnedDataTX) {
-                         //console.log(returnedDataTX)
-                         $('#sendSpinner').hide();
-                         if ((JSON.parse(returnedDataTX).error) == 'pending') {
-                             counter++;
-                             if (counter <= 6){
-                               setTimeout(getConfirmations, 2000);
-                             }
-                             // If tx pending, returns the custom error message
-                             document.getElementById("wrapper-link-confirm").innerHTML = 'Transaction pending <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
-                             $("#wrapper-link-confirm").fadeTo("slow", 1);
-                         } else {
-
-                             if ((JSON.parse(returnedDataTX).error) != undefined) {
-                               $("#wrapper-link-confirm").fadeTo("fast", 0);
-                               document.getElementById("wrapper-link-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
-                               $("#wrapper-link-confirm").fadeTo("slow", 1);
-                             } else {
-                               // If it works, returns the tx link
-                               $("#wrapper-link-confirm").fadeTo("fast", 0);
-                               document.getElementById("wrapper-link-confirm").innerHTML = 'Transaction successful <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
-                               document.getElementById("currentlink").innerHTML = target_address_link;
-                               $("#wrapper-link-confirm").fadeTo("slow", 1);
-                               $('#neoaddresslink').val('');
-                             }
-
-                         }
-
-                       }).fail(function(e) {
-                         $('#sendSpinner').hide();
-                         console.log(JSON.stringify(e))
-                         document.getElementById("wrapper-link-confirm").innerHTML = e;
-                         $("#wrapper-link-confirm").fadeTo("slow", 1);
-                       });
-                     }
-                 }
-               ).fail(function(e) {
-                 $('#sendSpinner').hide();
-                 console.log(JSON.stringify(e.statusText))
-                 document.getElementById("wrapper-swapneo-confirm").innerHTML = JSON.stringify(e.statusText);
-                 $("#wrapper-link-confirm").fadeTo("slow", 1);
-               })
-
-             } else {
-               $('#sendSpinner').hide();
-             }
-           }
-        });
-
-    }
-*/
 </script>
