@@ -613,7 +613,7 @@ namespace Phantom.Wallet
                 }
                 else
                 {
-                    PushError(request, "You need a small drop of KCAL (+0.1) to call a contract.");
+                    PushError(request, "You need a small drop of KCAL to call a contract.");
                 }
             }
             return null;
@@ -795,7 +795,7 @@ namespace Phantom.Wallet
                 }
                 else
                 {
-                    PushError(request, "You need a small drop of KCAL (+0.1) to register a name.");
+                    PushError(request, "You need a small drop of KCAL to register a name.");
                 }
             }
 
