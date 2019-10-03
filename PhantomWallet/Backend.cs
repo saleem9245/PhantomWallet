@@ -12,6 +12,8 @@ using Phantasma.RpcClient.Interfaces;
 using Phantom.Wallet.Helpers;
 using Serilog;
 using Serilog.Core;
+using System.Globalization;
+using System.Reflection;
 
 namespace Phantom.Wallet
 {
@@ -23,13 +25,14 @@ namespace Phantom.Wallet
         private static Application _app; //= new Application(serviceCollection);
         private static Logger Logger = new LoggerConfiguration().MinimumLevel.Debug()
                                     .WriteTo.File(Utils.LogPath).CreateLogger();
-	    public static string Port { get; set; }
-	    public static string Path { get; set; }
+  	    public static string Port { get; set; }
+  	    public static string Path { get; set; }
 
         static void Main(string[] args)
         {
             Init();
 	          ParseArgs(args);
+            SetDefaultCulture(new CultureInfo("en-US"));
             var server = HostBuilder.CreateServer(args);
             var viewsRenderer = new ViewsRenderer(server, "views");
             Console.WriteLine("UTILS LOGPATH: " + Utils.LogPath);
@@ -99,6 +102,43 @@ namespace Phantom.Wallet
 	            }
 	        }
 	    }
+
+      static void SetDefaultCulture(CultureInfo culture)
+      {
+          Type type = typeof(CultureInfo);
+
+          try
+          {
+              type.InvokeMember("s_userDefaultCulture",
+                                  BindingFlags.SetField | BindingFlags.NonPublic | BindingFlags.Static,
+                                  null,
+                                  culture,
+                                  new object[] { culture });
+
+              type.InvokeMember("s_userDefaultUICulture",
+                                  BindingFlags.SetField | BindingFlags.NonPublic | BindingFlags.Static,
+                                  null,
+                                  culture,
+                                  new object[] { culture });
+          }
+          catch { }
+
+          try
+          {
+              type.InvokeMember("m_userDefaultCulture",
+                                  BindingFlags.SetField | BindingFlags.NonPublic | BindingFlags.Static,
+                                  null,
+                                  culture,
+                                  new object[] { culture });
+
+              type.InvokeMember("m_userDefaultUICulture",
+                                  BindingFlags.SetField | BindingFlags.NonPublic | BindingFlags.Static,
+                                  null,
+                                  culture,
+                                  new object[] { culture });
+          }
+          catch { }
+      }
     }
 
     public class Application
