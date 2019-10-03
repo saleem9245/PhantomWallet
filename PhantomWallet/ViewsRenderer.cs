@@ -778,6 +778,7 @@ namespace Phantom.Wallet
                 if (kcalBalance.Amount > 0.1m) //RegistrationCost
                 {
                     var keyPair = GetLoginKey(request);
+                    InvalidateCache(keyPair.Address);
                     var result = AccountController.RegisterName(keyPair, name).Result;
 
                     if (result.GetType() == typeof(ErrorResult))
