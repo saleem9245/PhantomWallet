@@ -9,6 +9,7 @@ using Phantasma.Blockchain.Contracts;
 using Phantasma.Blockchain;
 using Phantasma.Core.Types;
 using Phantasma.Cryptography;
+using Phantasma.Domain;
 using Phantasma.Neo.Cryptography;
 using Phantasma.Neo.Core;
 using Phantasma.Numerics;
@@ -225,7 +226,7 @@ namespace Phantom.Wallet.Controllers
 
                 var settleTxScript = ScriptUtils.BeginScript()
                     .CallContract("token", "SettleBlock", sourceChain, block)
-                    .AllowGas(keyPair.Address, Address.Null, MinimumFee, 9999)
+                    .AllowGas(keyPair.Address, Address.Null, MinimumFee, 800)
                     .SpendGas(keyPair.Address)
                     .EndScript();
 
@@ -261,7 +262,7 @@ namespace Phantom.Wallet.Controllers
 
                 var script = isFungible
                     ? ScriptUtils.BeginScript()
-                        .AllowGas(keyPair.Address, Address.Null, MinimumFee, 9999)
+                        .AllowGas(keyPair.Address, Address.Null, MinimumFee, 800)
                         .CrossTransferToken(Address.FromText(toChain.Address), symbol, keyPair.Address,
                             keyPair.Address, fee)
                         .CrossTransferToken(Address.FromText(toChain.Address), symbol, keyPair.Address,
@@ -270,7 +271,7 @@ namespace Phantom.Wallet.Controllers
                         .EndScript()
 
                     : ScriptUtils.BeginScript()
-                        .AllowGas(keyPair.Address, Address.Null, MinimumFee, 9999)
+                        .AllowGas(keyPair.Address, Address.Null, MinimumFee, 800)
                         .CrossTransferNFT(Address.FromText(toChain.Address), symbol, keyPair.Address,
                             destinationAddress, bigIntAmount)
                         .SpendGas(keyPair.Address)
@@ -320,36 +321,51 @@ namespace Phantom.Wallet.Controllers
             try
             {
 
-                //if (NeoWallet.IsValidAddress(addressTo)) {
-                //    var addressCheck = NeoWallet.EncodeAddress(addressTo);
-                //}
                 int decimals = PhantasmaTokens.SingleOrDefault(t => t.Symbol == symbol).Decimals;
                 var bigIntAmount = UnitConversion.ToBigInteger(decimal.Parse(amountId), decimals);
                 byte[] script;
 
-                if (isName) {
-                    Log.Information("Transfer to " + addressTo);
-                    script = ScriptUtils.BeginScript()
-                            .AllowGas(keyPair.Address, Address.Null, MinimumFee, 9999)
-                            .TransferTokens(symbol, keyPair.Address, addressTo, bigIntAmount)
-                            .SpendGas(keyPair.Address)
-                            .EndScript();
+                if (NeoWallet.IsValidAddress(addressTo)) {
+                  var addressNeo = NeoWallet.EncodeAddress(addressTo);
+                  Log.Information("Transfer to " + addressNeo);
+                  script = isFungible
+                      ? ScriptUtils.BeginScript()
+                          .AllowGas(keyPair.Address, Address.Null, MinimumFee, 800)
+                          .TransferTokens(symbol, keyPair.Address, addressNeo, bigIntAmount)
+                          .SpendGas(keyPair.Address)
+                          .EndScript()
+                      : ScriptUtils.BeginScript()
+                          .AllowGas(keyPair.Address, Address.Null, MinimumFee, 800)
+                          .TransferNFT(symbol, keyPair.Address, addressNeo, bigIntAmount)
+                          .SpendGas(keyPair.Address)
+                          .EndScript();
                 }
                 else
                 {
-                    var destinationAddress = Address.FromText(addressTo);
-                    Log.Information("Transfer to " + destinationAddress.Text);
-                    script = isFungible
-                        ? ScriptUtils.BeginScript()
-                            .AllowGas(keyPair.Address, Address.Null, MinimumFee, 9999)
-                            .TransferTokens(symbol, keyPair.Address, destinationAddress, bigIntAmount)
-                            .SpendGas(keyPair.Address)
-                            .EndScript()
-                        : ScriptUtils.BeginScript()
-                            .AllowGas(keyPair.Address, Address.Null, MinimumFee, 9999)
-                            .TransferNFT(symbol, keyPair.Address, destinationAddress, bigIntAmount)
-                            .SpendGas(keyPair.Address)
-                            .EndScript();
+                  if (isName) {
+                      Log.Information("Transfer to " + addressTo);
+                      script = ScriptUtils.BeginScript()
+                              .AllowGas(keyPair.Address, Address.Null, MinimumFee, 800)
+                              .TransferTokens(symbol, keyPair.Address, addressTo, bigIntAmount)
+                              .SpendGas(keyPair.Address)
+                              .EndScript();
+                  }
+                  else
+                  {
+                      var destinationAddress = Address.FromText(addressTo);
+                      Log.Information("Transfer to " + destinationAddress.Text);
+                      script = isFungible
+                          ? ScriptUtils.BeginScript()
+                              .AllowGas(keyPair.Address, Address.Null, MinimumFee, 800)
+                              .TransferTokens(symbol, keyPair.Address, destinationAddress, bigIntAmount)
+                              .SpendGas(keyPair.Address)
+                              .EndScript()
+                          : ScriptUtils.BeginScript()
+                              .AllowGas(keyPair.Address, Address.Null, MinimumFee, 800)
+                              .TransferNFT(symbol, keyPair.Address, destinationAddress, bigIntAmount)
+                              .SpendGas(keyPair.Address)
+                              .EndScript();
+                  }
                 }
 
                 var nexusName = WalletConfig.Network;
@@ -406,7 +422,7 @@ namespace Phantom.Wallet.Controllers
                 var multisigScript = SendUtils.GenerateMultisigScript(settings);
 
                 var script = ScriptUtils.BeginScript()
-                       .AllowGas(keyPair.Address, Address.Null, MinimumFee, 9999)
+                       .AllowGas(keyPair.Address, Address.Null, MinimumFee, 800)
                        .CallContract("account", "RegisterScript", keyPair.Address, multisigScript)
                        .SpendGas(keyPair.Address)
                        .EndScript();
@@ -436,7 +452,7 @@ namespace Phantom.Wallet.Controllers
             try
             {
                 var script = ScriptUtils.BeginScript()
-                       .AllowGas(keyPair.Address, Address.Null, MinimumFee, 9999)
+                       .AllowGas(keyPair.Address, Address.Null, MinimumFee, 800)
                        .CallContract("account", "RegisterName", keyPair.Address, name)
                        .SpendGas(keyPair.Address)
                        .EndScript();
@@ -469,10 +485,10 @@ namespace Phantom.Wallet.Controllers
                 var outputAddress = Address.FromKey(keyPair);
 
                 var script = ScriptUtils.BeginScript()
-                    .CallContract("interop", "SettleTransaction", outputAddress, NeoWallet.NeoPlatform, txHash)
+                    .CallContract("interop", "SettleTransaction", outputAddress, NeoWallet.NeoPlatform, "neo", txHash)
                     .CallContract("swap", "SwapFee", outputAddress, symbol, UnitConversion.ToBigInteger(0.1m, 8))
                     .CallInterop("Runtime.TransferBalance", outputAddress, keyPair.Address, symbol)
-                    .AllowGas(outputAddress, Address.Null, MinimumFee, 500)
+                    .AllowGas(outputAddress, Address.Null, MinimumFee, 800)
                     .SpendGas(outputAddress)
                     .EndScript();
 
@@ -503,7 +519,7 @@ namespace Phantom.Wallet.Controllers
             try
             {
                 var script = ScriptUtils.BeginScript()
-                       .AllowGas(keyPair.Address, Address.Null, MinimumFee, 9999)
+                       .AllowGas(keyPair.Address, Address.Null, MinimumFee, 800)
                         .CallContract(contract, method, paramArray)
                        .SpendGas(keyPair.Address)
                        .EndScript();
@@ -538,7 +554,7 @@ namespace Phantom.Wallet.Controllers
             var script = ScriptUtils.BeginScript()
                   .CallContract("stake", "Stake", keyPair.Address, bigIntAmount)
                   .CallContract("stake", "Claim", keyPair.Address, keyPair.Address)
-                  .AllowGas(keyPair.Address, Address.Null, MinimumFee, 400)
+                  .AllowGas(keyPair.Address, Address.Null, MinimumFee, 800)
                   .SpendGas(keyPair.Address)
                   .EndScript();
 
@@ -588,7 +604,7 @@ namespace Phantom.Wallet.Controllers
             {
                 var script = ScriptUtils
                         .BeginScript()
-                        .AllowGas(keyPair.Address, Address.Null, MinimumFee, 9999)
+                        .AllowGas(keyPair.Address, Address.Null, MinimumFee, 800)
                         .CallContract(contract, method, paramArray)
                         .SpendGas(keyPair.Address)
                         .EndScript();
@@ -745,20 +761,22 @@ namespace Phantom.Wallet.Controllers
 
         private List<PlatformDto> GetPhantasmaPlatforms()
         {
-            List<PlatformDto> platforms = null;
+            IList<PlatformDto> platforms = null;
             try
             {
-                platforms = _phantasmaRpcService.GetPlatforms.SendRequestAsync().Result.ToList();
+                platforms = _phantasmaRpcService.GetPlatforms.SendRequestAsync().Result;
             }
             catch (RpcResponseException rpcEx)
             {
                 Debug.WriteLine($"RPC Exception occurred: {rpcEx.RpcError.Message}");
+                Log.Information(rpcEx.RpcError.Message);
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"Exception occurred: {ex.Message}");
+                Log.Information(ex.Message);
             }
-            return platforms;
+            return platforms as List<PlatformDto>;
         }
 
         private List<TokenDto> GetPhantasmaTokens()
