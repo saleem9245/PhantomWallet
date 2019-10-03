@@ -72,17 +72,6 @@ namespace Phantom.Wallet.Helpers
                         }
                         break;
 
-                    case EventKind.TokenEscrow:
-                        {
-                            var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
-                            amount = data.Value;
-                            receiverAddress = Address.FromText(evt.EventAddress);
-                            receiverChain = data.ChainName;
-                            var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.Symbol).Decimals);
-                            amountsymbol = $"{amountDecimal.ToString("#,0.##########").ToString(new CultureInfo("en-US"))} {data.Symbol}";
-                        }
-                        break;
-
                     case EventKind.TokenMint:
                         {
                             var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
@@ -156,16 +145,6 @@ namespace Phantom.Wallet.Helpers
                             receiverAddress = Address.FromText(evt.EventAddress);
                             receiverChain = data.ChainName;
                             receiverToken = data.Symbol;
-                        }
-                        break;
-
-                    case EventKind.TokenEscrow:
-                        {
-                            var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
-                            amount = data.Value;
-                            var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.Symbol).Decimals);
-                            receiverAddress = Address.FromText(evt.EventAddress);
-                            typetx = $"Custom";
                         }
                         break;
 
