@@ -477,16 +477,18 @@ namespace Phantom.Wallet.Controllers
             }
         }
 
-        public async Task<object> InvokeSettleTx(NeoKeys keyPair, string neoTxHash, string symbol)
+        public async Task<object> InvokeSettleTx(NeoKeys keyPair, PhantasmaKeys phantasmakeyPair, string neoTxHash, string symbol)
         {
             try
             {
                 Hash txHash = Hash.Parse(neoTxHash);
                 var outputAddress = Address.FromKey(keyPair);
+                var phantasmaAddress = phantasmakeyPair.Address;
 
                 var script = ScriptUtils.BeginScript()
-                    .CallContract("interop", "SettleTransaction", outputAddress, NeoWallet.NeoPlatform, "neo", txHash)
+                    .CallContract("interop", "SettleTransaction", outputAddress, NeoWallet.NeoPlatform, NeoWallet.NeoPlatform, txHash)
                     .CallContract("swap", "SwapFee", outputAddress, symbol, UnitConversion.ToBigInteger(0.1m, 8))
+                    //.TransferBalance(symbol, outputAddress, phantasmaAddress)
                     .CallInterop("Runtime.TransferBalance", outputAddress, keyPair.Address, symbol)
                     .AllowGas(outputAddress, Address.Null, MinimumFee, 800)
                     .SpendGas(outputAddress)
