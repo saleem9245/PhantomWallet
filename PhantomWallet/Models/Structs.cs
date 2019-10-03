@@ -81,13 +81,6 @@ namespace Phantom.Wallet.Models
         public string DestinationChainAddress;
     }
 
-    public struct InteropData
-    {
-        public string platform;
-        public string address;
-        public string interop;
-    }
-
     public struct TransferTx
     {
         public bool IsFungible;
