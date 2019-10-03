@@ -3,23 +3,23 @@
 <div class="swap">
     <div id="sendSpinner" class="loading">Loading&#8230;</div>
     <div style="font-size:2em;display:flex;justify-content: center;">
-      <span style="margin:1em;display:inline-block;" id="chainswap" class="highlighted">Chain Swap</span>
-      <div style="margin-top:1em;display:inline-block;">
-        <input class="tgl tgl-flat" id="cb4" type="checkbox" onclick="toggleSwap()">
-        <label class="tgl-btn" style="margin: 0 auto;" for="cb4"></label>
-      </div>
       <span style="margin:1em;display:inline-block;" id="cosmicswap">Cosmic Swap</span>
+      <div style="margin-top:1em;display:inline-block;">
+        <input class="tgl tgl-flat" id="cb5" type="checkbox" onclick="toggleSwap()">
+        <label class="tgl-btn" style="margin: 0 auto;" for="cb5"></label>
+      </div>
+      <span style="margin:1em;display:inline-block;" id="chainswap" class="highlighted">Chain Swap</span>
     </div>
     <div id="chainswapdiv" class="container" style="margin-top:0">
       <div id="chainswapdesc" style="margin:1em 1em 2em 1em;font-style:italic;color:#17B0E7;display:inline-block;font-size:1.2em;">From NEO Blockchain to Phantasma Blockchain</div>
       <i style="display:inline-block;font-size: 1.5em;" class="fas fa-sync" onclick="toggleChains()"></i>
       <div id="neotophantasma">
-          <div class="row setup-content" id="step-2" style="display:none;">
+          <div class="row setup-content" id="step-1" style="display:none;">
               <div class="col-xs-12">
                   <div class="col-md-12">
                       <div class="alert alert-warning" style="overflow: auto;">
                           Do NOT send assets from an exchange wallet.<br>
-                          Please send assets from the same <strong> personal wallet only</strong>!
+                          Please send assets from a <strong> personal wallet only</strong>!
                       </div>
                       <div id="loader-interopaddress" class="block-loader center">
                         <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
@@ -46,7 +46,7 @@
                   </div>
               </div>
           </div>
-          <div class="row setup-content" id="step-3" >
+          <div class="row setup-content" id="step-3" style="display:none;">
               <div class="col-xs-12">
                   <div class="col-md-12">
                       <div>
@@ -66,14 +66,17 @@
                   </div>
               </div>
           </div>
+          <div class="row setup-content" id="step-error">
+              <h3>Swapping not available</h3>
+          </div>
       </div>
       <div id="phantasmatoneo" style="display:none;">
             <div class="row setup-content">
                 <div class="col-xs-12">
                     <div class="col-md-12">
                       <div class="alert alert-warning" style="overflow: auto;">
-                          Do NOT send assets from an exchange wallet.<br>
-                          Please send assets from the same <strong> personal wallet only</strong>!
+                          Do NOT send assets to an exchange wallet.<br>
+                          Please send assets to a <strong> personal wallet only</strong>!
                       </div>
                       <h4 class="control-label">Step 1) Enter NEO address</h4>
                       <input class="form-control parameters-swap-input" id="neoaddress" type="text" style="text-align:center;" placeholder="Enter NEO address">
@@ -98,6 +101,7 @@
 
         $('#sendSpinner').hide();
         $("#loader-interopaddress").show();
+        isName = 'False';
 
         let tokenBox = $('#select-token-form');
         tokenBox.find('option').remove();
@@ -111,7 +115,7 @@
 
         $.get('/platforms/',
             function (returnedDataPlatforms) {
-              //console.log(returnedDataPlatforms)
+              console.log(returnedDataPlatforms)
               var pLength = (JSON.parse(returnedDataPlatforms)).length,
                   dstaddress = '',
                   i = 0;
@@ -123,6 +127,7 @@
               document.getElementById("currentplatformaddress").innerHTML = dstaddress;
               document.getElementById("padcurrentplatformaddress").addEventListener('click', function(){ copyText(dstaddress, 'Address');}, false);
               $("#loader-interopaddress").hide();
+              $("#step-error").hide();
               $("#step-2").show();
               $("#step-3").show();
             })
@@ -144,6 +149,11 @@
                 document.getElementById("neotophantasmabutton").click();
             }
         });
+
+        // Default swap mode
+        if (document.getElementById("cb5")) {
+          document.getElementById("cb5").checked = true;
+        }
 
     })
 
@@ -196,13 +206,13 @@
             if (result) {
               $.post('/sendrawtx',
                   {
-                      fungible: 'True', token: token, amount: amount, dest: target_address_neo, chain: 'main' , destChain: 'main'
+                      fungible: 'True', token: token, amount: amount, dest: target_address_neo, chain: 'main' , destChain: 'main', isName: isName
                   },
                   function (returnedData) {
                     if (returnedData !== "") {
                         window.location.replace("/waiting/" + returnedData);
                     } else {
-                        window.location.replace("/error");
+                        //window.location.replace("/error");
                     }
                     //console.log(returnedData);
                   })
@@ -223,12 +233,12 @@
       let neopassphrase = $("#neopassphrase").val();
       let assetsymbol = $("#select-token-swap").val();
 
-      if (!hash.length == 64) {
+      if (hash.length !== 64) {
           bootbox.alert("Please insert a valid transaction hash!");
           return;
       }
 
-      if (!neokey.length == 52 || !neokey.length == 58) {
+      if (neokey.length < 52 || neokey.length > 58 || (neokey.length > 52 && neokey.length < 52)) {
           bootbox.alert("Please insert a valid private key or encrypted key!");
           return;
       }

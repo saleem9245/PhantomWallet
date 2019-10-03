@@ -147,7 +147,7 @@
             if (curStepBtn === "step-2") {
                 saveToken();
                 let amount = $("#amount").val().replace(/\,/g,'');
-                if (parseInt(amount, 10) > parseInt(max_amount.replace(/\,/g,''), 10)) {
+                if (toFixed(amount) > toFixed(max_amount.replace(/\,/g,''))) {
                     bootbox.alert("Insufficient funds");
                     return;
                 }
@@ -188,10 +188,6 @@
 
     });
 
-    function pickMax() {
-        $("#amount").val(max_amount.replace(/\,/g,''));
-    }
-
     function confirmSend() {
         let amount = $("#amount").val().replace(/\,/g,'');
         let target_address = $("#destination").val();
@@ -202,7 +198,7 @@
                 return;
             }
 
-            if (parseInt(amount, 10) > parseInt(max_amount.replace(/\,/g,''), 10)) {
+            if (toFixed(amount) > toFixed(max_amount.replace(/\,/g,''))) {
                 bootbox.alert("Insufficient funds");
                 return;
             }
