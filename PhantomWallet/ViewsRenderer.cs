@@ -160,6 +160,7 @@ namespace Phantom.Wallet
             context["menu"] = MenuEntries;
             context["networks"] = Networks;
             context["explorer"] = config != null ? config.ExplorerUrl : "http://45.76.88.140:7072";
+            context["rpcurl"] = config != null ? config.RpcUrl : "http://45.76.88.140:7076";
 
             if (HasLogin(request))
             {
@@ -748,6 +749,7 @@ namespace Phantom.Wallet
             var neoPassphrase = request.GetVariable("neoPassphrase");
             var assetSymbol = request.GetVariable("assetSymbol");
             var context = InitContext(request);
+            var phantasmaKey = GetLoginKey(request);
             if (context["holdings"] is Holding[] balance)
             {
                 Phantasma.Neo.Core.NeoKeys neoKeysConverted;
@@ -761,7 +763,7 @@ namespace Phantom.Wallet
                     neoKeysConverted = Phantasma.Neo.Core.NeoKeys.FromWIF(neoKey);
                 }
 
-                var result = AccountController.InvokeSettleTx(neoKeysConverted, neoTxHash, assetSymbol).Result;
+                var result = AccountController.InvokeSettleTx(neoKeysConverted, phantasmaKey, neoTxHash, assetSymbol).Result;
                 return result;
             }
             return null;
