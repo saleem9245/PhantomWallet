@@ -113,21 +113,17 @@
         }
         {{/each}}
 
-        $.get('/platforms/',
+        customrestport = '{{rpcurl}}';
+        customrestport = customrestport.slice(0,-8) + '7078';
+        $.get(customrestport + '/api/getPlatforms',
             function (returnedDataPlatforms) {
-              console.log(returnedDataPlatforms)
-              var pLength = (JSON.parse(returnedDataPlatforms)).length,
-                  dstaddress = '',
-                  i = 0;
-              for (i; i < pLength; i += 1) {
-                if (JSON.parse(returnedDataPlatforms)[i].platform == 'neo') {
-                  dstaddress = JSON.parse(returnedDataPlatforms)[i].address
-                }
-              }
+              //console.log(returnedDataPlatforms[0].interop[0].external)
+              dstaddress = returnedDataPlatforms[0].interop[0].external;
               document.getElementById("currentplatformaddress").innerHTML = dstaddress;
               document.getElementById("padcurrentplatformaddress").addEventListener('click', function(){ copyText(dstaddress, 'Address');}, false);
               $("#loader-interopaddress").hide();
               $("#step-error").hide();
+              $("#step-1").show();
               $("#step-2").show();
               $("#step-3").show();
             })
