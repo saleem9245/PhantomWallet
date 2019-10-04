@@ -37,7 +37,11 @@
                       {{#if Symbol == 'NACHO'}}
                       <td class="col-6 aligned-row"><img class="token-icon" src="img/nacho_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
                       {{#else}}
-                      <td class="col-6 aligned-row"><img class="token-icon" src="img/token_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
+                        {{#if Symbol == 'MKNI'}}
+                        <td class="col-6 aligned-row"><img class="token-icon" src="img/mkni_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
+                        {{#else}}
+                        <td class="col-6 aligned-row"><img class="token-icon" src="img/token_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
+                        {{/if}}
                       {{/if}}
                     {{/if}}
                   {{/if}}
@@ -129,6 +133,7 @@ $(document).ready(function() {
   $("#loader-pie").hide();
   $("#loader-historical").hide();
   $("#container-historical-value").hide();
+  $(document.getElementById("count-soulmasters")).fadeTo("fast", 0);
   onLoad = 1;
   GetPieChart();
   // init portfolio chart on 3M
@@ -988,10 +993,7 @@ function GetSoulmastersDetails() {
        // if soulmaster exist and changed, flash the value
        if (mastercount != 0) {
          document.getElementById("count-soulmasters").innerHTML = '<img class="status-icon" src="img/soulmasterstatus_logo.png" />';
-         $(document.getElementById("count-soulmasters")).addClass('flash-portfolio').delay(300).queue(function(next){
-              $(this).removeClass('flash-portfolio');
-              next();
-         });
+         $(document.getElementById("count-soulmasters")).fadeTo("slow", 1);
        }
        // if amount 0 or 1 total soulmaster exist and changed, flash the value
        if (mastertotalcount == 0 || mastertotalcount == 1) {
