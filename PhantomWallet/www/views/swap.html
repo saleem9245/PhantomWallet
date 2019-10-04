@@ -60,7 +60,7 @@
                           <div id="keytypetoggle" style="margin:.5em;font-style:italic;color:#17B0E7;display:inline-block;">Private Key</div>
                           <i style="display:inline-block;" class="fas fa-sync fa-sync-neo" onclick="toggleKeyType()"></i>
                           <input type="search" class="form-control parameters-swap-input" id="neoprivatekey" style="text-align:center;" placeholder="Enter NEO key">
-                          <input type="search" class="form-control parameters-swap-input" id="neopassphrase" style="text-align:center;margin-top:1em;display:none;" placeholder="Enter NEO passphrase">
+                          <input type="password" class="form-control parameters-swap-input" id="neopassphrase" style="text-align:center;margin-top:1em;display:none;" placeholder="Enter NEO passphrase">
                           <button class="btn-primary nextBtn btn-lg button" type="button" onclick="swapNEOToPhantasma()" id="neotophantasmabutton">SWAP ASSETS</button>
                       </div>
                   </div>
@@ -224,12 +224,12 @@
 
     function swapNEOToPhantasma() {
 
-      let hash = $("#neohash").val();
+      let txhash = $("#neohash").val();
       let neokey = $("#neoprivatekey").val();
       let neopassphrase = $("#neopassphrase").val();
       let assetsymbol = $("#select-token-swap").val();
 
-      if (hash.length !== 64) {
+      if (txhash.length !== 64) {
           bootbox.alert("Please insert a valid transaction hash!");
           return;
       }
@@ -243,7 +243,7 @@
       bootbox.confirm({
           title: "Swap confirmation",
           message: "Validate <strong>" +
-              hash +
+              txhash +
               "</strong><br>from NEO Blockchain and release <strong>" + assetsymbol + " on Phantasma Blockchain" +
               "</strong>?",
           buttons: {
@@ -260,7 +260,7 @@
 
               $.post('/settle/tx',
                  {
-                     neoTxHash: hash,
+                     txHash: txhash,
                      neoKey: neokey,
                      neoPassphrase: neopassphrase,
                      assetSymbol: assetsymbol

@@ -4,8 +4,8 @@
   <div id="sendSpinner" class="loading">Loading&#8230;</div>
   <div class="top-portfolio col-md-12">
     <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/kcal_logo.png" /><span>ENERGY</span><br><span id="unclaimed-kcal" class="top-portfolio-col-highlight">KCAL</span><br><span id="rewards-kcal" class="top-portfolio-col-small">KCAL / DAY</span></div>
-    <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/phantasma_logo.png" /><span>STAKES</span><br><span id="stake-soul" class="top-portfolio-col-highlight">SOUL</span><br><span id="count-soulmasters" class="top-portfolio-col-small">SOULMASTER</span></div>
-    <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/soulmasters_logo.png" /><span>SOULMASTERS</span><br><span><span id="count-soulmasters-total" class="top-portfolio-col-highlight">SOULMASTER</span></span><br><span><span id="rewards-soulmasters" class="top-portfolio-col-small">SOUL / MONTH</span></span></div>
+    <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/soul_logo.png" /><span>STAKES</span><span id="count-soulmasters" class="top-portfolio-col-small"></span><br><span id="stake-soul" class="top-portfolio-col-highlight">SOUL</span><br><br></div>
+    <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/token_logo.png" /><span>SOULMASTERS</span><br><span><span id="count-soulmasters-total" class="top-portfolio-col-highlight">SOULMASTER</span></span><br><span><span id="rewards-soulmasters" class="top-portfolio-col-small">SOUL / MONTH</span></span></div>
 </div>
     <div class="wrapper-portfolio">
       <div><button type="button" id="claim-kcal" class="button button-disabled" onclick="Claim()">CLAIM<BR>KCAL</button></div>
@@ -29,7 +29,7 @@
               {{#each holdings}}
               <tr class="token-shadow">
                   {{#if Symbol == 'SOUL'}}
-                  <td class="col-6 aligned-row"><img class="token-icon" src="img/{{Icon}}.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
+                  <td class="col-6 aligned-row"><img class="token-icon" src="img/soul_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
                   {{#else}}
                     {{#if Symbol == 'KCAL'}}
                     <td class="col-6 aligned-row"><img class="token-icon" src="img/kcal_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
@@ -37,7 +37,7 @@
                       {{#if Symbol == 'NACHO'}}
                       <td class="col-6 aligned-row"><img class="token-icon" src="img/nacho_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
                       {{#else}}
-                      <td class="col-6 aligned-row"><img class="token-icon" src="img/soulmasters_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
+                      <td class="col-6 aligned-row"><img class="token-icon" src="img/token_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
                       {{/if}}
                     {{/if}}
                   {{/if}}
@@ -733,7 +733,7 @@ function MasterClaim() {
   // build params for contract call
   params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
 
-  if (document.getElementById("count-soulmasters").innerHTML == '0 SOULMASTER' || document.getElementById("count-soulmasters-total").innerHTML == '0 SOULMASTER') {
+  if (document.getElementById("count-soulmasters-total").innerHTML == '0 SOULMASTER') {
         bootbox.alert("Nothing to claim yet!");
         return;
   }
@@ -986,8 +986,8 @@ function GetSoulmastersDetails() {
          rewards = 0;
        }
        // if soulmaster exist and changed, flash the value
-       if (document.getElementById("count-soulmasters").innerHTML != mastercount + ' SOULMASTER') {
-         document.getElementById("count-soulmasters").innerHTML = mastercount + ' SOULMASTER';
+       if (mastercount != 0) {
+         document.getElementById("count-soulmasters").innerHTML = '<img class="status-icon" src="img/soulmasterstatus_logo.png" />';
          $(document.getElementById("count-soulmasters")).addClass('flash-portfolio').delay(300).queue(function(next){
               $(this).removeClass('flash-portfolio');
               next();
