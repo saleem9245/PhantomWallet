@@ -206,6 +206,11 @@
         var selectedDestinationChain = $("#destinationChain").val();
         var isValid = false;
 
+        if (formatedAmountKCAL == 0) {
+            bootbox.alert("You need KCAL to send transactions!");
+            return;
+        }
+
         if (target_address.length == 0) {
             bootbox.alert("Please insert an destination address!");
             return;
@@ -303,10 +308,14 @@
 		let tokenBox = $('#select-token-form');
 		tokenBox.find('option').remove();
 
+    formatedAmountKCAL = 0;
 		{{#each chainTokens}}
 		if ('{{ChainName}}' === selected_chain) {
       formatedAmount = numberWithCommas('{{Amount}}');
 			tokenBox.append($('<option>', {value:'{{Symbol}}', text:'{{Name}} ({{Symbol}}) - ' + formatedAmount}));
+		}
+    if ('{{Symbol}}' === 'KCAL') {
+      formatedAmountKCAL = numberWithCommas('{{Amount}}');
 		}
 		{{/each}}
 

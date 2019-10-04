@@ -754,13 +754,13 @@ namespace Phantom.Wallet
             {
                 Phantasma.Neo.Core.NeoKeys neoKeys;
 
-                if (neoPassphrase == null)
+                if (string.IsNullOrEmpty(neoPassphrase))
                 {
-                    neoKeys = Phantasma.Neo.Core.NeoKeys.FromNEP2(neoKey, neoPassphrase);
+                    neoKeys = Phantasma.Neo.Core.NeoKeys.FromWIF(neoKey);
                 }
                 else
                 {
-                    neoKeys = Phantasma.Neo.Core.NeoKeys.FromWIF(neoKey);
+                    neoKeys = Phantasma.Neo.Core.NeoKeys.FromNEP2(neoKey, neoPassphrase);
                 }
 
                 var result = AccountController.InvokeSettleTx(neoKeys, phantasmaKeys, txHash, assetSymbol).Result;
