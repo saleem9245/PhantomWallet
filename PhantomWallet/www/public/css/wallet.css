@@ -462,7 +462,6 @@ ul.nav.nav-pills {
     margin-right: 12px;
 }
 
-
 .status-icon {
     width: 65px !important;
     margin-top: 0.55em;
@@ -1250,11 +1249,11 @@ ul.nav.nav-pills {
 }
 
 tbody tr:hover {
-    background-color: #17B0E7;
+    background-color: #17b0e7d9;
 }
 
 tbody tr:hover td {
-    background-color: #17B0E7;
+    background-color: #17b0e7d9;
     color: #fff;
 }
 
