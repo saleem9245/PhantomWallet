@@ -477,27 +477,25 @@ namespace Phantom.Wallet.Controllers
             }
         }
 
-        public async Task<object> InvokeSettleTx(NeoKeys keyPair, PhantasmaKeys phantasmakeyPair, string neoTxHash, string symbol)
+        public async Task<object> InvokeSettleTx(NeoKeys neoKeys, PhantasmaKeys phantasmaKeys, string txHash, string symbol)
         {
             try
             {
-                Hash txHash = Hash.Parse(neoTxHash);
-                var outputAddress = Address.FromKey(keyPair);
-                var phantasmaAddress = phantasmakeyPair.Address;
+                Hash neoTxHash = Hash.Parse(txHash);
+                var transcodedAddress = Address.FromKey(neoKeys);
 
                 var script = ScriptUtils.BeginScript()
-                    .CallContract("interop", "SettleTransaction", outputAddress, NeoWallet.NeoPlatform, NeoWallet.NeoPlatform, txHash)
-                    .CallContract("swap", "SwapFee", outputAddress, symbol, UnitConversion.ToBigInteger(0.1m, 8))
-                    //.TransferBalance(symbol, outputAddress, phantasmaAddress)
-                    .CallInterop("Runtime.TransferBalance", outputAddress, keyPair.Address, symbol)
-                    .AllowGas(outputAddress, Address.Null, MinimumFee, 800)
-                    .SpendGas(outputAddress)
+                    .CallContract("interop", "SettleTransaction", transcodedAddress, NeoWallet.NeoPlatform, NeoWallet.NeoPlatform, neoTxHash)
+                    .CallContract("swap", "SwapFee", transcodedAddress, symbol, UnitConversion.ToBigInteger(0.1m, DomainSettings.FuelTokenDecimals))
+                    .TransferBalance(symbol, transcodedAddress, phantasmaKeys.Address)
+                    .AllowGas(transcodedAddress, Address.Null, MinimumFee, 800)
+                    .SpendGas(transcodedAddress)
                     .EndScript();
 
                 var nexusName = WalletConfig.Network;
                 var tx = new Phantasma.Blockchain.Transaction(nexusName, "main", script, DateTime.UtcNow + TimeSpan.FromMinutes(30));
 
-                tx.Sign(keyPair);
+                tx.Sign(neoKeys);
 
                 var txResult = await _phantasmaRpcService.SendRawTx.SendRequestAsync(tx.ToByteArray(true).Encode());
                 Log.Information("txResult: " + txResult);

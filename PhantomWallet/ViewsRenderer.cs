@@ -744,26 +744,26 @@ namespace Phantom.Wallet
 
         private object RouteInvokeSettleTx(HTTPRequest request)
         {
-            var neoTxHash = request.GetVariable("neoTxHash");
+            var txHash = request.GetVariable("txHash");
             var neoKey = request.GetVariable("neoKey");
             var neoPassphrase = request.GetVariable("neoPassphrase");
             var assetSymbol = request.GetVariable("assetSymbol");
             var context = InitContext(request);
-            var phantasmaKey = GetLoginKey(request);
+            var phantasmaKeys = GetLoginKey(request);
             if (context["holdings"] is Holding[] balance)
             {
-                Phantasma.Neo.Core.NeoKeys neoKeysConverted;
+                Phantasma.Neo.Core.NeoKeys neoKeys;
 
-                if (neoPassphrase != "")
+                if (neoPassphrase == null)
                 {
-                    neoKeysConverted = Phantasma.Neo.Core.NeoKeys.FromNEP2(neoKey, neoPassphrase);
+                    neoKeys = Phantasma.Neo.Core.NeoKeys.FromNEP2(neoKey, neoPassphrase);
                 }
                 else
                 {
-                    neoKeysConverted = Phantasma.Neo.Core.NeoKeys.FromWIF(neoKey);
+                    neoKeys = Phantasma.Neo.Core.NeoKeys.FromWIF(neoKey);
                 }
 
-                var result = AccountController.InvokeSettleTx(neoKeysConverted, phantasmaKey, neoTxHash, assetSymbol).Result;
+                var result = AccountController.InvokeSettleTx(neoKeys, phantasmaKeys, txHash, assetSymbol).Result;
                 return result;
             }
             return null;
