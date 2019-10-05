@@ -154,8 +154,8 @@
 
             if (curStepBtn === "step-2") {
                 saveToken();
-                let amount = $("#amount").val().replace(/\,/g,'');
-                if (parseFloat(amount.replace(/\,/g,'')) > parseFloat(max_amount.replace(/\,/g,''))) {
+                let amount = $("#amount").val();
+                if (parseFloat(amount) > parseFloat(max_amount.replace(/\,/g,''))) {
                     bootbox.alert("Insufficient funds");
                     return;
                 }
@@ -206,7 +206,7 @@
                 return;
             }
 
-            if (toFixed(amount) > toFixed(max_amount.replace(/\,/g,''))) {
+            if (parseFloat(amount) > parseFloat(max_amount.replace(/\,/g,''))) {
                 bootbox.alert("Insufficient funds");
                 return;
             }

@@ -102,7 +102,7 @@
             <select id="select-token-form-cosmic">
             </select>
             <h4 class="control-label" style="margin-top:1em;">Step 2) Enter amount</h4>
-            <input class="form-control parameters-swap-input" id="neoamount" type="number" style="text-align:center;" placeholder="Enter amount">
+            <input class="form-control parameters-swap-input" id="phantasmaamount" type="number" style="text-align:center;" placeholder="Enter amount">
             <h4 class="control-label" style="margin-top:1em;">Step 3) Select token to receive</h4>
             <select id="select-token-form-cosmicreceive">
             </select><br>
@@ -122,6 +122,9 @@
         $('#sendSpinner').hide();
         $("#loader-interopaddress").show();
         isName = 'False';
+        $('#neopassphrase').val('');
+        $('#neoprivatekey').val('');
+        $('#neohash').val('');
 
         let tokenBox = $('#select-token-form');
         tokenBox.find('option').remove();
@@ -196,8 +199,8 @@
     function swapPhantasmaToNEO() {
 
       if (1 == 1) {
-          bootbox.alert("Not available yet, coming soon!");
-          return;
+          //bootbox.alert("Not available yet, coming soon!");
+          //return;
       }
 
       $("#wrapper-swap-confirm").fadeTo(1, 0);
@@ -288,7 +291,7 @@
           return;
       }
 
-      if (neokey.length < 52 || neokey.length > 58 || (neokey.length > 52 && neokey.length < 52)) {
+      if (neokey.length < 52 || neokey.length > 58 || (neokey.length > 52 && neokey.length < 58)) {
           bootbox.alert("Please insert a valid private key or encrypted key!");
           return;
       }
