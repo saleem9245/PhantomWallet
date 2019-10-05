@@ -212,6 +212,12 @@ function toggleSwap() {
     $('#cosmicswapdiv').hide();
     $('#chainswapdiv').show();
   }
+  $('#neoaddresslink').val('');
+  $('#neohash').val('');
+  $('#neoamount').val('');
+  $('#neodstaddress').val('');
+  $('#neopassphrase').val('');
+  $('#neoprivatekey').val('');
 }
 
 // function toggle neo/phantasma chains
@@ -241,6 +247,8 @@ function toggleChains() {
     $('#neohash').val('');
     $('#neoamount').val('');
     $('#neodstaddress').val('');
+    $('#neopassphrase').val('');
+    $('#neoprivatekey').val('');
 }
 
 // function toggle private key / encrypted key
@@ -265,6 +273,7 @@ function toggleKeyType() {
     }
     $('#neopassphrase').val('');
     $('#neoprivatekey').val('');
+    $('#neohash').val('');
 }
 
 // function fixed decimals value
