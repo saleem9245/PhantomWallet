@@ -24,6 +24,7 @@
 - Claim KCAL
 - Stake/Unstake SOUL
 - Claim SOULMASTER rewards
+- Swap from/to NEO Blockchain to Phantasma Blockchain
 - Send/receive SOUL, KCAL and any token
 - View wallet transactions history
 - Switch between network type (Simnet/Testnet/Mainnet)
@@ -31,7 +32,6 @@
 - Switch between multiple currencies (USD/CAD/EUR/etc.)
 - Connect to custom Explorer URL and custom RPC URL
 - Read/Write generic contract calls, for all chain/sidechain
-- PhantomCli
 
 ### Roadmap
 
@@ -40,7 +40,7 @@
 - Finalize & improve multisignature (revoke conversion / set a max amount per day with no multisig required / trigger events)
 - Add feature account Import/Export/login with user/pw (requires db + logic + view)
 - Add feature contacts addresses
-- Add feature swap to/from NEO/native SOUL
+- Add feature to burn KCAL
 - Add dashboard statistic swapping progress (supply on NEO/native)
 - Add dashboard statistics soulmasters / BP
 - Build generic script parser
@@ -48,22 +48,7 @@
 - Fix when new ABI: Overall logic check when/if call require signed tx (currently it does call both all the time because of that)
 - Offline mode
 
-## Phantom Cli Overview
-
-### Current features
-
-PhantomCli is a cli interface that allows quick queries on transactions or to check a contract abi. It has a history and autocompletion for the built in commands and on historized patterns. Not everything might work smoothly as I abused it a bit to test a few things, but in the future PhantomCli will be a full featured Phantasma CLI wallet with extended functionalities.
-
-### Roadmap
-
-- Simple scripting within the cli
-- File read write
-- Transaction/block export
-- Standard wallet features (send/receive)
-- Passthrough to your OS shell (Linux and OSX, not sure about Windows yet)
-- Output in nicely formatted text tables
-
-## Phantom Wallet & CLI Installation
+## Phantom Wallet Installation
 
 The wallet can be launched either from the latest binaries, or can be built manually
 
@@ -87,8 +72,6 @@ In any network type selected (Simnet/Testnet/Mainnet), you have the possibility 
 
 ### Launch from binaries
 
-*Phantom Wallet:*
-
 1) Download here (https://github.com/merl111/PhantomWallet/releases)
 
 2.1) One step launch
@@ -110,39 +93,18 @@ on Windows:
 `.\PhantomWallet.exe --path=www --port=7071`
 
 Then open a browser and go to http://localhost:7071
-If using on Windows, you might need to disable your antivirus before launching the wallet, as sometimes it gets detected as a false positive.
 
-*Phantom Cli:*
+Note 1: if using on Windows, you might need to disable your antivirus before launching the wallet, as sometimes it gets detected as a false positive.
 
-1) Download here (https://github.com/merl111/PhantomWallet/releases)
-
-2) Launch the program
-
-on Linux or MacOS:
-
-`./PhantomCli`
-
-on Windows:
-
-`.\PhantomCli.exe --path=www --port=7071`
+Note 2: if using on Linux, you might need to add curl first, depending on your exact environment.
 
 ### Manual build
-
-*Phantom Wallet:*
 
 Go to PhantomWallet directory and type:
 
 `dotnet build`
 
 `dotnet PhantomWallet/www/bin/netcoreapp2.0/PhantomWallet.dll --path=/pathtowallet/PhantomWallet/www/ --port=7071`
-
-*Phantom Cli:*
-
-Go to PhantomCli directory and type:
-
-`dotnet build`
-
-`dotnet PhantomCli/bin/netcoreapp2.0/PhantomCli.dll`
 
 ## Multisignature
 
