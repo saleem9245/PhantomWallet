@@ -198,6 +198,7 @@ function toggleNightMode() {
 
 // function toggle on/off cosmic/chain swap
 function toggleSwap() {
+  $("#wrapper-swap-confirm").fadeTo(1, 0);
   $('#cosmicswap').toggleClass('highlighted');
   $('#chainswap').toggleClass('highlighted');
 
@@ -215,6 +216,7 @@ function toggleSwap() {
 
 // function toggle neo/phantasma chains
 function toggleChains() {
+  $("#wrapper-swap-confirm").fadeTo(1, 0);
   if ($('#neotophantasma').css('display') === 'none')
     {
       $('#neotophantasma').show();

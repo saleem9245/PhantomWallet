@@ -99,8 +99,11 @@
 
         // force max 8 decimals
         $( "#amount" ).blur(function() {
-            this.value = parseFloat(this.value).toFixed(8);
+            this.value = round(this.value,8);
         });
+        function round(value, decimals) {
+          return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
+        }
 
         var navListItems = $('div.setup-panel div a'),
             allWells = $('.setup-content'),

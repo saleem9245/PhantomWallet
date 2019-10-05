@@ -89,10 +89,27 @@
                 </div>
             </div>
       </div>
+      <div id="wrapper-temp-confirm" style="opacity:0;text-align:center;">
+      </div>
     </div>
 </div>
-<div id="cosmicswapdiv" class="container" style="margin-top:1em;display:none;">
+<div id="cosmicswapdiv" class="container swap" style="margin-top:1em;display:none;">
   <h4>Not available yet, coming soon!</h4>
+  <div class="row setup-content" style="display:none;">
+      <div class="col-xs-12">
+          <div class="col-md-12">
+            <h4 class="control-label">Step 1) Select token to send</h4>
+            <select id="select-token-form-cosmic">
+            </select>
+            <h4 class="control-label" style="margin-top:1em;">Step 2) Enter amount</h4>
+            <input class="form-control parameters-swap-input" id="neoamount" type="number" style="text-align:center;" placeholder="Enter amount">
+            <h4 class="control-label" style="margin-top:1em;">Step 3) Select token to receive</h4>
+            <select id="select-token-form-cosmicreceive">
+            </select><br>
+            <button class="btn-success btn-lg button" type="button" onclick="swapCosmic()" id="cosmicswapbutton">SWAP ASSETS</button>
+          </div>
+      </div>
+  </div>
 </div>
 <div id="wrapper-swap-confirm" style="opacity:0;text-align:center;">
   Transaction
@@ -109,10 +126,21 @@
         let tokenBox = $('#select-token-form');
         tokenBox.find('option').remove();
 
+        let tokenBoxCosmic = $('#select-token-form-cosmic');
+        tokenBoxCosmic.find('option').remove();
+
+        let tokenBoxCosmicReceive = $('#select-token-form-cosmicreceive');
+        tokenBoxCosmicReceive.find('option').remove();
+
         {{#each chainTokens}}
         if ('{{Symbol}}' == 'SOUL' || '{{Symbol}}' == 'NEO' || '{{Symbol}}' == 'GAS') {
           formatedAmount = numberWithCommas('{{Amount}}');
           tokenBox.append($('<option>', {value:'{{Symbol}}', text:'{{Name}} ({{Symbol}}) - ' + formatedAmount}));
+        }
+        if ('{{Symbol}}' == 'SOUL' || '{{Symbol}}' == 'KCAL' || '{{Symbol}}' == 'NEO' || '{{Symbol}}' == 'GAS') {
+          formatedAmountCosmic = numberWithCommas('{{Amount}}');
+          tokenBoxCosmic.append($('<option>', {value:'{{Symbol}}', text:'{{Name}} ({{Symbol}}) - ' + formatedAmountCosmic}));
+          tokenBoxCosmicReceive.append($('<option>', {value:'{{Symbol}}', text:'{{Name}} ({{Symbol}}) - ' + formatedAmountCosmic}));
         }
         {{/each}}
 
@@ -154,9 +182,23 @@
           document.getElementById("cb5").checked = true;
         }
 
+        $("#phantasmatoneo").mouseenter(function() {
+          document.getElementById("wrapper-temp-confirm").innerHTML = '<br><br><span style="font-size:1.3em;">Not available yet, coming soon!</span>';
+          $("#wrapper-temp-confirm").fadeTo("slow", 1);
+        });
+
+        $("#phantasmatoneo").mouseleave(function() {
+          $("#wrapper-temp-confirm").fadeTo("slow", 0);
+        });
+
     })
 
     function swapPhantasmaToNEO() {
+
+      if (1 == 1) {
+          bootbox.alert("Not available yet, coming soon!");
+          return;
+      }
 
       $("#wrapper-swap-confirm").fadeTo(1, 0);
       let target_address_neo = $("#neoaddress").val();
@@ -214,7 +256,7 @@
                     } else {
                         console.log(returnedData)
                         $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
-                            document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction rejected: ' + (JSON.parse(returnedData));
+                            document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction rejected';
                             $("#wrapper-swap-confirm").fadeTo("slow", 1);
                         });
                     }
@@ -222,7 +264,7 @@
                   }).fail(function(e) {
                     console.log(e)
                     $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
-                        document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction rejected: ' + (JSON.parse(e));
+                        document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction rejected';
                         $("#wrapper-swap-confirm").fadeTo("slow", 1);
                     });
                   })
@@ -283,7 +325,7 @@
                    } else {
                        console.log(returnedData)
                        $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
-                           document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction rejected: ' + (JSON.parse(returnedData));
+                           document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction rejected';
                            $("#wrapper-swap-confirm").fadeTo("slow", 1);
                        });
                    }
@@ -292,7 +334,7 @@
                ).fail(function(e) {
                  console.log(e)
                  $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
-                     document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction rejected: ' + (JSON.parse(e));
+                     document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction rejected';
                      $("#wrapper-swap-confirm").fadeTo("slow", 1);
                  });
                })
