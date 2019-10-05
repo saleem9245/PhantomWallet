@@ -14,10 +14,11 @@ namespace Phantom.Wallet
             var settings = ServerSettings.Parse(args);
             settings.Compression = false;
 
-            var sessionStorage = new FileSessionStorage("session") { CookieExpiration = TimeSpan.FromHours(6) };
+            //var sessionStorage = new FileSessionStorage("session") { CookieExpiration = TimeSpan.FromHours(6) };
 
             // instantiate a new site, the second argument is the relative file path where the public site contents will be found
-            return new HTTPServer(settings, log, sessionStorage);
+            //return new HTTPServer(settings, log, sessionStorage);
+            return new HTTPServer(settings, log);
         }
     }
 }
