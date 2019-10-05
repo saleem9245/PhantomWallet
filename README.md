@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./PhantomWallet/www/public/img/soul.png" width="125px;">
+  <img src="./PhantomWallet/www/public/img/soul_logo.png" width="125px;">
 </p>
 
 <h1 align="center">Phantom Wallet</h1>

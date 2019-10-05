@@ -134,6 +134,8 @@ $(document).ready(function() {
   $("#loader-historical").hide();
   $("#container-historical-value").hide();
   $(document.getElementById("count-soulmasters")).fadeTo("fast", 0);
+  updatedKCALbalance = 0;
+  hasKCAL = 0;
   onLoad = 1;
   GetPieChart();
   // init portfolio chart on 3M
@@ -153,6 +155,12 @@ $(document).ready(function() {
       GetSoulmastersDetails();
     }, 60000);
   }
+
+  {{#each holdings}}
+    if ('{{Symbol}}' == 'KCAL') {
+      hasKCAL = 1;
+    }
+  {{/each}}
 
 });
 // Datatable initialization
@@ -250,14 +258,15 @@ function Claim() {
 
                   if ((JSON.parse(returnedDataTX).error) != undefined) {
                     // If .error defined, returns the custom error message
-                    $("#wrapper-portfolio-confirm").fadeTo("fast", 0);
-                    document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
-                    $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                    $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
+                        document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
+                        $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                    });
                   } else {
                     setTimeout(function() {
                       // if amount exist and changed and update kcal based on fees, flash the value
                       if (document.getElementById("KCAL-amount").innerHTML != numberWithCommas((futureamount - ((JSON.parse(returnedDataTX).fee) / Math.pow(10,10))).toFixed(10))) {
-                        document.getElementById("KCAL-amount").innerHTML = numberWithCommas((futureamount - ((JSON.parse(returnedDataTX).fee) / Math.pow(10,10))).toFixed(10));
+                        document.getElementById("KCAL-amount").innerHTML = numberWithCommas(parseFloat((futureamount - ((JSON.parse(returnedDataTX).fee) / Math.pow(10,10))).toFixed(10)));
                         $(document.getElementById("KCAL-amount")).addClass('flash-portfolio').delay(300).queue(function(next){
                              $(this).removeClass('flash-portfolio');
                              next();
@@ -266,25 +275,30 @@ function Claim() {
                       getUnclaimed();
                     }, 2000);
                     // If it works, returns the tx link
-                    $("#wrapper-portfolio-confirm").fadeTo("fast", 0);
-                    document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
-                    $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                    $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
+                        document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                        $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                    });
                   }
 
               }
 
             }).fail(function(e) {
               $('#sendSpinner').hide();
-              console.log(e)
-              document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
-              $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+              console.log(JSON.stringify(e))
+              $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
+                  document.getElementById("wrapper-portfolio-confirm").innerHTML = JSON.stringify(e);
+                  $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+              });
             });
           }
      }).fail(function(e) {
        $('#sendSpinner').hide();
         console.log(JSON.stringify(e))
-        document.getElementById("wrapper-portfolio-confirm").innerHTML = JSON.stringify(e);
-        $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+        $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
+            document.getElementById("wrapper-portfolio-confirm").innerHTML = JSON.stringify(e);
+            $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+        });
      })
 
 }
@@ -327,12 +341,19 @@ function Stake() {
         return;
   }
 
+  if (hasKCAL == 0) {
+    custommessagecombined = '<br>Since you do not have any KCAL, a one-time KCAL claim will also be performed.';
+  } else {
+    custommessagecombined = '';
+  }
+
   $('#sendSpinner').show();
   bootbox.confirm({
       title: "Staking confirmation",
       message: "Stake <strong>" +
           numberWithCommas(toFixed((changedamount))) +
-          " SOUL?",
+          " SOUL?" +
+          custommessagecombined,
       buttons: {
           cancel: {
               label: '<i class="fa fa-times"></i> Cancel'
@@ -379,15 +400,19 @@ function Stake() {
 
                             if ((JSON.parse(returnedDataTX).error) != undefined) {
                               // If .error defined, returns the custom error message
-                              $("#wrapper-portfolio-confirm").fadeTo("fast", 0);
-                              document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
-                              $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                              $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
+                                  document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
+                                  $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                              });
                             } else {
                               //console.log(returnedDataTX)
+                              if (updatedKCALbalance == 0) {
+                                  $('#temp-kcal').hide();
+                              }
                               setTimeout(function() {
                                 // update kcal based on features
                                 if (document.getElementById("KCAL-amount") !== null) {
-                                  document.getElementById("KCAL-amount").innerHTML = numberWithCommas(((document.getElementById("KCAL-amount").innerHTML).replace(/\,/g,'') - ((JSON.parse(returnedDataTX).fee) / Math.pow(10,10))).toFixed(10));
+                                  document.getElementById("KCAL-amount").innerHTML = numberWithCommas(parseFloat(((document.getElementById("KCAL-amount").innerHTML).replace(/\,/g,'') - ((JSON.parse(returnedDataTX).fee) / Math.pow(10,10))).toFixed(10)));
                                   $(document.getElementById("KCAL-amount")).addClass('flash-portfolio').delay(300).queue(function(next){
                                        $(this).removeClass('flash-portfolio');
                                        next();
@@ -430,9 +455,10 @@ function Stake() {
                                   GetSoulmastersDetails();
                                 }, 1000);
                               }, 2000);
-                              $("#wrapper-portfolio-confirm").fadeTo("fast", 0);
-                              document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
-                              $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                              $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
+                                  document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                                  $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                              });
                             }
 
                           }
@@ -440,8 +466,10 @@ function Stake() {
                       }).fail(function(e) {
                         $('#sendSpinner').hide();
                         console.log(JSON.stringify(e.statusText))
-                        document.getElementById("wrapper-portfolio-confirm").innerHTML = JSON.stringify(e.statusText);
-                        $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                        $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
+                            document.getElementById("wrapper-portfolio-confirm").innerHTML = JSON.stringify(e.statusText);
+                            $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                        });
                       });
 
                     }
@@ -449,8 +477,10 @@ function Stake() {
                }).fail(function(e) {
                   $('#sendSpinner').hide();
                   console.log(JSON.stringify(e.statusText))
-                  document.getElementById("wrapper-portfolio-confirm").innerHTML = JSON.stringify(e.statusText);
-                  $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                  $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
+                      document.getElementById("wrapper-portfolio-confirm").innerHTML = JSON.stringify(e.statusText);
+                      $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                  });
                })
 
                document.getElementById("manageinput").value = '';
@@ -484,9 +514,10 @@ function Stake() {
 
                             if ((JSON.parse(returnedDataTX).error) != undefined) {
                               // If .error defined, returns the custom error message
-                              $("#wrapper-portfolio-confirm").fadeTo("fast", 0);
-                              document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
-                              $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                              $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
+                                  document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
+                                  $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                              });
                             } else {
                               //console.log(returnedDataTX)
                               setTimeout(function() {
@@ -529,22 +560,30 @@ function Stake() {
                                 // call getstake and getpie getsoulmastersdetails after all other refresh
                                 onLoad = 0;
                                 getStake();
+                                currentKCALearned = (changedamount*0.002);
+                                feesonearned = (JSON.parse(returnedDataTX).fee/(Math.pow(10,10)));
+                                updatedKCALbalance += parseFloat((currentKCALearned - feesonearned).toFixed(10));
+                                $('#mainportfoliotable > tbody').append('<tr class="token-shadow odd" role="row" id="temp-kcal" style="display:none;"><td class="col-6 aligned-row"><img class="token-icon" src="img/kcal_logo.png">Phantasma Energy - <a href="http://{{explorer}}/token/KCAL" target="_blank" title="View Asset">KCAL</a></td><td class="col-6">Main</td><td class="col-3" id="KCAL-amount">' + numberWithCommas(updatedKCALbalance) + '</td><td class="col-3 sorting_1" id="KCAL-price">N/A</td></tr>');
+                                $('#temp-kcal').show('slow');
                                 setTimeout(function() {
                                   GetPieChart(changedamount);
                                   GetSoulmastersDetails();
                                 }, 1000);
                               }, 2000);
-                              $("#wrapper-portfolio-confirm").fadeTo("fast", 0);
-                              document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
-                              $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                              $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
+                                  document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                                  $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                              });
                             }
 
                         }
                       }).fail(function(e) {
                         $('#sendSpinner').hide();
                         console.log(JSON.stringify(e.statusText))
-                        document.getElementById("wrapper-portfolio-confirm").innerHTML = JSON.stringify(e.statusText);
-                        $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                        $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
+                            document.getElementById("wrapper-portfolio-confirm").innerHTML = JSON.stringify(e.statusText);
+                            $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                        });
                       });
 
                     }
@@ -552,8 +591,10 @@ function Stake() {
                }).fail(function(e) {
                   $('#sendSpinner').hide();
                   console.log(JSON.stringify(e.statusText))
-                  document.getElementById("wrapper-portfolio-confirm").innerHTML = JSON.stringify(e.statusText);
-                  $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                  $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
+                      document.getElementById("wrapper-portfolio-confirm").innerHTML = JSON.stringify(e.statusText);
+                      $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                  });
                })
                document.getElementById("manageinput").value = '';
              }
@@ -651,9 +692,10 @@ function Unstake() {
 
                           if ((JSON.parse(returnedDataTX).error) != undefined) {
                             // If .error defined, returns the custom error message
-                            $("#wrapper-portfolio-confirm").fadeTo("fast", 0);
-                            document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
-                            $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                            $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
+                                document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
+                                $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                            });
                           } else {
                             setTimeout(function() {
                               // update kcal based on fees
@@ -692,24 +734,29 @@ function Unstake() {
                                 GetSoulmastersDetails();
                               }, 1000);
                             }, 2000);
-                              $("#wrapper-portfolio-confirm").fadeTo("fast", 0);
-                              document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
-                              $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                              $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
+                                  document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                                  $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                              });
                           }
 
                       }
                     }).fail(function(e) {
                       $('#sendSpinner').show();
                       console.log(e)
-                      document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
-                      $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                      $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
+                          document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
+                          $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                      });
                     });
                   }
              }).fail(function(e) {
                 $('#sendSpinner').show();
                 console.log(e)
-                document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
-                $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
+                    document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
+                    $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                });
              })
 
              document.getElementById("manageinput").value = '';
@@ -777,9 +824,10 @@ function MasterClaim() {
 
                 if ((JSON.parse(returnedDataTX).error) != undefined) {
                   // If .error defined, returns the custom error message
-                  $("#wrapper-portfolio-confirm").fadeTo("fast", 0);
-                  document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
-                  $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                  $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
+                      document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
+                      $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                  });
                 } else {
                   //console.log(returnedDataTX)
                   //changedamount = JSON.parse(returnedDataTX);
@@ -823,24 +871,29 @@ function MasterClaim() {
                       GetSoulmastersDetails();
                     }, 1000);
                   }, 2000);
-                  $("#wrapper-portfolio-confirm").fadeTo("fast", 0);
-                  document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
-                  $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                  $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
+                      document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                      $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                  });
                 }
 
             }
             }).fail(function(e) {
               $('#sendSpinner').hide();
               console.log(e)
-              document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
-              $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+              $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
+                  document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
+                  $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+              });
             });
           }
      }).fail(function(e) {
         $('#sendSpinner').hide();
         console.log(e)
-        document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
-        $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+        $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
+            document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
+            $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+        });
      })
 
      document.getElementById("manageinput").value = '';
