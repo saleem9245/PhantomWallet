@@ -227,10 +227,10 @@ function toggleChains() {
     {
       $('#neotophantasma').show();
       $('#phantasmatoneo').hide();
-      $(".fa-sync").addClass("fa-spin");
+      $(".fa-sync-chains").addClass("fa-spin");
       document.getElementById("chainswapdesc").innerHTML = 'From NEO Blockchain to Phantasma Blockchain';
       setTimeout(function() {
-        $(".fa-sync").removeClass("fa-spin");
+        $(".fa-sync-chains").removeClass("fa-spin");
       }, 1000);
     }
     else
