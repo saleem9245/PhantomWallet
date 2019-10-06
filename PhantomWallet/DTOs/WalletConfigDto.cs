@@ -19,7 +19,7 @@ namespace Phantom.Wallet.DTOs
         public string RpcUrl { get; set; } = "http://45.76.88.140:7076/rpc";
 
         [JsonProperty("explorer_url")]
-        public string ExplorerUrl { get; set; } = "http://45.76.88.140:7072";
+        public string ExplorerUrl { get; set; } = "https://explorer.phantasma.io";
 
         public static WalletConfigDto FromJson(string json) => JsonConvert.DeserializeObject<WalletConfigDto>(json, JsonUtils.Settings);
         public string ToJson() => JsonConvert.SerializeObject(this, JsonUtils.Settings);
