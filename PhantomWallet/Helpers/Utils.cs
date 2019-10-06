@@ -316,10 +316,14 @@ namespace Phantom.Wallet.Helpers
                       description =
                           $"Sent to {receiverAddress.ToString()}";
                     }
+                    else if (receiverAddress.Text.StartsWith("X") || senderAddress.Text.StartsWith("X"))
+                    {
+                        description = $"Swap received from NEO Blockchain";
+                    }
                     else
                     {
-                      description =
-                          $"Received from {senderAddress.ToString()}";
+                        description =
+                            $"Received from {senderAddress.ToString()}";
                     }
 
                 }
@@ -328,6 +332,18 @@ namespace Phantom.Wallet.Helpers
                     var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == receiverToken).Decimals);
 
                     description = $"Received from {senderAddress.Text} ";
+                }
+                else if (receiverAddress.Text.StartsWith("X") || senderAddress.Text.StartsWith("X"))
+                {
+
+                    description = $"Swap received from NEO Blockchain";
+
+                }
+                else if ((!receiverAddress.Text.StartsWith("X") || !senderAddress.Text.StartsWith("X")) && (!receiverAddress.Text.StartsWith("P") || !senderAddress.Text.StartsWith("P")))
+                {
+
+                    description = $"Swap sent to NEO Blockchain ";
+
                 }
                 else
                 {
