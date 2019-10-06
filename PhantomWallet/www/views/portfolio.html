@@ -742,7 +742,7 @@ function Unstake() {
 
                       }
                     }).fail(function(e) {
-                      $('#sendSpinner').show();
+                      $('#sendSpinner').hide();
                       console.log(e)
                       $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
                           document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
@@ -751,7 +751,7 @@ function Unstake() {
                     });
                   }
              }).fail(function(e) {
-                $('#sendSpinner').show();
+                $('#sendSpinner').hide();
                 console.log(e)
                 $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
                     document.getElementById("wrapper-portfolio-confirm").innerHTML = e;
