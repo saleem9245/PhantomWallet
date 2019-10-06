@@ -306,10 +306,9 @@ body {
     background-color: white;
 }
 
-.fa-sync:before {
+.fa-sync:before, .swap .fa-random:before {
     color: #337ab7;
 }
-
 
 .wallet-title {
     font-size: 2em;
