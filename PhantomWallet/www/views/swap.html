@@ -12,7 +12,7 @@
     </div>
     <div id="chainswapdiv" class="container" style="margin-top:0">
       <div id="chainswapdesc" style="margin:1em 1em 2em 1em;font-style:italic;color:#17B0E7;display:inline-block;font-size:1.2em;">From NEO Blockchain to Phantasma Blockchain</div>
-      <i style="display:inline-block;font-size: 1.5em;" class="fas fa-sync fa-sync-chains" onclick="toggleChains()"></i>
+      <i style="display:inline-block;font-size: 1.5em;" class="fas fa-random fa-sync-chains" onclick="toggleChains()"></i>
       <div id="neotophantasma">
           <div class="row setup-content" id="step-1" style="display:none;">
               <div class="col-xs-12">
@@ -95,7 +95,7 @@
 </div>
 <div id="cosmicswapdiv" class="container swap" style="margin-top:1em;display:none;">
   <h4>Not available yet, coming soon!</h4>
-  <div class="row setup-content">
+  <div class="row setup-content" style="display:none;">
       <div class="col-xs-12">
           <div class="col-md-12">
             <h4 class="control-label">Step 1) Select token to sell</h4>
@@ -130,6 +130,10 @@
         $('#neopassphrase').val('');
         $('#neoprivatekey').val('');
         $('#neohash').val('');
+        $('#neoaddress').val('');
+        $('#neoamount').val('');
+        hasKCAL = 0;
+        hasGAS = 0;
 
         let tokenBox = $('#select-token-form');
         tokenBox.find('option').remove();
@@ -190,6 +194,15 @@
           document.getElementById("cb5").checked = true;
         }
 
+        {{#each holdings}}
+          if ('{{Symbol}}' == 'KCAL') {
+            hasKCAL = 1;
+          }
+          if ('{{Symbol}}' == 'GAS') {
+            hasGAS = 1;
+          }
+        {{/each}}
+
     })
 
     function swapPhantasmaToNEO() {
@@ -198,6 +211,16 @@
       let target_address_neo = $("#neoaddress").val();
       let token = $("#select-token-form").val();
       let amount = $("#neoamount").val().replace(/\,/g,'');
+
+      if (hasKCAL == 0) {
+          bootbox.alert("All transactions on Phantasma require KCAL. Please claim some first!");
+          return;
+      }
+
+      if (hasGAS == 0) {
+          bootbox.alert("All Swaps from Phantasma to NEO require a drop of GAS, please swap some GAS first!");
+          return;
+      }
 
       if (target_address_neo == '') {
           bootbox.alert("Please enter a NEO address!");
@@ -273,6 +296,8 @@
                                          $("#wrapper-swap-confirm").fadeTo("slow", 1);
                                      });
                                    } else {
+                                     $('#neoaddress').val('');
+                                     $('#neoamount').val('');
                                      // If it works, settle tx
                                      $.get(customrestport + '/api/settleSwap',
                                        {
@@ -298,6 +323,7 @@
                              });
                            }
                     } else {
+                        $('#sendSpinner').hide();
                         console.log(returnedData)
                         $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
                             document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction rejected';
@@ -306,14 +332,16 @@
                     }
                     //console.log(returnedData);
                   }).fail(function(e) {
+                    $('#sendSpinner').hide();
                     console.log(e)
                     $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
                         document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction rejected';
                         $("#wrapper-swap-confirm").fadeTo("slow", 1);
                     });
                   })
+              } else {
+                $('#sendSpinner').hide();
               }
-              $('#sendSpinner').hide();
           }
       });
 
@@ -392,11 +420,15 @@
                                       $("#wrapper-swap-confirm").fadeTo("slow", 1);
                                   });
                                 } else {
+                                  $('#neopassphrase').val('');
+                                  $('#neoprivatekey').val('');
+                                  $('#neohash').val('');
                                   // If it works, returns tx
                                   $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
-                                      document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedDataTX + '" target="_blank" title="View Transaction">' + returnedDataTX + '</a>';
+                                      document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + JSON.parse(returnedDataTX).hash + '" target="_blank" title="View Transaction">' + JSON.parse(returnedDataTX).hash + '</a>';
                                       $("#wrapper-swap-confirm").fadeTo("slow", 1);
                                   });
+                                  window.location.replace("/history/");
                                 }
                             }
                           }).fail(function(e) {
@@ -409,6 +441,7 @@
                           });
                         }
                    } else {
+                       $('#sendSpinner').hide();
                        console.log(returnedData)
                        $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
                            document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction rejected';
@@ -418,14 +451,16 @@
                    //console.log(returnedData);
                  }
                ).fail(function(e) {
+                 $('#sendSpinner').hide();
                  console.log(e)
                  $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
                      document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction rejected';
                      $("#wrapper-swap-confirm").fadeTo("slow", 1);
                  });
                })
+             } else {
+               $('#sendSpinner').hide();
              }
-             $('#sendSpinner').hide();
            }
         });
 
