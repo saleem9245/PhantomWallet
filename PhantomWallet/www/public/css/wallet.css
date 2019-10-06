@@ -1656,7 +1656,3 @@ input[type="search"]::-webkit-search-cancel-button {
 .dark-mode .top-portfolio-col-small {
     color: grey;
 }
-
-#phantasmatoneo div:hover {
-    filter: blur(4px);
-}

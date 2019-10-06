@@ -95,17 +95,22 @@
 </div>
 <div id="cosmicswapdiv" class="container swap" style="margin-top:1em;display:none;">
   <h4>Not available yet, coming soon!</h4>
-  <div class="row setup-content" style="display:none;">
+  <div class="row setup-content">
       <div class="col-xs-12">
           <div class="col-md-12">
-            <h4 class="control-label">Step 1) Select token to send</h4>
+            <h4 class="control-label">Step 1) Select token to sell</h4>
             <select id="select-token-form-cosmic">
             </select>
-            <h4 class="control-label" style="margin-top:1em;">Step 2) Enter amount</h4>
-            <input class="form-control parameters-swap-input" id="phantasmaamount" type="number" style="text-align:center;" placeholder="Enter amount">
-            <h4 class="control-label" style="margin-top:1em;">Step 3) Select token to receive</h4>
+            <h4 class="control-label" style="margin-top:1em;">Step 2) Select token to buy</h4>
             <select id="select-token-form-cosmicreceive">
-            </select><br>
+            </select>
+            <h4 class="control-label" style="margin-top:1em;">Step 3) Enter amount to sell</h4>
+            <input class="form-control parameters-swap-input" id="phantasmaamount" type="number" style="text-align:center;" placeholder="Enter amount">
+            <div class="cosmic-calc">
+                <br>You are sending:<br>
+                You will be receiving:<br>
+                Rate: X SOUL for Y KCAL
+            </div>
             <button class="btn-success btn-lg button" type="button" onclick="swapCosmic()" id="cosmicswapbutton">SWAP ASSETS</button>
           </div>
       </div>
@@ -185,23 +190,9 @@
           document.getElementById("cb5").checked = true;
         }
 
-        $("#phantasmatoneo").mouseenter(function() {
-          document.getElementById("wrapper-temp-confirm").innerHTML = '<br><br><span style="font-size:1.3em;">Not available yet, coming soon!</span>';
-          $("#wrapper-temp-confirm").fadeTo("slow", 1);
-        });
-
-        $("#phantasmatoneo").mouseleave(function() {
-          $("#wrapper-temp-confirm").fadeTo("slow", 0);
-        });
-
     })
 
     function swapPhantasmaToNEO() {
-
-      if (1 == 1) {
-          //bootbox.alert("Not available yet, coming soon!");
-          //return;
-      }
 
       $("#wrapper-swap-confirm").fadeTo(1, 0);
       let target_address_neo = $("#neoaddress").val();
@@ -255,7 +246,57 @@
                   },
                   function (returnedData) {
                     if (returnedData !== "") {
-                        window.location.replace("/waiting/" + returnedData);
+                        //console.log(returnedData)
+                        // If /sendrawtx works, call /tx/hash in a loop to check if the tx worked
+                        var counter = 0;
+                        getConfirmations();
+                        function getConfirmations() {
+
+                         $.get('/tx/' + returnedData,
+                             function (returnedDataTX) {
+                               //console.log(returnedDataTX)
+                               $('#sendSpinner').hide();
+                               if ((JSON.parse(returnedDataTX).error) == 'pending') {
+                                   counter++;
+                                   if (counter <= 6){
+                                     setTimeout(getConfirmations, 2000);
+                                   }
+                                   // If tx pending, returns the custom error message
+                                   document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction pending';
+                                   $("#wrapper-swap-confirm").fadeTo("slow", 1);
+                               } else {
+
+                                   if ((JSON.parse(returnedDataTX).error) != undefined) {
+                                     // If .error defined, returns the custom error message
+                                     $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
+                                         document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
+                                         $("#wrapper-swap-confirm").fadeTo("slow", 1);
+                                     });
+                                   } else {
+                                     // If it works, settle tx
+                                     $.get(customrestport + '/api/settleSwap',
+                                       {
+                                           sourcePlatform: 'phantasma', destPlatform: 'neo', hashText: JSON.parse(returnedDataTX).hash
+                                       },
+                                         function (returnedDataSettle) {
+                                           //console.log(returnedDataSettle)
+                                           $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
+                                               document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedDataSettle + '" target="_blank" title="View Transaction">' + returnedDataSettle + '</a>';
+                                               $("#wrapper-swap-confirm").fadeTo("slow", 1);
+                                           });
+                                           window.location.replace("/history/");
+                                       })
+                                   }
+                               }
+                             }).fail(function(e) {
+                               $('#sendSpinner').hide();
+                               console.log(JSON.stringify(e))
+                               $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
+                                   document.getElementById("wrapper-portfolio-confirm").innerHTML = JSON.stringify(e);
+                                   $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                               });
+                             });
+                           }
                     } else {
                         console.log(returnedData)
                         $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
@@ -324,7 +365,49 @@
                  },
                  function (returnedData) {
                    if (returnedData !== "") {
-                       window.location.replace("/waiting/" + returnedData);
+                     //console.log(returnedData)
+                     // If /sendrawtx works, call /tx/hash in a loop to check if the tx worked
+                     var counter = 0;
+                     getConfirmations();
+                     function getConfirmations() {
+
+                      $.get('/tx/' + returnedData,
+                          function (returnedDataTX) {
+                            //console.log(returnedDataTX)
+                            $('#sendSpinner').hide();
+                            if ((JSON.parse(returnedDataTX).error) == 'pending') {
+                                counter++;
+                                if (counter <= 6){
+                                  setTimeout(getConfirmations, 2000);
+                                }
+                                // If tx pending, returns the custom error message
+                                document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction pending';
+                                $("#wrapper-swap-confirm").fadeTo("slow", 1);
+                            } else {
+
+                                if ((JSON.parse(returnedDataTX).error) != undefined) {
+                                  // If .error defined, returns the custom error message
+                                  $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
+                                      document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
+                                      $("#wrapper-swap-confirm").fadeTo("slow", 1);
+                                  });
+                                } else {
+                                  // If it works, returns tx
+                                  $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
+                                      document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedDataTX + '" target="_blank" title="View Transaction">' + returnedDataTX + '</a>';
+                                      $("#wrapper-swap-confirm").fadeTo("slow", 1);
+                                  });
+                                }
+                            }
+                          }).fail(function(e) {
+                            $('#sendSpinner').hide();
+                            console.log(JSON.stringify(e))
+                            $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
+                                document.getElementById("wrapper-portfolio-confirm").innerHTML = JSON.stringify(e);
+                                $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                            });
+                          });
+                        }
                    } else {
                        console.log(returnedData)
                        $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
