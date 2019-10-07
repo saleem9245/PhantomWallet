@@ -9,20 +9,20 @@
 
   {{#if transactions}}
   <div class="table-responsive">
-      <table class="table table-striped" id="mainhistorytable" style="display:none;">
+      <table class="table table-striped" id="mainhistorytable" style="display:none;width:100%;">
           <thead>
               <tr>
-                  <th class="col-1">Type</th>
+                  <th class="col-1" style="display:none">Type</th>
                   <th class="col-2">Date (UTC)</th>
                   <th class="col-3">Hash</th>
                   <th class="col-4">Amount</th>
-                  <th class="col-5">Description</th>
+                  <th class="col-5" style="display:none">Description</th>
               </tr>
           </thead>
           <tbody>
               {{#each transactions}}
               <tr>
-                  <td class="col-1">
+                  <td class="col-1" style="display:none">
                     {{#if Type == 'Mint'}}
                       <i class="fas fa-coins" style="color:#7cacff"><span style="display:none;">{{Type}}</span></i>
                     {{#else}}
@@ -48,7 +48,7 @@
                   <td class="col-2">{{Date}}</td>
                   <td class="col-3"><small><a href="{{explorer}}/tx/{{Hash}}" target="_blank" title="View Transaction">{{Hash}}</a></small></td>
                   <td class="col-4">{{Amount}}</td>
-                  <td class="col-5">{{Description}}</td>
+                  <td class="col-5" style="display:none">>{{Description}}</td>
               </tr>
               {{/each}}
           </tbody>
