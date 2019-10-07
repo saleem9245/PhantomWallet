@@ -96,7 +96,7 @@ Then open a browser and go to http://localhost:7071
 
 Note 1: if using on Windows, you might need to disable your antivirus before launching the wallet, as sometimes it gets detected as a false positive.
 
-Note 2: if using on Linux, you might need to add curl first, depending on your exact environment.
+Note 2: if using on Linux, you might need to add curl first, depending on your exact environment. You might also have to add some dotnet dependencies, see here: https://github.com/dotnet/core/blob/master/Documentation/prereqs.md
 
 ### Manual build
 
