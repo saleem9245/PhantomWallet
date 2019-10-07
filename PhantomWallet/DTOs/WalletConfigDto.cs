@@ -16,7 +16,7 @@ namespace Phantom.Wallet.DTOs
         public string Theme { get; set; } = "light";
 
         [JsonProperty("rpc_url")]
-        public string RpcUrl { get; set; } = "http://45.76.88.140:7076/rpc";
+        public string RpcUrl { get; set; } = "http://207.148.17.86:7071/rpc";
 
         [JsonProperty("explorer_url")]
         public string ExplorerUrl { get; set; } = "https://explorer.phantasma.io";
