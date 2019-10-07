@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -44,33 +44,10 @@ namespace Phantom.Wallet.Helpers
 
             BigInteger amount = 0;
 
-            tx.Events.Reverse();
             foreach (var evt in tx.Events) //todo move this
             {
                 switch (evt.EventKind)
                 {
-                    case EventKind.TokenSend:
-                        {
-                            var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
-                            amount = data.Value;
-                            senderAddress = Address.FromText(evt.EventAddress);
-                            senderToken = data.Symbol;
-                            var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == senderToken).Decimals);
-                            amountsymbol = $"{amountDecimal.ToString("#,0.##########").ToString(new CultureInfo("en-US"))} {senderToken}";
-                        }
-                        break;
-
-                    case EventKind.TokenReceive:
-                        {
-                            var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
-                            amount = data.Value;
-                            receiverAddress = Address.FromText(evt.EventAddress);
-                            receiverChain = data.ChainName;
-                            receiverToken = data.Symbol;
-                            var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == receiverToken).Decimals);
-                            amountsymbol = $"{amountDecimal.ToString("#,0.##########").ToString(new CultureInfo("en-US"))} {receiverToken}";
-                        }
-                        break;
 
                     case EventKind.TokenMint:
                         {
@@ -102,6 +79,29 @@ namespace Phantom.Wallet.Helpers
                             receiverChain = data.ChainName;
                             var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.Symbol).Decimals);
                             amountsymbol = $"{amountDecimal.ToString("#,0.##########").ToString(new CultureInfo("en-US"))} {data.Symbol}";
+                        }
+                        break;
+
+                    case EventKind.TokenSend:
+                        {
+                            var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
+                            amount = data.Value;
+                            senderAddress = Address.FromText(evt.EventAddress);
+                            senderToken = data.Symbol;
+                            var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == senderToken).Decimals);
+                            amountsymbol = $"{amountDecimal.ToString("#,0.##########").ToString(new CultureInfo("en-US"))} {senderToken}";
+                        }
+                        break;
+
+                    case EventKind.TokenReceive:
+                        {
+                            var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
+                            amount = data.Value;
+                            receiverAddress = Address.FromText(evt.EventAddress);
+                            receiverChain = data.ChainName;
+                            receiverToken = data.Symbol;
+                            var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == receiverToken).Decimals);
+                            amountsymbol = $"{amountDecimal.ToString("#,0.##########").ToString(new CultureInfo("en-US"))} {receiverToken}";
                         }
                         break;
 

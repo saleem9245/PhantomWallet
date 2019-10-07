@@ -1200,12 +1200,12 @@ ul.nav.nav-pills {
     height: 2.5em;
 }
 
-.contracts .button:hover, .portfolio .button:hover, .settings .button:hover, .send .button:hover, .swap .button:hover, .contracts .selected-chain, .contracts .selected-method {
+.contracts .button:hover, .portfolio .button:hover, .settings .button:hover, .send .button:hover, .swap .button:hover, .pending .button:hover, .contracts .selected-chain, .contracts .selected-method {
     background-color: #17B0E7 !important;
     color: #fff !important;
 }
 
-.contracts .button, .portfolio .button, .settings .button {
+.contracts .button, .portfolio .button, .settings .button, .pending .button {
     padding: 1em 1em;
     color: #17B0E7;
     border: 2px solid #17B0E7;
@@ -1381,7 +1381,7 @@ table.dataTable thead .sorting {
     outline: 0;
 }
 
-input[type="search"]::-webkit-search-cancel-button {
+input[type="search"]::-webkit-search-cancel-button, input[type="text"]::-webkit-search-cancel-button {
     -webkit-appearance: searchfield-cancel-button !important;
 }
 
@@ -1532,7 +1532,7 @@ input[type="search"]::-webkit-search-cancel-button {
 }
 
 .swap {
-    margin-top: -4.5em;
+    margin-top: -5em;
 }
 
 .flash-portfolio {
@@ -1654,4 +1654,8 @@ input[type="search"]::-webkit-search-cancel-button {
 
 .dark-mode .top-portfolio-col-small {
     color: grey;
+}
+
+.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control {
+    background-color: initial;
 }

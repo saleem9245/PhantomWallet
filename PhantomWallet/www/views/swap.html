@@ -24,9 +24,9 @@
                       <div id="loader-interopaddress" class="block-loader center">
                         <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
                       </div>
-                      <h4 class="control-label">Step 1) Send NEO, GAS or SOUL</h4>
+                      <h4 class="control-label">Step 1) Send NEO (min. 2), GAS or SOUL</h4>
                       <div class="center">
-                          <p class="public-address" style="display:inline-block;">
+                          <p class="public-address" style="display:inline-block;margin-bottom:0;">
                               <em><span id="currentplatformaddress"></span></em>
                           </p>
                           <span id="padcurrentplatformaddress" class="copy-pad" style="font-size: 20px;">
@@ -89,8 +89,6 @@
                 </div>
             </div>
       </div>
-      <div id="wrapper-temp-confirm" style="opacity:0;text-align:center;">
-      </div>
     </div>
 </div>
 <div id="cosmicswapdiv" class="container swap" style="margin-top:1em;display:none;">
@@ -118,6 +116,15 @@
 </div>
 <div id="wrapper-swap-confirm" style="opacity:0;text-align:center;">
   Transaction
+</div><br>
+<div id="wrapper-pending-confirm" class="pending" style="opacity:1;text-align:center;margin-top:2em;display:none;">
+  <span>Swap pending? Re-process it (optional)</span><br>
+  <div style="display:inline-flex;">
+    <input class="form-control parameters-swap-input" id="neopending" type="text" style="text-align:center;display:inline-block;width:22em;" placeholder="Enter NEO public address">
+    <button class="btn-success btn-lg button" style="margin-left:1em;width:12em;font-size:.6em;" type="button" onclick="swapPendingSettle()" id="swappendingsettlebutton">PROCESS SWAP</button>
+  </div>
+  <br><div id="wrapper-pendingswap-confirm" style="opacity:1;text-align:center;margin-top:1em;">
+  </div>
 </div>
 
 <script>
@@ -205,6 +212,59 @@
 
     })
 
+    function swapPendingSettle() {
+
+      $('#sendSpinner').show();
+      $("#wrapper-pendingswap-confirm").fadeTo("fast", 0);
+      neopending = $("#neopending").val();
+
+      $.get(customrestport + '/api/getSwapsForAddress',
+        {
+            accountInput: neopending
+        },
+          function (returnedDataPending) {
+            //console.log(returnedDataPending)
+            $('#sendSpinner').hide();
+            console.log(returnedDataPending.length)
+            if (returnedDataPending.length == 0) {
+                $('#wrapper-pendingswap-confirm').fadeTo("fast", 0, function() {
+                    document.getElementById("wrapper-pendingswap-confirm").innerHTML = 'No pending swap';
+                    $("#wrapper-pendingswap-confirm").fadeTo("slow", 1);
+                });
+            } else {
+              neopendinghash = returnedDataPending[0].sourceHash;
+              $.get(customrestport + '/api/settleSwap',
+                {
+                    sourcePlatform: 'phantasma', destPlatform: 'neo', hashText: neopendinghash
+                },
+                  function (returnedDataPending) {
+                    //console.log(returnedDataPending)
+                    $('#wrapper-pendingswap-confirm').fadeTo("fast", 0, function() {
+                        document.getElementById("wrapper-pendingswap-confirm").innerHTML = 'Swap processed successfully: <a href="{{explorer}}/tx/' + returnedDataPending + '" target="_blank" title="View Transaction" class="pendingswaphash">' + returnedDataPending + '</a>';
+                        $("#wrapper-pendingswap-confirm").fadeTo("slow", 1);
+                    });
+                    window.location.replace("/history/");
+                }).fail(function(e) {
+                  $('#sendSpinner').hide();
+                  console.log(JSON.stringify(e))
+                  $('#wrapper-pendingswap-confirm').fadeTo("fast", 0, function() {
+                      document.getElementById("wrapper-pendingswap-confirm").innerHTML = 'Swap processing failed.';
+                      $("#wrapper-pendingswap-confirm").fadeTo("slow", 1);
+                  });
+                });
+            }
+
+        }).fail(function(e) {
+          $('#sendSpinner').hide();
+          console.log(JSON.stringify(e))
+          $('#wrapper-pendingswap-confirm').fadeTo("fast", 0, function() {
+              document.getElementById("wrapper-pendingswap-confirm").innerHTML = 'Swap processing failed.';
+              $("#wrapper-pendingswap-confirm").fadeTo("slow", 1);
+          });
+        });
+
+    }
+
     function swapPhantasmaToNEO() {
 
       $("#wrapper-swap-confirm").fadeTo(1, 0);
@@ -270,6 +330,7 @@
                   function (returnedData) {
                     if (returnedData !== "") {
                         //console.log(returnedData)
+                        $('#sendSpinner').hide();
                         // If /sendrawtx works, call /tx/hash in a loop to check if the tx worked
                         var counter = 0;
                         getConfirmations();
@@ -280,13 +341,16 @@
                                //console.log(returnedDataTX)
                                $('#sendSpinner').hide();
                                if ((JSON.parse(returnedDataTX).error) == 'pending') {
-                                   counter++;
-                                   if (counter <= 6){
-                                     setTimeout(getConfirmations, 2000);
-                                   }
                                    // If tx pending, returns the custom error message
                                    document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction pending';
                                    $("#wrapper-swap-confirm").fadeTo("slow", 1);
+                                   counter++;
+                                   if (counter <= 10){
+                                     setTimeout(getConfirmations, 2000);
+                                   } else {
+                                     document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction unconfirmed, please re-process it below.';
+                                     $("#wrapper-swap-confirm").fadeTo("slow", 1);
+                                   }
                                } else {
 
                                    if ((JSON.parse(returnedDataTX).error) != undefined) {
@@ -310,24 +374,32 @@
                                                $("#wrapper-swap-confirm").fadeTo("slow", 1);
                                            });
                                            window.location.replace("/history/");
-                                       })
+                                       }).fail(function(e) {
+                                         $('#sendSpinner').hide();
+                                         console.log(JSON.stringify(e))
+                                         $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
+                                             document.getElementById("wrapper-swap-confirm").innerHTML = JSON.stringify(e);
+                                             $("#wrapper-swap-confirm").fadeTo("slow", 1);
+                                         });
+                                       });
+
                                    }
                                }
                              }).fail(function(e) {
                                $('#sendSpinner').hide();
                                console.log(JSON.stringify(e))
-                               $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
-                                   document.getElementById("wrapper-portfolio-confirm").innerHTML = JSON.stringify(e);
-                                   $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                               $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
+                                   document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction unconfirmed, please re-process it below.';
+                                   $("#wrapper-swap-confirm").fadeTo("slow", 1);
                                });
                              });
                            }
                     } else {
                         $('#sendSpinner').hide();
-                        console.log(returnedData)
+                        //console.log(returnedData)
                         $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
-                            document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction rejected';
-                            $("#wrapper-swap-confirm").fadeTo("slow", 1);
+                          document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction unconfirmed, please re-process it below.';
+                          $("#wrapper-swap-confirm").fadeTo("slow", 1);
                         });
                     }
                     //console.log(returnedData);
@@ -405,7 +477,7 @@
                             $('#sendSpinner').hide();
                             if ((JSON.parse(returnedDataTX).error) == 'pending') {
                                 counter++;
-                                if (counter <= 6){
+                                if (counter <= 10){
                                   setTimeout(getConfirmations, 2000);
                                 }
                                 // If tx pending, returns the custom error message
@@ -423,6 +495,7 @@
                                   $('#neopassphrase').val('');
                                   $('#neoprivatekey').val('');
                                   $('#neohash').val('');
+                                  let neopassphrase = '';
                                   // If it works, returns tx
                                   $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
                                       document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + JSON.parse(returnedDataTX).hash + '" target="_blank" title="View Transaction">' + JSON.parse(returnedDataTX).hash + '</a>';
