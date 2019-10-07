@@ -24,7 +24,7 @@
                 <img src="/img/soul_logo.png" id="logo-img" />
                 <span style="font-size:2em;">PHANTOM</span><br>
                 <span style="font-size:2em;">WALLET</span><br>
-                <span style="font-size:1em;color:#7C95AB;">version 0.3.1</span>
+                <span style="font-size:1em;color:#7C95AB;">version 0.3.3</span>
             </div>
             <div style="display:table;margin:0 auto;">
               <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -39,7 +39,7 @@
 
             <div class="tab-content" id="myTabContent">
                 <div class="tab-pane fade active" id="login" role="tabpanel" aria-labelledby="login-tab">
-                    <form action="" id="loginForm" onsubmit="onLogin()" style="width: 100%;">
+                    <form action="" id="loginForm" style="width: 100%;">
                         <div class="form-group input-group" style="width: 100%;padding-bottom: 40px;">
                             <label for="private_key" class="login-label" style="font-weight:400;">Enter Private Key</label>
                             <input class="form-control" type="password" name='private_key' id='private_key' />
@@ -113,12 +113,21 @@
 
     function onLogin(){
         var pk = document.getElementById("private_key");
+              //console.log(pk.value)
         if (pk.value.length != 52) {
             bootbox.alert("Invalid private key, must have 64 characters of length!");
         } else {
             window.location.replace("/login/"+pk.value);
         }
     }
+
+    $('#private_key').on('keyup keypress', function(e) {
+      var keyCode = e.keyCode || e.which;
+      if (keyCode === 13) {
+        e.preventDefault();
+        window.location.replace("/login/"+(document.getElementById("private_key")).value);
+      }
+    });
 
 
     {{#if WIF}}
