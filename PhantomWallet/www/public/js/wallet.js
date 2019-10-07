@@ -189,6 +189,7 @@ function numberWithCommas(x) {
 // function toggle on/off dark theme
 function toggleNightMode() {
   $('.well').toggleClass('dark-mode');
+  $('.pending').toggleClass('dark-mode');
   $('.sidenav').toggleClass('dark-mode');
   // Handles toggle nightmode on refresh
   if (localStorage.getItem('themesetting') == 'dark') {
@@ -211,18 +212,22 @@ function toggleSwap() {
   {
     $('#cosmicswapdiv').show();
     $('#chainswapdiv').hide();
+    $('#wrapper-pending-confirm').hide();
   }
   else
   {
     $('#cosmicswapdiv').hide();
     $('#chainswapdiv').show();
+    $('#wrapper-pending-confirm').show();
   }
   $('#neoaddresslink').val('');
   $('#neohash').val('');
   $('#neoamount').val('');
-  $('#neodstaddress').val('');
+  $('#neoaddress').val('');
   $('#neopassphrase').val('');
   $('#neoprivatekey').val('');
+  $('#neopending').val('');
+  document.getElementById("wrapper-pendingswap-confirm").innerHTML = '';
 }
 
 // function toggle neo/phantasma chains
@@ -232,6 +237,7 @@ function toggleChains() {
     {
       $('#neotophantasma').show();
       $('#phantasmatoneo').hide();
+      $('#wrapper-pending-confirm').hide();
       $(".fa-sync-chains").addClass("fa-spin");
       document.getElementById("chainswapdesc").innerHTML = 'From NEO Blockchain to Phantasma Blockchain';
       setTimeout(function() {
@@ -242,6 +248,7 @@ function toggleChains() {
     {
       $('#neotophantasma').hide();
       $('#phantasmatoneo').show();
+      $('#wrapper-pending-confirm').show();
       $(".fa-sync-chains").addClass("fa-spin");
       document.getElementById("chainswapdesc").innerHTML = 'From Phantasma Blockchain to NEO Blockchain';
       setTimeout(function() {
@@ -251,9 +258,11 @@ function toggleChains() {
     $('#neoaddresslink').val('');
     $('#neohash').val('');
     $('#neoamount').val('');
-    $('#neodstaddress').val('');
+    $('#neoaddress').val('');
     $('#neopassphrase').val('');
     $('#neoprivatekey').val('');
+    $('#neopending').val('');
+    document.getElementById("wrapper-pendingswap-confirm").innerHTML = '';
 }
 
 // function toggle private key / encrypted key
