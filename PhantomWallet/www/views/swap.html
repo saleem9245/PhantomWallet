@@ -243,7 +243,7 @@
                         document.getElementById("wrapper-pendingswap-confirm").innerHTML = 'Swap processed successfully: <a href="{{explorer}}/tx/' + returnedDataPending + '" target="_blank" title="View Transaction" class="pendingswaphash">' + returnedDataPending + '</a>';
                         $("#wrapper-pendingswap-confirm").fadeTo("slow", 1);
                     });
-                    window.location.replace("/history/");
+                    window.location.replace("/portfolio/");
                 }).fail(function(e) {
                   $('#sendSpinner').hide();
                   console.log(JSON.stringify(e))
@@ -373,7 +373,7 @@
                                                document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedDataSettle + '" target="_blank" title="View Transaction">' + returnedDataSettle + '</a>';
                                                $("#wrapper-swap-confirm").fadeTo("slow", 1);
                                            });
-                                           window.location.replace("/history/");
+                                           window.location.replace("/portfolio/");
                                        }).fail(function(e) {
                                          $('#sendSpinner').hide();
                                          console.log(JSON.stringify(e))
@@ -427,7 +427,7 @@
       let neopassphrase = $("#neopassphrase").val();
       let assetsymbol = $("#select-token-swap").val();
 
-      if (txhash.length !== 64) {
+      if (txhash.length !== 64 && txhash.length !== 66) {
           bootbox.alert("Please insert a valid transaction hash!");
           return;
       }
@@ -464,6 +464,7 @@
                      assetSymbol: assetsymbol
                  },
                  function (returnedData) {
+                   console.log(returnedData)
                    if (returnedData !== "") {
                      //console.log(returnedData)
                      // If /sendrawtx works, call /tx/hash in a loop to check if the tx worked
@@ -501,7 +502,7 @@
                                       document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + JSON.parse(returnedDataTX).hash + '" target="_blank" title="View Transaction">' + JSON.parse(returnedDataTX).hash + '</a>';
                                       $("#wrapper-swap-confirm").fadeTo("slow", 1);
                                   });
-                                  window.location.replace("/history/");
+                                  window.location.replace("/portfolio/");
                                 }
                             }
                           }).fail(function(e) {
