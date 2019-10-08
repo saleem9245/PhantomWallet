@@ -243,7 +243,7 @@
                         document.getElementById("wrapper-pendingswap-confirm").innerHTML = 'Swap processed successfully: <a href="{{explorer}}/tx/' + returnedDataPending + '" target="_blank" title="View Transaction" class="pendingswaphash">' + returnedDataPending + '</a>';
                         $("#wrapper-pendingswap-confirm").fadeTo("slow", 1);
                     });
-                    window.location.replace("/portfolio/");
+                    window.location.replace("/portfolio");
                 }).fail(function(e) {
                   $('#sendSpinner').hide();
                   console.log(JSON.stringify(e))
@@ -331,6 +331,8 @@
                     if (returnedData !== "") {
                         //console.log(returnedData)
                         $('#sendSpinner').hide();
+                        document.getElementById("wrapper-swap-confirm").innerHTML = '<div class="loader" style="position:initial;"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-text" style="margin-top:1.5em;position:initial;" id="waitingText">Waiting for transaction confirmations<div class="loader-dots"></div></div></div>';
+                        $("#wrapper-swap-confirm").fadeTo("slow", 1);
                         // If /sendrawtx works, call /tx/hash in a loop to check if the tx worked
                         var counter = 0;
                         getConfirmations();
@@ -339,11 +341,8 @@
                          $.get('/tx/' + returnedData,
                              function (returnedDataTX) {
                                //console.log(returnedDataTX)
-                               $('#sendSpinner').hide();
                                if ((JSON.parse(returnedDataTX).error) == 'pending') {
                                    // If tx pending, returns the custom error message
-                                   document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction pending';
-                                   $("#wrapper-swap-confirm").fadeTo("slow", 1);
                                    counter++;
                                    if (counter <= 10){
                                      setTimeout(getConfirmations, 2000);
@@ -373,7 +372,7 @@
                                                document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedDataSettle + '" target="_blank" title="View Transaction">' + returnedDataSettle + '</a>';
                                                $("#wrapper-swap-confirm").fadeTo("slow", 1);
                                            });
-                                           window.location.replace("/portfolio/");
+                                           window.location.replace("/portfolio");
                                        }).fail(function(e) {
                                          $('#sendSpinner').hide();
                                          console.log(JSON.stringify(e))
@@ -464,10 +463,12 @@
                      assetSymbol: assetsymbol
                  },
                  function (returnedData) {
-                   console.log(returnedData)
+                   //console.log(returnedData)
                    if (returnedData !== "") {
-                     //console.log(returnedData)
-                     // If /sendrawtx works, call /tx/hash in a loop to check if the tx worked
+                     $('#sendSpinner').hide();
+                     // If /settle/tx works, call /tx/hash in a loop to check if the tx worked
+                     document.getElementById("wrapper-swap-confirm").innerHTML = '<div class="loader" style="position:initial;"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-text" style="margin-top:1.5em;position:initial;" id="waitingText">Waiting for transaction confirmations<div class="loader-dots"></div></div></div>';
+                     $("#wrapper-swap-confirm").fadeTo("slow", 1);
                      var counter = 0;
                      getConfirmations();
                      function getConfirmations() {
@@ -475,15 +476,11 @@
                       $.get('/tx/' + returnedData,
                           function (returnedDataTX) {
                             //console.log(returnedDataTX)
-                            $('#sendSpinner').hide();
                             if ((JSON.parse(returnedDataTX).error) == 'pending') {
                                 counter++;
                                 if (counter <= 10){
                                   setTimeout(getConfirmations, 2000);
                                 }
-                                // If tx pending, returns the custom error message
-                                document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction pending';
-                                $("#wrapper-swap-confirm").fadeTo("slow", 1);
                             } else {
 
                                 if ((JSON.parse(returnedDataTX).error) != undefined) {
@@ -502,7 +499,7 @@
                                       document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + JSON.parse(returnedDataTX).hash + '" target="_blank" title="View Transaction">' + JSON.parse(returnedDataTX).hash + '</a>';
                                       $("#wrapper-swap-confirm").fadeTo("slow", 1);
                                   });
-                                  window.location.replace("/portfolio/");
+                                  window.location.replace("/portfolio");
                                 }
                             }
                           }).fail(function(e) {
