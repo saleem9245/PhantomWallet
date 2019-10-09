@@ -44,43 +44,39 @@ namespace Phantom.Wallet.Helpers
 
             BigInteger amount = 0;
 
+            tx.Events.Reverse();
             foreach (var evt in tx.Events) //todo move this
             {
                 switch (evt.EventKind)
                 {
 
-                    case EventKind.TokenMint:
-                        {
-                            var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
-                            amount = data.Value;
-                            receiverAddress = Address.FromText(evt.EventAddress);
-                            receiverChain = data.ChainName;
-                            var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.Symbol).Decimals);
+                  case EventKind.TokenStake:
+                      {
+                          var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
+                          amount = data.Value;
+                          receiverAddress = Address.FromText(evt.EventAddress);
+                          receiverChain = data.ChainName;
+                          var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.Symbol).Decimals);
+                          if (data.Symbol != "KCAL" && data.Symbol != "NEO" && data.Symbol != "GAS")
+                          {
                             amountsymbol = $"{amountDecimal.ToString("#,0.##########").ToString(new CultureInfo("en-US"))} {data.Symbol}";
-                        }
-                        break;
+                          }
+                      }
+                      break;
 
-                    case EventKind.TokenStake:
-                        {
-                            var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
-                            amount = data.Value;
-                            receiverAddress = Address.FromText(evt.EventAddress);
-                            receiverChain = data.ChainName;
-                            var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.Symbol).Decimals);
+                  case EventKind.TokenUnstake:
+                      {
+                          var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
+                          amount = data.Value;
+                          receiverAddress = Address.FromText(evt.EventAddress);
+                          receiverChain = data.ChainName;
+                          var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.Symbol).Decimals);
+                          if (data.Symbol != "KCAL" && data.Symbol != "NEO" && data.Symbol != "GAS")
+                          {
                             amountsymbol = $"{amountDecimal.ToString("#,0.##########").ToString(new CultureInfo("en-US"))} {data.Symbol}";
-                        }
-                        break;
-
-                    case EventKind.TokenUnstake:
-                        {
-                            var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
-                            amount = data.Value;
-                            receiverAddress = Address.FromText(evt.EventAddress);
-                            receiverChain = data.ChainName;
-                            var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.Symbol).Decimals);
-                            amountsymbol = $"{amountDecimal.ToString("#,0.##########").ToString(new CultureInfo("en-US"))} {data.Symbol}";
-                        }
-                        break;
+                          }
+                      }
+                      break;
 
                     case EventKind.TokenSend:
                         {
@@ -102,6 +98,17 @@ namespace Phantom.Wallet.Helpers
                             receiverToken = data.Symbol;
                             var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == receiverToken).Decimals);
                             amountsymbol = $"{amountDecimal.ToString("#,0.##########").ToString(new CultureInfo("en-US"))} {receiverToken}";
+                        }
+                        break;
+
+                    case EventKind.TokenClaim:
+                        {
+                            var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
+                            amount = data.Value;
+                            receiverAddress = Address.FromText(evt.EventAddress);
+                            receiverChain = data.ChainName;
+                            var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.Symbol).Decimals);
+                            amountsymbol = $"{amountDecimal.ToString("#,0.##########").ToString(new CultureInfo("en-US"))} {data.Symbol}";
                         }
                         break;
 
@@ -129,6 +136,33 @@ namespace Phantom.Wallet.Helpers
             {
                 switch (evt.EventKind)
                 {
+
+                    case EventKind.TransactionSettle:
+                        {
+                            typetx = $"{receiverAddress.ToString()}";
+                        }
+                        break;
+
+                    case EventKind.TokenStake:
+                        {
+                            var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
+                            if (data.Symbol != "KCAL" && data.Symbol != "NEO" && data.Symbol != "GAS")
+                            {
+                              typetx = $"Stake";
+                            }
+                        }
+                        break;
+
+                    case EventKind.TokenUnstake:
+                        {
+                          var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
+                          if (data.Symbol != "KCAL" && data.Symbol != "NEO" && data.Symbol != "GAS")
+                          {
+                            typetx = $"Unstake";
+                          }
+                        }
+                        break;
+
                     case EventKind.TokenSend:
                         {
                             var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
@@ -145,36 +179,6 @@ namespace Phantom.Wallet.Helpers
                             receiverAddress = Address.FromText(evt.EventAddress);
                             receiverChain = data.ChainName;
                             receiverToken = data.Symbol;
-                        }
-                        break;
-
-                    case EventKind.TokenStake:
-                        {
-                            typetx = $"Stake";
-                        }
-                        break;
-
-                    case EventKind.TokenUnstake:
-                        {
-                            typetx = $"Unstake";
-                        }
-                        break;
-
-                    case EventKind.TokenMint:
-                        {
-                            typetx = $"Mint";
-                        }
-                        break;
-
-                    case EventKind.BlockCreate:
-                        {
-                            typetx = $"Custom";
-                        }
-                        break;
-
-                    case EventKind.BlockClose:
-                        {
-                            typetx = $"{senderAddress.ToString()}";
                         }
                         break;
                 }
