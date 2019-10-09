@@ -170,7 +170,7 @@
               //console.log(returnedDataPlatforms[0].interop[0].external)
               dstaddress = returnedDataPlatforms[0].interop[0].external;
               document.getElementById("currentplatformaddress").innerHTML = dstaddress;
-              document.getElementById("padcurrentplatformaddress").addEventListener('click', function(){ copyText(dstaddress, 'Address');}, false);
+              document.getElementById("padcurrentplatformaddress").addEventListener('click', function(){ Clipboard.copy(dstaddress, 'Address');}, false);
               $("#loader-interopaddress").hide();
               $("#step-error").hide();
               $("#step-1").show();
@@ -243,7 +243,7 @@
                         document.getElementById("wrapper-pendingswap-confirm").innerHTML = 'Swap processed successfully: <a href="{{explorer}}/tx/' + returnedDataPending + '" target="_blank" title="View Transaction" class="pendingswaphash">' + returnedDataPending + '</a>';
                         $("#wrapper-pendingswap-confirm").fadeTo("slow", 1);
                     });
-                    window.location.replace("/portfolio");
+                    setTimeout(function(){window.location.href = "/portfolio"}, 4000);
                 }).fail(function(e) {
                   $('#sendSpinner').hide();
                   console.log(JSON.stringify(e))
@@ -372,7 +372,7 @@
                                                document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedDataSettle + '" target="_blank" title="View Transaction">' + returnedDataSettle + '</a>';
                                                $("#wrapper-swap-confirm").fadeTo("slow", 1);
                                            });
-                                           window.location.replace("/portfolio");
+                                           setTimeout(function(){window.location.href = "/portfolio"}, 4000);
                                        }).fail(function(e) {
                                          $('#sendSpinner').hide();
                                          console.log(JSON.stringify(e))
@@ -478,8 +478,13 @@
                             //console.log(returnedDataTX)
                             if ((JSON.parse(returnedDataTX).error) == 'pending') {
                                 counter++;
-                                if (counter <= 10){
+                                if (counter <= 15){
                                   setTimeout(getConfirmations, 2000);
+                                } else {
+                                  $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
+                                      document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction unconfirmed';
+                                      $("#wrapper-swap-confirm").fadeTo("slow", 1);
+                                  });
                                 }
                             } else {
 
@@ -499,7 +504,7 @@
                                       document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + JSON.parse(returnedDataTX).hash + '" target="_blank" title="View Transaction">' + JSON.parse(returnedDataTX).hash + '</a>';
                                       $("#wrapper-swap-confirm").fadeTo("slow", 1);
                                   });
-                                  window.location.replace("/portfolio");
+                                  setTimeout(function(){window.location.href = "/portfolio"}, 4000);
                                 }
                             }
                           }).fail(function(e) {
