@@ -356,7 +356,7 @@ namespace Phantom.Wallet
                     break;
 
                 case "swap":
-                    UpdateSendContext(context, keyPair, request);
+                    UpdateHistoryContext(context, request);
                     break;
 
                 default: break;
@@ -750,6 +750,7 @@ namespace Phantom.Wallet
             var assetSymbol = request.GetVariable("assetSymbol");
             var context = InitContext(request);
             var phantasmaKeys = GetLoginKey(request);
+            InvalidateCache(phantasmaKeys.Address);
             if (context["holdings"] is Holding[] balance)
             {
                 Phantasma.Neo.Core.NeoKeys neoKeys;
@@ -764,6 +765,7 @@ namespace Phantom.Wallet
                 }
 
                 var result = AccountController.InvokeSettleTx(neoKeys, phantasmaKeys, txHash, assetSymbol).Result;
+                ResetSessionSendFields(request);
                 return result;
             }
             return null;
