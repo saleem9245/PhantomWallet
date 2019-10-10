@@ -220,7 +220,7 @@
 
       $.get(customrestport + '/api/getSwapsForAddress',
         {
-            accountInput: neopending
+            account: neopending
         },
           function (returnedDataPending) {
             //console.log(returnedDataPending)
@@ -445,7 +445,7 @@
            currentaddress = returnedData;
            $.get(customrestport + '/api/getSwapsForAddress',
              {
-                 accountInput: currentaddress
+                 account: currentaddress
              },
                function (returnedDataPending) {
                  //console.log(returnedDataPending)
@@ -573,9 +573,9 @@
                           }).fail(function(e) {
                             $('#sendSpinner').hide();
                             console.log(JSON.stringify(e))
-                            $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
-                                document.getElementById("wrapper-portfolio-confirm").innerHTML = JSON.stringify(e);
-                                $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+                            $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
+                                document.getElementById("wrapper-swap-confirm").innerHTML = JSON.stringify(e);
+                                $("#wrapper-swap-confirm").fadeTo("slow", 1);
                             });
                           });
                         }

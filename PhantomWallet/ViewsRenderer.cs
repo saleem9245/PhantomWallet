@@ -794,12 +794,10 @@ namespace Phantom.Wallet
 
             if (string.IsNullOrEmpty(neoPassphrase))
             {
-                Log.Error($"neoPassphrase: {neoPassphrase}");
                 neoKeys = Phantasma.Neo.Core.NeoKeys.FromWIF(neoKey);
             }
             else
             {
-                Log.Error($"neoKey: {neoKey}");
                 neoKeys = Phantasma.Neo.Core.NeoKeys.FromNEP2(neoKey, neoPassphrase);
             }
             var result = $"{neoKeys.ToString()}";
