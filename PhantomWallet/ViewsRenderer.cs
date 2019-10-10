@@ -71,6 +71,7 @@ namespace Phantom.Wallet
 
         void UpdateHistoryContext(Dictionary<string, object> context, HTTPRequest request)
         {
+            context["chainTokens"] = AccountController.PrepareSendHoldings();
             if (request.session.Contains("confirmedHash"))
             {
                 context["confirmedHash"] = request.session.GetString("confirmedHash");
@@ -213,11 +214,15 @@ namespace Phantom.Wallet
 
             TemplateEngine.Server.Get("/confirmations/{txhash}", RouteConfirmations);
 
+            TemplateEngine.Server.Get("/rates", RouteRates);
+
             TemplateEngine.Server.Post("/register", RouteRegisterName);
 
             TemplateEngine.Server.Post("/stake", RouteStake);
 
             TemplateEngine.Server.Post("/settle/tx", RouteInvokeSettleTx);
+
+            TemplateEngine.Server.Post("/convert", RouteConvertAddress);
 
             TemplateEngine.Server.Post("/contract", RouteInvokeContract);
 
@@ -700,6 +705,14 @@ namespace Phantom.Wallet
             return json;
         }
 
+        private object RouteRates(HTTPRequest request)
+        {
+            var fromRate = request.GetVariable("fromRate");
+            //var toRate = request.GetVariable("toRate");
+            //var rates = AccountController.GetRates(fromRate, toRate).Result;
+            return fromRate;
+        }
+
         private object RouteConfig(HTTPRequest request)
         {
             var mode = request.GetVariable("mode");
@@ -769,6 +782,29 @@ namespace Phantom.Wallet
                 return result;
             }
             return null;
+        }
+
+        private object RouteConvertAddress(HTTPRequest request)
+        {
+            var neoKey = request.GetVariable("neoKey");
+            var neoPassphrase = request.GetVariable("neoPassphrase");
+            var context = InitContext(request);
+
+            Phantasma.Neo.Core.NeoKeys neoKeys;
+
+            if (string.IsNullOrEmpty(neoPassphrase))
+            {
+                Log.Error($"neoPassphrase: {neoPassphrase}");
+                neoKeys = Phantasma.Neo.Core.NeoKeys.FromWIF(neoKey);
+            }
+            else
+            {
+                Log.Error($"neoKey: {neoKey}");
+                neoKeys = Phantasma.Neo.Core.NeoKeys.FromNEP2(neoKey, neoPassphrase);
+            }
+            var result = $"{neoKeys.ToString()}";
+            return result;
+
         }
 
         private object RouteRegisterName(HTTPRequest request)
