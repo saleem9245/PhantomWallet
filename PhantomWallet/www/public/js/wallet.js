@@ -255,7 +255,7 @@ function toggleSwap() {
   {
     $('#cosmicswapdiv').hide();
     $('#chainswapdiv').show();
-    $('#wrapper-pending-confirm').show();
+    $('#wrapper-pending-confirm').hide();
   }
   $('#neoaddresslink').val('');
   $('#neohash').val('');
@@ -265,6 +265,9 @@ function toggleSwap() {
   $('#neoprivatekey').val('');
   $('#neopending').val('');
   document.getElementById("wrapper-pendingswap-confirm").innerHTML = '';
+  document.getElementById("wrapper-swapaddress-confirm").innerHTML = '';
+  document.getElementById("wrapper-swapaddressfail-confirm").innerHTML = '';
+  $("#step-3").hide();
 }
 
 // function toggle neo/phantasma chains
@@ -300,6 +303,9 @@ function toggleChains() {
     $('#neoprivatekey').val('');
     $('#neopending').val('');
     document.getElementById("wrapper-pendingswap-confirm").innerHTML = '';
+    document.getElementById("wrapper-swapaddress-confirm").innerHTML = '';
+    document.getElementById("wrapper-swapaddressfail-confirm").innerHTML = '';
+    $("#step-3").hide();
 }
 
 // function toggle private key / encrypted key

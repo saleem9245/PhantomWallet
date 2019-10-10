@@ -41,8 +41,15 @@
           <div class="row setup-content" id="step-2" style="display:none;">
               <div class="col-xs-12">
                   <div class="col-md-12">
-                      <h4 class="control-label">Step 2) Enter transaction hash</h4>
-                      <input type="search" class="form-control parameters-swap-input" id="neohash" style="text-align:center;" placeholder="Enter transaction hash">
+                      <div>
+                          <h4 class="control-label">Step 2) Sign with your NEO wallet</h4>
+                          <div id="keytypetoggle" style="margin:.5em;font-style:italic;color:#17B0E7;display:inline-block;">Private Key</div>
+                          <i style="display:inline-block;" class="fas fa-sync fa-sync-neo" onclick="toggleKeyType()"></i>
+                          <input type="search" class="form-control parameters-swap-input" id="neoprivatekey" style="text-align:center;" placeholder="Enter NEO key">
+                          <input type="password" class="form-control parameters-swap-input" id="neopassphrase" style="text-align:center;margin-top:1em;display:none;" placeholder="Enter NEO passphrase">
+                          <button class="btn-primary nextBtn btn-lg button" type="button" onclick="swapPendingNEO()" id="neocheckbutton">CHECK PENDING SWAP</button>
+                          <div id="wrapper-swapaddressfail-confirm" style="opacity:0;text-align:center;"></div>
+                      </div>
                   </div>
               </div>
           </div>
@@ -50,18 +57,9 @@
               <div class="col-xs-12">
                   <div class="col-md-12">
                       <div>
-                          <h4 class="control-label">Step 3) Select token</h4>
-                          <select id="select-token-swap">
-                              <option value="SOUL">SOUL</option>
-                              <option value="NEO">NEO</option>
-                              <option value="GAS">GAS</option>
-                          </select>
-                          <h4 class="control-label">Step 4) Sign with your NEO wallet</h4>
-                          <div id="keytypetoggle" style="margin:.5em;font-style:italic;color:#17B0E7;display:inline-block;">Private Key</div>
-                          <i style="display:inline-block;" class="fas fa-sync fa-sync-neo" onclick="toggleKeyType()"></i>
-                          <input type="search" class="form-control parameters-swap-input" id="neoprivatekey" style="text-align:center;" placeholder="Enter NEO key">
-                          <input type="password" class="form-control parameters-swap-input" id="neopassphrase" style="text-align:center;margin-top:1em;display:none;" placeholder="Enter NEO passphrase">
-                          <button class="btn-primary nextBtn btn-lg button" type="button" onclick="swapNEOToPhantasma()" id="neotophantasmabutton">SWAP ASSETS</button>
+                          <h4 class="control-label">Step 3) Validate swap</h4>
+                          <div id="wrapper-swapaddress-confirm" style="opacity:0;text-align:center;"></div>
+                          <button class="btn-primary nextBtn btn-lg button" type="button" onclick="swapNEOToPhantasma()" id="neotophantasmabutton" style="opacity:0;">SWAP ASSETS</button>
                       </div>
                   </div>
               </div>
@@ -159,9 +157,12 @@
         if ('{{Symbol}}' == 'SOUL' || '{{Symbol}}' == 'KCAL' || '{{Symbol}}' == 'NEO' || '{{Symbol}}' == 'GAS') {
           formatedAmountCosmic = numberWithCommas('{{Amount}}');
           tokenBoxCosmic.append($('<option>', {value:'{{Symbol}}', text:'{{Name}} ({{Symbol}}) - ' + formatedAmountCosmic}));
-          tokenBoxCosmicReceive.append($('<option>', {value:'{{Symbol}}', text:'{{Name}} ({{Symbol}}) - ' + formatedAmountCosmic}));
         }
         {{/each}}
+        tokenBoxCosmicReceive.append($('<option>', {value:'KCAL', text:'KCAL'}));
+        tokenBoxCosmicReceive.append($('<option>', {value:'SOUL', text:'SOUL'}));
+        tokenBoxCosmicReceive.append($('<option>', {value:'NEO', text:'NEO'}));
+        tokenBoxCosmicReceive.append($('<option>', {value:'GAS', text:'GAS'}));
 
         customrestport = '{{rpcurl}}';
         customrestport = customrestport.slice(0,-8) + '7078';
@@ -175,7 +176,6 @@
               $("#step-error").hide();
               $("#step-1").show();
               $("#step-2").show();
-              $("#step-3").show();
             })
 
         // Trigger update button on press enter
@@ -225,7 +225,6 @@
           function (returnedDataPending) {
             //console.log(returnedDataPending)
             $('#sendSpinner').hide();
-            console.log(returnedDataPending.length)
             if (returnedDataPending.length == 0) {
                 $('#wrapper-pendingswap-confirm').fadeTo("fast", 0, function() {
                     document.getElementById("wrapper-pendingswap-confirm").innerHTML = 'No pending swap';
@@ -243,7 +242,7 @@
                         document.getElementById("wrapper-pendingswap-confirm").innerHTML = 'Swap processed successfully: <a href="{{explorer}}/tx/' + returnedDataPending + '" target="_blank" title="View Transaction" class="pendingswaphash">' + returnedDataPending + '</a>';
                         $("#wrapper-pendingswap-confirm").fadeTo("slow", 1);
                     });
-                    setTimeout(function(){window.location.href = "/portfolio"}, 4000);
+                    setTimeout(function(){window.location.href = "/portfolio"}, 5000);
                 }).fail(function(e) {
                   $('#sendSpinner').hide();
                   console.log(JSON.stringify(e))
@@ -372,7 +371,7 @@
                                                document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedDataSettle + '" target="_blank" title="View Transaction">' + returnedDataSettle + '</a>';
                                                $("#wrapper-swap-confirm").fadeTo("slow", 1);
                                            });
-                                           setTimeout(function(){window.location.href = "/portfolio"}, 4000);
+                                           setTimeout(function(){window.location.href = "/portfolio"}, 5000);
                                        }).fail(function(e) {
                                          $('#sendSpinner').hide();
                                          console.log(JSON.stringify(e))
@@ -401,7 +400,6 @@
                           $("#wrapper-swap-confirm").fadeTo("slow", 1);
                         });
                     }
-                    //console.log(returnedData);
                   }).fail(function(e) {
                     $('#sendSpinner').hide();
                     console.log(e)
@@ -418,18 +416,18 @@
 
     }
 
-    function swapNEOToPhantasma() {
+    function swapPendingNEO() {
 
-      $("#wrapper-swap-confirm").fadeTo(1, 0);
-      let txhash = $("#neohash").val();
-      let neokey = $("#neoprivatekey").val();
-      let neopassphrase = $("#neopassphrase").val();
-      let assetsymbol = $("#select-token-swap").val();
+      $("#wrapper-swap-confirm").fadeTo("slow", 0);
+      $("#wrapper-swapaddress-confirm").fadeTo("slow", 0);
+      $("#wrapper-swapaddressfail-confirm").fadeTo("slow", 0);
+      $("#neotophantasmabutton").fadeTo("slow", 0);
+      $("#step-3").fadeTo("slow", 0);
 
-      if (txhash.length !== 64 && txhash.length !== 66) {
-          bootbox.alert("Please insert a valid transaction hash!");
-          return;
-      }
+      neokey = $("#neoprivatekey").val();
+      neopassphrase = $("#neopassphrase").val();
+      txhash = '';
+      assetsymbol = '';
 
       if (neokey.length < 52 || neokey.length > 58 || (neokey.length > 52 && neokey.length < 58)) {
           bootbox.alert("Please insert a valid private key or encrypted key!");
@@ -437,11 +435,76 @@
       }
 
       $('#sendSpinner').show();
+      $.post('/convert',
+         {
+             neoKey: neokey,
+             neoPassphrase: neopassphrase
+         },
+         function (returnedData) {
+           //console.log(returnedData)
+           currentaddress = returnedData;
+           $.get(customrestport + '/api/getSwapsForAddress',
+             {
+                 accountInput: currentaddress
+             },
+               function (returnedDataPending) {
+                 //console.log(returnedDataPending)
+                 for ( var i = 0; i < returnedDataPending.length; i++ ) {
+                     if (returnedDataPending[i].destinationHash == 'pending' && returnedDataPending[i].sourceChain == 'neo') {
+
+                       txhash = returnedDataPending[i].sourceHash;
+                       last10TX = txhash.substr(txhash.length - 10);
+                       first10TX = txhash.substr(0, 10);
+                       partialTX = first10TX + '...' + last10TX;
+                       assetsymbol = returnedDataPending[i].symbol
+                       if (returnedDataPending[i].symbol == 'SOUL') {
+                         decimals = Math.pow(10,8);
+                       } else if (returnedDataPending[i].symbol == 'GAS') {
+                         decimals = Math.pow(10,8);
+                       } else {
+                         decimals = Math.pow(10,0);
+                       }
+                       valueSwap = (returnedDataPending[i].value)/decimals;
+                       $('#sendSpinner').hide();
+                       $('#wrapper-swapaddress-confirm').fadeTo("fast", 0, function() {
+                           document.getElementById("wrapper-swapaddress-confirm").innerHTML = 'Transaction: <a href="https://neoscan.io/transaction/' + txhash + '" target="_blank">' + partialTX + '</a><br>Pending swap: ' + numberWithCommas(valueSwap) + ' ' + assetsymbol;
+                           $("#wrapper-swapaddress-confirm").fadeTo("slow", 1);
+                           $("#step-3").fadeTo("slow", 1);
+                           $('#neotophantasmabutton').fadeTo("slow", 1);
+                       });
+
+                     }
+                 }
+                 if (txhash == '') {
+                   $('#sendSpinner').hide();
+                   $('#wrapper-swapaddressfail-confirm').fadeTo("fast", 0, function() {
+                       document.getElementById("wrapper-swapaddressfail-confirm").innerHTML = 'No pending swaps for ' + currentaddress;
+                       $("#wrapper-swapaddressfail-confirm").fadeTo("slow", 1);
+                   });
+                 }
+             }).fail(function(e) {
+               $('#sendSpinner').hide();
+               console.log(e)
+               $('#wrapper-swapaddressfail-confirm').fadeTo("fast", 0, function() {
+                   document.getElementById("wrapper-swapaddressfail-confirm").innerHTML = e;
+                   $("#wrapper-swapaddressfail-confirm").fadeTo("slow", 1);
+               });
+             })
+
+       })
+
+    }
+
+    function swapNEOToPhantasma() {
+
+      $("#wrapper-swap-confirm").fadeTo(1, 0);
+
+      $('#sendSpinner').show();
       bootbox.confirm({
           title: "Swap confirmation",
           message: "Validate <strong>" +
               txhash +
-              "</strong><br>from NEO Blockchain and release <strong>" + assetsymbol + " on Phantasma Blockchain" +
+              "</strong><br>from <strong>NEO Blockchain</strong> address " + currentaddress + " and swap <strong>" + numberWithCommas(valueSwap) + ' ' + assetsymbol + " to Phantasma Blockchain" +
               "</strong>?",
           buttons: {
               cancel: {
@@ -504,7 +567,7 @@
                                       document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + JSON.parse(returnedDataTX).hash + '" target="_blank" title="View Transaction">' + JSON.parse(returnedDataTX).hash + '</a>';
                                       $("#wrapper-swap-confirm").fadeTo("slow", 1);
                                   });
-                                  setTimeout(function(){window.location.href = "/portfolio"}, 4000);
+                                  setTimeout(function(){window.location.href = "/portfolio"}, 5000);
                                 }
                             }
                           }).fail(function(e) {
@@ -537,6 +600,10 @@
              } else {
                $('#sendSpinner').hide();
              }
+             txhash = '';
+             neokey = '';
+             neopassphrase = '';
+             assetsymbol = '';
            }
         });
 
