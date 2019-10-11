@@ -327,13 +327,14 @@ function Stake() {
   params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
   params[1] = { name: 'stakeAmount', type: 'Number', input: toFixed((changedamount)*(Math.pow(10,8))), info: '' }
 
+  console.log(currentsoulamount)
   if (Number.isNaN(changedamount)) {
         bootbox.alert("Please enter a SOUL amount to stake!");
         return;
   }
 
-  if (toFixed(changedamount) < 1) {
-        bootbox.alert("Minimum amount to stake is 1 SOUL!");
+  if (toFixed(changedamount) < 2) {
+        bootbox.alert("Minimum amount to stake is 2 SOUL!");
         return;
   }
 
