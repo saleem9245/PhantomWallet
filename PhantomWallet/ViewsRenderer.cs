@@ -812,31 +812,23 @@ namespace Phantom.Wallet
 
             if (context["holdings"] is Holding[] balance)
             {
-                var kcalBalance = balance.SingleOrDefault(b => b.Symbol == "KCAL" && b.Chain == "main");
-                if (kcalBalance.Amount > 0.1m) //RegistrationCost
-                {
-                    var keyPair = GetLoginKey(request);
-                    InvalidateCache(keyPair.Address);
-                    var result = AccountController.RegisterName(keyPair, name).Result;
+              var keyPair = GetLoginKey(request);
+              InvalidateCache(keyPair.Address);
+              var result = AccountController.RegisterName(keyPair, name).Result;
 
-                    if (result.GetType() == typeof(ErrorResult))
-                    {
-                        return JsonConvert.SerializeObject(result, Formatting.Indented);
-                    }
+              if (result.GetType() == typeof(ErrorResult))
+              {
+                  return JsonConvert.SerializeObject(result, Formatting.Indented);
+              }
 
-                    var registerTx = (string)result;
+              var registerTx = (string)result;
 
-                    if (SendUtils.IsTxHashValid(registerTx))
-                    {
-                        return registerTx;
-                    }
+              if (SendUtils.IsTxHashValid(registerTx))
+              {
+                  return registerTx;
+              }
 
-                    PushError(request, registerTx);
-                }
-                else
-                {
-                    PushError(request, "You need a small drop of KCAL to register a name.");
-                }
+              PushError(request, registerTx);
             }
 
             else
