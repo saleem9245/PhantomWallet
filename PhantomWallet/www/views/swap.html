@@ -545,7 +545,7 @@
                                   setTimeout(getConfirmations, 2000);
                                 } else {
                                   $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
-                                      document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction unconfirmed';
+                                      document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction unconfirmed, please re-process it above.';
                                       $("#wrapper-swap-confirm").fadeTo("slow", 1);
                                   });
                                 }
@@ -600,10 +600,6 @@
              } else {
                $('#sendSpinner').hide();
              }
-             txhash = '';
-             neokey = '';
-             neopassphrase = '';
-             assetsymbol = '';
            }
         });
 

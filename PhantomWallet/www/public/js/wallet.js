@@ -48,17 +48,17 @@ window.Clipboard = (function(window, document, navigator) {
 function RegisterName() {
 
     if (!document.getElementById("stake-soul")) {
-          bootbox.alert("You need one SOUL staked to register a name!");
-          return;
+          //bootbox.alert("You need one SOUL staked to register a name!");
+          //return;
     }
 
     if (parseFloat((document.getElementById("stake-soul").innerHTML).replace(/\,/g,'').slice(0, -3)) < 1) {
-          bootbox.alert("You need at least one SOUL staked to register a name!");
-          return;
+          //bootbox.alert("You need at least one SOUL staked to register a name!");
+          //return;
     }
 
     bootbox.prompt({
-        title: "Insert a name for your address.<br>This will be lost if you unstake all your SOUL.",
+        title: "Insert a name for your address.<br>This will be unregistered automatically if you unstake all your SOUL.",
         message: "It might take a while to update your name.",
         callback:
             function (result) {
@@ -205,7 +205,9 @@ function getPricing() {
     currencysymbol = '$';
     localStorage.setItem('currency', currency);
   }
-   document.getElementById("soulpriceparent").innerHTML = 'SOUL/' + localStorage.getItem('currency');
+   if (document.getElementById("soulpriceparent")) {
+     document.getElementById("soulpriceparent").innerHTML = 'SOUL/' + localStorage.getItem('currency');
+   }
    $.get('https://api.coingecko.com/api/v3/simple/price?ids=phantasma&vs_currencies=' + currency.toLowerCase(),
        function (returnedData) {
          soulprice = currencysymbol + numberWithCommas(returnedData.phantasma[currency.toLowerCase()]);
