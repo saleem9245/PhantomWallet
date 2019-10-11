@@ -34,7 +34,7 @@ window.Clipboard = (function(window, document, navigator) {
     }
 
     copy = function(text) {
-        bootbox.alert("Address was copied to the clipboard.");
+        bootbox.alert("Copied to the clipboard.");
         createTextArea(text);
         selectText();
         copyToClipboard();
@@ -46,8 +46,19 @@ window.Clipboard = (function(window, document, navigator) {
 })(window, document, navigator);
 
 function RegisterName() {
+
+    if (!document.getElementById("stake-soul")) {
+          bootbox.alert("You need one SOUL staked to register a name!");
+          return;
+    }
+
+    if (parseFloat((document.getElementById("stake-soul").innerHTML).replace(/\,/g,'').slice(0, -3)) < 1) {
+          bootbox.alert("You need at least one SOUL staked to register a name!");
+          return;
+    }
+
     bootbox.prompt({
-        title: "Insert a name for your address.<br>This can only be done once.",
+        title: "Insert a name for your address.<br>This will be lost if you unstake all your SOUL.",
         message: "It might take a while to update your name.",
         callback:
             function (result) {
