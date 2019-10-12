@@ -43,7 +43,7 @@
                   <div class="col-md-12">
                       <div>
                           <h4 class="control-label">Step 2) Sign with your NEO wallet</h4>
-                          <div id="keytypetoggle" style="margin:.5em;font-style:italic;color:#17B0E7;display:inline-block;">Private Key</div>
+                          <div id="keytypetoggle" style="margin:.5em;font-style:italic;color:#17B0E7;display:inline-block;">Private Key (WIF)</div>
                           <i style="display:inline-block;" class="fas fa-sync fa-sync-neo" onclick="toggleKeyType()"></i>
                           <input type="search" class="form-control parameters-swap-input" id="neoprivatekey" style="text-align:center;" placeholder="Enter NEO key">
                           <input type="password" class="form-control parameters-swap-input" id="neopassphrase" style="text-align:center;margin-top:1em;display:none;" placeholder="Enter NEO passphrase">
@@ -192,7 +192,16 @@
         inputneoprivatekey.addEventListener("keyup", function(event) {
             if (event.keyCode === 13) {
                 //event.preventDefault();
-                document.getElementById("neotophantasmabutton").click();
+                document.getElementById("neocheckbutton").click();
+            }
+        });
+
+        // Trigger update button on press enter
+        var inputneopassphrase = document.getElementById("neopassphrase");
+        inputneoprivatekey.addEventListener("keyup", function(event) {
+            if (event.keyCode === 13) {
+                //event.preventDefault();
+                document.getElementById("neocheckbutton").click();
             }
         });
 
@@ -430,7 +439,7 @@
       assetsymbol = '';
 
       if (neokey.length < 52 || neokey.length > 58 || (neokey.length > 52 && neokey.length < 58)) {
-          bootbox.alert("Please insert a valid private key or encrypted key!");
+          bootbox.alert("Please insert a valid private key (WIF) or encrypted key!");
           return;
       }
 
