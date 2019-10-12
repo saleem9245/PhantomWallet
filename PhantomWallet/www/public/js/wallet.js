@@ -342,6 +342,7 @@ function toggleKeyType() {
       }, 1000);
     }
     $('#neopassphrase').val('');
+    neopassphrase = '';
     $('#neoprivatekey').val('');
     $('#neohash').val('');
 }
