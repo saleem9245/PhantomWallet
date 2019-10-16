@@ -214,8 +214,6 @@ namespace Phantom.Wallet
 
             TemplateEngine.Server.Get("/confirmations/{txhash}", RouteConfirmations);
 
-            TemplateEngine.Server.Get("/rates", RouteRates);
-
             TemplateEngine.Server.Post("/register", RouteRegisterName);
 
             TemplateEngine.Server.Post("/stake", RouteStake);
@@ -705,14 +703,6 @@ namespace Phantom.Wallet
             return json;
         }
 
-        private object RouteRates(HTTPRequest request)
-        {
-            var fromRate = request.GetVariable("fromRate");
-            //var toRate = request.GetVariable("toRate");
-            //var rates = AccountController.GetRates(fromRate, toRate).Result;
-            return fromRate;
-        }
-
         private object RouteConfig(HTTPRequest request)
         {
             var mode = request.GetVariable("mode");
@@ -893,8 +883,8 @@ namespace Phantom.Wallet
         private static readonly Net[] Networks =
         {
             new Net{Name = "mainnet", IsEnabled = true, Value = 1},
-            //new Net{Name = "testnet", IsEnabled = false, Value = 2},
-            //new Net{Name = "simnet", IsEnabled = false, Value = 3},
+            new Net{Name = "testnet", IsEnabled = false, Value = 2},
+            new Net{Name = "simnet", IsEnabled = false, Value = 3},
         };
         #endregion
     }
