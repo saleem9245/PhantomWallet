@@ -58,7 +58,7 @@ function RegisterName() {
     }
 
     bootbox.prompt({
-        title: "Insert a name for your address.<br>This will be unregistered automatically if you unstake all your SOUL.",
+        title: "Insert a name for your address.<br>You need at least 1 SOUL already staked to register a name.<br>This will be unregistered automatically if you unstake all your SOUL.",
         message: "It might take a while to update your name.",
         callback:
             function (result) {
@@ -281,6 +281,11 @@ function toggleSwap() {
   document.getElementById("wrapper-swapaddress-confirm").innerHTML = '';
   document.getElementById("wrapper-swapaddressfail-confirm").innerHTML = '';
   $("#step-3").hide();
+  $('#phantasmaamount').val('');
+  $(".cosmic-calc").fadeTo("slow", 0);
+  $(".cosmic-calc-title").fadeTo("slow", 0);
+  $("#cosmicswapbutton").fadeTo("slow", 0);
+  $("#wrapper-getrates-confirm").fadeTo("fast", 0);
 }
 
 // function toggle neo/phantasma chains
