@@ -7,7 +7,7 @@ namespace Phantom.Wallet.DTOs
     public class WalletConfigDto
     {
         [JsonProperty("network")]
-        public string Network { get; set; } = "simnet";
+        public string Network { get; set; } = "mainnet";
 
         [JsonProperty("currency")]
         public string Currency { get; set; } = "USD";
