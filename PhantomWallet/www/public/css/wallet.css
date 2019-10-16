@@ -1381,7 +1381,7 @@ table.dataTable thead .sorting {
     outline: 0;
 }
 
-input[type="search"]::-webkit-search-cancel-button, input[type="text"]::-webkit-search-cancel-button {
+input[type="search"]::-webkit-search-cancel-button, input[type="text"]::-webkit-search-cancel-button, input[type="password"]::-webkit-search-cancel-button {
     -webkit-appearance: searchfield-cancel-button !important;
 }
 
