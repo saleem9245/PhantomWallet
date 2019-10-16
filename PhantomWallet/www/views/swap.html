@@ -45,7 +45,7 @@
                           <h4 class="control-label">Step 2) Sign with your NEO wallet</h4>
                           <div id="keytypetoggle" style="margin:.5em;font-style:italic;color:#17B0E7;display:inline-block;">Private Key (WIF)</div>
                           <i style="display:inline-block;" class="fas fa-sync fa-sync-neo" onclick="toggleKeyType()"></i>
-                          <input type="search" class="form-control parameters-swap-input" id="neoprivatekey" style="text-align:center;" placeholder="Enter NEO key">
+                          <input type="password" class="form-control parameters-swap-input" id="neoprivatekey" style="text-align:center;" placeholder="Enter NEO key">
                           <input type="password" class="form-control parameters-swap-input" id="neopassphrase" style="text-align:center;margin-top:1em;display:none;" placeholder="Enter NEO passphrase">
                           <button class="btn-primary nextBtn btn-lg button" type="button" onclick="swapPendingNEO()" id="neocheckbutton">CHECK PENDING SWAP</button>
                           <div id="wrapper-swapaddressfail-confirm" style="opacity:0;text-align:center;"></div>
@@ -87,29 +87,36 @@
                 </div>
             </div>
       </div>
+      <div class="row setup-content" id="step-error-reverse">
+          <h3>Swapping not available</h3>
+      </div>
     </div>
 </div>
 <div id="cosmicswapdiv" class="container swap" style="margin-top:1em;display:none;">
   <h4>Not available yet, coming soon!</h4>
-  <div class="row setup-content" style="display:none;">
+  <div class="row setup-content" style="display:none;" id="step-noerror-cosmic">
       <div class="col-xs-12">
           <div class="col-md-12">
-            <h4 class="control-label">Step 1) Select token to sell</h4>
-            <select id="select-token-form-cosmic">
-            </select>
-            <h4 class="control-label" style="margin-top:1em;">Step 2) Select token to buy</h4>
-            <select id="select-token-form-cosmicreceive">
-            </select>
-            <h4 class="control-label" style="margin-top:1em;">Step 3) Enter amount to sell</h4>
+            <h4 class="control-label" style="margin-top:1em;">Step 1) Select token & quantity to <u>buy from</u> pot</h4>
+            <select id="select-token-form-cosmicbuy" style="margin-top:1em;">
             <input class="form-control parameters-swap-input" id="phantasmaamount" type="number" style="text-align:center;" placeholder="Enter amount">
-            <div class="cosmic-calc">
-                <br>You are sending:<br>
-                You will be receiving:<br>
-                Rate: X SOUL for Y KCAL
+            <h4 class="control-label" style="margin-top:1em;">Step 2) Select token to <u>sell to</u> the pot</h4>
+            <select id="select-token-form-cosmicsell" style="margin-top:1em;">
+            </select>
+            <button class="btn-primary nextBtn btn-lg button" type="button" onclick="getRates()" id="getratesbutton">GET RATES</button>
+            <h4 class="control-label cosmic-calc-title" style="margin-top:1em;margin-bottom:1em;opacity:0;">Step 3) Validate swap</h4>
+            <div id="wrapper-getrates-confirm" class="pending" style="opacity:1;text-align:center;display:none;"></div>
+            <div class="cosmic-calc" style="opacity:0;font-size:1.2em;">
+                <span>Current rate : </span><span id="cosmicrateinfo"></span><br>
+                <span>You are going to send : </span><span id="cosmicsellinfofinal"></span><br>
+                <span>You are going to receive ≈ </span><span id="cosmicbuyinfofinal"></span><br>
             </div>
-            <button class="btn-success btn-lg button" type="button" onclick="swapCosmic()" id="cosmicswapbutton">SWAP ASSETS</button>
+            <button class="btn-success btn-lg button" type="button" onclick="confirmRates()" id="cosmicswapbutton" style="opacity:0;">CONFIRM TRADE</button>
           </div>
       </div>
+  </div>
+  <div class="row setup-content" id="step-error-cosmic">
+      <h3>Swapping not available</h3>
   </div>
 </div>
 <div id="wrapper-swap-confirm" style="opacity:0;text-align:center;">
@@ -132,6 +139,7 @@
         $('#sendSpinner').hide();
         $("#loader-interopaddress").show();
         isName = 'False';
+        neopassphrase = '';
         $('#neopassphrase').val('');
         $('#neoprivatekey').val('');
         $('#neohash').val('');
@@ -139,14 +147,19 @@
         $('#neoamount').val('');
         hasKCAL = 0;
         hasGAS = 0;
+        balpotKCAL = 0;
+        balpotSOUL = 0;
+        balpotGAS = 0;
+        balpotNEO = 0;
+        tokenToSendBal = 0;
 
-        let tokenBox = $('#select-token-form');
+        tokenBox = $('#select-token-form');
         tokenBox.find('option').remove();
 
-        let tokenBoxCosmic = $('#select-token-form-cosmic');
+        tokenBoxCosmic = $('#select-token-form-cosmicsell');
         tokenBoxCosmic.find('option').remove();
 
-        let tokenBoxCosmicReceive = $('#select-token-form-cosmicreceive');
+        tokenBoxCosmicReceive = $('#select-token-form-cosmicbuy');
         tokenBoxCosmicReceive.find('option').remove();
 
         {{#each chainTokens}}
@@ -156,13 +169,26 @@
         }
         if ('{{Symbol}}' == 'SOUL' || '{{Symbol}}' == 'KCAL' || '{{Symbol}}' == 'NEO' || '{{Symbol}}' == 'GAS') {
           formatedAmountCosmic = numberWithCommas('{{Amount}}');
-          tokenBoxCosmic.append($('<option>', {value:'{{Symbol}}', text:'{{Name}} ({{Symbol}}) - ' + formatedAmountCosmic}));
+          tokenBoxCosmic.append($('<option>', {value:'{{Symbol}}', text:'{{Symbol}} - ' + formatedAmountCosmic}));
+            if ('{{Symbol}}' == 'KCAL') {
+                balselfKCAL = '{{Amount}}';
+            } else if ('{{Symbol}}' == 'SOUL') {
+                balselfSOUL = '{{Amount}}'
+            } else if ('{{Symbol}}' == 'GAS') {
+                balselfGAS = '{{Amount}}'
+            } else if ('{{Symbol}}' == 'NEO') {
+                balselfNEO = '{{Amount}}'
+            }
         }
         {{/each}}
-        tokenBoxCosmicReceive.append($('<option>', {value:'KCAL', text:'KCAL'}));
-        tokenBoxCosmicReceive.append($('<option>', {value:'SOUL', text:'SOUL'}));
-        tokenBoxCosmicReceive.append($('<option>', {value:'NEO', text:'NEO'}));
-        tokenBoxCosmicReceive.append($('<option>', {value:'GAS', text:'GAS'}));
+        var textToFind = 'KCAL';
+        var dd = document.getElementById('select-token-form-cosmicsell');
+        for (var i = 0; i < dd.options.length; i++) {
+            if (dd.options[i].value === textToFind) {
+                dd.selectedIndex = i;
+                break;
+            }
+        }
 
         customrestport = '{{rpcurl}}';
         customrestport = customrestport.slice(0,-8) + '7078';
@@ -174,6 +200,7 @@
               document.getElementById("padcurrentplatformaddress").addEventListener('click', function(){ Clipboard.copy(dstaddress, 'Address');}, false);
               $("#loader-interopaddress").hide();
               $("#step-error").hide();
+              $("#step-error-reverse").hide();
               $("#step-1").show();
               $("#step-2").show();
             })
@@ -205,6 +232,15 @@
             }
         });
 
+        // Trigger update button on press enter
+        var inputphantasmaamount = document.getElementById("phantasmaamount");
+        inputphantasmaamount.addEventListener("keyup", function(event) {
+            if (event.keyCode === 13) {
+                //event.preventDefault();
+                document.getElementById("getratesbutton").click();
+            }
+        });
+
         // Default swap mode
         if (document.getElementById("cb5")) {
           document.getElementById("cb5").checked = true;
@@ -219,7 +255,148 @@
           }
         {{/each}}
 
+        $.get(customrestport + '/api/getAccount',
+          {
+              account: 'S3dMFF77NxxdncubZwbKgzskP6wzVP8PuQJtyvYg6iSpZmR'
+          },
+            function (returnedDataPending) {
+              //console.log(returnedDataPending)
+              var alength = (returnedDataPending.balances).length,
+                  i = 0;
+              for (i; i < alength; i += 1) {
+                tokenBoxCosmicReceive.append($('<option>', {value: returnedDataPending.balances[i].symbol, text: returnedDataPending.balances[i].symbol + ' - max ' + numberWithCommas((returnedDataPending.balances[i].amount)/(Math.pow(10,returnedDataPending.balances[i].decimals)))}))
+                if (returnedDataPending.balances[i].symbol == 'KCAL') {
+                    balpotKCAL = (returnedDataPending.balances[i].amount)/(Math.pow(10,returnedDataPending.balances[i].decimals));
+                } else if (returnedDataPending.balances[i].symbol == 'SOUL') {
+                    balpotSOUL = (returnedDataPending.balances[i].amount)/(Math.pow(10,returnedDataPending.balances[i].decimals));
+                } else if (returnedDataPending.balances[i].symbol == 'GAS') {
+                    balpotGAS = (returnedDataPending.balances[i].amount)/(Math.pow(10,returnedDataPending.balances[i].decimals));
+                } else if (returnedDataPending.balances[i].symbol == 'NEO') {
+                    balpotNEO = (returnedDataPending.balances[i].amount)/(Math.pow(10,returnedDataPending.balances[i].decimals));
+                }
+              }
+              $("#step-error-cosmic").hide();
+        }).fail(function(e) {
+          console.log(JSON.stringify(e))
+          $("#step-noerror-cosmic").hide();
+        });
+
     })
+
+    function getRates() {
+
+      $(".cosmic-calc").fadeTo("slow", 0);
+      $(".cosmic-calc-title").fadeTo("slow", 0);
+      $("#cosmicswapbutton").fadeTo("slow", 0);
+      $("#wrapper-getrates-confirm").fadeTo("fast", 0);
+      let cosmicfrom = $("#select-token-form-cosmicsell").val().replace(/\,/g,'');
+      let cosmicto = $("#select-token-form-cosmicbuy").val().replace(/\,/g,'');
+      let cosmicfromamount = $("#phantasmaamount").val();
+
+      if (cosmicfrom == null) {
+          bootbox.alert("No assets available!");
+          return;
+      }
+
+      if (cosmicto == null) {
+          bootbox.alert("No assets in the pot available!");
+          return;
+      }
+
+      if (cosmicfrom == cosmicto) {
+          bootbox.alert("You cannot swap to the same asset!");
+          return;
+      }
+
+      if ((cosmicto == 'KCAL' && cosmicfromamount > balpotKCAL) || (cosmicto == 'SOUL' && cosmicfromamount > balpotSOUL) || (cosmicto == 'GAS' && cosmicfromamount > balpotGAS) || (cosmicto == 'NEO' && cosmicfromamount > balpotNEO)) {
+          bootbox.alert("Insufficient " + cosmicto + " in the pot!");
+          return;
+      }
+
+      if (cosmicfromamount <= 0) {
+          bootbox.alert("Please insert a valid amount!");
+          return;
+      }
+
+      $('#sendSpinner').show();
+
+      params = [];
+      // build params for contract call
+      params[0] = { name: 'fromSymbol', type: 'String', input: cosmicto, info: '' }
+      params[1] = { name: 'toSymbol', type: 'String', input: cosmicfrom, info: '' }
+      params[2] = { name: 'amount', type: 'Number', input: cosmicfromamount, info: '' }
+      $.post('/contract',
+         {
+             chain: 'main',
+             contract: 'swap',
+             method: 'GetRate',
+             params: JSON.stringify({
+               params
+             })
+         },
+         function (returnedData) {
+            //console.log(returnedData)
+            tokenToSendBal = returnedData;
+            if (returnedData == 0) {
+              $('#sendSpinner').hide();
+              document.getElementById("cosmicbuyinfofinal").innerHTML = '';
+              document.getElementById("cosmicsellinfofinal").innerHTML = '';
+              document.getElementById("cosmicrateinfo").innerHTML = '';
+              $('#wrapper-getrates-confirm').fadeTo("fast", 0, function() {
+                  document.getElementById("wrapper-getrates-confirm").innerHTML = 'Amount too low. Try with a higher one.';
+                  $("#wrapper-getrates-confirm").fadeTo("slow", 1);
+              });
+
+            } else {
+              $('#sendSpinner').hide();
+              document.getElementById("cosmicbuyinfofinal").innerHTML = numberWithCommas($("#phantasmaamount").val()) + ' ' + $("#select-token-form-cosmicbuy").val();
+              document.getElementById("cosmicsellinfofinal").innerHTML = numberWithCommas(returnedData) + ' ' + $("#select-token-form-cosmicsell").val();
+              document.getElementById("cosmicrateinfo").innerHTML = '1 ' + $("#select-token-form-cosmicbuy").val() + ' for ' + (returnedData/($("#phantasmaamount").val())).toFixed(5) + ' ' + $("#select-token-form-cosmicsell").val()
+              $(".cosmic-calc").fadeTo("fast", 1);
+              $(".cosmic-calc-title").fadeTo("fast", 1);
+              $("#cosmicswapbutton").fadeTo("fast", 1);
+            }
+          }).fail(function(e) {
+            $('#sendSpinner').hide();
+            console.log(JSON.stringify(e))
+            });
+
+    }
+
+    function confirmRates() {
+
+      if ((tokenBoxCosmic.val() == 'KCAL' && parseFloat(tokenToSendBal) > parseFloat(balselfKCAL)) || (tokenBoxCosmic.val() == 'SOUL' && parseFloat(tokenToSendBal) > parseFloat(balselfSOUL)) || (tokenBoxCosmic.val() == 'GAS' && parseFloat(tokenToSendBal) > parseFloat(balselfGAS)) || (tokenBoxCosmic.val() == 'NEO' && parseFloat(tokenToSendBal) > parseFloat(balselfNEO))) {
+          bootbox.alert("Not enough " + tokenBoxCosmic.val() + " balance available!");
+          return;
+      }
+
+      $('#sendSpinner').show();
+
+      params = [];
+      // build params for contract call
+      params[0] = { name: 'from', type: 'String', input: '{{address}}', info: '' }
+      params[1] = { name: 'fromSymbol', type: 'String', input: $("#select-token-form-cosmicsell").val(), info: '' }
+      params[2] = { name: 'toSymbol', type: 'String', input: $("#select-token-form-cosmicbuy").val(), info: '' }
+      params[3] = { name: 'amount', type: 'Number', input: $("#phantasmaamount").val(), info: '' }
+      $.post('/contract',
+         {
+             chain: 'main',
+             contract: 'swap',
+             method: 'SwapTokens',
+             params: JSON.stringify({
+               params
+             })
+         },
+         function (returnedData) {
+            console.log(returnedData)
+            $('#sendSpinner').hide();
+
+        }).fail(function(e) {
+            $('#sendSpinner').hide();
+            console.log(JSON.stringify(e))
+            });
+
+    }
 
     function swapPendingSettle() {
 
@@ -240,26 +417,40 @@
                     $("#wrapper-pendingswap-confirm").fadeTo("slow", 1);
                 });
             } else {
-              neopendinghash = returnedDataPending[0].sourceHash;
-              $.get(customrestport + '/api/settleSwap',
-                {
-                    sourcePlatform: 'phantasma', destPlatform: 'neo', hashText: neopendinghash
-                },
-                  function (returnedDataPending) {
-                    //console.log(returnedDataPending)
-                    $('#wrapper-pendingswap-confirm').fadeTo("fast", 0, function() {
-                        document.getElementById("wrapper-pendingswap-confirm").innerHTML = 'Swap processed successfully: <a href="{{explorer}}/tx/' + returnedDataPending + '" target="_blank" title="View Transaction" class="pendingswaphash">' + returnedDataPending + '</a>';
-                        $("#wrapper-pendingswap-confirm").fadeTo("slow", 1);
-                    });
-                    setTimeout(function(){window.location.href = "/portfolio"}, 5000);
-                }).fail(function(e) {
-                  $('#sendSpinner').hide();
-                  console.log(JSON.stringify(e))
-                  $('#wrapper-pendingswap-confirm').fadeTo("fast", 0, function() {
-                      document.getElementById("wrapper-pendingswap-confirm").innerHTML = 'Swap processing failed.';
-                      $("#wrapper-pendingswap-confirm").fadeTo("slow", 1);
-                  });
-                });
+
+              for ( var i = 0; i < returnedDataPending.length; i++ ) {
+                  if (returnedDataPending[i].destinationHash == 'pending' && returnedDataPending[i].sourcePlatform == 'phantasma') {
+
+                    neopendinghash = returnedDataPending[i].sourceHash;
+                    $.get(customrestport + '/api/settleSwap',
+                      {
+                          sourcePlatform: 'phantasma', destPlatform: 'neo', hashText: neopendinghash
+                      },
+                        function (returnedDataPending) {
+                          console.log(returnedDataPending)
+                          if ((returnedDataPending).error != null) {
+                              $('#wrapper-pendingswap-confirm').fadeTo("fast", 0, function() {
+                                  document.getElementById("wrapper-pendingswap-confirm").innerHTML = 'Swap error: ' + returnedDataPending.error;
+                                  $("#wrapper-pendingswap-confirm").fadeTo("slow", 1);
+                              });
+                            } else {
+                              $('#wrapper-pendingswap-confirm').fadeTo("fast", 0, function() {
+                                  document.getElementById("wrapper-pendingswap-confirm").innerHTML = 'Swap processed successfully: <a href="{{explorer}}/tx/' + returnedDataPending + '" target="_blank" title="View Transaction" class="pendingswaphash">' + returnedDataPending + '</a>';
+                                  $("#wrapper-pendingswap-confirm").fadeTo("slow", 1);
+                              });
+                            }
+                          //setTimeout(function(){window.location.href = "/portfolio"}, 5000);
+                      }).fail(function(e) {
+                        $('#sendSpinner').hide();
+                        console.log(JSON.stringify(e))
+                        $('#wrapper-pendingswap-confirm').fadeTo("fast", 0, function() {
+                            document.getElementById("wrapper-pendingswap-confirm").innerHTML = 'Swap processing failed.';
+                            $("#wrapper-pendingswap-confirm").fadeTo("slow", 1);
+                        });
+                      });
+                    break;
+              }}
+
             }
 
         }).fail(function(e) {
@@ -349,6 +540,7 @@
                          $.get('/tx/' + returnedData,
                              function (returnedDataTX) {
                                //console.log(returnedDataTX)
+                               console.log(JSON.parse(returnedDataTX).error)
                                if ((JSON.parse(returnedDataTX).error) == 'pending') {
                                    // If tx pending, returns the custom error message
                                    counter++;
@@ -375,12 +567,12 @@
                                            sourcePlatform: 'phantasma', destPlatform: 'neo', hashText: JSON.parse(returnedDataTX).hash
                                        },
                                          function (returnedDataSettle) {
-                                           //console.log(returnedDataSettle)
+                                           console.log(returnedDataSettle)
                                            $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
                                                document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedDataSettle + '" target="_blank" title="View Transaction">' + returnedDataSettle + '</a>';
                                                $("#wrapper-swap-confirm").fadeTo("slow", 1);
                                            });
-                                           setTimeout(function(){window.location.href = "/portfolio"}, 5000);
+                                           //setTimeout(function(){window.location.href = "/portfolio"}, 5000);
                                        }).fail(function(e) {
                                          $('#sendSpinner').hide();
                                          console.log(JSON.stringify(e))
@@ -500,6 +692,13 @@
                });
              })
 
+       }).fail(function(e) {
+         $('#sendSpinner').hide();
+         console.log(e)
+         $('#wrapper-swapaddressfail-confirm').fadeTo("fast", 0, function() {
+             document.getElementById("wrapper-swapaddressfail-confirm").innerHTML = 'Could not convert keys.';
+             $("#wrapper-swapaddressfail-confirm").fadeTo("slow", 1);
+         });
        })
 
     }
@@ -560,10 +759,17 @@
                                 }
                             } else {
 
-                                if ((JSON.parse(returnedDataTX).error) != undefined) {
+                                if ((JSON.parse(returnedDataTX).error) == 'Unable to convert the result to type Phantasma.RpcClient.DTOs.TransactionDto') {
+                                  // Temp workaround for error returned
+                                  $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
+                                    document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                                      $("#wrapper-swap-confirm").fadeTo("slow", 1);
+                                  });
+                                  setTimeout(function(){window.location.href = "/portfolio"}, 5000);
+                                } else if ((JSON.parse(returnedDataTX).error) != undefined) {
                                   // If .error defined, returns the custom error message
                                   $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
-                                      document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction ' + (JSON.parse(returnedDataTX).error);
+                                      document.getElementById("wrapper-swap-confirm").innerHTML = (JSON.parse(returnedDataTX).error);
                                       $("#wrapper-swap-confirm").fadeTo("slow", 1);
                                   });
                                 } else {
@@ -602,7 +808,7 @@
                  $('#sendSpinner').hide();
                  console.log(e)
                  $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
-                     document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction rejected';
+                     document.getElementById("wrapper-swap-confirm").innerHTML = e;
                      $("#wrapper-swap-confirm").fadeTo("slow", 1);
                  });
                })
