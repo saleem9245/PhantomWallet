@@ -87,13 +87,14 @@
                 </div>
             </div>
       </div>
-      <div class="row setup-content" id="step-error-reverse">
+      <div class="row setup-content" id="step-error-reverse" style="display:none;">
           <h3>Swapping not available</h3>
       </div>
     </div>
 </div>
-<div id="cosmicswapdiv" class="container swap" style="margin-top:1em;display:none;">
-  <h4>Not available yet, coming soon!</h4>
+<div id="cosmicswapdiv" class="container swap" style="display:none;">
+  <h4 style="margin-top:5em;">Not available yet, coming soon!</h4>
+  <div id="cosmicswapdesc" style="margin:1em 1em 2em 1em;font-style:italic;color:#17B0E7;display:inline-block;font-size:1.2em;display:none;">From Phantasma Blockchain to Phantasma Blockchain</div>
   <div class="row setup-content" style="display:none;" id="step-noerror-cosmic">
       <div class="col-xs-12">
           <div class="col-md-12">
@@ -115,7 +116,7 @@
           </div>
       </div>
   </div>
-  <div class="row setup-content" id="step-error-cosmic">
+  <div class="row setup-content" id="step-error-cosmic" style="display:none;">
       <h3>Swapping not available</h3>
   </div>
 </div>
@@ -388,7 +389,7 @@
              })
          },
          function (returnedData) {
-            console.log(returnedData)
+            //console.log(returnedData)
             $('#sendSpinner').hide();
 
         }).fail(function(e) {
@@ -410,6 +411,7 @@
         },
           function (returnedDataPending) {
             //console.log(returnedDataPending)
+            noSwaps = true;
             $('#sendSpinner').hide();
             if (returnedDataPending.length == 0) {
                 $('#wrapper-pendingswap-confirm').fadeTo("fast", 0, function() {
@@ -421,13 +423,14 @@
               for ( var i = 0; i < returnedDataPending.length; i++ ) {
                   if (returnedDataPending[i].destinationHash == 'pending' && returnedDataPending[i].sourcePlatform == 'phantasma') {
 
+                    noSwaps = false;
                     neopendinghash = returnedDataPending[i].sourceHash;
                     $.get(customrestport + '/api/settleSwap',
                       {
                           sourcePlatform: 'phantasma', destPlatform: 'neo', hashText: neopendinghash
                       },
                         function (returnedDataPending) {
-                          console.log(returnedDataPending)
+                          //console.log(returnedDataPending)
                           if ((returnedDataPending).error != null) {
                               $('#wrapper-pendingswap-confirm').fadeTo("fast", 0, function() {
                                   document.getElementById("wrapper-pendingswap-confirm").innerHTML = 'Swap error: ' + returnedDataPending.error;
@@ -439,7 +442,7 @@
                                   $("#wrapper-pendingswap-confirm").fadeTo("slow", 1);
                               });
                             }
-                          //setTimeout(function(){window.location.href = "/portfolio"}, 5000);
+                          setTimeout(function(){window.location.href = "/portfolio"}, 5000);
                       }).fail(function(e) {
                         $('#sendSpinner').hide();
                         console.log(JSON.stringify(e))
@@ -450,6 +453,12 @@
                       });
                     break;
               }}
+              if (noSwaps == true) {
+                $('#wrapper-pendingswap-confirm').fadeTo("fast", 0, function() {
+                    document.getElementById("wrapper-pendingswap-confirm").innerHTML = 'No pending swaps for ' + neopending;
+                    $("#wrapper-pendingswap-confirm").fadeTo("slow", 1);
+                });
+              }
 
             }
 
@@ -540,8 +549,8 @@
                          $.get('/tx/' + returnedData,
                              function (returnedDataTX) {
                                //console.log(returnedDataTX)
-                               console.log(JSON.parse(returnedDataTX).error)
-                               if ((JSON.parse(returnedDataTX).error) == 'pending') {
+                               //console.log(JSON.parse(returnedDataTX).error)
+                               if (((JSON.parse(returnedDataTX).error) == 'pending') || ((JSON.parse(returnedDataTX).error) == 'Transaction not found')) {
                                    // If tx pending, returns the custom error message
                                    counter++;
                                    if (counter <= 10){
@@ -559,29 +568,54 @@
                                          $("#wrapper-swap-confirm").fadeTo("slow", 1);
                                      });
                                    } else {
-                                     $('#neoaddress').val('');
-                                     $('#neoamount').val('');
-                                     // If it works, settle tx
-                                     $.get(customrestport + '/api/settleSwap',
-                                       {
-                                           sourcePlatform: 'phantasma', destPlatform: 'neo', hashText: JSON.parse(returnedDataTX).hash
-                                       },
-                                         function (returnedDataSettle) {
-                                           console.log(returnedDataSettle)
+                                     if ((JSON.parse(returnedDataTX).hash) == null) {
+                                       // If hash null (means it worked), returns the tx hash from before
+                                       $('#neoaddress').val('');
+                                       $('#neoamount').val('');
+                                       // If it works, settle tx
+                                       $.get(customrestport + '/api/settleSwap',
+                                         {
+                                             sourcePlatform: 'phantasma', destPlatform: 'neo', hashText: returnedData
+                                         },
+                                           function (returnedDataSettle) {
+                                             //console.log(returnedDataSettle)
+                                             $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
+                                                 document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedDataSettle + '" target="_blank" title="View Transaction">' + returnedDataSettle + '</a>';
+                                                 $("#wrapper-swap-confirm").fadeTo("slow", 1);
+                                             });
+                                             setTimeout(function(){window.location.href = "/portfolio"}, 5000);
+                                         }).fail(function(e) {
+                                           $('#sendSpinner').hide();
+                                           console.log(JSON.stringify(e))
                                            $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
-                                               document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedDataSettle + '" target="_blank" title="View Transaction">' + returnedDataSettle + '</a>';
+                                               document.getElementById("wrapper-swap-confirm").innerHTML = JSON.stringify(e);
                                                $("#wrapper-swap-confirm").fadeTo("slow", 1);
                                            });
-                                           //setTimeout(function(){window.location.href = "/portfolio"}, 5000);
-                                       }).fail(function(e) {
-                                         $('#sendSpinner').hide();
-                                         console.log(JSON.stringify(e))
-                                         $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
-                                             document.getElementById("wrapper-swap-confirm").innerHTML = JSON.stringify(e);
-                                             $("#wrapper-swap-confirm").fadeTo("slow", 1);
                                          });
-                                       });
-
+                                     } else {
+                                       $('#neoaddress').val('');
+                                       $('#neoamount').val('');
+                                       // If it works, settle tx
+                                       $.get(customrestport + '/api/settleSwap',
+                                         {
+                                             sourcePlatform: 'phantasma', destPlatform: 'neo', hashText: JSON.parse(returnedDataTX).hash
+                                         },
+                                           function (returnedDataSettle) {
+                                             //console.log(returnedDataSettle)
+                                             $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
+                                                 document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedDataSettle + '" target="_blank" title="View Transaction">' + returnedDataSettle + '</a>';
+                                                 $("#wrapper-swap-confirm").fadeTo("slow", 1);
+                                             });
+                                             //setTimeout(function(){window.location.href = "/portfolio"}, 5000);
+                                         }).fail(function(e) {
+                                           $('#sendSpinner').hide();
+                                           console.log(JSON.stringify(e))
+                                           $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
+                                               document.getElementById("wrapper-swap-confirm").innerHTML = JSON.stringify(e);
+                                               $("#wrapper-swap-confirm").fadeTo("slow", 1);
+                                           });
+                                         });
+                                     }
                                    }
                                }
                              }).fail(function(e) {
@@ -679,7 +713,7 @@
                  if (txhash == '') {
                    $('#sendSpinner').hide();
                    $('#wrapper-swapaddressfail-confirm').fadeTo("fast", 0, function() {
-                       document.getElementById("wrapper-swapaddressfail-confirm").innerHTML = 'No pending swaps for ' + currentaddress;
+                       document.getElementById("wrapper-swapaddressfail-confirm").innerHTML = 'No pending swaps for ' + currentaddress + '.<br>If you just sent something, try again in 15 seconds.';
                        $("#wrapper-swapaddressfail-confirm").fadeTo("slow", 1);
                    });
                  }
@@ -726,6 +760,10 @@
 
             if (result) {
 
+              var countersettle = 0;
+              loopSettle();
+              function loopSettle() {
+
               $.post('/settle/tx',
                  {
                      txHash: txhash,
@@ -757,32 +795,44 @@
                                       $("#wrapper-swap-confirm").fadeTo("slow", 1);
                                   });
                                 }
-                            } else {
-
-                                if ((JSON.parse(returnedDataTX).error) == 'Unable to convert the result to type Phantasma.RpcClient.DTOs.TransactionDto') {
-                                  // Temp workaround for error returned
+                            } else if ((JSON.parse(returnedDataTX).error) == 'Transaction not found') {
+                                countersettle++;
+                                if (countersettle <= 5){
+                                  setTimeout(loopSettle, 2000);
+                                } else {
                                   $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
-                                    document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                                      document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction unconfirmed, please re-process it above.';
                                       $("#wrapper-swap-confirm").fadeTo("slow", 1);
                                   });
-                                  setTimeout(function(){window.location.href = "/portfolio"}, 5000);
-                                } else if ((JSON.parse(returnedDataTX).error) != undefined) {
+                                }
+                            } else {
+                                if ((JSON.parse(returnedDataTX).error) != undefined) {
                                   // If .error defined, returns the custom error message
                                   $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
                                       document.getElementById("wrapper-swap-confirm").innerHTML = (JSON.parse(returnedDataTX).error);
                                       $("#wrapper-swap-confirm").fadeTo("slow", 1);
                                   });
                                 } else {
-                                  $('#neopassphrase').val('');
-                                  $('#neoprivatekey').val('');
-                                  $('#neohash').val('');
-                                  let neopassphrase = '';
-                                  // If it works, returns tx
-                                  $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
-                                      document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + JSON.parse(returnedDataTX).hash + '" target="_blank" title="View Transaction">' + JSON.parse(returnedDataTX).hash + '</a>';
-                                      $("#wrapper-swap-confirm").fadeTo("slow", 1);
-                                  });
-                                  setTimeout(function(){window.location.href = "/portfolio"}, 5000);
+                                  if ((JSON.parse(returnedDataTX).hash) == null) {
+                                    // If hash null (means it worked), returns the tx hash from before
+                                    $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
+                                        document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                                        $("#wrapper-swap-confirm").fadeTo("slow", 1);
+                                    });
+                                  } else {
+                                    $('#neopassphrase').val('');
+                                    $('#neoprivatekey').val('');
+                                    $('#neohash').val('');
+                                    let neopassphrase = '';
+                                    // If it works, returns tx
+                                    //console.log(returnedDataTX)
+                                    $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
+                                        document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + JSON.parse(returnedDataTX).hash + '" target="_blank" title="View Transaction">' + JSON.parse(returnedDataTX).hash + '</a>';
+                                        $("#wrapper-swap-confirm").fadeTo("slow", 1);
+                                    });
+                                    setTimeout(function(){window.location.href = "/portfolio"}, 5000);
+                                  }
+
                                 }
                             }
                           }).fail(function(e) {
@@ -812,6 +862,7 @@
                      $("#wrapper-swap-confirm").fadeTo("slow", 1);
                  });
                })
+             }
              } else {
                $('#sendSpinner').hide();
              }
