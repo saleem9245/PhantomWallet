@@ -19,6 +19,8 @@ using Newtonsoft.Json;
 using Phantasma.CodeGen.Assembler;
 using Phantasma.VM;
 using System.Globalization;
+using Serilog;
+using Serilog.Core;
 
 namespace Phantom.Wallet.Helpers
 {
@@ -29,6 +31,9 @@ namespace Phantom.Wallet.Helpers
 
         public static string LogPath { get; } = Path.Combine(Environment.GetFolderPath(
                                          Environment.SpecialFolder.ApplicationData), "phantom_wallet.log");
+
+        private static Serilog.Core.Logger Log = new LoggerConfiguration()
+           .MinimumLevel.Debug().WriteTo.File(Utils.LogPath).CreateLogger();
 
         public static string GetTxAmount(TransactionDto tx, List<ChainDto> phantasmaChains, List<TokenDto> phantasmaTokens)
         {
@@ -51,20 +56,6 @@ namespace Phantom.Wallet.Helpers
                 {
 
                   case EventKind.TokenStake:
-                      {
-                          var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
-                          amount = data.Value;
-                          receiverAddress = Address.FromText(evt.EventAddress);
-                          receiverChain = data.ChainName;
-                          var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.Symbol).Decimals);
-                          if (data.Symbol != "KCAL" && data.Symbol != "NEO" && data.Symbol != "GAS")
-                          {
-                            amountsymbol = $"{amountDecimal.ToString("#,0.##########").ToString(new CultureInfo("en-US"))} {data.Symbol}";
-                          }
-                      }
-                      break;
-
-                  case EventKind.TokenUnstake:
                       {
                           var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
                           amount = data.Value;
@@ -137,12 +128,6 @@ namespace Phantom.Wallet.Helpers
                 switch (evt.EventKind)
                 {
 
-                    case EventKind.TransactionSettle:
-                        {
-                            typetx = $"{receiverAddress.ToString()}";
-                        }
-                        break;
-
                     case EventKind.TokenStake:
                         {
                             var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
@@ -150,16 +135,6 @@ namespace Phantom.Wallet.Helpers
                             {
                               typetx = $"Stake";
                             }
-                        }
-                        break;
-
-                    case EventKind.TokenUnstake:
-                        {
-                          var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
-                          if (data.Symbol != "KCAL" && data.Symbol != "NEO" && data.Symbol != "GAS")
-                          {
-                            typetx = $"Unstake";
-                          }
                         }
                         break;
 
@@ -264,15 +239,6 @@ namespace Phantom.Wallet.Helpers
                         }
                         break;
 
-                    case EventKind.TokenUnstake:
-                        {
-                            var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
-                            amount = data.Value;
-                            var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.Symbol).Decimals);
-                            description = $"Unstake transaction";
-                        }
-                        break;
-
                     case EventKind.AddressRegister:
                         {
                             var name = Serialization.Unserialize<string>(evt.Data.Decode());
@@ -280,31 +246,6 @@ namespace Phantom.Wallet.Helpers
                         }
                         break;
 
-                    case EventKind.AddressLink:
-                        {
-                            var address = Serialization.Unserialize<Address>(evt.Data.Decode());
-                            description = $"{evt.EventAddress} linked to {address.ToString()}";
-                        }
-                        break;
-
-                    case EventKind.AddressUnlink:
-                        {
-                            var address = Serialization.Unserialize<Address>(evt.Data.Decode());
-                            description = $"{evt.EventAddress} unlinked from {address.ToString()}";
-                        }
-                        break;
-
-                    case EventKind.BlockCreate:
-                        {
-                            description = $"BlockCreate transaction";
-                        }
-                        break;
-
-                    case EventKind.BlockClose:
-                        {
-                            description = $"BlockClose transaction";
-                        }
-                        break;
                 }
             }
 
@@ -449,11 +390,15 @@ namespace Phantom.Wallet.Helpers
 
         public static decimal GetCoinRate(string ticker, string symbol)
         {
+            //Log.Information("ticker " + symbol);
             string json;
             string baseticker;
             switch (ticker)
             {
                 case "SOUL":
+                    baseticker = "phantasma";
+                    break;
+                case "KCAL":
                     baseticker = "phantasma";
                     break;
                 case "NEO":
@@ -468,7 +413,7 @@ namespace Phantom.Wallet.Helpers
             }
 
             var url = $"https://api.coingecko.com/api/v3/simple/price?ids={baseticker}&vs_currencies={symbol}";
-
+            //Log.Information("ticker " + ticker);
             try
             {
                 using (var httpClient = new HttpClient())
@@ -480,7 +425,8 @@ namespace Phantom.Wallet.Helpers
                 root = root[ticker];
 
                 var price = root.GetDecimal(symbol.ToLower());
-
+                //Log.Information("ticker " + ticker);
+                //Log.Information("price " + price);
                 return price;
             }
             catch (Exception ex)
