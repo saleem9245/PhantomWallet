@@ -504,46 +504,42 @@ namespace Phantom.Wallet
 
             var txObject = (TransactionDto)result;
 
-            if (txObject.Confirmations > 0)
+            request.session.SetString("confirmedHash", txHash);
+            if (request.session.GetBool("isCrossTransfer"))
             {
-                request.session.SetString("confirmedHash", txHash);
-                if (request.session.GetBool("isCrossTransfer"))
+                var settle = request.session.GetStruct<SettleTx>("settleTx");
+
+                var settleTx = AccountController.SettleBlockTransfer(
+                    GetLoginKey(request),
+                    settle.ChainAddress,
+                    txObject.Txid, settle.DestinationChainAddress).Result;
+
+                // clear
+                request.session.SetBool("isCrossTransfer", false);
+
+                if (SendUtils.IsTxHashValid(settleTx))
                 {
-                    var settle = request.session.GetStruct<SettleTx>("settleTx");
-
-                    var settleTx = AccountController.SettleBlockTransfer(
-                        GetLoginKey(request),
-                        settle.ChainAddress,
-                        txObject.Txid, settle.DestinationChainAddress).Result;
-
-                    // clear
-                    request.session.SetBool("isCrossTransfer", false);
-
-                    if (SendUtils.IsTxHashValid(settleTx))
-                    {
-                        context["confirmingTxHash"] = settleTx;
-                        return "settling";
-                    }
-                    PushError(request, settleTx);
-                    return "unconfirmed";
+                    context["confirmingTxHash"] = settleTx;
+                    return "settling";
                 }
-                else
-                {
-                    if (request.session.GetInt("txNumber") > 2)
-                    {
-                        return "continue";
-                    }
-
-                    //if it gets here, there are no more txs to process
-                    var keyPair = GetLoginKey(request);
-                    InvalidateCache(keyPair.Address);
-
-                    ResetSessionSendFields(request);
-                    return "confirmed";
-                }
+                PushError(request, settleTx);
+                return "unconfirmed";
             }
-            PushError(request, "Error sending tx.");
-            return "unconfirmed";
+            else
+            {
+                if (request.session.GetInt("txNumber") > 2)
+                {
+                    return "continue";
+                }
+
+                //if it gets here, there are no more txs to process
+                var keyPair = GetLoginKey(request);
+                InvalidateCache(keyPair.Address);
+
+                ResetSessionSendFields(request);
+                return "confirmed";
+            }
+
         }
 
         private object RouteTransaction(HTTPRequest request)
