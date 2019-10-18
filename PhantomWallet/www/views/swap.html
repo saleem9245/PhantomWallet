@@ -200,17 +200,14 @@
               document.getElementById("currentplatformaddress").innerHTML = dstaddress;
               document.getElementById("padcurrentplatformaddress").addEventListener('click', function(){ Clipboard.copy(dstaddress, 'Address');}, false);
               $("#loader-interopaddress").hide();
-              //$("#step-error").hide();
-              //$("#step-error-reverse").hide();
               $("#step-1").show();
               $("#step-2").show();
               $("#step-11").show();
-              //$("#wrapper-pending-confirm").show();
             }).fail(function(e) {
               console.log(JSON.stringify(e))
               $("#step-error").show();
               $("#step-error-reverse").show();
-              //$("#step-error-cosmic").show();
+              $("#wrapper-pending-confirm").hide();
             });
 
         // Trigger update button on press enter

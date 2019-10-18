@@ -268,7 +268,7 @@ function toggleSwap() {
   {
     $('#cosmicswapdiv').hide();
     $('#chainswapdiv').show();
-    if($('#neotophantasma').css('display') === 'none')
+    if($('#neotophantasma').css('display') === 'none' && $('#step-error-reverse').css('display') === 'none')
     {
       $('#wrapper-pending-confirm').show();
     }
@@ -309,7 +309,10 @@ function toggleChains() {
     {
       $('#neotophantasma').hide();
       $('#phantasmatoneo').show();
-      $('#wrapper-pending-confirm').show();
+      if ($('#step-error-reverse').css('display') === 'none')
+        {
+          $('#wrapper-pending-confirm').show();
+        }
       $(".fa-sync-chains").addClass("fa-spin");
       document.getElementById("chainswapdesc").innerHTML = 'From Phantasma Blockchain to NEO Blockchain';
       setTimeout(function() {
