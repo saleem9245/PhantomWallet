@@ -47,15 +47,15 @@ window.Clipboard = (function(window, document, navigator) {
 
 function RegisterName() {
 
-    if (!document.getElementById("stake-soul")) {
+    //if (!document.getElementById("stake-soul")) {
           //bootbox.alert("You need one SOUL staked to register a name!");
           //return;
-    }
+    //}
 
-    if (parseFloat((document.getElementById("stake-soul").innerHTML).replace(/\,/g,'').slice(0, -3)) < 1) {
+    //if (parseFloat((document.getElementById("stake-soul").innerHTML).replace(/\,/g,'').slice(0, -3)) < 1) {
           //bootbox.alert("You need at least one SOUL staked to register a name!");
           //return;
-    }
+    //}
 
     bootbox.prompt({
         title: "Insert a name for your address.<br>You need at least 1 SOUL already staked to register a name.<br>This will be unregistered automatically if you unstake all your SOUL.",
@@ -268,7 +268,10 @@ function toggleSwap() {
   {
     $('#cosmicswapdiv').hide();
     $('#chainswapdiv').show();
-    $('#wrapper-pending-confirm').hide();
+    if($('#neotophantasma').css('display') === 'none')
+    {
+      $('#wrapper-pending-confirm').show();
+    }
   }
   $('#neoaddresslink').val('');
   $('#neohash').val('');

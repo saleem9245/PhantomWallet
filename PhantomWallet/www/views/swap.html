@@ -64,12 +64,12 @@
                   </div>
               </div>
           </div>
-          <div class="row setup-content" id="step-error">
+          <div class="row setup-content" id="step-error" style="display:none;">
               <h3>Swapping not available</h3>
           </div>
       </div>
       <div id="phantasmatoneo" style="display:none;">
-            <div class="row setup-content">
+            <div class="row setup-content" id="step-11" style="display:none">
                 <div class="col-xs-12">
                     <div class="col-md-12">
                       <div class="alert alert-warning" style="overflow: auto;">
@@ -86,9 +86,9 @@
                     </div>
                 </div>
             </div>
-      </div>
-      <div class="row setup-content" id="step-error-reverse" style="display:none;">
-          <h3>Swapping not available</h3>
+            <div class="row setup-content" id="step-error-reverse" style="display:none;">
+                <h3>Swapping not available</h3>
+            </div>
       </div>
     </div>
 </div>
@@ -200,11 +200,18 @@
               document.getElementById("currentplatformaddress").innerHTML = dstaddress;
               document.getElementById("padcurrentplatformaddress").addEventListener('click', function(){ Clipboard.copy(dstaddress, 'Address');}, false);
               $("#loader-interopaddress").hide();
-              $("#step-error").hide();
-              $("#step-error-reverse").hide();
+              //$("#step-error").hide();
+              //$("#step-error-reverse").hide();
               $("#step-1").show();
               $("#step-2").show();
-            })
+              $("#step-11").show();
+              //$("#wrapper-pending-confirm").show();
+            }).fail(function(e) {
+              console.log(JSON.stringify(e))
+              $("#step-error").show();
+              $("#step-error-reverse").show();
+              //$("#step-error-cosmic").show();
+            });
 
         // Trigger update button on press enter
         var inputrpc = document.getElementById("neoamount");
@@ -276,7 +283,6 @@
                     balpotNEO = (returnedDataPending.balances[i].amount)/(Math.pow(10,returnedDataPending.balances[i].decimals));
                 }
               }
-              $("#step-error-cosmic").hide();
         }).fail(function(e) {
           console.log(JSON.stringify(e))
           $("#step-noerror-cosmic").hide();
