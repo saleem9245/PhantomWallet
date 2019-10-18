@@ -264,6 +264,11 @@ namespace Phantom.Wallet
                 return HTTPResponse.Redirect("/login");
             }
 
+            var customerror = request.GetVariable("customerror");
+            if (!string.IsNullOrEmpty(customerror))
+            {
+              PushError(request, customerror);
+            }
             var context = InitContext(request);
             return RendererView(context, "layout", "error");
         }
