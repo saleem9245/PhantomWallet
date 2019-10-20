@@ -168,6 +168,7 @@ $(document).ready(function() {
   {{#each holdings}}
     if ('{{Symbol}}' == 'KCAL') {
       hasKCAL = 1;
+      loadedKCALbalance = '{{Amount}}';
     }
   {{/each}}
 
@@ -215,8 +216,91 @@ function initTables() {
     }
 }
 
+// cosmic swap when low kcal balances
+function cosmicSwapBasic() {
+
+  params = [];
+  // build params for contract swap 0.1 soul to kcal
+  params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
+  params[1] = { name: 'fromSymbol', type: 'String', input: 'SOUL', info: '' }
+  params[2] = { name: 'toSymbol', type: 'String', input: 'KCAL', info: '' }
+  params[3] = { name: 'amount', type: 'Number', input: '10000000', info: '' }
+  var countercontract = 0;
+  loopContract();
+  function loopContract() {
+    $("#wrapper-portfolio-confirm").fadeTo(1, 0);
+    $.post('/contract/tx/',
+       {
+           chain: 'main',
+           contract: 'swap',
+           method: 'SwapTokens',
+           params: JSON.stringify({
+             params
+           })
+       },
+       function (returnedData) {
+          //console.log(returnedData)
+          document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction pending: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+          $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+          if (returnedData !== "") {
+            var counter = 0;
+            getConfirmations();
+            function getConfirmations() {
+                  $.get('/tx/' + returnedData,
+                      function (returnedDataTX) {
+                        //console.log(returnedDataTX)
+                        if ((JSON.parse(returnedDataTX).error) == 'pending') {
+                            counter++;
+                            if (counter <= 10){
+                              setTimeout(getConfirmations, 2000);
+                            } else {
+                              window.location.replace("/error");
+                            }
+                        } else if ((JSON.parse(returnedDataTX).error) == 'Transaction not found') {
+                            countercontract++;
+                            if (countercontract <= 10){
+                              setTimeout(loopContract, 2000);
+                            } else {
+                              window.location.replace("/error");
+                            }
+                        } else {
+                          window.location.replace("/waiting/" + returnedData);
+                        }
+                  })
+            }
+        }
+      })
+  }
+
+}
+
 // on click claim on portfolio
 function Claim() {
+
+  if (parseFloat(loadedKCALbalance) < 0.1) {
+    bootbox.confirm({
+        title: "Swap confirmation",
+        message: "You don't have enough KCAL for this action (current balance: " + loadedKCALbalance + " KCAL).<br>Do you want to cosmic swap 0.1 SOUL? You'll get approximatively 0.49 KCAL for that.",
+        buttons: {
+            cancel: {
+                label: '<i class="fa fa-times"></i> Cancel'
+            },
+            confirm: {
+                label: '<i class="fa fa-check"></i> Confirm'
+            }
+        },
+        callback: function(result) {
+
+            if (result) {
+
+              cosmicSwapBasic();
+
+            }
+
+        }
+      })
+      return;
+  }
 
   $("#wrapper-portfolio-confirm").fadeTo(1, 0);
   var params = [];
@@ -314,6 +398,31 @@ function Claim() {
 
 // on click stake on portfolio
 function Stake() {
+
+  if (parseFloat(loadedKCALbalance) < 0.1) {
+    bootbox.confirm({
+        title: "Swap confirmation",
+        message: "You don't have enough KCAL for this action (current balance: " + loadedKCALbalance + " KCAL).<br>Do you want to cosmic swap 0.1 SOUL? You'll get approximatively 0.5 KCAL for that.",
+        buttons: {
+            cancel: {
+                label: '<i class="fa fa-times"></i> Cancel'
+            },
+            confirm: {
+                label: '<i class="fa fa-check"></i> Confirm'
+            }
+        },
+        callback: function(result) {
+
+            if (result) {
+
+              cosmicSwapBasic();
+
+            }
+
+        }
+      })
+      return;
+  }
 
   $("#wrapper-portfolio-confirm").fadeTo(1, 0);
   var params = [];
@@ -616,6 +725,31 @@ function Stake() {
 // on click stake on portfolio
 function Unstake() {
 
+  if (parseFloat(loadedKCALbalance) < 0.1) {
+    bootbox.confirm({
+        title: "Swap confirmation",
+        message: "You don't have enough KCAL for this action (current balance: " + loadedKCALbalance + " KCAL).<br>Do you want to cosmic swap 0.1 SOUL? You'll get approximatively 0.5 KCAL for that.",
+        buttons: {
+            cancel: {
+                label: '<i class="fa fa-times"></i> Cancel'
+            },
+            confirm: {
+                label: '<i class="fa fa-check"></i> Confirm'
+            }
+        },
+        callback: function(result) {
+
+            if (result) {
+
+              cosmicSwapBasic();
+
+            }
+
+        }
+      })
+      return;
+  }
+
   $("#wrapper-portfolio-confirm").fadeTo(1, 0);
   customunstakeall = '';
   var params = [];
@@ -782,6 +916,31 @@ function Unstake() {
 }
 // on click claim rewards on portfolio
 function MasterClaim() {
+
+  if (parseFloat(loadedKCALbalance) < 0.1) {
+    bootbox.confirm({
+        title: "Swap confirmation",
+        message: "You don't have enough KCAL for this action (current balance: " + loadedKCALbalance + " KCAL).<br>Do you want to cosmic swap 0.1 SOUL? You'll get approximatively 0.5 KCAL for that.",
+        buttons: {
+            cancel: {
+                label: '<i class="fa fa-times"></i> Cancel'
+            },
+            confirm: {
+                label: '<i class="fa fa-check"></i> Confirm'
+            }
+        },
+        callback: function(result) {
+
+            if (result) {
+
+              cosmicSwapBasic();
+
+            }
+
+        }
+      })
+      return;
+  }
 
   $("#wrapper-portfolio-confirm").fadeTo(1, 0);
   var params = [];
@@ -1581,7 +1740,7 @@ function CheckMultisignature() {
 
 </script>
 {{#else}}
-<div class="alert alert-info" role="alert">
+<div class="alert alert-info" role="alert" id="portfolionewaccount">
     This address is still new and does not have any assets yet.
 </div>
 

@@ -57,7 +57,7 @@
 </div>
 
 {{#else}}
-<div class="alert alert-info" role="alert">
+<div class="alert alert-info" role="alert" id="historynewaccount">
     This address is still new and does not have any transaction yet.
 </div>
 {{/if}}
@@ -66,7 +66,7 @@
 
   $(document).ready(function() {
 
-    initTables()
+    initTables();
 
   });
 
