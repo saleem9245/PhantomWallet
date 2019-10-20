@@ -149,7 +149,7 @@ $(document).ready(function() {
     }
     getPricing();
     var pathname = window.location.pathname;
-    // on all pages except login and create, getChains every 2 sec and getPricing every minute
+    // on all pages except login and create, getChains every 5 sec and getPricing every minute
     if (pathname != '/login' && pathname != '/create') {
       setInterval(function() {
         getChains();
@@ -164,20 +164,38 @@ $(document).ready(function() {
 function getChains() {
    $.get('/chains',
        function (returnedData) {
-         heightmain = '#' + numberWithCommas(JSON.parse(returnedData)[0].height);
-         // if height exist and changed, flash height
-         if (document.getElementById("blockheight").innerHTML != heightmain) {
-           document.getElementById("blockheight").innerHTML = heightmain;
-           $(document.getElementById("blockheight")).addClass('flash').delay(150).queue(function(next){
-                $(this).removeClass('flash');
-                next();
-           });
+         //console.log(returnedData)
+         if (returnedData == 'null') {
+             //$('#historynewaccount').hide();
+             //$('#portfolionewaccount').hide();
+             console.log('in')
+             if (document.getElementById("historynewaccount")) {
+               document.getElementById("historynewaccount").innerHTML = 'RPC Connection Error. Try again later.';
+             }
+             if (document.getElementById("portfolionewaccount")) {
+               document.getElementById("portfolionewaccount").innerHTML = 'RPC Connection Error. Try again later.';
+             }
+             if (document.getElementById("sendnewaccount")) {
+               document.getElementById("sendnewaccount").innerHTML = 'RPC Connection Error. Try again later.';
+             }
+           } else {
+           heightmain = '#' + numberWithCommas(JSON.parse(returnedData)[0].height);
+           // if height exist and changed, flash height
+           if (document.getElementById("blockheight").innerHTML != heightmain) {
+             document.getElementById("blockheight").innerHTML = heightmain;
+             $(document.getElementById("blockheight")).addClass('flash').delay(150).queue(function(next){
+                  $(this).removeClass('flash');
+                  next();
+             });
+           }
+           // store height for later
+           cacheheight = document.getElementById("blockheight").innerHTML;
+           localStorage.setItem('lastheight', cacheheight);
          }
-         // store height for later
-         cacheheight = document.getElementById("blockheight").innerHTML;
-         localStorage.setItem('lastheight', cacheheight);
        }).fail(function(e) {
           console.log(e);
+          $('#historynewaccount').hide();
+          $('#portfolionewaccount').hide();
        });
 }
 
@@ -289,6 +307,7 @@ function toggleSwap() {
   $(".cosmic-calc-title").fadeTo("slow", 0);
   $("#cosmicswapbutton").fadeTo("slow", 0);
   $("#wrapper-getrates-confirm").fadeTo("fast", 0);
+  $("#wrapper-confirmrates-confirm").fadeTo("fast", 0);
 }
 
 // function toggle neo/phantasma chains

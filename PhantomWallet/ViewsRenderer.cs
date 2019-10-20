@@ -226,6 +226,8 @@ namespace Phantom.Wallet
 
             TemplateEngine.Server.Post("/contract/tx", RouteInvokeContractTx);
 
+            TemplateEngine.Server.Post("/contract/tx/cosmic", RouteInvokeContractTxCosmic);
+
             TemplateEngine.Server.Post("/contract/abi", RouteContractABI);
 
             TemplateEngine.Server.Get("/chains", RouteChains);
@@ -600,6 +602,55 @@ namespace Phantom.Wallet
                     var keyPair = GetLoginKey(request);
                     InvalidateCache(keyPair.Address);
                     var result = AccountController.InvokeContractTxGeneric(
+                            keyPair, chain, contract, method, paramList.ToArray()
+                            ).Result;
+
+                    if (result.GetType() == typeof(ErrorResult))
+                    {
+                        return JsonConvert.SerializeObject(result, Formatting.Indented);
+                    }
+
+                    var contractTx = (string)result;
+
+                    if (SendUtils.IsTxHashValid(contractTx))
+                    {
+                        return contractTx;
+                    }
+
+                    PushError(request, contractTx);
+                }
+                else
+                {
+                    PushError(request, "You need a small drop of KCAL to call a contract.");
+                }
+            }
+            return null;
+        }
+
+        private object RouteInvokeContractTxCosmic(HTTPRequest request)
+        {
+            var chain = request.GetVariable("chain");
+            var contract = request.GetVariable("contract");
+            var method = request.GetVariable("method");
+            var param = request.GetVariable("params");
+            var context = InitContext(request);
+
+            if (param == null)
+            {
+                PushError(request, "Parameters cannot be null!");
+                return null;
+            }
+
+            List<object> paramList = SendUtils.BuildParamList(param);
+
+            if (context["holdings"] is Holding[] balance)
+            {
+                var kcalBalance = balance.SingleOrDefault(b => b.Symbol == "KCAL" && b.Chain == chain);
+                if (kcalBalance.Amount > 0.1m)
+                {
+                    var keyPair = GetLoginKey(request);
+                    InvalidateCache(keyPair.Address);
+                    var result = AccountController.InvokeContractTxCosmic(
                             keyPair, chain, contract, method, paramList.ToArray()
                             ).Result;
 
