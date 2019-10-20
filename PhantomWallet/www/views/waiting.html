@@ -46,7 +46,7 @@
                                 console.log("error");
                             });
                         }	else {
-                          if (JSON.parse(returnedData).error != undefined) {
+                          if (JSON.parse(returnedData).error != undefined && JSON.parse(returnedData).error != 'pending') {
                             window.location.replace("/error/?customerror=" + JSON.parse(returnedData).error);
                           } else {
                             counter++;
