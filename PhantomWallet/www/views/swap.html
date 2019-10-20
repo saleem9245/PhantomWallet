@@ -92,27 +92,28 @@
       </div>
     </div>
 </div>
-<div id="cosmicswapdiv" class="container swap" style="display:none;">
-  <h4 style="margin-top:5em;">Not available yet, coming soon!</h4>
-  <div id="cosmicswapdesc" style="margin:1em 1em 2em 1em;font-style:italic;color:#17B0E7;display:inline-block;font-size:1.2em;display:none;">From Phantasma Blockchain to Phantasma Blockchain</div>
-  <div class="row setup-content" style="display:none;" id="step-noerror-cosmic">
+<div id="cosmicswapdiv" class="container swap" style="display:none;margin-top:0;">
+  <div id="cosmicswapdesc" style="margin:1em 1em 2em 1em;font-style:italic;color:#17B0E7;display:inline-block;font-size:1.2em;">From Phantasma Blockchain to Phantasma Blockchain</div>
+  <div class="row setup-content" style="" id="step-noerror-cosmic">
       <div class="col-xs-12">
           <div class="col-md-12">
-            <h4 class="control-label" style="margin-top:1em;">Step 1) Select token & quantity to <u>buy from</u> pot</h4>
+            <h4 class="control-label" style="margin-top:1em;">Step 1) Select token and quantity <u>to buy</u></h4>
             <select id="select-token-form-cosmicbuy" style="margin-top:1em;">
             <input class="form-control parameters-swap-input" id="phantasmaamount" type="number" style="text-align:center;" placeholder="Enter amount">
-            <h4 class="control-label" style="margin-top:1em;">Step 2) Select token to <u>sell to</u> the pot</h4>
+            <h4 class="control-label" style="margin-top:1em;">Step 2) Select token <u>to sell to</u></h4>
             <select id="select-token-form-cosmicsell" style="margin-top:1em;">
             </select>
             <button class="btn-primary nextBtn btn-lg button" type="button" onclick="getRates()" id="getratesbutton">GET RATES</button>
             <h4 class="control-label cosmic-calc-title" style="margin-top:1em;margin-bottom:1em;opacity:0;">Step 3) Validate swap</h4>
             <div id="wrapper-getrates-confirm" class="pending" style="opacity:1;text-align:center;display:none;"></div>
             <div class="cosmic-calc" style="opacity:0;font-size:1.2em;">
-                <span>Current rate : </span><span id="cosmicrateinfo"></span><br>
-                <span>You are going to send : </span><span id="cosmicsellinfofinal"></span><br>
-                <span>You are going to receive ≈ </span><span id="cosmicbuyinfofinal"></span><br>
+                <span>Current rate: </span><span id="cosmicrateinfo"></span><br>
+                <div style=""><input id="cosmicaddfee" type="checkbox"><span style="font-size:.8em;">Add 0.1 KCAL donation for Phantom Wallet?</span><br></div>
+                <div style="display: inline-block;margin:1em;"><span style="color:grey">SENDING</span><br><span id="cosmicsellinfofinal"></span></div>
+                <div style="display: inline-block;margin:1em;"><span style="color:grey">RECEIVING</span><br><span id="cosmicbuyinfofinal"></span></div>
             </div>
             <button class="btn-success btn-lg button" type="button" onclick="confirmRates()" id="cosmicswapbutton" style="opacity:0;">CONFIRM TRADE</button>
+            <div id="wrapper-confirmrates-confirm" class="pending" style="opacity:1;text-align:center;display:none;"></div>
           </div>
       </div>
   </div>
@@ -152,7 +153,6 @@
         balpotSOUL = 0;
         balpotGAS = 0;
         balpotNEO = 0;
-        tokenToSendBal = 0;
 
         tokenBox = $('#select-token-form');
         tokenBox.find('option').remove();
@@ -207,6 +207,7 @@
               console.log(JSON.stringify(e))
               $("#step-error").show();
               $("#step-error-reverse").show();
+              $("#step-error-cosmic").show();
               $("#wrapper-pending-confirm").hide();
             });
 
@@ -285,6 +286,17 @@
           $("#step-noerror-cosmic").hide();
         });
 
+        // on cosmic swap sell asset change event
+        $("#select-token-form-cosmicsell").change(function () {
+
+            $(".cosmic-calc").fadeTo("slow", 0);
+            $(".cosmic-calc-title").fadeTo("slow", 0);
+            $("#cosmicswapbutton").fadeTo("slow", 0);
+            $("#wrapper-getrates-confirm").fadeTo("fast", 0);
+            $("#wrapper-confirmrates-confirm").fadeTo("fast", 0);
+
+         });
+
     })
 
     function getRates() {
@@ -293,9 +305,11 @@
       $(".cosmic-calc-title").fadeTo("slow", 0);
       $("#cosmicswapbutton").fadeTo("slow", 0);
       $("#wrapper-getrates-confirm").fadeTo("fast", 0);
+      $("#wrapper-confirmrates-confirm").fadeTo("fast", 0);
       let cosmicfrom = $("#select-token-form-cosmicsell").val().replace(/\,/g,'');
       let cosmicto = $("#select-token-form-cosmicbuy").val().replace(/\,/g,'');
       let cosmicfromamount = $("#phantasmaamount").val();
+      amounttoSend = 0;
 
       if (cosmicfrom == null) {
           bootbox.alert("No assets available!");
@@ -326,9 +340,27 @@
 
       params = [];
       // build params for contract call
+      if (cosmicto == 'KCAL') {
+        decimals = Math.pow(10,10);
+      } else if (cosmicto == 'SOUL') {
+        decimals = Math.pow(10,8);
+      } else if (cosmicto == 'GAS') {
+        decimals = Math.pow(10,8);
+      } else if (cosmicto == 'NEO') {
+        decimals = Math.pow(10,0);
+      }
+      if (cosmicfrom == 'KCAL') {
+        decimalsfrom = Math.pow(10,10);
+      } else if (cosmicfrom == 'SOUL') {
+        decimalsfrom = Math.pow(10,8);
+      } else if (cosmicfrom == 'GAS') {
+        decimalsfrom = Math.pow(10,8);
+      } else if (cosmicfrom == 'NEO') {
+        decimalsfrom = Math.pow(10,0);
+      }
       params[0] = { name: 'fromSymbol', type: 'String', input: cosmicto, info: '' }
       params[1] = { name: 'toSymbol', type: 'String', input: cosmicfrom, info: '' }
-      params[2] = { name: 'amount', type: 'Number', input: cosmicfromamount, info: '' }
+      params[2] = { name: 'amount', type: 'Number', input: cosmicfromamount*decimals, info: '' }
       $.post('/contract',
          {
              chain: 'main',
@@ -340,7 +372,8 @@
          },
          function (returnedData) {
             //console.log(returnedData)
-            tokenToSendBal = returnedData;
+            combinedfees = 1.074113856068743;
+            returnedData = returnedData * combinedfees;
             if (returnedData == 0) {
               $('#sendSpinner').hide();
               document.getElementById("cosmicbuyinfofinal").innerHTML = '';
@@ -354,11 +387,16 @@
             } else {
               $('#sendSpinner').hide();
               document.getElementById("cosmicbuyinfofinal").innerHTML = numberWithCommas($("#phantasmaamount").val()) + ' ' + $("#select-token-form-cosmicbuy").val();
-              document.getElementById("cosmicsellinfofinal").innerHTML = numberWithCommas(returnedData) + ' ' + $("#select-token-form-cosmicsell").val();
-              document.getElementById("cosmicrateinfo").innerHTML = '1 ' + $("#select-token-form-cosmicbuy").val() + ' for ' + (returnedData/($("#phantasmaamount").val())).toFixed(5) + ' ' + $("#select-token-form-cosmicsell").val()
-              $(".cosmic-calc").fadeTo("fast", 1);
-              $(".cosmic-calc-title").fadeTo("fast", 1);
-              $("#cosmicswapbutton").fadeTo("fast", 1);
+              document.getElementById("cosmicsellinfofinal").innerHTML = numberWithCommas((returnedData/decimalsfrom).toFixed(5)) + ' ' + $("#select-token-form-cosmicsell").val();
+              amounttoSend = returnedData.toFixed(0);
+              document.getElementById("cosmicrateinfo").innerHTML = '1 ' + $("#select-token-form-cosmicbuy").val() + ' for ' + ((returnedData/($("#phantasmaamount").val()))/decimalsfrom).toFixed(5) + ' ' + $("#select-token-form-cosmicsell").val()
+              $(".cosmic-calc").fadeTo("fast", 0);
+              $(".cosmic-calc-title").fadeTo("fast", 0);
+              $('#cosmicswapbutton').fadeTo("fast", 0, function() {
+                $(".cosmic-calc").fadeTo("fast", 1);
+                $(".cosmic-calc-title").fadeTo("fast", 1);
+                $("#cosmicswapbutton").fadeTo("fast", 1);
+              });
             }
           }).fail(function(e) {
             $('#sendSpinner').hide();
@@ -369,36 +407,147 @@
 
     function confirmRates() {
 
-      if ((tokenBoxCosmic.val() == 'KCAL' && parseFloat(tokenToSendBal) > parseFloat(balselfKCAL)) || (tokenBoxCosmic.val() == 'SOUL' && parseFloat(tokenToSendBal) > parseFloat(balselfSOUL)) || (tokenBoxCosmic.val() == 'GAS' && parseFloat(tokenToSendBal) > parseFloat(balselfGAS)) || (tokenBoxCosmic.val() == 'NEO' && parseFloat(tokenToSendBal) > parseFloat(balselfNEO))) {
+      if (1 == 1) {
+          bootbox.alert("Functionnality coming very soon!");
+          return;
+      }
+
+      if ((tokenBoxCosmic.val() == 'KCAL' && parseFloat(amounttoSend)/decimalsfrom > parseFloat(balselfKCAL)) || (tokenBoxCosmic.val() == 'SOUL' && parseFloat(amounttoSend)/decimalsfrom > parseFloat(balselfSOUL)) || (tokenBoxCosmic.val() == 'GAS' && parseFloat(amounttoSend)/decimalsfrom > parseFloat(balselfGAS)) || (tokenBoxCosmic.val() == 'NEO' && parseFloat(amounttoSend)/decimalsfrom > parseFloat(balselfNEO))) {
           bootbox.alert("Not enough " + tokenBoxCosmic.val() + " balance available!");
           return;
       }
 
+      $("#wrapper-confirmrates-confirm").fadeTo("fast", 0);
       $('#sendSpinner').show();
+      var selectfee = document.getElementById('cosmicaddfee').checked;
+      if (selectfee == true) {
+        feeDescText = ' and donate 0.1 KCAL to Phantom Wallet '
+        cosmicURL = '/contract/tx/cosmic'
+      } else {
+        feeDescText = ''
+        cosmicURL = '/contract/tx/'
+      }
+      bootbox.confirm({
+          title: "Cosmic Swap confirmation",
+          message: "Swap <strong>" + (amounttoSend/decimalsfrom).toFixed(5) + " " + numberWithCommas($("#select-token-form-cosmicsell").val()) + "</strong> for ≈ <strong>" + numberWithCommas($("#phantasmaamount").val()) + " " + $("#select-token-form-cosmicbuy").val() + "</strong>" + feeDescText + "?",
+          buttons: {
+              cancel: {
+                  label: '<i class="fa fa-times"></i> Cancel'
+              },
+              confirm: {
+                  label: '<i class="fa fa-check"></i> Confirm'
+              }
+          },
+          callback: function(result) {
 
-      params = [];
-      // build params for contract call
-      params[0] = { name: 'from', type: 'String', input: '{{address}}', info: '' }
-      params[1] = { name: 'fromSymbol', type: 'String', input: $("#select-token-form-cosmicsell").val(), info: '' }
-      params[2] = { name: 'toSymbol', type: 'String', input: $("#select-token-form-cosmicbuy").val(), info: '' }
-      params[3] = { name: 'amount', type: 'Number', input: $("#phantasmaamount").val(), info: '' }
-      $.post('/contract',
-         {
-             chain: 'main',
-             contract: 'swap',
-             method: 'SwapTokens',
-             params: JSON.stringify({
-               params
-             })
-         },
-         function (returnedData) {
-            //console.log(returnedData)
-            $('#sendSpinner').hide();
+            if (result) {
 
-        }).fail(function(e) {
-            $('#sendSpinner').hide();
-            console.log(JSON.stringify(e))
-            });
+              params = [];
+              // build params for contract call
+              params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
+              params[1] = { name: 'fromSymbol', type: 'String', input: $("#select-token-form-cosmicsell").val(), info: '' }
+              params[2] = { name: 'toSymbol', type: 'String', input: $("#select-token-form-cosmicbuy").val(), info: '' }
+              params[3] = { name: 'amount', type: 'Number', input: amounttoSend, info: '' }
+
+              /*
+              params[0] = { name: 'from', type: 'Object', input: '{{address}}', info: '' }
+              params[1] = { name: 'fromSymbol', type: 'String', input: 'SOUL', info: '' }
+              params[2] = { name: 'toSymbol', type: 'String', input: 'KCAL', info: '' }
+              params[3] = { name: 'amount', type: 'Number', input: (0.01 * Math.pow(10,8)), info: '' }
+              */
+              var countersettle = 0;
+              loopSettle();
+              function loopSettle() {
+
+                $.post(cosmicURL,
+                   {
+                       chain: 'main',
+                       contract: 'swap',
+                       method: 'SwapTokens',
+                       params: JSON.stringify({
+                         params
+                       })
+                   },
+                   function (returnedData) {
+                      //console.log(returnedData)
+                      $('#sendSpinner').hide();
+                      document.getElementById("wrapper-confirmrates-confirm").innerHTML = '<div class="loader" style="position:initial;"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-text" style="margin-top:1.5em;position:initial;" id="waitingText">Waiting for transaction confirmations<div class="loader-dots"></div></div></div>';
+                      $("#wrapper-confirmrates-confirm").fadeTo("slow", 1);
+                      var counter = 0;
+                      getConfirmations();
+                      function getConfirmations() {
+                            $.get('/tx/' + returnedData,
+                                function (returnedDataTX) {
+                                  //console.log(returnedDataTX)
+                                  if ((JSON.parse(returnedDataTX).error) == 'pending') {
+                                      counter++;
+                                      if (counter <= 10){
+                                        setTimeout(getConfirmations, 2000);
+                                      } else {
+                                        $('#wrapper-confirmrates-confirm').fadeTo("fast", 0, function() {
+                                            document.getElementById("wrapper-confirmrates-confirm").innerHTML = 'Transaction unconfirmed, please try again.';
+                                            $("#wrapper-confirmrates-confirm").fadeTo("slow", 1);
+                                        });
+                                      }
+                                  } else if ((JSON.parse(returnedDataTX).error) == 'Transaction not found') {
+                                      countersettle++;
+                                      if (countersettle <= 10){
+                                        setTimeout(loopSettle, 2000);
+                                      } else {
+                                        $('#wrapper-confirmrates-confirm').fadeTo("fast", 0, function() {
+                                            document.getElementById("wrapper-confirmrates-confirm").innerHTML = 'Transaction unconfirmed, please try again.';
+                                            $("#wrapper-confirmrates-confirm").fadeTo("slow", 1);
+                                        });
+                                      }
+                                  } else {
+
+                                      if ((JSON.parse(returnedDataTX).error) != undefined) {
+                                        $('#wrapper-confirmrates-confirm').fadeTo("fast", 0, function() {
+                                            document.getElementById("wrapper-confirmrates-confirm").innerHTML = JSON.parse(returnedDataTX).error;
+                                            $("#wrapper-confirmrates-confirm").fadeTo("slow", 1);
+                                        });
+                                      } else {
+                                        if ((JSON.parse(returnedDataTX).hash) == null) {
+                                          $('#wrapper-confirmrates-confirm').fadeTo("fast", 0, function() {
+                                              document.getElementById("wrapper-confirmrates-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                                              $("#wrapper-confirmrates-confirm").fadeTo("slow", 1);
+                                          });
+                                        } else {
+                                          $('#wrapper-confirmrates-confirm').fadeTo("fast", 0, function() {
+                                              document.getElementById("wrapper-confirmrates-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedDataTX + '" target="_blank" title="View Transaction">' + returnedDataTX + '</a>';
+                                              $("#wrapper-confirmrates-confirm").fadeTo("slow", 1);
+                                          });
+                                        }
+                                        setTimeout(function(){window.location.href = "/portfolio"}, 5000);
+
+                                      }
+                                    }
+                                }).fail(function(e) {
+                                    $('#sendSpinner').hide();
+                                    console.log(JSON.stringify(e))
+                                    $('#wrapper-confirmrates-confirm').fadeTo("fast", 0, function() {
+                                        document.getElementById("wrapper-confirmrates-confirm").innerHTML = JSON.stringify(e);
+                                        $("#wrapper-confirmrates-confirm").fadeTo("slow", 1);
+                                    });
+                                });
+                        }
+
+                  }).fail(function(e) {
+                      $('#sendSpinner').hide();
+                      console.log(JSON.stringify(e))
+                      $('#wrapper-confirmrates-confirm').fadeTo("fast", 0, function() {
+                          document.getElementById("wrapper-confirmrates-confirm").innerHTML = JSON.stringify(e);
+                          $("#wrapper-confirmrates-confirm").fadeTo("slow", 1);
+                      });
+                  });
+
+              }
+
+            } else {
+              $('#sendSpinner').hide();
+            }
+          }
+      })
 
     }
 
