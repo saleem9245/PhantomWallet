@@ -470,7 +470,7 @@ function Stake() {
       title: "Staking confirmation",
       message: "Stake <strong>" +
           numberWithCommas(toFixed((changedamount))) +
-          " SOUL?" +
+          " SOUL?</strong><br>You will be able to claim " + toFixed((changedamount)*0.002) + " KCAL per day." +
           custommessagecombined,
       buttons: {
           cancel: {
@@ -795,7 +795,7 @@ function Unstake() {
       title: "Unstaking confirmation",
       message: "Unstake <strong>" +
           numberWithCommas(toFixed((changedamount))) +
-          " SOUL?</strong>" + customunstakeall,
+          " SOUL?</strong><br>You will be loose the ability to claim " + toFixed((changedamount)*0.002) + " KCAL per day." + customunstakeall,
       buttons: {
           cancel: {
               label: '<i class="fa fa-times"></i> Cancel'
