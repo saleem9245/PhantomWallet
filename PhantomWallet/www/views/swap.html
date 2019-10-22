@@ -100,7 +100,7 @@
             <h4 class="control-label" style="margin-top:1em;">Step 1) Select token and quantity <u>to buy</u></h4>
             <select id="select-token-form-cosmicbuy" style="margin-top:1em;">
             <input class="form-control parameters-swap-input" id="phantasmaamount" type="number" style="text-align:center;" placeholder="Enter amount">
-            <h4 class="control-label" style="margin-top:1em;">Step 2) Select token <u>to sell to</u></h4>
+            <h4 class="control-label" style="margin-top:1em;">Step 2) Select token <u>to sell</u></h4>
             <select id="select-token-form-cosmicsell" style="margin-top:1em;">
             </select>
             <button class="btn-primary nextBtn btn-lg button" type="button" onclick="getRates()" id="getratesbutton">GET RATES</button>
@@ -731,10 +731,17 @@
                                          },
                                            function (returnedDataSettle) {
                                              //console.log(returnedDataSettle)
-                                             $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
-                                                 document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedDataSettle + '" target="_blank" title="View Transaction">' + returnedDataSettle + '</a>';
-                                                 $("#wrapper-swap-confirm").fadeTo("slow", 1);
-                                             });
+                                             if ((JSON.parse(returnedDataTX).hash) == null) {
+                                               $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
+                                                   document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
+                                                   $("#wrapper-swap-confirm").fadeTo("slow", 1);
+                                               });
+                                             } else {
+                                               $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
+                                                   document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedDataSettle + '" target="_blank" title="View Transaction">' + returnedDataSettle + '</a>';
+                                                   $("#wrapper-swap-confirm").fadeTo("slow", 1);
+                                               });
+                                             }
                                              setTimeout(function(){window.location.href = "/portfolio"}, 5000);
                                          }).fail(function(e) {
                                            $('#sendSpinner').hide();
@@ -758,7 +765,7 @@
                                                  document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedDataSettle + '" target="_blank" title="View Transaction">' + returnedDataSettle + '</a>';
                                                  $("#wrapper-swap-confirm").fadeTo("slow", 1);
                                              });
-                                             //setTimeout(function(){window.location.href = "/portfolio"}, 5000);
+                                             setTimeout(function(){window.location.href = "/portfolio"}, 5000);
                                          }).fail(function(e) {
                                            $('#sendSpinner').hide();
                                            console.log(JSON.stringify(e))
