@@ -614,6 +614,7 @@ namespace Phantom.Wallet
 
                     if (SendUtils.IsTxHashValid(contractTx))
                     {
+                        request.session.SetString("confirmedHash", contractTx);
                         return contractTx;
                     }
 
@@ -663,6 +664,7 @@ namespace Phantom.Wallet
 
                     if (SendUtils.IsTxHashValid(contractTx))
                     {
+                        request.session.SetString("confirmedHash", contractTx);
                         return contractTx;
                     }
 
@@ -704,6 +706,7 @@ namespace Phantom.Wallet
 
                 if (SendUtils.IsTxHashValid(contractTx))
                 {
+                    request.session.SetString("confirmedHash", contractTx);
                     return contractTx;
                 }
 
@@ -867,6 +870,7 @@ namespace Phantom.Wallet
 
               if (SendUtils.IsTxHashValid(registerTx))
               {
+                  request.session.SetString("confirmedHash", registerTx);
                   return registerTx;
               }
 
