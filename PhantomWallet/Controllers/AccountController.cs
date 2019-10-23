@@ -486,7 +486,7 @@ namespace Phantom.Wallet.Controllers
 
                 var script = ScriptUtils.BeginScript()
                     .CallContract("interop", "SettleTransaction", transcodedAddress, NeoWallet.NeoPlatform, NeoWallet.NeoPlatform, neoTxHash)
-                    .CallContract("swap", "SwapFee", transcodedAddress, symbol, UnitConversion.ToBigInteger(0.1m, DomainSettings.FuelTokenDecimals))
+                    .CallContract("swap", "SwapFee", transcodedAddress, symbol, UnitConversion.ToBigInteger(0.15m, DomainSettings.FuelTokenDecimals))
                     .TransferBalance(symbol, transcodedAddress, phantasmaKeys.Address)
                     .AllowGas(transcodedAddress, Address.Null, MinimumFee, 800)
                     .SpendGas(transcodedAddress)
