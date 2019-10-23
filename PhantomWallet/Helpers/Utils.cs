@@ -323,12 +323,12 @@ namespace Phantom.Wallet.Helpers
                     if (addressfrom == senderAddress.ToString())
                     {
                       description =
-                          $"Sent to {receiverAddress.ToString()}";
+                          $"Send transaction: to {receiverAddress.ToString()}";
                     }
                     else
                     {
                         description =
-                            $"Received from {senderAddress.ToString()}";
+                            $"Receive transaction: from {senderAddress.ToString()}";
                     }
 
                 }
@@ -336,7 +336,7 @@ namespace Phantom.Wallet.Helpers
                 {
                     var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == receiverToken).Decimals);
 
-                    description = $"Sent to {receiverAddress.Text} ";
+                    description = $"Send transaction: to {receiverAddress.Text} ";
                 }
                 else
                 {
