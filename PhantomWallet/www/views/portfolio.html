@@ -9,7 +9,7 @@
 </div>
     <div class="wrapper-portfolio">
       <div><button type="button" id="claim-kcal" class="button button-disabled" onclick="Claim()">CLAIM<BR>KCAL</button></div>
-      <div><input id="manageinput" type="number" min="1" class="form-control center" placeholder="Amount" style="display:inline-block;width: 30%;display:inline-block;margin-right: 1em;"><button type="button" class="button" style="border-radius: 0;" onclick="Stake()">STAKE</button><button type="button" id="unstake-soul" class="button" style="border-radius: 0;margin-left: .1em;display:none;" onclick="Unstake()">UNSTAKE</button></div>
+      <div><input id="manageinput" type="number" min="1" class="form-control center" placeholder="Amount" style="display:inline-block;width: 30%;display:inline-block;margin-right: 1em;"><button type="button" class="button" style="border-radius: 0;" onclick="Stake()" id="stakebutton">STAKE</button><button type="button" id="unstake-soul" class="button" style="border-radius: 0;margin-left: .1em;display:none;" onclick="Unstake()">UNSTAKE</button></div>
       <div><button type="button" id="claim-rewards" class="button button-disabled"onclick="MasterClaim()">CLAIM<BR>REWARDS</button></div>
     </div>
     <div id="wrapper-portfolio-confirm" style="opacity:0;">
@@ -165,12 +165,22 @@ $(document).ready(function() {
     }, 60000);
   }
 
+  loadedKCALbalance = 0;
   {{#each holdings}}
     if ('{{Symbol}}' == 'KCAL') {
       hasKCAL = 1;
       loadedKCALbalance = '{{Amount}}';
     }
   {{/each}}
+
+  // Trigger stake button on press enter
+  var inputstake = document.getElementById("manageinput");
+  inputstake.addEventListener("keyup", function(event) {
+      if (event.keyCode === 13) {
+          //event.preventDefault();
+          document.getElementById("stakebutton").click();
+      }
+  });
 
 });
 // Datatable initialization
@@ -217,7 +227,7 @@ function initTables() {
 }
 
 // cosmic swap when low kcal balances
-function cosmicSwapBasic() {
+function cosmicSwapFixed() {
 
   params = [];
   // build params for contract swap 0.1 soul to kcal
@@ -229,15 +239,7 @@ function cosmicSwapBasic() {
   loopContract();
   function loopContract() {
     $("#wrapper-portfolio-confirm").fadeTo(1, 0);
-    $.post('/contract/tx/',
-       {
-           chain: 'main',
-           contract: 'swap',
-           method: 'SwapTokens',
-           params: JSON.stringify({
-             params
-           })
-       },
+    $.post('/cosmicfixed',
        function (returnedData) {
           //console.log(returnedData)
           document.getElementById("wrapper-portfolio-confirm").innerHTML = 'Transaction pending: <a href="{{explorer}}/tx/' + returnedData + '" target="_blank" title="View Transaction">' + returnedData + '</a>';
@@ -269,7 +271,15 @@ function cosmicSwapBasic() {
                   })
             }
         }
-      })
+      }).fail(function(e) {
+        $('#sendSpinner').hide();
+        console.log(JSON.parse(JSON.stringify(e)).statusText)
+        $('#wrapper-portfolio-confirm').fadeTo("fast", 0, function() {
+            document.getElementById("wrapper-portfolio-confirm").innerHTML = JSON.parse((JSON.stringify(e))).statusText;
+            $("#wrapper-portfolio-confirm").fadeTo("slow", 1);
+        });
+      });
+
   }
 
 }
@@ -277,10 +287,10 @@ function cosmicSwapBasic() {
 // on click claim on portfolio
 function Claim() {
 
-  if (parseFloat(loadedKCALbalance) < 0.1) {
+  if (parseFloat(loadedKCALbalance) < 0.1 && parseFloat(loadedKCALbalance) > 0) {
     bootbox.confirm({
         title: "Swap confirmation",
-        message: "You don't have enough KCAL for this action (current balance: " + loadedKCALbalance + " KCAL).<br>Do you want to cosmic swap 0.1 SOUL? You'll get approximatively 0.49 KCAL for that.",
+        message: "You don't have enough KCAL for this action (current balance: " + loadedKCALbalance + " KCAL).<br>Do you want to cosmic swap 0.1 SOUL? You'll get approximatively 0.5 KCAL for that.",
         buttons: {
             cancel: {
                 label: '<i class="fa fa-times"></i> Cancel'
@@ -293,7 +303,7 @@ function Claim() {
 
             if (result) {
 
-              cosmicSwapBasic();
+              cosmicSwapFixed();
 
             }
 
@@ -399,7 +409,7 @@ function Claim() {
 // on click stake on portfolio
 function Stake() {
 
-  if (parseFloat(loadedKCALbalance) < 0.1) {
+  if (parseFloat(loadedKCALbalance) < 0.1 && parseFloat(loadedKCALbalance) > 0) {
     bootbox.confirm({
         title: "Swap confirmation",
         message: "You don't have enough KCAL for this action (current balance: " + loadedKCALbalance + " KCAL).<br>Do you want to cosmic swap 0.1 SOUL? You'll get approximatively 0.5 KCAL for that.",
@@ -415,7 +425,7 @@ function Stake() {
 
             if (result) {
 
-              cosmicSwapBasic();
+              cosmicSwapFixed();
 
             }
 
@@ -538,7 +548,7 @@ function Stake() {
                                 }
                                 // if amount exist and changed, flash the value
                                 if (document.getElementById("SOUL-amount").innerHTML != numberWithCommas(futureamount)) {
-                                  document.getElementById("SOUL-amount").innerHTML = numberWithCommas(futureamount);
+                                  document.getElementById("SOUL-amount").innerHTML = numberWithCommas(futureamount.toFixed(8));
                                   $(document.getElementById("SOUL-amount")).addClass('flash-portfolio').delay(300).queue(function(next){
                                        $(this).removeClass('flash-portfolio');
                                        next();
@@ -725,7 +735,7 @@ function Stake() {
 // on click stake on portfolio
 function Unstake() {
 
-  if (parseFloat(loadedKCALbalance) < 0.1) {
+  if (parseFloat(loadedKCALbalance) < 0.1 && parseFloat(loadedKCALbalance) > 0) {
     bootbox.confirm({
         title: "Swap confirmation",
         message: "You don't have enough KCAL for this action (current balance: " + loadedKCALbalance + " KCAL).<br>Do you want to cosmic swap 0.1 SOUL? You'll get approximatively 0.5 KCAL for that.",
@@ -741,7 +751,7 @@ function Unstake() {
 
             if (result) {
 
-              cosmicSwapBasic();
+              cosmicSwapFixed();
 
             }
 
@@ -917,7 +927,7 @@ function Unstake() {
 // on click claim rewards on portfolio
 function MasterClaim() {
 
-  if (parseFloat(loadedKCALbalance) < 0.1) {
+  if (parseFloat(loadedKCALbalance) < 0.1 && parseFloat(loadedKCALbalance) > 0) {
     bootbox.confirm({
         title: "Swap confirmation",
         message: "You don't have enough KCAL for this action (current balance: " + loadedKCALbalance + " KCAL).<br>Do you want to cosmic swap 0.1 SOUL? You'll get approximatively 0.5 KCAL for that.",
@@ -933,7 +943,7 @@ function MasterClaim() {
 
             if (result) {
 
-              cosmicSwapBasic();
+              cosmicSwapFixed();
 
             }
 
