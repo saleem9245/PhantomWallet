@@ -422,7 +422,7 @@
       var selectfee = document.getElementById('cosmicaddfee').checked;
       if (selectfee == true) {
         feeDescText = ' and donate 0.1 KCAL to Phantom Wallet '
-        cosmicURL = '/contract/tx/cosmic'
+        cosmicURL = '/cosmiccustom'
       } else {
         feeDescText = ''
         cosmicURL = '/contract/tx/'
@@ -989,8 +989,8 @@
                                         document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + JSON.parse(returnedDataTX).hash + '" target="_blank" title="View Transaction">' + JSON.parse(returnedDataTX).hash + '</a>';
                                         $("#wrapper-swap-confirm").fadeTo("slow", 1);
                                     });
-                                    setTimeout(function(){window.location.href = "/portfolio"}, 5000);
                                   }
+                                  setTimeout(function(){window.location.href = "/portfolio"}, 5000);
 
                                 }
                             }

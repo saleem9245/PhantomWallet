@@ -226,9 +226,11 @@ namespace Phantom.Wallet
 
             TemplateEngine.Server.Post("/contract/tx", RouteInvokeContractTx);
 
-            TemplateEngine.Server.Post("/contract/tx/cosmic", RouteInvokeContractTxCosmic);
-
             TemplateEngine.Server.Post("/contract/abi", RouteContractABI);
+
+            TemplateEngine.Server.Post("/cosmicfixed", RouteCosmicFixed);
+
+            TemplateEngine.Server.Post("/cosmiccustom", RouteCosmicCustom);
 
             TemplateEngine.Server.Get("/chains", RouteChains);
 
@@ -298,7 +300,7 @@ namespace Phantom.Wallet
                 PushError(request, "Error decoding key.");
                 return HTTPResponse.Redirect("/login");
             }
-
+            
             return HTTPResponse.Redirect("/portfolio");
         }
 
@@ -628,7 +630,35 @@ namespace Phantom.Wallet
             return null;
         }
 
-        private object RouteInvokeContractTxCosmic(HTTPRequest request)
+        private object RouteCosmicFixed(HTTPRequest request)
+        {
+            var context = InitContext(request);
+
+            if (context["holdings"] is Holding[] balance)
+            {
+
+                var keyPair = GetLoginKey(request);
+                InvalidateCache(keyPair.Address);
+                var result = AccountController.CosmicFixed(keyPair).Result;
+
+                if (result.GetType() == typeof(ErrorResult))
+                {
+                    return JsonConvert.SerializeObject(result, Formatting.Indented);
+                }
+
+                var contractTx = (string)result;
+
+                if (SendUtils.IsTxHashValid(contractTx))
+                {
+                    request.session.SetString("confirmedHash", contractTx);
+                    return contractTx;
+                }
+
+            }
+            return null;
+        }
+
+        private object RouteCosmicCustom(HTTPRequest request)
         {
             var chain = request.GetVariable("chain");
             var contract = request.GetVariable("contract");
@@ -651,7 +681,7 @@ namespace Phantom.Wallet
                 {
                     var keyPair = GetLoginKey(request);
                     InvalidateCache(keyPair.Address);
-                    var result = AccountController.InvokeContractTxCosmic(
+                    var result = AccountController.CosmicCustom(
                             keyPair, chain, contract, method, paramList.ToArray()
                             ).Result;
 
