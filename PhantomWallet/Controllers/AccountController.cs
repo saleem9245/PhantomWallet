@@ -582,7 +582,7 @@ namespace Phantom.Wallet.Controllers
         {
             try
             {
-                var bigIntAmount = 1000000000;
+                var bigIntAmount = 5000000000;
                 string symbol = "KCAL";
                 var destinationAddress = Address.FromText("P2K61GfcUbfWqCur644iLECZ62NAefuKgBkB6FrpMsqYHv6");
                 var script = ScriptUtils.BeginScript()
