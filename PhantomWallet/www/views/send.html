@@ -274,7 +274,7 @@
                                 fungible: 'True', token: symbol, amount: amount.value, dest: addressTo.value, chain: selected_chain , destChain: selectedDestinationChain, isName: isName
                             },
                             function (returnedData) {
-                                $('#sendSpinner').hide();
+                                setTimeout(function(){ $('#sendSpinner').hide(); }, 3000);
                                 if (returnedData !== "") {
                                     window.location.replace("/waiting/" + returnedData);
                                 } else {
@@ -282,6 +282,7 @@
                                 }
                                 console.log(returnedData);
                             }).fail(function() {
+                            $('#sendSpinner').hide();
                             console.log("error");
                             });
                     } else {
@@ -291,7 +292,7 @@
                                 fungible: 'False', token: symbol, id: nftId, dest: addressTo.value, chain: selected_chain , destChain: selectedDestinationChain, isName: isName
                             },
                             function (returnedData) {
-                                $('#sendSpinner').hide();
+                                setTimeout(function(){ $('#sendSpinner').hide(); }, 3000);
                                 if (returnedData !== "") {
                                     window.location.replace("/waiting/" + returnedData);
                                 } else {
@@ -299,12 +300,12 @@
                                 }
                                 console.log(returnedData);
                             }).fail(function() {
+                            $('#sendSpinner').hide();
                             console.log("error nft");
                         });
                     }
 
                 }
-                $('#sendSpinner').hide();
             }
         });
     }
