@@ -417,12 +417,6 @@ namespace Phantom.Wallet.Helpers
             File.WriteAllText(path, JsonConvert.SerializeObject(walletConfig));
         }
 
-        public static string LookUpName(string addressSerialized)
-        {
-          var address = Serialization.Unserialize<Address>(addressSerialized.Decode());
-          return $"{address.ToString()}";
-        }
-
         public static string FixPath(string path, bool final)
         {
             String platform = System.Environment.OSVersion.Platform.ToString();
