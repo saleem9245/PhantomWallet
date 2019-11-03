@@ -352,6 +352,7 @@
       } else if (cosmicto == 'NEO') {
         decimals = Math.pow(10,0);
       }
+
       if (cosmicfrom == 'KCAL') {
         decimalsfrom = Math.pow(10,10);
       } else if (cosmicfrom == 'SOUL') {
@@ -361,6 +362,7 @@
       } else if (cosmicfrom == 'NEO') {
         decimalsfrom = Math.pow(10,0);
       }
+
       params[0] = { name: 'fromSymbol', type: 'String', input: cosmicfrom, info: '' }
       params[1] = { name: 'toSymbol', type: 'String', input: cosmicto, info: '' }
       params[2] = { name: 'amount', type: 'Number', input: cosmicfromamount*decimalsfrom, info: '' }
@@ -381,7 +383,7 @@
               document.getElementById("cosmicsellinfofinal").innerHTML = '';
               document.getElementById("cosmicrateinfo").innerHTML = '';
               $('#wrapper-getrates-confirm').fadeTo("fast", 0, function() {
-                  document.getElementById("wrapper-getrates-confirm").innerHTML = 'Amount too low. Try with a higher one.';
+                  document.getElementById("wrapper-getrates-confirm").innerHTML = 'Can not get rates for the ' + cosmicfrom + '/' + cosmicto + ' pair. Try again later.';
                   $("#wrapper-getrates-confirm").fadeTo("slow", 1);
               });
 
@@ -907,13 +909,13 @@
                        }
                        valueSwap = (returnedDataPending[i].value)/decimals;
                        if (isFirstSwap) {
-                          fetchValuesPending = '<span style="border:1px solid #17B0E7;border-radius: 25px; padding:.5em;margin:.5em;display:inline-block;width:13em;background-color: #337ab7!important;color: #fff!important;">' + '<span><img style="margin: 0 0 .5em 0;height:2.5em;" src="img/' + assetsymbol.toLowerCase() + '_logo.png"></span><br>' + '<span style="font-size:.7em;"><a href="https://neoscan.io/transaction/' + txhash + '" style="color:#17B0E7" target="_blank">' + partialTX + '</a></span><br>' + '<span>' + numberWithCommas(valueSwap) + ' ' + assetsymbol + '</span></span>' + fetchValuesPending
+                          fetchValuesPending = '<span style="border:1px solid #17B0E7;border-radius: 25px; padding:.5em;margin:.5em;display:inline-block;width:11em;background-color: #337ab7!important;color: #fff!important;">' + '<span><img style="margin: 0 0 .5em 0;height:2.5em;" src="img/' + assetsymbol.toLowerCase() + '_logo.png"></span><br>' + '<span style="font-size:.7em;"><a href="https://neoscan.io/transaction/' + txhash + '" style="color:#17B0E7" target="_blank">' + partialTX + '</a></span><br>' + '<span style="font-size:.7em;">' + numberWithCommas(valueSwap) + ' ' + assetsymbol + '</span></span>' + fetchValuesPending
                           isFirstSwap = false;
                           assetsymbolToProcess = assetsymbol
                           txhashToProcess = txhash;
                           valueSwapToProcess = valueSwap
                        } else {
-                          fetchValuesPending = '<span style="border:1px solid #17B0E7;border-radius: 25px; padding:.5em;margin:.5em;display:inline-block;width:13em;">' + '<span><img style="margin: 0 0 .5em 0;height:2.5em;" src="img/' + assetsymbol.toLowerCase() + '_logo.png"></span><br>' + '<span style="font-size:.7em;"><a href="https://neoscan.io/transaction/' + txhash + '" target="_blank">' + partialTX + '</a></span><br>' + '<span>' + numberWithCommas(valueSwap) + ' ' + assetsymbol + '</span></span>' + fetchValuesPending
+                          fetchValuesPending = '<span style="border:1px solid #17B0E7;border-radius: 25px; padding:.5em;margin:.5em;display:inline-block;width:11em;">' + '<span><img style="margin: 0 0 .5em 0;height:2.5em;" src="img/' + assetsymbol.toLowerCase() + '_logo.png"></span><br>' + '<span style="font-size:.7em;"><a href="https://neoscan.io/transaction/' + txhash + '" target="_blank">' + partialTX + '</a></span><br>' + '<span style="font-size:.7em;">' + numberWithCommas(valueSwap) + ' ' + assetsymbol + '</span></span>' + fetchValuesPending
                        }
                        $('#sendSpinner').hide();
                        $('#wrapper-swapaddress-confirm').fadeTo("fast", 0, function() {
