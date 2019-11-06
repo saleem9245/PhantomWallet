@@ -669,7 +669,7 @@
           return;
       }
 
-      if (target_address_neo.length !== 34) {
+      if (target_address_neo.length !== 34 || !target_address_neo.startsWith('A')) {
           bootbox.alert("Please enter a valid NEO address!");
           return;
       }
