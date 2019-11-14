@@ -5,7 +5,7 @@
   <div class="top-portfolio col-md-12">
     <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/kcal_logo.png" /><span>ENERGY</span><br><span id="unclaimed-kcal" class="top-portfolio-col-highlight">KCAL</span><br><span id="rewards-kcal" class="top-portfolio-col-small">KCAL / DAY</span></div>
     <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/soul_logo.png" /><span>STAKES</span><span id="count-soulmasters" class="top-portfolio-col-small"></span><br><span id="stake-soul" class="top-portfolio-col-highlight">SOUL</span><br><br></div>
-    <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/token_logo.png" /><span>SOULMASTERS</span><br><span><span id="count-soulmasters-total" class="top-portfolio-col-highlight">SOULMASTER</span></span><br><span><span id="rewards-soulmasters" class="top-portfolio-col-small">SOUL / MONTH</span></span></div>
+    <div class="top-portfolio-col"><img class="portfolio-token-icon" src="img/token_logo.png" /><span>SOULMASTERS</span><br><span><span id="count-soulmasters-total" class="top-portfolio-col-highlight">SOULMASTERS</span></span><br><span><span id="eligible-soulmasters" class="top-portfolio-col-small">ELIGIBLE / SOUL PER SM</span><span id="rewards-soulmasters" class="top-portfolio-col-small"></span></span></div>
 </div>
     <div class="wrapper-portfolio">
       <div><button type="button" id="claim-kcal" class="button button-disabled" onclick="Claim()">CLAIM<BR>KCAL</button></div>
@@ -805,7 +805,7 @@ function Unstake() {
       title: "Unstaking confirmation",
       message: "Unstake <strong>" +
           numberWithCommas(toFixed((changedamount))) +
-          " SOUL?</strong><br>You will be loose the ability to claim " + toFixed((changedamount)*0.002) + " KCAL per day." + customunstakeall,
+          " SOUL?</strong><br>You will be lose the ability to claim " + toFixed((changedamount)*0.002) + " KCAL per day." + customunstakeall,
       buttons: {
           cancel: {
               label: '<i class="fa fa-times"></i> Cancel'
@@ -950,6 +950,12 @@ function MasterClaim() {
         }
       })
       return;
+  }
+
+  var d = new Date();
+  if (d.getDate() !== 1) {
+    bootbox.alert("Can only be performed the first day of each month");
+    return;
   }
 
   $("#wrapper-portfolio-confirm").fadeTo(1, 0);
@@ -1176,6 +1182,8 @@ function GetSoulmastersDetails() {
 
   var params = [];
   var params2 = [];
+  var params3 = [];
+  var d = new Date();
 
   // call both GetMasterCount and GetStake for calculations
   $.when(
@@ -1211,7 +1219,25 @@ function GetSoulmastersDetails() {
            stakeamount = returnedData;
         }).fail(function(e) {
            console.log(e)
-        })
+        }),
+
+        // build params for contract call
+        params3[0] = { name: 'claimDate', type: 'Timestamp', input: (d.getMonth() + 2) + '/' + d.getDate() + '/' + d.getFullYear() + ' 00:00:01', info: '' },
+
+        $.post('/contract',
+           {
+               chain: 'main',
+               contract: 'stake',
+               method: 'GetClaimMasterCount',
+               params: JSON.stringify({
+                 params3
+               })
+           },
+           function (returnedData) {
+              mastertotalcounteligible = returnedData;
+           }).fail(function(e) {
+              console.log(e)
+           })
 
      ).then(function() {
        // check if address is master
@@ -1221,8 +1247,8 @@ function GetSoulmastersDetails() {
          mastercount = 0;
        }
        // calculate total soulmasters
-       if (mastertotalcount > 0) {
-         rewards = 125000/mastertotalcount;
+       if (mastertotalcounteligible > 0) {
+         rewards = 125000/mastertotalcounteligible;
        } else {
          rewards = 0;
        }
@@ -1251,20 +1277,31 @@ function GetSoulmastersDetails() {
          }
        }
        // if amount rewards soulmaster exist and changed, flash the value
-       if (document.getElementById("rewards-soulmasters").innerHTML != numberWithCommas(parseFloat((rewards).toFixed(0))) + ' SOUL / MONTH') {
-         document.getElementById("rewards-soulmasters").innerHTML = numberWithCommas(parseFloat((rewards).toFixed(0))) + ' SOUL / MONTH';
+       if (document.getElementById("eligible-soulmasters").innerHTML != numberWithCommas(parseFloat((mastertotalcounteligible))) + ' Eligible / ') {
+         document.getElementById("eligible-soulmasters").innerHTML = numberWithCommas(parseFloat((mastertotalcounteligible)))  + ' Eligible / ';
+         $(document.getElementById("eligible-soulmasters")).addClass('flash-portfolio').delay(300).queue(function(next){
+              $(this).removeClass('flash-portfolio');
+              next();
+         });
+       }
+       // if amount rewards soulmaster exist and changed, flash the value
+       if (document.getElementById("rewards-soulmasters").innerHTML != numberWithCommas(parseFloat((rewards).toFixed(0))) + ' SOUL PER SM') {
+         document.getElementById("rewards-soulmasters").innerHTML = numberWithCommas(parseFloat((rewards).toFixed(0))) + ' SOUL PER SM';
          $(document.getElementById("rewards-soulmasters")).addClass('flash-portfolio').delay(300).queue(function(next){
               $(this).removeClass('flash-portfolio');
               next();
          });
        }
        // if getstake < 50000 disable claim rewards button
-       if (mastercount == 0 || mastertotalcount == 0) {
+       if (mastercount == 0 || mastertotalcount == 0 || mastertotalcounteligible == 0) {
          $(document.getElementById("claim-rewards")).addClass('button-disabled').delay(300).queue(function(next){
          });
        } else {
-         $(document.getElementById("claim-rewards")).removeClass('button-disabled').delay(300).queue(function(next){
-         });
+         var d = new Date();
+         if (d.getDate() == '1') {
+           $(document.getElementById("claim-rewards")).removeClass('button-disabled').delay(300).queue(function(next){
+           });
+         }
        }
      })
 
