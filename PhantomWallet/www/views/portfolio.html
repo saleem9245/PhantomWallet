@@ -1222,7 +1222,8 @@ function GetSoulmastersDetails() {
         }),
 
         // build params for contract call
-        params3[0] = { name: 'claimDate', type: 'Timestamp', input: (d.getMonth() + 2) + '/' + d.getDate() + '/' + d.getFullYear() + ' 00:00:01', info: '' },
+        //params3[0] = { name: 'claimDate', type: 'Timestamp', input: (d.getMonth() + 2) + '/' + d.getDate() + '/' + d.getFullYear() + ' 00:00:01', info: '' },
+        params3[0] = { name: 'claimDate', type: 'Timestamp', input: (d.getMonth() < 11 ? d.getMonth() + 2 : 1) + '/1/2020 00:00:01', info: '' },
 
         $.post('/contract',
            {
