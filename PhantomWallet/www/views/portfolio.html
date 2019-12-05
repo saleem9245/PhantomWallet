@@ -1185,6 +1185,14 @@ function GetSoulmastersDetails() {
   var params3 = [];
   var d = new Date();
 
+  if (d.getMonth().toString().length < 2) {
+    customMonth = '0' + d.getMonth() + 2;
+  } else if (d.getMonth() == '10') {
+    customMonth = 12
+  } else if (d.getMonth() == '11') {
+    customMonth = '01'
+  }
+
   // call both GetMasterCount and GetStake for calculations
   $.when(
 
@@ -1222,8 +1230,7 @@ function GetSoulmastersDetails() {
         }),
 
         // build params for contract call
-        //params3[0] = { name: 'claimDate', type: 'Timestamp', input: (d.getMonth() + 2) + '/' + d.getDate() + '/' + d.getFullYear() + ' 00:00:01', info: '' },
-        params3[0] = { name: 'claimDate', type: 'Timestamp', input: (d.getMonth() < 11 ? d.getMonth() + 2 : 1) + '/1/2020 00:00:01', info: '' },
+        params3[0] = { name: 'claimDate', type: 'Timestamp', input: customMonth + '/02/2020 00:00:00', info: '' },
 
         $.post('/contract',
            {

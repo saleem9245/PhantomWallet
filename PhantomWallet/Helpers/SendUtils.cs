@@ -177,7 +177,7 @@ namespace Phantom.Wallet.Helpers
                             result = Hash.Parse(input);
                             break;
                         case "Timestamp":
-                            DateTime date = DateTime.ParseExact(input, "M/d/yyyy HH:mm:ss",
+                            DateTime date = DateTime.ParseExact(input, "MM/dd/yyyy HH:mm:ss",
                                     System.Globalization.CultureInfo.InvariantCulture);
                             DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
                             var ticks = (uint)(date.ToUniversalTime() - unixEpoch).TotalSeconds;
