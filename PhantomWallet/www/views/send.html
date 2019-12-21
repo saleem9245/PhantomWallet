@@ -49,7 +49,7 @@
                         <input onfocusin="saveToken()" class="form-control parameters-input" maxlength="100" type="number" required="required" placeholder="Enter amount" id="amount" />
                     </div>
                     <div class="form-group" id="nft-id-group" hidden>
-                        <label class="control-label send-label">Select token ID</label>
+                        <h4 class="control-label send-label">Step 3) Select NFT</h4>
                         <select id="select-id"></select>
                     </div>
                     <button class="btn-primary prevBtn btn-lg button" type="button">PREVIOUS</button>
@@ -193,6 +193,32 @@
                 document.getElementById("amount-next").click();
             }
         });
+
+        arrayNFT = ''
+        sendcustomNFT = []
+        {{#each chainTokens}}
+            {{#each Ids}}
+            arrayNFT += '{{this}}' + ',';
+            {{/each}}
+        {{/each}}
+        arrayNFTFormatted = arrayNFT.substring(0, arrayNFT.length - 1)
+
+        $.get('http://cors-anywhere.herokuapp.com/https://www.22series.com/api/store/nft?ids=' + arrayNFTFormatted,
+            function (returnedDataTX) {
+              dataNFT = JSON.parse(returnedDataTX)
+              Object.keys(dataNFT).forEach(key => {
+                if (dataNFT[key].item_info) {
+                  name = dataNFT[key].item_info.name_english
+                } else {
+                  name = 'goati server error';
+                }
+                sendcustomNFT.push({
+                    id: key,
+                    item: dataNFT[key].item,
+                    name: ' • ' + name
+                });
+              });
+            })
 
     });
 
@@ -348,9 +374,11 @@
                     let nftIds = $('#select-id');
 
                     nftIds.find('option').remove();
-                    {{#each Ids}}
-                    nftIds.append($('<option>', { value: '{{this}}', text: '{{this}}' }));
-                    {{/each}}
+
+                    sendcustomNFTlength = sendcustomNFT.length
+                    for (i = 0; i < sendcustomNFTlength; i++) {
+                      nftIds.append($('<option>', { value: sendcustomNFT[i].id, text: 'NFT #' + sendcustomNFT[i].item + sendcustomNFT[i].name}));
+                    }
                     return;
                 } else {
                     var existingText = $('#select-token-form option:selected').text();
