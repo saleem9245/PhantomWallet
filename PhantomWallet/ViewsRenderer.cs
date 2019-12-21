@@ -182,6 +182,7 @@ namespace Phantom.Wallet
                 //context["transactions"] = cache.Transactions;
                 context["transactions"] = AccountController.GetAccountTransactions(keyPair.Address.Text).Result;
                 context["holdings"] = AccountController.GetAccountHoldings(keyPair.Address.Text).Result;
+                context["chainTokens"] = AccountController.PrepareSendHoldings();
 
                 if (string.IsNullOrEmpty(AccountController.AccountName))
                 {
@@ -207,6 +208,8 @@ namespace Phantom.Wallet
             TemplateEngine.Server.Get("/create", RouteCreateAccount);
 
             TemplateEngine.Server.Post("/sendrawtx", RouteSendRawTx);
+
+            TemplateEngine.Server.Post("/sendrawtxNFT", RouteSendRawTxNFT);
 
             TemplateEngine.Server.Get("/error", RouteError);
 
@@ -300,7 +303,7 @@ namespace Phantom.Wallet
                 PushError(request, "Error decoding key.");
                 return HTTPResponse.Redirect("/login");
             }
-            
+
             return HTTPResponse.Redirect("/portfolio");
         }
 
@@ -469,6 +472,32 @@ namespace Phantom.Wallet
                         });
                 }
             }
+
+            if (!SendUtils.IsTxHashValid(result))
+            {
+                PushError(request, result);
+                Log.Information("No valid result");
+                return "";
+            }
+
+            return result;
+        }
+
+        private object RouteSendRawTxNFT(HTTPRequest request)
+        {
+
+            var addressTo = request.GetVariable("dest");
+            var chainName = request.GetVariable("chain");
+            var symbol = request.GetVariable("token");
+            var amount = request.GetVariable("amount");
+            var payload = request.GetVariable("payload");
+
+            var keyPair = GetLoginKey(request);
+            string result;
+
+            result = AccountController.TransferTokensNFT(keyPair, addressTo, chainName, symbol, amount, payload).Result;
+
+            ResetSessionSendFields(request);
 
             if (!SendUtils.IsTxHashValid(result))
             {
@@ -953,6 +982,7 @@ namespace Phantom.Wallet
         private static readonly MenuEntry[] MenuEntries = new MenuEntry[]
         {
             new MenuEntry(){ Id = "portfolio", Icon = "fa-wallet", Caption = "Portfolio", Enabled = true, IsSelected = true},
+            new MenuEntry(){ Id = "nft", Icon = "fa-certificate", Caption = "NFT Sales", Enabled = true, IsSelected = false},
             new MenuEntry(){ Id = "send", Icon = "fa-paper-plane", Caption = "Send", Enabled = true, IsSelected = false},
             new MenuEntry(){ Id = "receive", Icon = "fa-qrcode", Caption = "Receive", Enabled = true, IsSelected = false},
             new MenuEntry(){ Id = "swap", Icon = "fa-random", Caption = "Swap", Enabled = true, IsSelected = false},
@@ -961,7 +991,7 @@ namespace Phantom.Wallet
             //new MenuEntry(){ Id = "exchange", Icon = "fa-chart-bar", Caption = "Exchange", Enabled = true, IsSelected = false},
             //new MenuEntry(){ Id = "sales", Icon = "fa-certificate", Caption = "Crowdsales", Enabled = true, IsSelected = false},
             //new MenuEntry(){ Id = "offline", Icon = "fa-file-export", Caption = "Offline Operation", Enabled = true, IsSelected = false},
-            new MenuEntry(){ Id = "contracts", Icon = "fa-file-signature", Caption = "Contracts", Enabled = true, IsSelected = false},
+            //new MenuEntry(){ Id = "contracts", Icon = "fa-file-signature", Caption = "Contracts", Enabled = true, IsSelected = false},
             new MenuEntry(){ Id = "settings", Icon = "fa-cog", Caption = "Settings", Enabled = true, IsSelected = false},
             new MenuEntry(){ Id = "logout", Icon = "fa-sign-out-alt", Caption = "Log Out", Enabled = true, IsSelected = false},
         };
