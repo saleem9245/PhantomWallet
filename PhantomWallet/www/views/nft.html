@@ -1,0 +1,630 @@
+<h3 class="tab-title">NFT Sales</h3>
+
+<div class="row setup-content nft" id="nft">
+    <div class="col-xs-12">
+        <div class="col-md-12">
+
+            <div style="text-align:center;" id="main-logo">
+              <img src="img/22series-logo-dark.png" alt="" style="width: 20em;">
+            </div>
+            <div class="col-md-6 center">
+              <div style="margin-top:-5em;width: 225%;margin-left: -65% !important;" class="container-clock">
+                <h3>Sale Ends in</h3>
+                <div class="custom-clock"></div>
+              </div>
+            </div>
+            <div class="col-md-6 center container-prize" style="margin-top:-5em;">
+              <h3>Current Prize Pool<i class="tooltip fas fa-info-circle" style="margin-left:1em;width:1em;" title="10% of all sales goes towards prize pool of the first 22 Series championship!"></i></h3>
+              <div class="prizepool" id="prizepool">XXX,XXX SOUL</div>
+              <div class="referral-nft">If you refer someone, you both get 10% of his purchase!<i class="tooltip fas fa-info-circle" style="margin-left:1em;width:1em;" data-tooltip-content="#tooltip_referral"></i></div>
+            </div>
+            <div class="col-md-12 center">
+              <h3 id="nftdetailslist-title" style="margin-top:-1.5em;">Current NFTs available to buy </h3>
+              <div id="nft-category" style="margin-bottom: 1em;padding:.5em;padding-left: 4em;padding-right: 4em;">
+                <div class="category" id="game-access" onclick="filterCategory(this.id)">Game Access</div>
+                <div class="category" id="vehicle-parts" onclick="filterCategory(this.id)">Vehicle Parts</div>
+                <div class="category" id="vehicles" onclick="filterCategory(this.id)">Vehicles</div>
+                <div class="category-currency" style="font-size: 1.25em;justify-content: center;border: 0;">
+                  <div style="margin-top:.95em;display:inline-block;vertical-align:top;">
+                    <input class="tgl tgl-flat" id="cb5" type="checkbox" onclick="toggleCurrency()" checked>
+                    <label class="tgl-btn" style="margin: 0 auto;" for="cb5"></label>
+                  </div>
+                  <span style="margin:1em .5em;display:inline-block;color:#FFBF32" id="symbol-currency">SOUL</span>
+                </div>
+              </div>
+              <div id="loader-nftlist" class="block-loader center">
+                <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+              </div>
+              <div id="nftdetailslist-game" style="margin:1em;">
+              </div>
+              <div id="nftdetailslist-parts" style="margin:1em;">
+              </div>
+              <div id="nftdetailslist-vehicles" style="margin:1em;">
+              </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div id="no-nft" style="display:none;">
+    <h3>No Sales available currently</h3>
+</div>
+
+<div class="tooltip_templates">
+    <span id="tooltip_referral">
+        Simply give them your public Phantasma address which they'll have to input before buying NFT.<br><br>Rewards paid out in GOATI token, valued at 10:1 SOUL.<br><br>Example: you refer someone who buys 1000 SOUL worth, you both get 10 GOATI, which you can use to buy an item worth 100 SOUL.
+    </span>
+</div>
+<div class="tooltip_templates">
+    <span id="tooltip_pit">
+        Vehicle Builder.<br><br>Pit Pass NFT tokens give you access to the in-game vehicle builder<br>where you can assemble your vehicle parts and build your own custom<br>vehicles ready to race.<br><br>Grants access to one track to race individually.
+    </span>
+</div>
+<div class="tooltip_templates">
+    <span id="tooltip_game">
+        Access All Areas.<br><br>Game license NFT's give you full access to the entire game.<br>With this NFT you will be able to access the vehicle builder,<br>as well as all race modes, single player and multiplayer.<br><br>Includes Phantasma Blue Vehicle.
+    </span>
+</div>
+<div class="tooltip_templates">
+    <span id="tooltip_auction">
+        Auction-Based.<br><br>Supply TBA.
+    </span>
+</div>
+<div class="tooltip_templates">
+    <span id="tooltip_manufacturer">
+        License to mint separate vehicle parts into complete, tradable, vehicles<br><br>Manufacturing a vehicle then requires 25 core parts, burned in the process.
+    </span>
+</div>
+<div class="tooltip_templates">
+    <span id="tooltip_scrapper">
+        License to scrap minted, complete NFT vehicles into 25 individual, tradable NFT parts.
+    </span>
+</div>
+<div class="tooltip_templates">
+    <span id="tooltip_pack">
+        Five random, tradable parts.<br><br>5 % Chance to unlock exlusive pre-season vehicles such as: <ul><li>Steelseries</li><li>Kraken</li><li>AMD</li><li>Phantasma White.
+    </span>
+</div>
+<div class="tooltip_templates">
+    <span id="tooltip_part">
+        Random, tradable part.<br><br>You need 25 individual core parts to manufacture a vehicle (also requires manufacturer license).
+    </span>
+</div>
+<div class="tooltip_templates">
+    <span id="tooltip_bronze">
+        Pre-Season, exclusive, tradable Phantasma bronze vehicle.<br><br>Date & Supply TBA.
+    </span>
+</div>
+<div class="tooltip_templates">
+    <span id="tooltip_silver">
+        Pre-Season, exclusive, tradable Phantasma silver vehicle.<br><br>Date & Supply TBA.
+    </span>
+</div>
+<div class="tooltip_templates">
+    <span id="tooltip_gold">
+      Pre-Season, exclusive, tradable Phantasma gold vehicle.<br><br>Date & Supply TBA.
+    </span>
+</div>
+<div class="tooltip_templates">
+    <span id="tooltip_mankini">
+        Tradable, exlusive Mankini Mobile that guarantees “great success”.<br><br>Includes 5 Mankini tokens, for entry to exclusive Mankini events.<br><br>Date & Supply TBA.
+    </span>
+</div>
+<div class="tooltip_templates">
+    <span id="tooltip_pamped">
+        Custom vehicle that will be created with the player.<br><br>3 feeback consultations with 22 Series artists.<br><br>22 Series has right of refusal which will result in a refund - ideally established in first consulation.<br><br>Date & Supply TBA.
+    </span>
+</div>
+<div class="tooltip_templates">
+    <span id="tooltip_0"></span><span id="tooltip_1"></span><span id="tooltip_2"></span><span id="tooltip_3"></span><span id="tooltip_4"></span><span id="tooltip_5"></span><span id="tooltip_6"></span><span id="tooltip_7"></span><span id="tooltip_8"></span><span id="tooltip_9"></span><span id="tooltip_10"></span>
+    <span id="tooltip_111"></span><span id="tooltip_12"></span><span id="tooltip_13"></span><span id="tooltip_14"></span><span id="tooltip_15"></span><span id="tooltip_16"></span><span id="tooltip_17"></span><span id="tooltip_18"></span><span id="tooltip_19"></span><span id="tooltip_20"></span>
+    <span id="tooltip_a0"></span><span id="tooltip_a1"></span><span id="tooltip_a2"></span><span id="tooltip_a3"></span><span id="tooltip_a4"></span><span id="tooltip_a5"></span><span id="tooltip_a6"></span>
+</div>
+
+<script>
+
+$(document).ready(function() {
+
+  storeURL = 'http://cors-anywhere.herokuapp.com/http://www.22series.com/api/store/info';
+  categorySelected = 'game-access';
+  currencySelected = 'SOUL';
+
+  //temp hack if init store filter empty
+  document.getElementById("vehicle-parts").innerHTML = 'Game Access';
+  $("#game-access").hide();
+
+  // Hide all on page init
+  $("#loader-nftlist").show();
+
+  var date = new Date(2020, 2, 22);
+  var now = new Date();
+  var diff = (date.getTime()/1000) - (now.getTime()/1000);
+  var clock = $('.custom-clock').FlipClock(diff,{
+      clockFace: 'DailyCounter',
+      countdown: true
+  });
+
+  // If sale timeframe still on
+  if (now.getMonth() == 11) {
+    // Init page on load
+    getNFTDetails()
+    getPrizepool()
+
+    // init refresh every minute
+    setInterval(function() {
+      getNFTDetails()
+      getPrizepool()
+    }, 60000);
+
+  } else {
+    $("#nft").hide();
+    $("#no-nft").show();
+  }
+
+  loadedKCALbalance = 0;
+  loadedSOULbalance = 0;
+  loadedGOATIbalance = 0;
+  {{#each holdings}}
+    if ('{{Symbol}}' == 'KCAL') {
+      loadedKCALbalance = '{{Amount}}';
+    }
+    if ('{{Symbol}}' == 'SOUL') {
+      loadedSOULbalance = '{{Amount}}';
+    }
+    if ('{{Symbol}}' == 'GOATI') {
+      loadedGOATIbalance = '{{Amount}}';
+    }
+  {{/each}}
+
+  // init tooltipster i
+  $('i.tooltip').tooltipster({
+    theme: 'tooltipster-noir',
+    contentCloning: true,
+    side: 'right'
+  });
+
+});
+
+// function toggle currency
+function toggleCurrency() {
+
+  if(document.getElementById("symbol-currency").innerHTML == 'GOATI')
+  {
+    document.getElementById("symbol-currency").innerHTML = 'SOUL';
+    currencySelected = 'SOUL';
+  }
+  else
+  {
+    document.getElementById("symbol-currency").innerHTML = 'GOATI';
+    currencySelected = 'GOATI';
+  }
+
+  getNFTDetails()
+
+}
+
+// On click categories
+function filterCategory(category) {
+
+  var cat1 = document.getElementById("game-access");
+  var cat2 = document.getElementById("vehicle-parts");
+  var cat3 = document.getElementById("vehicles");
+  if (category == 'game-access') {
+    cat1.classList.add("category-current");
+    cat2.classList.remove("category-current");
+    cat3.classList.remove("category-current");
+    $("#nftdetailslist-game").show();
+    $("#nftdetailslist-parts").hide();
+    $("#nftdetailslist-vehicles").hide();
+  } else if (category == 'vehicle-parts') {
+    cat1.classList.remove("category-current");
+    cat2.classList.add("category-current");
+    cat3.classList.remove("category-current");
+    $("#nftdetailslist-game").hide();
+    $("#nftdetailslist-parts").show();
+    $("#nftdetailslist-vehicles").hide();
+  } else if (category == 'vehicles') {
+    cat1.classList.remove("category-current");
+    cat2.classList.remove("category-current");
+    cat3.classList.add("category-current");
+    $("#nftdetailslist-game").hide();
+    $("#nftdetailslist-parts").hide();
+    $("#nftdetailslist-vehicles").show();
+  }
+  categorySelected = category;
+
+}
+
+// Get prizepool details
+function getPrizepool() {
+
+  $.get(storeURL,
+
+    function (data) {
+      //console.log(data)
+        if (JSON.parse(data).prize_pool_formatted != undefined) {
+          responsesoulbal = JSON.parse(data).prize_pool_formatted;
+          responsesoulbalformatted = numberWithCommas(responsesoulbal) + ' SOUL';
+          document.getElementById("prizepool").innerHTML = responsesoulbalformatted;
+        }
+  })
+
+}
+
+// Get NFT details
+function getNFTDetails() {
+
+  addressNFT = '';
+  addressAuctionNFT = '';
+  datastore = '';
+
+  $.get(storeURL,
+
+    function (data) {
+      addressNFT = JSON.parse(data).address
+      datastore = JSON.parse(data);
+  }).then(function() {
+
+    $("#nftdetailslist-game").hide();
+    $("#nftdetailslist-parts").hide();
+    $("#nftdetailslist-vehicles").hide();
+
+    fetchValuesNFTGame = '';
+    fetchValuesNFTParts = '';
+    fetchValuesNFTVehicles = '';
+
+    var detailsNFTGamelength = (datastore.inventory).length;
+    // Start building the NFT details divs
+    for (i = 0; i < detailsNFTGamelength; i += 1) {
+      //if (((datastore.inventory)[i].item_info.name_english) == ((datastore.inventory)[i].item_info.name_english)) {
+      var emptyCustomFilter = 0;
+      if (((datastore.inventory)[i].item_info.name_english) == 'Pit Pass' || ((datastore.inventory)[i].item_info.name_english) == 'Game License') {
+
+      // temp hack if first category filter empty
+      emptyCustomFilter = 1;
+
+      amountFormatted = (datastore.inventory)[i].value_soul_formatted;
+      if (currencySelected == 'GOATI') {
+        amountFormatted = (datastore.inventory)[i].value_goati_formatted;
+      }
+
+      if ((datastore.inventory)[i].max_supply == 0) {
+        maxSupply = 'UNLIMITED';
+      } else {
+        maxSupply = numberWithCommas((datastore.inventory)[i].max_supply);
+      }
+
+      document.getElementById("tooltip_" + [i]).innerHTML = (datastore.inventory)[i].item_info.description_english;
+
+        fetchValuesNFTGame += '<div class="nft-class">'
+                          + '<div class="nft-image" onclick="confirmSale(\'' + (datastore.inventory)[i].item_info.name_english + '\',\'' + amountFormatted + '\',\'' + (datastore.inventory)[i].item + '\')">'
+                            + '<button class="nft-order circulating">' + numberWithCommas((datastore.inventory)[i].supply) + ' BOUGHT</button>'
+                            + '<button class="nft-order supply">' + maxSupply + '</button>'
+                            + '<img src="' + (datastore.inventory)[i].img + '" alt="" style="height:20em;">'
+                            + '<div class="nft-desc" style="height:8em;">'
+                              + '<h3>' + (datastore.inventory)[i].item_info.name_english + '</h3>'
+                                + '<div style="text:align:center;">'
+                                  + '<button class="nft-order price" style="font-size:1.3em;" >BUY FOR ' + numberWithCommas(amountFormatted) + ' ' + currencySelected + '</button>'
+                                  + '<button class="tooltip nft-order info" style="font-size:1.3em;" data-tooltip-content="#tooltip_' + [i] + '"><i class="fas fa-info" style="width:1em;"></i></button>'
+                                + '</div>'
+                            + '</div>'
+                          + '</div>'
+                        + '</div>'
+
+        }
+    }
+
+    // temp hack if first category filter empty
+    if (emptyCustomFilter == 1) {
+      document.getElementById("vehicle-parts").innerHTML = 'Vehicle Parts';
+      $("#game-access").show();
+    } else {
+      categorySelected = 'vehicle-parts';
+    }
+
+    var detailsNFTPartslength = (datastore.inventory).length;
+    // Start building the NFT details divs
+    for (i = 0; i < detailsNFTPartslength; i += 1) {
+      //if (((datastore.inventory)[i].item_info.name_english) == ((datastore.inventory)[i].item_info.name_english)) {
+      if (((datastore.inventory)[i].item_info.name_english) !== 'Pit Pass' || ((datastore.inventory)[i].item_info.name_english) !== 'Game License') {
+
+      amountFormatted = (datastore.inventory)[i].value_soul_formatted;
+      if (currencySelected == 'GOATI') {
+        amountFormatted = (datastore.inventory)[i].value_goati_formatted;
+      }
+
+      if ((datastore.inventory)[i].max_supply == 0) {
+        maxSupply = 'UNLIMITED';
+      } else {
+        maxSupply = numberWithCommas((datastore.inventory)[i].max_supply);
+      }
+
+      document.getElementById("tooltip_" + [i]).innerHTML = (datastore.inventory)[i].item_info.description_english;
+
+        fetchValuesNFTParts += '<div class="nft-class">'
+                          + '<div class="nft-image" onclick="confirmSale(\'' + (datastore.inventory)[i].item_info.name_english + '\',\'' + amountFormatted + '\',\'' + (datastore.inventory)[i].item + '\')">'
+                            + '<button class="nft-order circulating">' + numberWithCommas((datastore.inventory)[i].supply) + ' BOUGHT</button>'
+                            + '<button class="nft-order supply">' + maxSupply + '</button>'
+                            + '<img src="' + (datastore.inventory)[i].img + '" alt="" style="height:12em;">'
+                            + '<div class="nft-desc">'
+                              + '<h3>' + (datastore.inventory)[i].item_info.name_english + '</h3>'
+                                + '<div style="text:align:center;">'
+                                  + '<button class="nft-order price" >BUY FOR ' + numberWithCommas(amountFormatted) + ' ' + currencySelected + '</button>'
+                                  + '<button class="tooltip nft-order info" data-tooltip-content="#tooltip_' + [i] + '"><i class="fas fa-info" style="width:1em;"></i></button>'
+                                + '</div>'
+                            + '</div>'
+                          + '</div>'
+                        + '</div>'
+
+        }
+    }
+
+    var detailsNFTVehicleslength = (datastore.auctions).length;
+    // Start building the NFT details divs
+    for (i = 0; i < detailsNFTVehicleslength; i += 1) {
+
+      var timeuntil = (((datastore.auctions)[i].start_time)*1000) - (new Date()).getTime();
+      var timeleft = (((datastore.auctions)[i].end_time)*1000) - (new Date()).getTime();
+      var hoursuntil = 'STARTS IN ' + numberWithCommas(Math.ceil((((timeleft / 1000) / 60) / 60))) + ' HOURS';
+      var hoursleft = 'ENDS IN ' + numberWithCommas(Math.ceil((((timeleft / 1000) / 60) / 60))) + ' HOURS';
+
+        if (hoursuntil >= 0) {
+          hours = hoursuntil
+        } else {
+          hours = hoursleft
+        }
+
+        if (i == 2) {
+          customlinebreak = '<br>';
+        } else {
+          customlinebreak = '';
+        }
+
+        var bidsLength = ((datastore.auctions)[i].bids).length;
+
+        if (bidsLength >= 2) {
+          currentLowestBid = (datastore.auctions)[i].bids[2].value_soul_formatted
+        } else if (bidsLength == 1) {
+          currentLowestBid = (datastore.auctions)[i].bids[1].value_soul_formatted
+        } else if (bidsLength == 0) {
+          currentLowestBid = (datastore.auctions)[i].bids[0].value_soul_formatted
+        } else {
+          currentLowestBid = 1000;
+        }
+
+        addressAuctionNFT = (datastore.auctions)[i].address
+
+        document.getElementById("tooltip_a" + [i]).innerHTML = (datastore.auctions)[i].item_info.description_english;
+
+        if (timeuntil < 0) {
+
+          fetchValuesNFTVehicles += '<div class="nft-class">'
+                            + '<div class="nft-image" onclick="confirmAuction(\'' + (datastore.auctions)[i].item_info.make + '\',\'' + (parseFloat(currentLowestBid)) + '\',\'' + (numberWithCommas((datastore.auctions)[i].capacity)) + '\',\'' + addressAuctionNFT + '\',\'' + ((datastore.auctions)[i].item) + '\')">'
+                              + '<button class="nft-order circulating">' + hours + '</button>'
+                              + '<button class="nft-order supply">' + numberWithCommas((datastore.auctions)[i].capacity) + '</button>'
+                              + '<img src="' + (datastore.auctions)[i].img + '" alt="" style="height:12em;">'
+                              + '<div class="nft-desc">'
+                                + '<h3>' + (datastore.auctions)[i].item_info.make + '</h3>'
+                                  + '<div style="text:align:center;">'
+                                    + '<button class="nft-order price" >CURRENT BID ' + numberWithCommas(parseFloat(currentLowestBid)) + ' SOUL</button>'
+                                    + '<button class="tooltip nft-order info" data-tooltip-content="#tooltip_a' + [i] + '"><i class="fas fa-info" style="width:1em;"></i></button>'
+                                  + '</div>'
+                              + '</div>'
+                            + '</div>'
+                          + '</div>'
+                          + customlinebreak;
+
+        } else {
+
+          fetchValuesNFTVehicles += '<div class="nft-class">'
+                            + '<div class="nft-image" onclick="timeUntilAuction(\'' + timeuntil + '\')">'
+                              + '<button class="nft-order circulating">' + hours + '</button>'
+                              + '<button class="nft-order supply">' + numberWithCommas((datastore.auctions)[i].capacity) + '</button>'
+                              + '<img src="' + (datastore.auctions)[i].img + '" alt="" style="height:12em;">'
+                              + '<div class="nft-desc">'
+                                + '<h3>' + (datastore.auctions)[i].item_info.make + '</h3>'
+                                  + '<div style="text:align:center;">'
+                                    + '<button class="nft-order price" >LOWEST BID ' + numberWithCommas(parseFloat(currentLowestBid)) + ' SOUL</button>'
+                                    + '<button class="tooltip nft-order info" data-tooltip-content="#tooltip_a' + [i] + '"><i class="fas fa-info" style="width:1em;"></i></button>'
+                                  + '</div>'
+                              + '</div>'
+                            + '</div>'
+                          + '</div>'
+                          + customlinebreak;
+
+        }
+
+    }
+
+    if ((datastore.inventory).length == 0) {
+      document.getElementById("nftdetailslist-game").innerHTML = '<div style="margin:2em auto;">No NFTs available.</div>';
+    } else {
+      document.getElementById("nftdetailslist-game").innerHTML = fetchValuesNFTGame;
+      document.getElementById("nftdetailslist-parts").innerHTML = fetchValuesNFTParts;
+      document.getElementById("nftdetailslist-vehicles").innerHTML = fetchValuesNFTVehicles;
+    }
+    $("#loader-nftlist").hide();
+
+    filterCategory(categorySelected)
+
+    // init tooltipster button
+    if ($('button.tooltip').tooltipster()) {
+        $('button.tooltip').tooltipster('destroy');
+    }
+
+    $('button.tooltip').tooltipster({
+      theme: 'tooltipster-noir',
+      contentCloning: true,
+      side: 'right'
+    });
+
+  }).fail(function(e) {
+     console.log(e)
+     $("#loader-nftlist").hide();
+  })
+
+}
+
+// Confirm date auction
+function timeUntilAuction(timeleft) {
+
+  bootbox.alert('Auction has not started yet.<br>You need to wait ' + numberWithCommas(Math.ceil((((timeleft / 1000) / 60) / 60))) + ' more hours to bid on this NFT!');
+  return;
+
+}
+
+// Confirm auction
+function confirmAuction(nameNFT, priceNFT, quantityNFT, addressAuctionNFT, payloadNFT) {
+
+  if (parseFloat(loadedSOULbalance) < parseFloat(priceNFT)) {
+        bootbox.alert('Not enough SOUL available. You need ' + numberWithCommas(parseFloat(priceNFT) - parseFloat(loadedSOULbalance)) + ' more SOUL to buy this NFT!');
+        return;
+  }
+
+  if (parseFloat(loadedKCALbalance) < 0.1 && parseFloat(loadedKCALbalance) > 0) {
+        bootbox.alert("Not enough KCAL available. You need at least 0.1 KCAL to perform a transaction!");
+        return;
+  }
+
+  $('#sendSpinner').show();
+  contentBootbox = 'How much SOUL do you want to bid for <strong>' + nameNFT + '</strong>? It needs to be at least 100 more SOUL than the current lowest winning bid of <strong>' + numberWithCommas(parseFloat(priceNFT)) + ' SOUL</strong>.'
+      + '<br><input type="text" class="form-control" name="bidauction"><br>'
+      + 'If your bid is below that amount, or if it falls below the <b>' + quantityNFT + ' current highest bids later</b>, you will be refunded instantly.<br><br>'
+      + "Someone referred you? Enter his Phantasma address below.<br>You will both get <strong>10% of the purchase back in GOATI</strong> tokens.<br><br>"
+      + '<input type="text" class="form-control" name="referral">';
+
+  dialog = bootbox.confirm({
+      title: "NFT auction bid confirmation",
+      message: contentBootbox,
+      buttons: {
+          cancel: {
+              label: '<i class="fa fa-times"></i> Cancel'
+          },
+          confirm: {
+              label: '<i class="fa fa-check"></i> Bid on NFT'
+          }
+      },
+      callback: function(result) {
+
+        if (result) {
+
+          results = {};
+          results.fieldname1 = dialog[0].querySelector("[name=referral]").value;
+          referredBy = results.fieldname1
+          results.fieldname2 = dialog[0].querySelector("[name=bidauction]").value;
+          bidAuction = results.fieldname2
+          var payloadFormatted = JSON.stringify({"item":parseFloat(payloadNFT)})
+
+          if (referredBy != ''){
+            payloadFormatted = JSON.stringify({"ref":referredBy, "item":parseFloat(payloadNFT)})
+          }
+
+          $.post('/sendrawtxNFT',
+              {
+                  token: currencySelected, amount: parseFloat(bidAuction), dest: addressAuctionNFT, chain: 'main' , destChain: 'main', payload: payloadFormatted
+              },
+              function (returnedData) {
+                  setTimeout(function(){ $('#sendSpinner').hide(); }, 3000);
+                  if (returnedData !== "") {
+                      window.location.replace("/waiting/" + returnedData);
+                  } else {
+                      window.location.replace("/error");
+                  }
+                  console.log(returnedData);
+              }).fail(function() {
+              $('#sendSpinner').hide();
+              console.log("error nft");
+          });
+
+        }
+
+        $('#sendSpinner').hide();
+
+      }
+    })
+
+}
+
+// Confirm sale
+function confirmSale(nameNFT, priceNFT, payloadNFT) {
+
+  if (currencySelected == 'SOUL') {
+
+    if (parseFloat(loadedSOULbalance) < parseFloat(priceNFT)) {
+          bootbox.alert('Not enough SOUL available. You need ' + numberWithCommas(parseFloat(priceNFT) - parseFloat(loadedSOULbalance)) + ' more SOUL to buy this NFT!');
+          return;
+    }
+
+  } else if (currencySelected == 'GOATI') {
+
+    if (parseFloat(loadedGOATIbalance) < parseFloat(priceNFT)) {
+          bootbox.alert('Not enough GOATI available. You need ' + numberWithCommas(parseFloat(priceNFT) - parseFloat(loadedGOATIbalance)) + ' more GOATI to buy this NFT!');
+          return;
+    }
+
+  }
+
+  if (parseFloat(loadedKCALbalance) < 0.1 && parseFloat(loadedKCALbalance) > 0) {
+        bootbox.alert("Not enough KCAL available. You need at least 0.1 KCAL to perform a transaction!");
+        return;
+  }
+
+  $('#sendSpinner').show();
+  contentBootbox = 'You are going to buy <strong>'
+      + nameNFT
+      + '</strong> for <strong>'
+      + numberWithCommas(parseFloat(priceNFT))
+      + " " + currencySelected + ".</strong><br><br>"
+      + " Someone referred you? Enter his Phantasma address below.<br>You will both get 10% of the purchase back in GOATI tokens.<br><br>"
+      + '<input type="text" class="form-control" name="referral">';
+  dialog = bootbox.confirm({
+      title: "NFT buy confirmation",
+      message: contentBootbox,
+      buttons: {
+          cancel: {
+              label: '<i class="fa fa-times"></i> Cancel'
+          },
+          confirm: {
+              label: '<i class="fa fa-check"></i> Buy NFT'
+          }
+      },
+      callback: function(result) {
+
+        if (result) {
+
+          results = {};
+          results.fieldname1 = dialog[0].querySelector("[name=referral]").value;
+          referredBy = results.fieldname1
+          var payloadFormatted = JSON.stringify({"item":parseFloat(payloadNFT)})
+
+          if (referredBy != ''){
+            payloadFormatted = JSON.stringify({"ref":referredBy, "item":parseFloat(payloadNFT)})
+          }
+
+          $.post('/sendrawtxNFT',
+              {
+                  token: currencySelected, amount: parseFloat(priceNFT), dest: addressNFT, chain: 'main' , destChain: 'main', payload: payloadFormatted
+              },
+              function (returnedData) {
+                  setTimeout(function(){ $('#sendSpinner').hide(); }, 3000);
+                  if (returnedData !== "") {
+                      window.location.replace("/waiting/" + returnedData);
+                  } else {
+                      window.location.replace("/error");
+                  }
+                  console.log(returnedData);
+              }).fail(function() {
+              $('#sendSpinner').hide();
+              console.log("error nft");
+          });
+
+        }
+
+        $('#sendSpinner').hide();
+
+      }
+    })
+
+}
+
+</script>
