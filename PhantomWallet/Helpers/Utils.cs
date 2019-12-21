@@ -89,6 +89,10 @@ namespace Phantom.Wallet.Helpers
                             amount = data.Value;
                             senderAddress = Address.FromText(evt.EventAddress);
                             senderToken = data.Symbol;
+                            if (data.Symbol == "TTRS") {
+                              amountsymbol = $"";
+                              break;
+                            }
                             var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == senderToken).Decimals);
                             amountsymbol = $"{amountDecimal.ToString("#,0.##########").ToString(new CultureInfo("en-US"))} {senderToken}";
                         }
@@ -102,6 +106,10 @@ namespace Phantom.Wallet.Helpers
                             receiverChain = data.ChainName;
                             receiverToken = data.Symbol;
                             var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == receiverToken).Decimals);
+                            if (data.Symbol == "TTRS") {
+                              amountsymbol = $"";
+                              break;
+                            }
                             amountsymbol = $"{amountDecimal.ToString("#,0.##########").ToString(new CultureInfo("en-US"))} {receiverToken}";
                         }
                         break;
@@ -114,6 +122,10 @@ namespace Phantom.Wallet.Helpers
                             receiverChain = data.ChainName;
                             var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.Symbol).Decimals);
                             amountsymbol = $"{amountDecimal.ToString("#,0.##########").ToString(new CultureInfo("en-US"))} {data.Symbol}";
+                            if (data.Symbol == "TTRS")
+                            {
+                              amountsymbol = $"";
+                            }
                         }
                         break;
 
@@ -188,6 +200,11 @@ namespace Phantom.Wallet.Helpers
 
                   case EventKind.TokenMint:
                       {
+                          var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
+                          if (data.Symbol == "TTRS" || data.Symbol == "GOATI")
+                          {
+                            return typetx = $"Custom";
+                          }
                           return typetx = $"Mint";
                       }
                       break;
@@ -280,6 +297,11 @@ namespace Phantom.Wallet.Helpers
 
                     case EventKind.TokenMint:
                         {
+                          var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
+                          if (data.Symbol == "TTRS")
+                          {
+                            return description = $"Custom transaction";
+                          }
                             return description = $"Claim transaction";
                         }
                         break;
