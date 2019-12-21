@@ -322,51 +322,64 @@ namespace Phantom.Wallet.Controllers
             {
 
                 int decimals = PhantasmaTokens.SingleOrDefault(t => t.Symbol == symbol).Decimals;
-                var bigIntAmount = UnitConversion.ToBigInteger(decimal.Parse(amountId), decimals);
                 byte[] script;
+                if (isFungible) {
+                   var bigIntAmount = UnitConversion.ToBigInteger(decimal.Parse(amountId), decimals);
+                   if (NeoWallet.IsValidAddress(addressTo)) {
+                     var addressNeo = NeoWallet.EncodeAddress(addressTo);
+                     Log.Information("Transfer to " + addressNeo);
+                     script = ScriptUtils.BeginScript()
+                         .AllowGas(keyPair.Address, Address.Null, MinimumFee, 800)
+                         .TransferTokens(symbol, keyPair.Address, addressNeo, bigIntAmount)
+                         .SpendGas(keyPair.Address)
+                         .EndScript();
+                   }
+                   else
+                   {
+                     if (isName) {
+                         Log.Information("Transfer to " + addressTo);
+                         script = ScriptUtils.BeginScript()
+                             .AllowGas(keyPair.Address, Address.Null, MinimumFee, 800)
+                             .TransferTokens(symbol, keyPair.Address, addressTo, bigIntAmount)
+                             .SpendGas(keyPair.Address)
+                             .EndScript();
+                     }
+                     else
+                     {
+                         var destinationAddress = Address.FromText(addressTo);
+                         Log.Information("Transfer to " + destinationAddress.Text);
+                         script = ScriptUtils.BeginScript()
+                             .AllowGas(keyPair.Address, Address.Null, MinimumFee, 800)
+                             .TransferTokens(symbol, keyPair.Address, destinationAddress, bigIntAmount)
+                             .SpendGas(keyPair.Address)
+                             .EndScript();
+                     }
+                   }
 
-                if (NeoWallet.IsValidAddress(addressTo)) {
-                  var addressNeo = NeoWallet.EncodeAddress(addressTo);
-                  Log.Information("Transfer to " + addressNeo);
-                  script = isFungible
-                      ? ScriptUtils.BeginScript()
-                          .AllowGas(keyPair.Address, Address.Null, MinimumFee, 800)
-                          .TransferTokens(symbol, keyPair.Address, addressNeo, bigIntAmount)
-                          .SpendGas(keyPair.Address)
-                          .EndScript()
-                      : ScriptUtils.BeginScript()
-                          .AllowGas(keyPair.Address, Address.Null, MinimumFee, 800)
-                          .TransferNFT(symbol, keyPair.Address, addressNeo, bigIntAmount)
-                          .SpendGas(keyPair.Address)
-                          .EndScript();
                 }
                 else
                 {
+                  var bigIntAmount = BigInteger.Parse(amountId);
                   if (isName) {
                       Log.Information("Transfer to " + addressTo);
                       script = ScriptUtils.BeginScript()
-                              .AllowGas(keyPair.Address, Address.Null, MinimumFee, 800)
-                              .TransferTokens(symbol, keyPair.Address, addressTo, bigIntAmount)
-                              .SpendGas(keyPair.Address)
-                              .EndScript();
+                          .AllowGas(keyPair.Address, Address.Null, MinimumFee, 800)
+                          .TransferTokens(symbol, keyPair.Address, addressTo, bigIntAmount)
+                          .SpendGas(keyPair.Address)
+                          .EndScript();
                   }
                   else
                   {
                       var destinationAddress = Address.FromText(addressTo);
                       Log.Information("Transfer to " + destinationAddress.Text);
-                      script = isFungible
-                          ? ScriptUtils.BeginScript()
-                              .AllowGas(keyPair.Address, Address.Null, MinimumFee, 800)
-                              .TransferTokens(symbol, keyPair.Address, destinationAddress, bigIntAmount)
-                              .SpendGas(keyPair.Address)
-                              .EndScript()
-                          : ScriptUtils.BeginScript()
-                              .AllowGas(keyPair.Address, Address.Null, MinimumFee, 800)
-                              .TransferNFT(symbol, keyPair.Address, destinationAddress, bigIntAmount)
-                              .SpendGas(keyPair.Address)
-                              .EndScript();
+                      script = ScriptUtils.BeginScript()
+                          .AllowGas(keyPair.Address, Address.Null, MinimumFee, 800)
+                          .TransferNFT(symbol, keyPair.Address, destinationAddress, bigIntAmount)
+                          .SpendGas(keyPair.Address)
+                          .EndScript();
                   }
                 }
+
 
                 var nexusName = WalletConfig.Network;
                 var tx = new Phantasma.Blockchain.Transaction(nexusName, chainName, script,
@@ -380,6 +393,42 @@ namespace Phantom.Wallet.Controllers
                 //
 
                 //}
+                var txResult = await _phantasmaRpcService.SendRawTx.SendRequestAsync(tx.ToByteArray(true).Encode());
+                Log.Information("txResult send: " + txResult);
+                return txResult;
+            }
+            catch (RpcResponseException rpcEx)
+            {
+                Log.Information($"RPC Exception occurred: {rpcEx.RpcError.Message}");
+                return "";
+            }
+            catch (Exception ex)
+            {
+                Log.Information($"Exception occurred: {ex.Message}");
+                return "";
+            }
+        }
+        public async Task<string> TransferTokensNFT(PhantasmaKeys keyPair, string addressTo, string chainName, string symbol, string amountId, string payload, MultisigSettings settings = new MultisigSettings())
+        {
+            try
+            {
+
+                int decimals = PhantasmaTokens.SingleOrDefault(t => t.Symbol == symbol).Decimals;
+                var bigIntAmount = UnitConversion.ToBigInteger(decimal.Parse(amountId), decimals);
+                byte[] script;
+
+                var destinationAddress = Address.FromText(addressTo);
+                script = ScriptUtils.BeginScript()
+                    .AllowGas(keyPair.Address, Address.Null, MinimumFee, 800)
+                    .TransferTokens(symbol, keyPair.Address, destinationAddress, bigIntAmount)
+                    .SpendGas(keyPair.Address)
+                    .EndScript();
+
+                var nexusName = WalletConfig.Network;
+                var tx = new Phantasma.Blockchain.Transaction(nexusName, chainName, script,
+                    DateTime.UtcNow + TimeSpan.FromMinutes(30), payload);
+                tx.Sign(keyPair);
+
                 var txResult = await _phantasmaRpcService.SendRawTx.SendRequestAsync(tx.ToByteArray(true).Encode());
                 Log.Information("txResult send: " + txResult);
                 return txResult;
