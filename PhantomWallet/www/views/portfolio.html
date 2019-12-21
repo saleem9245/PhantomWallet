@@ -46,7 +46,15 @@
                           {{#if Symbol == 'NEO'}}
                             <td class="col-6 aligned-row"><img class="token-icon" src="img/neo_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
                             {{#else}}
-                            <td class="col-6 aligned-row"><img class="token-icon" src="img/token_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
+                            {{#if Symbol == 'TTRS'}}
+                              <td class="col-6 aligned-row"><img class="token-icon" src="img/22rs_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a> - NFT <i class="tooltip-nft fas fa-info-circle" style="margin-left:.5em;width:1em;" data-tooltip-content="#tooltip_nft"></i></td>
+                              {{#else}}
+                              {{#if Symbol == 'GOATI'}}
+                                <td class="col-6 aligned-row"><img class="token-icon" src="img/goati_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
+                                {{#else}}
+                                <td class="col-6 aligned-row"><img class="token-icon" src="img/token_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
+                                {{/if}}
+                              {{/if}}
                             {{/if}}
                           {{/if}}
                         {{/if}}
@@ -108,6 +116,9 @@
   <i class="fas fa-exclamation-circle"></i><br>
   <span>NEW<br>EVENT</span>
 </div>
+<div class="tooltip_templates">
+    <span id="tooltip_nft"></span>
+</div>
 <script>
 
 $(document).ready(function() {
@@ -166,6 +177,15 @@ $(document).ready(function() {
   }
 
   loadedKCALbalance = 0;
+
+  arrayNFT = ''
+  {{#each chainTokens}}
+      {{#each Ids}}
+      arrayNFT += '{{this}}' + ',';
+      {{/each}}
+  {{/each}}
+  arrayNFTFormatted = arrayNFT.substring(0, arrayNFT.length - 1)
+
   {{#each holdings}}
     if ('{{Symbol}}' == 'KCAL') {
       hasKCAL = 1;
@@ -181,6 +201,29 @@ $(document).ready(function() {
           document.getElementById("stakebutton").click();
       }
   });
+
+  tooltipData = '';
+
+  $.get('http://cors-anywhere.herokuapp.com/https://www.22series.com/api/store/nft?ids=' + arrayNFTFormatted,
+      function (returnedDataTX) {
+        dataNFT = JSON.parse(returnedDataTX)
+        Object.keys(dataNFT).forEach(key => {
+          if (dataNFT[key].item_info) {
+            name = dataNFT[key].item_info.name_english
+          } else {
+            name = 'goati server error';
+          }
+          tooltipData += '<img style="height:50px;margin-bottom:.5em;" src=' + dataNFT[key].img + '> TTRS NFT #' + dataNFT[key].item + ' • ' + name + '<br>'
+        });
+        document.getElementById("tooltip_nft").innerHTML = tooltipData;
+
+        // init tooltipster i
+        $('i.tooltip-nft').tooltipster({
+          theme: 'tooltipster-noir',
+          contentCloning: true,
+          side: 'right'
+        });
+      })
 
 });
 // Datatable initialization
