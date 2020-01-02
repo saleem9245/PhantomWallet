@@ -129,10 +129,6 @@ $(document).ready(function() {
   categorySelected = 'game-access';
   currencySelected = 'SOUL';
 
-  //temp hack if init store filter empty
-  document.getElementById("vehicle-parts").innerHTML = 'Game Access';
-  $("#game-access").hide();
-
   // Hide all on page init
   $("#loader-nftlist").show();
 
@@ -145,7 +141,7 @@ $(document).ready(function() {
   });
 
   // If sale timeframe still on
-  if (now.getMonth() == 11) {
+  if (now.getMonth() == 0) {
     // Init page on load
     getNFTDetails()
     getPrizepool()
@@ -277,11 +273,7 @@ function getNFTDetails() {
     // Start building the NFT details divs
     for (i = 0; i < detailsNFTGamelength; i += 1) {
       //if (((datastore.inventory)[i].item_info.name_english) == ((datastore.inventory)[i].item_info.name_english)) {
-      var emptyCustomFilter = 0;
-      if (((datastore.inventory)[i].item_info.name_english) == 'Pit Pass' || ((datastore.inventory)[i].item_info.name_english) == 'Game License') {
-
-      // temp hack if first category filter empty
-      emptyCustomFilter = 1;
+      if (((datastore.inventory)[i].item_info.name_english) == 'Pit Pass' || ((datastore.inventory)[i].item_info.name_english) == 'NFT Pre Season Game Pack') {
 
       amountFormatted = (datastore.inventory)[i].value_soul_formatted;
       if (currencySelected == 'GOATI') {
@@ -314,19 +306,11 @@ function getNFTDetails() {
         }
     }
 
-    // temp hack if first category filter empty
-    if (emptyCustomFilter == 1) {
-      document.getElementById("vehicle-parts").innerHTML = 'Vehicle Parts';
-      $("#game-access").show();
-    } else {
-      categorySelected = 'vehicle-parts';
-    }
-
     var detailsNFTPartslength = (datastore.inventory).length;
     // Start building the NFT details divs
     for (i = 0; i < detailsNFTPartslength; i += 1) {
       //if (((datastore.inventory)[i].item_info.name_english) == ((datastore.inventory)[i].item_info.name_english)) {
-      if (((datastore.inventory)[i].item_info.name_english) !== 'Pit Pass' || ((datastore.inventory)[i].item_info.name_english) !== 'Game License') {
+      if (((datastore.inventory)[i].item_info.name_english) !== 'Pit Pass' && ((datastore.inventory)[i].item_info.name_english) !== 'NFT Pre Season Game Pack') {
 
       amountFormatted = (datastore.inventory)[i].value_soul_formatted;
       if (currencySelected == 'GOATI') {
@@ -382,12 +366,18 @@ function getNFTDetails() {
 
         var bidsLength = ((datastore.auctions)[i].bids).length;
 
-        if (bidsLength >= 2) {
-          currentLowestBid = (datastore.auctions)[i].bids[2].value_soul_formatted
-        } else if (bidsLength == 1) {
-          currentLowestBid = (datastore.auctions)[i].bids[1].value_soul_formatted
-        } else if (bidsLength == 0) {
-          currentLowestBid = (datastore.auctions)[i].bids[0].value_soul_formatted
+        if ((datastore.auctions)[i].bids[0]) {
+
+          if (bidsLength >= 2) {
+            currentLowestBid = (datastore.auctions)[i].bids[2].value_soul_formatted
+          } else if (bidsLength == 1) {
+            currentLowestBid = (datastore.auctions)[i].bids[1].value_soul_formatted
+          } else if (bidsLength == 0) {
+            currentLowestBid = (datastore.auctions)[i].bids[0].value_soul_formatted
+          } else {
+            currentLowestBid = 1000;
+          }
+
         } else {
           currentLowestBid = 1000;
         }
