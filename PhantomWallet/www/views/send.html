@@ -194,6 +194,13 @@
             }
         });
 
+        // On nft change event
+        $("#select-id").change(function () {
+
+             nftId = $("#select-id").val();
+
+         });
+
         arrayNFT = ''
         sendcustomNFT = []
         {{#each chainTokens}}
@@ -312,7 +319,6 @@
                             console.log("error");
                             });
                     } else {
-                        var nftId = $("#select-id").val();
                         $.post('/sendrawtx',
                             {
                                 fungible: 'False', token: symbol, id: nftId, dest: addressTo.value, chain: selected_chain , destChain: selectedDestinationChain, isName: isName
