@@ -523,7 +523,7 @@ function Stake() {
       title: "Staking confirmation",
       message: "Stake <strong>" +
           numberWithCommas(toFixed((changedamount))) +
-          " SOUL?</strong><br>You will be able to claim " + toFixed((changedamount)*0.002) + " KCAL per day." +
+          " SOUL?</strong><br>You will be able to claim " + toFixed((changedamount)*0.001) + " KCAL per day." +
           custommessagecombined,
       buttons: {
           cancel: {
@@ -731,7 +731,7 @@ function Stake() {
                                 // call getstake and getpie getsoulmastersdetails after all other refresh
                                 onLoad = 0;
                                 getStake();
-                                currentKCALearned = (changedamount*0.002);
+                                currentKCALearned = (changedamount*0.001);
                                 feesonearned = (JSON.parse(returnedDataTX).fee/(Math.pow(10,10)));
                                 updatedKCALbalance += parseFloat((currentKCALearned - feesonearned).toFixed(10));
                                 $('#mainportfoliotable > tbody').append('<tr class="token-shadow odd" role="row" id="temp-kcal" style="display:none;"><td class="col-6 aligned-row"><img class="token-icon" src="img/kcal_logo.png">Phantasma Energy - <a href="http://{{explorer}}/token/KCAL" target="_blank" title="View Asset">KCAL</a></td><td class="col-6">Main</td><td class="col-3" id="KCAL-amount">' + numberWithCommas(updatedKCALbalance) + '</td><td class="col-3 sorting_1" id="KCAL-price">N/A</td></tr>');
@@ -848,7 +848,7 @@ function Unstake() {
       title: "Unstaking confirmation",
       message: "Unstake <strong>" +
           numberWithCommas(toFixed((changedamount))) +
-          " SOUL?</strong><br>You will be lose the ability to claim " + toFixed((changedamount)*0.002) + " KCAL per day." + customunstakeall,
+          " SOUL?</strong><br>You will be lose the ability to claim " + toFixed((changedamount)*0.001) + " KCAL per day." + customunstakeall,
       buttons: {
           cancel: {
               label: '<i class="fa fa-times"></i> Cancel'
@@ -1201,8 +1201,8 @@ function getStake() {
           });
         }
         // if kcal per day exist and changed, flash the value
-        if (document.getElementById("rewards-kcal").innerHTML != numberWithCommas(parseFloat((stakesFormatted/500).toFixed(0))) + ' KCAL / DAY') {
-          document.getElementById("rewards-kcal").innerHTML = numberWithCommas(parseFloat((stakesFormatted/500).toFixed(0))) + ' KCAL / DAY';
+        if (document.getElementById("rewards-kcal").innerHTML != numberWithCommas(parseFloat((stakesFormatted/1000).toFixed(0))) + ' KCAL / DAY') {
+          document.getElementById("rewards-kcal").innerHTML = numberWithCommas(parseFloat((stakesFormatted/1000).toFixed(0))) + ' KCAL / DAY';
           $(document.getElementById("rewards-kcal")).addClass('flash-portfolio').delay(300).queue(function(next){
                $(this).removeClass('flash-portfolio');
                next();
@@ -1229,7 +1229,7 @@ function GetSoulmastersDetails() {
   var d = new Date();
 
   if (d.getMonth().toString().length < 2) {
-    customMonth = '0' + d.getMonth() + 2;
+    customMonth = '0' + parseFloat(d.getMonth() + 2);
   } else if (d.getMonth() == '10') {
     customMonth = 12
   } else if (d.getMonth() == '11') {
