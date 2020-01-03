@@ -140,16 +140,14 @@ $(document).ready(function() {
       countdown: true
   });
 
-  // If sale timeframe still on
-  if (now.getMonth() == 0) {
+  // If sale timeframe still on // set to January 31 epoch
+  if (now.getTime() <= (1580428800 * 1000)) {
     // Init page on load
     getNFTDetails()
-    getPrizepool()
 
     // init refresh every minute
     setInterval(function() {
       getNFTDetails()
-      getPrizepool()
     }, 60000);
 
   } else {
@@ -231,22 +229,6 @@ function filterCategory(category) {
 
 }
 
-// Get prizepool details
-function getPrizepool() {
-
-  $.get(storeURL,
-
-    function (data) {
-      //console.log(data)
-        if (JSON.parse(data).prize_pool_formatted != undefined) {
-          responsesoulbal = JSON.parse(data).prize_pool_formatted;
-          responsesoulbalformatted = numberWithCommas(responsesoulbal) + ' SOUL';
-          document.getElementById("prizepool").innerHTML = responsesoulbalformatted;
-        }
-  })
-
-}
-
 // Get NFT details
 function getNFTDetails() {
 
@@ -259,6 +241,11 @@ function getNFTDetails() {
     function (data) {
       addressNFT = JSON.parse(data).address
       datastore = JSON.parse(data);
+      if (JSON.parse(data).prize_pool_formatted != undefined) {
+        responsesoulbal = JSON.parse(data).prize_pool_formatted;
+        responsesoulbalformatted = numberWithCommas(responsesoulbal) + ' SOUL';
+        document.getElementById("prizepool").innerHTML = responsesoulbalformatted;
+      }
   }).then(function() {
 
     $("#nftdetailslist-game").hide();
