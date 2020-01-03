@@ -99,7 +99,9 @@
 
         // force max 8 decimals
         $( "#amount" ).blur(function() {
+          if (this.value) {
             this.value = round(this.value,8);
+          }
         });
         function round(value, decimals) {
           return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
@@ -153,7 +155,8 @@
                 isValid = true;
 
             if (curStepBtn === "step-2") {
-                saveToken();
+                //saveToken();
+                nftId = $("#select-id").val();
                 let amount = $("#amount").val();
                 if (parseFloat(amount) > parseFloat(max_amount.replace(/\,/g,''))) {
                     bootbox.alert("Insufficient funds");
@@ -193,13 +196,6 @@
                 document.getElementById("amount-next").click();
             }
         });
-
-        // On nft change event
-        $("#select-id").change(function () {
-
-             nftId = $("#select-id").val();
-
-         });
 
         arrayNFT = ''
         sendcustomNFT = []
@@ -275,6 +271,12 @@
             }
         }
 
+        if (isFungible) {
+          descNFTConfirm = '';
+        } else {
+          descNFTConfirm = ' - ' + $("#select-id option:selected").text();
+        }
+
         $('#sendSpinner').show();
         bootbox.confirm({
             title: "Transfer confirmation",
@@ -282,6 +284,7 @@
                 numberWithCommas(amount) +
                 " " +
                 selected_symbol +
+                descNFTConfirm +
                 "</strong> to address <strong>" +
                 target_address +
                 "</strong>?",
@@ -337,6 +340,8 @@
                         });
                     }
 
+                } else {
+                  $('#sendSpinner').hide();
                 }
             }
         });
@@ -383,7 +388,12 @@
 
                     sendcustomNFTlength = sendcustomNFT.length
                     for (i = 0; i < sendcustomNFTlength; i++) {
-                      nftIds.append($('<option>', { value: sendcustomNFT[i].id, text: 'NFT #' + sendcustomNFT[i].item + sendcustomNFT[i].name}));
+                      if (sendcustomNFT[i].name) {
+                        name = (sendcustomNFT[i].name).replace('<br/>', ' • ');
+                      } else {
+                        name = sendcustomNFT[i].name
+                      }
+                      nftIds.append($('<option>', { value: sendcustomNFT[i].id, text: 'NFT #' + sendcustomNFT[i].item + name}));
                     }
                     return;
                 } else {
