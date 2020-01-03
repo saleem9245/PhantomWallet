@@ -179,6 +179,7 @@ $(document).ready(function() {
   loadedKCALbalance = 0;
 
   arrayNFT = ''
+  arrayNFTFormatted = ''
   {{#each chainTokens}}
       {{#each Ids}}
       arrayNFT += '{{this}}' + ',';
@@ -204,26 +205,34 @@ $(document).ready(function() {
 
   tooltipData = '';
 
-  $.get('http://cors-anywhere.herokuapp.com/https://www.22series.com/api/store/nft?ids=' + arrayNFTFormatted,
-      function (returnedDataTX) {
-        dataNFT = JSON.parse(returnedDataTX)
-        Object.keys(dataNFT).forEach(key => {
-          if (dataNFT[key].item_info) {
-            name = dataNFT[key].item_info.name_english
-          } else {
-            name = 'goati server error';
-          }
-          tooltipData += '<img style="height:50px;margin-bottom:.5em;" src=' + dataNFT[key].img + '> TTRS NFT #' + dataNFT[key].item + ' • ' + name + '<br>'
-        });
-        document.getElementById("tooltip_nft").innerHTML = tooltipData;
+  if (arrayNFTFormatted != '') {
 
-        // init tooltipster i
-        $('i.tooltip-nft').tooltipster({
-          theme: 'tooltipster-noir',
-          contentCloning: true,
-          side: 'right'
-        });
-      })
+    $.get('http://cors-anywhere.herokuapp.com/https://www.22series.com/api/store/nft?ids=' + arrayNFTFormatted,
+        function (returnedDataTX) {
+          dataNFT = JSON.parse(returnedDataTX)
+          Object.keys(dataNFT).forEach(key => {
+            if (dataNFT[key].item_info) {
+              if (dataNFT[key].item_info.name_english) {
+                name = (dataNFT[key].item_info.name_english).replace('<br/>', ' • ');
+              } else {
+                name = dataNFT[key].item_info.name_english
+              }
+            } else {
+              name = 'goati server error';
+            }
+            tooltipData += '<img style="height:50px;margin-bottom:.5em;" src=' + dataNFT[key].img + '> TTRS NFT #' + dataNFT[key].item + ' • ' + name + '<br>'
+          });
+          document.getElementById("tooltip_nft").innerHTML = tooltipData;
+
+          // init tooltipster i
+          $('i.tooltip-nft').tooltipster({
+            theme: 'tooltipster-noir',
+            contentCloning: true,
+            side: 'right'
+          });
+        })
+
+    }
 
 });
 // Datatable initialization
