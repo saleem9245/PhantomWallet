@@ -255,6 +255,7 @@ function getNFTDetails() {
     fetchValuesNFTGame = '';
     fetchValuesNFTParts = '';
     fetchValuesNFTVehicles = '';
+    counterAuctions = 0;
 
     var detailsNFTGamelength = (datastore.inventory).length;
     // Start building the NFT details divs
@@ -279,7 +280,7 @@ function getNFTDetails() {
                           + '<div class="nft-image" onclick="confirmSale(\'' + (datastore.inventory)[i].item_info.name_english + '\',\'' + amountFormatted + '\',\'' + (datastore.inventory)[i].item + '\')">'
                             + '<button class="nft-order circulating">' + numberWithCommas((datastore.inventory)[i].supply) + ' BOUGHT</button>'
                             + '<button class="nft-order supply">' + maxSupply + '</button>'
-                            + '<img src="' + (datastore.inventory)[i].img + '" alt="" style="height:20em;">'
+                            + '<img src="' + (datastore.inventory)[i].item_info.image_url + '" onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'" alt="" style="height:20em;">'
                             + '<div class="nft-desc" style="height:8em;">'
                               + '<h3>' + (datastore.inventory)[i].item_info.name_english + '</h3>'
                                 + '<div style="text:align:center;">'
@@ -313,10 +314,10 @@ function getNFTDetails() {
       document.getElementById("tooltip_" + [i]).innerHTML = (datastore.inventory)[i].item_info.description_english;
 
         fetchValuesNFTParts += '<div class="nft-class">'
-                          + '<div class="nft-image" onclick="confirmSale(\'' + (datastore.inventory)[i].item_info.name_english + '\',\'' + amountFormatted + '\',\'' + (datastore.inventory)[i].item + '\')">'
+                          + '<div class="nft-image" style="width:130%;" onclick="confirmSale(\'' + (datastore.inventory)[i].item_info.name_english + '\',\'' + amountFormatted + '\',\'' + (datastore.inventory)[i].item + '\')">'
                             + '<button class="nft-order circulating">' + numberWithCommas((datastore.inventory)[i].supply) + ' BOUGHT</button>'
                             + '<button class="nft-order supply">' + maxSupply + '</button>'
-                            + '<img src="' + (datastore.inventory)[i].img + '" alt="" style="height:20em;">'
+                            + '<img src="' + (datastore.inventory)[i].item_info.image_url + '" onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'" alt="" style="height:20em;">'
                             + '<div class="nft-desc" style="height:8em;">'
                               + '<h3>' + (datastore.inventory)[i].item_info.name_english + '</h3>'
                                 + '<div style="text:align:center;">'
@@ -355,9 +356,11 @@ function getNFTDetails() {
 
         if ((datastore.auctions)[i].bids[0]) {
 
-          if (bidsLength >= 1) {
+          if (bidsLength > 2) {
+            currentLowestBid = (datastore.auctions)[i].bids[2].value_soul_formatted
+          } else if (bidsLength == 2) {
             currentLowestBid = (datastore.auctions)[i].bids[1].value_soul_formatted
-          } else if (bidsLength == 0) {
+          } else if (bidsLength == 1) {
             currentLowestBid = (datastore.auctions)[i].bids[0].value_soul_formatted
           } else {
             currentLowestBid = 1000;
@@ -371,17 +374,25 @@ function getNFTDetails() {
 
         document.getElementById("tooltip_a" + [i]).innerHTML = (datastore.auctions)[i].item_info.description_english;
 
-        if (timeuntil < 0) {
+        if (timeuntil < 0 && timeleft < 0) {
+
+          //console.log(outside of sale timeframe)
+
+        } else if (timeuntil < 0) {
+
+          //console.log(sale timeframe planned but not started)
+
+          counterAuctions = 1;
 
           fetchValuesNFTVehicles += '<div class="nft-class">'
-                            + '<div class="nft-image" onclick="confirmAuction(\'' + (datastore.auctions)[i].item_info.name_english + '\',\'' + (parseFloat(currentLowestBid)) + '\',\'' + (numberWithCommas((datastore.auctions)[i].capacity)) + '\',\'' + addressAuctionNFT + '\',\'' + ((datastore.auctions)[i].item) + '\')">'
+                            + '<div class="nft-image" style="width:115%;" onclick="confirmAuctionNotStarted()">'
                               + '<button class="nft-order circulating">' + hours + '</button>'
                               + '<button class="nft-order supply">' + numberWithCommas((datastore.auctions)[i].capacity) + '</button>'
-                              + '<img src="' + (datastore.auctions)[i].item_info.image_url + '" alt="" style="height:12em;">'
+                              + '<img src="' + (datastore.auctions)[i].item_info.image_url + '" onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'" alt="" style="height:12em;">'
                               + '<div class="nft-desc">'
-                                + '<h3>' + (datastore.auctions)[i].item_info.make + '</h3>'
+                                + '<h3>' + (datastore.auctions)[i].name + '</h3>'
                                   + '<div style="text:align:center;">'
-                                    + '<button class="nft-order price" >CURRENT BID ' + numberWithCommas(parseFloat(currentLowestBid)) + ' SOUL</button>'
+                                    + '<button class="nft-order price" >STARTING BID 1,000 SOUL</button>'
                                     + '<button class="tooltip nft-order info" data-tooltip-content="#tooltip_a' + [i] + '"><i class="fas fa-info" style="width:1em;"></i></button>'
                                   + '</div>'
                               + '</div>'
@@ -389,15 +400,19 @@ function getNFTDetails() {
                           + '</div>'
                           + customlinebreak;
 
-        } else {
+        } else if (timeleft > 0) {
+
+          //console.log(sale timeframe started but not ended)
+
+          counterAuctions = 1;
 
           fetchValuesNFTVehicles += '<div class="nft-class">'
-                            + '<div class="nft-image" onclick="timeUntilAuction(\'' + timeuntil + '\')">'
+                            + '<div class="nft-image" style="width:115%;" onclick="timeUntilAuction(\'' + timeuntil + '\')">'
                               + '<button class="nft-order circulating">' + hours + '</button>'
                               + '<button class="nft-order supply">' + numberWithCommas((datastore.auctions)[i].capacity) + '</button>'
-                              + '<img src="' + (datastore.auctions)[i].item_info.image_url + '" alt="" style="height:12em;">'
+                              + '<img src="' + (datastore.auctions)[i].item_info.image_url + '" onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'" alt="" style="height:12em;">'
                               + '<div class="nft-desc">'
-                                + '<h3>' + (datastore.auctions)[i].item_info.name_english + '</h3>'
+                                + '<h3>' + (datastore.auctions)[i].name + '</h3>'
                                   + '<div style="text:align:center;">'
                                     + '<button class="nft-order price" >LOWEST BID ' + numberWithCommas(parseFloat(currentLowestBid)) + ' SOUL</button>'
                                     + '<button class="tooltip nft-order info" data-tooltip-content="#tooltip_a' + [i] + '"><i class="fas fa-info" style="width:1em;"></i></button>'
@@ -407,6 +422,10 @@ function getNFTDetails() {
                           + '</div>'
                           + customlinebreak;
 
+        }
+
+        if (counterAuctions == 0) {
+          fetchValuesNFTVehicles = '<div style="text:align:center;">No vehicle auctions available at the moment.<br>Check back later!</div>';
         }
 
     }
@@ -445,6 +464,13 @@ function timeUntilAuction(timeleft) {
 
   bootbox.alert('Auction has not started yet.<br>You need to wait ' + numberWithCommas(Math.ceil((((timeleft / 1000) / 60) / 60))) + ' more hours to bid on this NFT!');
   return;
+
+}
+
+// Confirm auction not started
+function confirmAuctionNotStarted() {
+
+    alert('Auction not started yet!')
 
 }
 
