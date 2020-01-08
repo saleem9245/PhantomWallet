@@ -220,7 +220,7 @@ $(document).ready(function() {
             } else {
               name = 'goati server error';
             }
-            tooltipData += '<img style="height:50px;margin-bottom:.5em;" src=' + dataNFT[key].img + '> TTRS - NFT #' + dataNFT[key].item + ' • ' + name + '<br>'
+            tooltipData += '<div style="width:6em;display:inline-block;text-align:center;margin-right:1em;"><img style="height:50px;margin-bottom:.5em;" src=' + dataNFT[key].img + ' onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'"></div>NFT #' + dataNFT[key].item + ' • ' + dataNFT[key].item_info.display_type_english + ' • ' + name + '<br>'
           });
           document.getElementById("tooltip_nft").innerHTML = tooltipData;
 
