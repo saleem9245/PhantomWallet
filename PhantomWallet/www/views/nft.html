@@ -337,10 +337,10 @@ function getNFTDetails() {
 
       var timeuntil = (((datastore.auctions)[i].start_time)*1000) - (new Date()).getTime();
       var timeleft = (((datastore.auctions)[i].end_time)*1000) - (new Date()).getTime();
-      var hoursuntil = 'STARTS IN ' + numberWithCommas(Math.ceil((((timeleft / 1000) / 60) / 60))) + ' HOURS';
+      var hoursuntil = 'STARTS IN ' + numberWithCommas(Math.ceil((((timeuntil / 1000) / 60) / 60))) + ' HOURS';
       var hoursleft = 'ENDS IN ' + numberWithCommas(Math.ceil((((timeleft / 1000) / 60) / 60))) + ' HOURS';
 
-        if (hoursuntil >= 0) {
+        if (timeuntil >= 0) {
           hours = hoursuntil
         } else {
           hours = hoursleft
@@ -374,18 +374,18 @@ function getNFTDetails() {
 
         document.getElementById("tooltip_a" + [i]).innerHTML = (datastore.auctions)[i].item_info.description_english;
 
-        if (timeuntil < 0 && timeleft < 0) {
+        if (timeleft < 0) {
 
           //console.log(outside of sale timeframe)
 
-        } else if (timeuntil < 0) {
+        } else if (timeuntil > 0) {
 
           //console.log(sale timeframe planned but not started)
 
           counterAuctions = 1;
 
           fetchValuesNFTVehicles += '<div class="nft-class">'
-                            + '<div class="nft-image" style="width:115%;" onclick="confirmAuctionNotStarted()">'
+                            + '<div class="nft-image" style="width:115%;" onclick="confirmAuctionNotStarted(\'' + timeleft + '\')">'
                               + '<button class="nft-order circulating">' + hours + '</button>'
                               + '<button class="nft-order supply">' + numberWithCommas((datastore.auctions)[i].capacity) + '</button>'
                               + '<img src="' + (datastore.auctions)[i].item_info.image_url + '" onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'" alt="" style="height:12em;">'
@@ -407,7 +407,7 @@ function getNFTDetails() {
           counterAuctions = 1;
 
           fetchValuesNFTVehicles += '<div class="nft-class">'
-                            + '<div class="nft-image" style="width:115%;" onclick="timeUntilAuction(\'' + timeuntil + '\')">'
+                              + '<div class="nft-image" style="width:115%;" onclick="confirmAuction(\'' + (datastore.auctions)[i].name + '\',\'' + (parseFloat(currentLowestBid)) + '\',\'' + (numberWithCommas((datastore.auctions)[i].capacity)) + '\',\'' + addressAuctionNFT + '\',\'' + ((datastore.auctions)[i].item) + '\')">'
                               + '<button class="nft-order circulating">' + hours + '</button>'
                               + '<button class="nft-order supply">' + numberWithCommas((datastore.auctions)[i].capacity) + '</button>'
                               + '<img src="' + (datastore.auctions)[i].item_info.image_url + '" onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'" alt="" style="height:12em;">'
@@ -424,10 +424,10 @@ function getNFTDetails() {
 
         }
 
-        if (counterAuctions == 0) {
-          fetchValuesNFTVehicles = '<div style="text:align:center;">No vehicle auctions available at the moment.<br>Check back later!</div>';
-        }
+    }
 
+    if (counterAuctions == 0) {
+      fetchValuesNFTVehicles = '<div style="text:align:center;">No vehicle auctions available at the moment.<br>Check back later!</div>';
     }
 
     if ((datastore.inventory).length == 0) {
@@ -460,17 +460,10 @@ function getNFTDetails() {
 }
 
 // Confirm date auction
-function timeUntilAuction(timeleft) {
+function confirmAuctionNotStarted(timeleft) {
 
   bootbox.alert('Auction has not started yet.<br>You need to wait ' + numberWithCommas(Math.ceil((((timeleft / 1000) / 60) / 60))) + ' more hours to bid on this NFT!');
   return;
-
-}
-
-// Confirm auction not started
-function confirmAuctionNotStarted() {
-
-    alert('Auction not started yet!')
 
 }
 
@@ -490,7 +483,7 @@ function confirmAuction(nameNFT, priceNFT, quantityNFT, addressAuctionNFT, paylo
   $('#sendSpinner').show();
   contentBootbox = 'How much SOUL do you want to bid for <strong>' + nameNFT + '</strong>? It needs to be at least 100 more SOUL than the current lowest winning bid of <strong>' + numberWithCommas(parseFloat(priceNFT)) + ' SOUL</strong>.'
       + '<br><input type="text" class="form-control" name="bidauction"><br>'
-      + 'If your bid is below that amount, or if it falls below the <b>' + quantityNFT + ' current highest bids later</b>, you will be refunded instantly.<br><br>'
+      + 'If your bid is below that amount, or if it falls below the <b>' + quantityNFT + ' highest bids later</b>, you will be refunded instantly.<br><br>'
       + "Someone referred you? Enter his Phantasma address below.<br>You will both get <strong>10% of the purchase back in GOATI</strong> tokens.<br><br>"
       + '<input type="text" class="form-control" name="referral">';
 
