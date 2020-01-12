@@ -206,22 +206,26 @@
         {{/each}}
         arrayNFTFormatted = arrayNFT.substring(0, arrayNFT.length - 1)
 
-        $.get('http://cors-anywhere.herokuapp.com/https://www.22series.com/api/store/nft?ids=' + arrayNFTFormatted,
-            function (returnedDataTX) {
-              dataNFT = JSON.parse(returnedDataTX)
-              Object.keys(dataNFT).forEach(key => {
-                if (dataNFT[key].item_info) {
-                  name = dataNFT[key].item_info.name_english
-                } else {
-                  name = 'goati server error';
-                }
-                sendcustomNFT.push({
-                    id: key,
-                    item: dataNFT[key].item,
-                    name: ' • ' + name
+        if (arrayNFTFormatted != '') {
+
+          $.get('https://www.22series.com/api/store/nft?ids=' + arrayNFTFormatted,
+              function (returnedDataTX) {
+                dataNFT = JSON.parse(returnedDataTX)
+                Object.keys(dataNFT).forEach(key => {
+                  if (dataNFT[key].item_info) {
+                    name = dataNFT[key].item_info.name_english
+                  } else {
+                    name = 'goati server error';
+                  }
+                  sendcustomNFT.push({
+                      id: key,
+                      item: dataNFT[key].item,
+                      name: ' • ' + name
+                  });
                 });
-              });
-            })
+              })
+
+        }
 
     });
 
