@@ -1309,8 +1309,17 @@ ul.nav.nav-pills {
   background-color: #17B0E7;
 }
 
+.nft-class .nft-image:hover > .nft-desc .nft-order.info.winner {
+  color: #ffff00;
+  background-color: transparent;
+}
+
 .nft-class .nft-image:hover > .nft-order.circulating, .nft-class .nft-image:hover > .nft-order.supply {
   border-color: #17B0E7;
+}
+
+.nft-order.price {
+  margin-right: .5em;
 }
 
 .nft-order.price:hover, .nft-order.info:hover {
@@ -1389,7 +1398,13 @@ ul.nav.nav-pills {
   border-width: 3px;
   padding: .5em 1em;
   border-color: #333;
-  margin-left: .5em;
+}
+
+.nft-order.info.winner {
+  color: #ffff00;
+  border: 0;
+  background: transparent;
+  font-size: 1.1em;
 }
 
 .dark-mode .nft-order.info {
