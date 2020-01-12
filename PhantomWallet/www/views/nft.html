@@ -16,7 +16,7 @@
             <div class="col-md-6 center container-prize" style="margin-top:-5em;">
               <h3>Current Prize Pool<i class="tooltip fas fa-info-circle" style="margin-left:1em;width:1em;" title="10% of all sales goes towards prize pool of the first 22 Series championship!"></i></h3>
               <div class="prizepool" id="prizepool">XXX,XXX SOUL</div>
-              <div class="referral-nft">If you refer someone, you both get 11% of his purchase!<i class="tooltip fas fa-info-circle" style="margin-left:1em;width:1em;" data-tooltip-content="#tooltip_referral"></i></div>
+              <div class="referral-nft">If you refer someone, you both get 11% of their purchase!<i class="tooltip fas fa-info-circle" style="margin-left:1em;width:1em;" data-tooltip-content="#tooltip_referral"></i></div>
             </div>
             <div class="col-md-12 center">
               <h3 id="nftdetailslist-title" style="margin-top:-1.5em;">Current NFTs available to buy </h3>
@@ -53,6 +53,11 @@
 <div class="tooltip_templates">
     <span id="tooltip_referral">
         Simply give them your public Phantasma address which they'll have to input before buying NFT.<br><br>Rewards paid out in GOATI token, valued at 10:1 SOUL.<br><br>Example: you refer someone who buys 1000 SOUL worth, you both get 10 GOATI, which you can use to buy an item worth 100 SOUL.
+    </span>
+</div>
+<div class="tooltip_templates">
+    <span id="tooltip_winner">
+        Your wallet is currently one of the top bids.<br>If no one outbids you, you will get this NFT once the counter ends.
     </span>
 </div>
 <div class="tooltip_templates">
@@ -93,6 +98,7 @@ $(document).ready(function() {
   $('i.tooltip').tooltipster({
     theme: 'tooltipster-noir',
     contentCloning: true,
+    interactive: true,
     side: 'right'
   });
 
@@ -163,7 +169,7 @@ function initStore() {
 
         // init refresh every minute
         setInterval(function() {
-          getNFTDetails()
+          //getNFTDetails()
         }, 60000);
 
         // init counter
@@ -195,6 +201,7 @@ function getNFTDetails() {
 
     function (data) {
       addressNFT = JSON.parse(data).address
+      addressActionPack = JSON.parse(data).actions[0].address
       datastore = JSON.parse(data);
       if (JSON.parse(data).prize_pool_formatted != undefined) {
         responsesoulbal = JSON.parse(data).prize_pool_formatted;
@@ -306,17 +313,14 @@ function getNFTDetails() {
         }
 
         var bidsLength = ((datastore.auctions)[i].bids).length;
+        var maxWinners = (datastore.auctions)[i].capacity;
 
         if ((datastore.auctions)[i].bids[0]) {
 
-          if (bidsLength > 2) {
-            currentLowestBid = (datastore.auctions)[i].bids[2].value_soul_formatted
-          } else if (bidsLength == 2) {
-            currentLowestBid = (datastore.auctions)[i].bids[1].value_soul_formatted
-          } else if (bidsLength == 1) {
+          if (bidsLength >= ((datastore.auctions)[i].capacity)) {
+            currentLowestBid = (datastore.auctions)[i].bids[maxWinners-1].value_soul_formatted
+          } else if (bidsLength < ((datastore.auctions)[i].capacity)) {
             currentLowestBid = (datastore.auctions)[i].bids[0].value_soul_formatted
-          } else {
-            currentLowestBid = 1000;
           }
 
         } else {
@@ -340,11 +344,11 @@ function getNFTDetails() {
           fetchValuesNFTVehicles += '<div class="nft-class">'
                             + '<div class="nft-image" style="width:115%;" onclick="confirmAuctionNotStarted(\'' + timeleft + '\')">'
                               + '<button class="nft-order circulating">' + hours + '</button>'
-                              + '<button class="nft-order supply">' + numberWithCommas((datastore.auctions)[i].capacity) + '</button>'
-                              + '<img src="' + (datastore.auctions)[i].item_info.image_url + '" onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'" alt="" style="height:12em;">'
+                              + '<button class="nft-order supply">' + numberWithCommas((datastore.auctions)[i].capacity) + ' AVAILABLE</button>'
+                              + '<img src="' + (datastore.auctions)[i].item_info.image_url + '" onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'" alt="" style="height:12em;padding-top:3em;">'
                               + '<div class="nft-desc">'
                                 + '<h3>' + (datastore.auctions)[i].name + '</h3>'
-                                  + '<div style="text:align:center;">'
+                                  + '<div style="text-align:center;">'
                                     + '<button class="nft-order price" >STARTING BID 1,000 SOUL</button>'
                                     + '<button class="tooltip nft-order info" data-tooltip-content="#tooltip_a' + [i] + '"><i class="fas fa-info" style="width:1em;"></i></button>'
                                   + '</div>'
@@ -357,17 +361,38 @@ function getNFTDetails() {
 
           //console.log(sale timeframe started but not ended)
 
+          var bidsLength = ((datastore.auctions)[i].bids).length;
+          var currentWinner = 0;
+
+          for (k = 0; k < ((datastore.auctions)[i].capacity); k++) {
+
+            if ((datastore.auctions)[i].bids[k]) {
+              if ('{{address}}' == (datastore.auctions)[i].bids[k].from) {
+                currentWinner = 1
+              }
+            }
+
+          }
+
+          if (currentWinner == 0) {
+            bidTypeWinner = ''
+          } else {
+            bidTypeWinner = '<button class="tooltip nft-order info winner" data-tooltip-content="#tooltip_winner"><i class="fas fa-trophy" style="width:1em;"></i></button>'
+          }
+
           counterAuctions = 1;
 
           fetchValuesNFTVehicles += '<div class="nft-class">'
                               + '<div class="nft-image" style="width:115%;" onclick="confirmAuction(\'' + (datastore.auctions)[i].name + '\',\'' + (parseFloat(currentLowestBid)) + '\',\'' + (numberWithCommas((datastore.auctions)[i].capacity)) + '\',\'' + addressAuctionNFT + '\',\'' + ((datastore.auctions)[i].item) + '\')">'
                               + '<button class="nft-order circulating">' + hours + '</button>'
-                              + '<button class="nft-order supply">' + numberWithCommas((datastore.auctions)[i].capacity) + '</button>'
-                              + '<img src="' + (datastore.auctions)[i].item_info.image_url + '" onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'" alt="" style="height:12em;">'
+                              + '<button class="nft-order supply">' + numberWithCommas((datastore.auctions)[i].capacity) + ' AVAILABLE</button>'
+                              + '<img src="' + (datastore.auctions)[i].item_info.image_url + '" onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'" alt="" style="height:12em;padding-top:3em;">'
                               + '<div class="nft-desc">'
-                                + '<h3>' + (datastore.auctions)[i].name + '</h3>'
-                                  + '<div style="text:align:center;">'
-                                    + '<button class="nft-order price" >LOWEST BID ' + numberWithCommas(parseFloat(currentLowestBid)) + ' SOUL</button>'
+                                + '<h3 style="display:inline-block;">' + (datastore.auctions)[i].name + '</h3>'
+                                + bidTypeWinner
+                                  + '<div style="text-align:center;">'
+                                    + '<button class="nft-order price" >CURRENT BID ' + numberWithCommas(parseFloat(currentLowestBid)) + ' SOUL</button>'
+                                    + '<button class="nft-order price" >' + numberWithCommas((datastore.auctions)[i].total_bids) + ' TOTAL BIDS</button>'
                                     + '<button class="tooltip nft-order info" data-tooltip-content="#tooltip_a' + [i] + '"><i class="fas fa-info" style="width:1em;"></i></button>'
                                   + '</div>'
                               + '</div>'
@@ -380,7 +405,7 @@ function getNFTDetails() {
     }
 
     if (counterAuctions == 0) {
-      fetchValuesNFTVehicles = '<div style="text:align:center;">No vehicle auctions available at the moment.<br>Check back later!</div>';
+      fetchValuesNFTVehicles = '<div style="text-align:center;">No vehicle auctions available at the moment.<br>Check back later!</div>';
     }
 
     if ((datastore.inventory).length == 0) {
@@ -437,7 +462,7 @@ function confirmAuction(nameNFT, priceNFT, quantityNFT, addressAuctionNFT, paylo
   contentBootbox = 'How much SOUL do you want to bid for <strong>' + nameNFT + '</strong>? It needs to be at least 100 more SOUL than the current lowest winning bid of <strong>' + numberWithCommas(parseFloat(priceNFT)) + ' SOUL</strong>.'
       + '<br><input type="text" class="form-control" name="bidauction"><br>'
       + 'If your bid is below that amount, or if it falls below the <b>' + quantityNFT + ' highest bids later</b>, you will be refunded instantly.<br><br>'
-      + "Someone referred you? Enter his Phantasma address below.<br>You will both get <strong>11% of the purchase back in GOATI</strong> tokens.<br><br>"
+      + "Someone referred you? Enter their Phantasma address below.<br>You will both get <strong>11% of the purchase back in GOATI</strong> tokens.<br><br>"
       + '<input type="text" class="form-control" name="referral">';
 
   dialog = bootbox.confirm({
@@ -516,13 +541,20 @@ function confirmSale(nameNFT, priceNFT, payloadNFT) {
         return;
   }
 
+  if (nameNFT == 'Pre-season pack') {
+    customAction = 'Once bought, to open it you have to send it to <strong>' + addressActionPack + '</strong>.<br>You will then automatically get 5 random NFT vehicle parts.<br><br>'
+  } else {
+    customAction = ''
+  }
+
   $('#sendSpinner').show();
   contentBootbox = 'You are going to buy <strong>'
       + nameNFT
       + '</strong> for <strong>'
       + numberWithCommas(parseFloat(priceNFT))
       + " " + currencySelected + ".</strong><br><br>"
-      + " Someone referred you? Enter his Phantasma address below.<br>You will both get 11% of the purchase back in GOATI tokens.<br><br>"
+      + customAction
+      + " Someone referred you? Enter their Phantasma address below.<br>You will both get 11% of the purchase back in GOATI tokens.<br><br>"
       + '<input type="text" class="form-control" name="referral">';
   dialog = bootbox.confirm({
       title: "NFT buy confirmation",
