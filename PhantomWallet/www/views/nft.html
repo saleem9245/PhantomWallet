@@ -15,7 +15,7 @@
             </div>
             <div class="col-md-6 center container-prize" style="margin-top:-5em;">
               <h3>Current Prize Pool<i class="tooltip fas fa-info-circle" style="margin-left:1em;width:1em;" title="10% of all sales goes towards prize pool of the first 22 Series championship!"></i></h3>
-              <div class="prizepool" id="prizepool">XXX,XXX SOUL</div>
+              <div class="prizepool" id="prizepool">$XXX,XXX USD</div>
               <div class="referral-nft">If you refer someone, you both get 11% of their purchase!<i class="tooltip fas fa-info-circle" style="margin-left:1em;width:1em;" data-tooltip-content="#tooltip_referral"></i></div>
             </div>
             <div class="col-md-12 center">
@@ -52,7 +52,7 @@
 
 <div class="tooltip_templates">
     <span id="tooltip_referral">
-        Simply give them your public Phantasma address which they'll have to input before buying NFT.<br><br>Rewards paid out in GOATI token, valued at 10:1 SOUL.<br><br>Example: you refer someone who buys 1000 SOUL worth, you both get 10 GOATI, which you can use to buy an item worth 100 SOUL.
+        Simply give them your public Phantasma address which they'll have to input before buying NFT.<br><br>Rewards paid out in GOATI token, valued at $0.10.<br><br>Example: you refer someone who buys 1000 SOUL worth, you both get 11% in GOATI, which you can use to buy other NFTs.
     </span>
 </div>
 <div class="tooltip_templates">
@@ -203,10 +203,10 @@ function getNFTDetails() {
       addressNFT = JSON.parse(data).address
       addressActionPack = JSON.parse(data).actions[0].address
       datastore = JSON.parse(data);
-      if (JSON.parse(data).prize_pool_formatted != undefined) {
-        responsesoulbal = JSON.parse(data).prize_pool_formatted;
-        responsesoulbalformatted = numberWithCommas(responsesoulbal) + ' SOUL';
-        document.getElementById("prizepool").innerHTML = responsesoulbalformatted;
+      if (JSON.parse(data).prize_pool_usd_formatted != undefined) {
+        responseprizebal = JSON.parse(data).prize_pool_usd_formatted;
+        responseprizebalformatted = '$' + numberWithCommas(responseprizebal) + ' USD';
+        document.getElementById("prizepool").innerHTML = responseprizebalformatted;
       }
   }).then(function() {
 
@@ -241,7 +241,7 @@ function getNFTDetails() {
                           + '<div class="nft-image" onclick="confirmSale(\'' + (datastore.inventory)[i].item_info.name_english + '\',\'' + amountFormatted + '\',\'' + (datastore.inventory)[i].item + '\')">'
                             + '<button class="nft-order circulating">' + numberWithCommas((datastore.inventory)[i].supply) + ' BOUGHT</button>'
                             + '<button class="nft-order supply">' + maxSupply + '</button>'
-                            + '<img src="' + (datastore.inventory)[i].item_info.image_url + '?width=512" " onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'" alt="" style="height:20em;">'
+                            + '<img src="' + (datastore.inventory)[i].item_info.image_url + '?width=1200" " onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'" alt="" style="height:20em;">'
                             + '<div class="nft-desc" style="height:8em;">'
                               + '<h3>' + (datastore.inventory)[i].item_info.name_english + '</h3>'
                                 + '<div style="text:align:center;">'
@@ -277,7 +277,7 @@ function getNFTDetails() {
                           + '<div class="nft-image" style="width:130%;" onclick="confirmSale(\'' + (datastore.inventory)[i].item_info.name_english + '\',\'' + amountFormatted + '\',\'' + (datastore.inventory)[i].item + '\')">'
                             + '<button class="nft-order circulating">' + numberWithCommas((datastore.inventory)[i].supply) + ' BOUGHT</button>'
                             + '<button class="nft-order supply">' + maxSupply + '</button>'
-                            + '<img src="' + (datastore.inventory)[i].item_info.image_url + '?width=512" " onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'" alt="" style="height:20em;">'
+                            + '<img src="' + (datastore.inventory)[i].item_info.image_url + '?width=1200" " onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'" alt="" style="height:20em;">'
                             + '<div class="nft-desc" style="height:8em;">'
                               + '<h3>' + (datastore.inventory)[i].item_info.name_english + '</h3>'
                                 + '<div style="text:align:center;">'
@@ -345,7 +345,7 @@ function getNFTDetails() {
                             + '<div class="nft-image" style="width:115%;" onclick="confirmAuctionNotStarted(\'' + timeleft + '\')">'
                               + '<button class="nft-order circulating">' + hours + '</button>'
                               + '<button class="nft-order supply">' + numberWithCommas((datastore.auctions)[i].capacity) + ' AVAILABLE</button>'
-                              + '<img src="' + (datastore.auctions)[i].item_info.image_url + '?width=512" " onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'" alt="" style="height:12em;padding-top:3em;">'
+                              + '<img src="' + (datastore.auctions)[i].item_info.image_url + '?width=512" onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'" alt="" style="height:12em;padding-top:3em;">'
                               + '<div class="nft-desc">'
                                 + '<h3>' + (datastore.auctions)[i].name + '</h3>'
                                   + '<div style="text-align:center;">'
@@ -386,7 +386,7 @@ function getNFTDetails() {
                               + '<div class="nft-image" style="width:115%;" onclick="confirmAuction(\'' + (datastore.auctions)[i].name + '\',\'' + (parseFloat(currentLowestBid)) + '\',\'' + (numberWithCommas((datastore.auctions)[i].capacity)) + '\',\'' + addressAuctionNFT + '\',\'' + ((datastore.auctions)[i].item) + '\')">'
                               + '<button class="nft-order circulating">' + hours + '</button>'
                               + '<button class="nft-order supply">' + numberWithCommas((datastore.auctions)[i].capacity) + ' AVAILABLE</button>'
-                              + '<img src="' + (datastore.auctions)[i].item_info.image_url + '?width=512" " onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'" alt="" style="height:12em;padding-top:3em;">'
+                              + '<img src="' + (datastore.auctions)[i].item_info.image_url + '?width=512" onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'" alt="" style="height:12em;padding-top:3em;">'
                               + '<div class="nft-desc">'
                                 + '<h3 style="display:inline-block;">' + (datastore.auctions)[i].name + '</h3>'
                                 + bidTypeWinner

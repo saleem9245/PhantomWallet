@@ -208,7 +208,7 @@
 
         if (arrayNFTFormatted != '') {
 
-          $.get('https://www.22series.com/api/store/nft?ids=' + arrayNFTFormatted,
+          $.post('https://www.22series.com/api/store/nft?ids=' + arrayNFTFormatted,
               function (returnedDataTX) {
                 dataNFT = JSON.parse(returnedDataTX)
                 Object.keys(dataNFT).forEach(key => {
