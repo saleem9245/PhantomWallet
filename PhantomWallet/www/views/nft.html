@@ -24,12 +24,12 @@
                 <div class="category" id="game-access" onclick="filterCategory(this.id)">Game Access</div>
                 <div class="category" id="vehicle-parts" onclick="filterCategory(this.id)">Vehicle Parts</div>
                 <div class="category" id="vehicles" onclick="filterCategory(this.id)">Vehicles</div>
-                <div class="category-currency" style="font-size: 1.25em;justify-content: center;border: 0;">
+                <div class="category-currency" style="font-size: 1.25em;justify-content: center;border: 0;white-space:nowrap;">
                   <div style="margin-top:.95em;display:inline-block;vertical-align:top;">
                     <input class="tgl tgl-flat" id="cb5" type="checkbox" onclick="toggleCurrency()" checked>
                     <label class="tgl-btn" style="margin: 0 auto;" for="cb5"></label>
                   </div>
-                  <span style="margin:1em .5em;display:inline-block;color:#FFBF32" id="symbol-currency">SOUL</span>
+                  <span style="margin:1em .5em;display:inline-block;color:#FFBF32;" id="symbol-currency">SOUL (XX% DISCOUNT)</span>
                 </div>
               </div>
               <div id="loader-nftlist" class="block-loader center">
@@ -111,6 +111,7 @@ function toggleCurrency() {
   {
     document.getElementById("symbol-currency").innerHTML = 'SOUL';
     currencySelected = 'SOUL';
+    document.getElementById("symbol-currency").innerHTML = discountSoul;
   }
   else
   {
@@ -179,6 +180,12 @@ function initStore() {
           countdown: true
         });
 
+        // init store discount
+        if (document.getElementById("cb5").checked == 1)
+        {
+          document.getElementById("symbol-currency").innerHTML = 'SOUL (' + Math.floor((JSON.parse(data).soul_usd_value_market)*100/(JSON.parse(data).soul_usd_value_store)) + '% DISCOUNT)'
+        }
+
       } else {
         $("#nft").hide();
         $("#no-nft").show();
@@ -207,6 +214,12 @@ function getNFTDetails() {
         responseprizebal = JSON.parse(data).prize_pool_usd_formatted;
         responseprizebalformatted = '$' + numberWithCommas(responseprizebal) + ' USD';
         document.getElementById("prizepool").innerHTML = responseprizebalformatted;
+      }
+      // init store discount
+      discountSoul = 'SOUL (' + Math.floor((JSON.parse(data).soul_usd_value_market)*100/(JSON.parse(data).soul_usd_value_store)) + '% DISCOUNT)';
+      if (document.getElementById("cb5").checked == 1)
+      {
+        document.getElementById("symbol-currency").innerHTML = discountSoul
       }
   }).then(function() {
 
