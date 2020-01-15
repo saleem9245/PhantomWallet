@@ -183,7 +183,7 @@ function initStore() {
         // init store discount
         if (document.getElementById("cb5").checked == 1)
         {
-          document.getElementById("symbol-currency").innerHTML = 'SOUL (' + Math.floor((JSON.parse(data).soul_usd_value_market)*100/(JSON.parse(data).soul_usd_value_store)) + '% DISCOUNT)'
+          document.getElementById("symbol-currency").innerHTML = 'SOUL (' + Math.ceil((1-((JSON.parse(data).soul_usd_value_market)/(JSON.parse(data).soul_usd_value_store)))*100) + '% DISCOUNT)';
         }
 
       } else {
@@ -216,7 +216,7 @@ function getNFTDetails() {
         document.getElementById("prizepool").innerHTML = responseprizebalformatted;
       }
       // init store discount
-      discountSoul = 'SOUL (' + Math.floor((JSON.parse(data).soul_usd_value_market)*100/(JSON.parse(data).soul_usd_value_store)) + '% DISCOUNT)';
+      discountSoul = 'SOUL (' + Math.ceil((1-((JSON.parse(data).soul_usd_value_market)/(JSON.parse(data).soul_usd_value_store)))*100) + '% DISCOUNT)';
       if (document.getElementById("cb5").checked == 1)
       {
         document.getElementById("symbol-currency").innerHTML = discountSoul
