@@ -208,9 +208,19 @@
 
         if (arrayNFTFormatted != '') {
 
-          $.post('https://www.22series.com/api/store/nft?ids=' + arrayNFTFormatted,
-              function (returnedDataTX) {
-                dataNFT = JSON.parse(returnedDataTX)
+          $.ajax({
+              xhrFields: {
+                  withCredentials: !1
+              },
+              cache: !1,
+              crossDomain: !0,
+              type: 'POST',
+              dataType: 'json',
+              data: JSON.stringify({ids: arrayNFTFormatted}),
+              // final url pricing
+              url: 'https://www.22series.com/api/store/nft',
+              success: function(returnedDataTX) {
+                dataNFT = returnedDataTX;
                 Object.keys(dataNFT).forEach(key => {
                   if (dataNFT[key].item_info) {
                     name = dataNFT[key].item_info.name_english
@@ -220,10 +230,14 @@
                   sendcustomNFT.push({
                       id: key,
                       item: dataNFT[key].item,
+                      type: dataNFT[key].item_info.display_type_english,
                       name: ' • ' + name
                   });
+                  sendcustomNFT.sort(function(a, b) {
+                    return b.item- a.item;
+                  })
                 });
-              })
+              }})
 
         }
 
@@ -392,12 +406,13 @@
 
                     sendcustomNFTlength = sendcustomNFT.length
                     for (i = 0; i < sendcustomNFTlength; i++) {
+                      console.log(sendcustomNFT[i])
                       if (sendcustomNFT[i].name) {
                         name = (sendcustomNFT[i].name).replace('<br/>', ' • ');
                       } else {
                         name = sendcustomNFT[i].name
                       }
-                      nftIds.append($('<option>', { value: sendcustomNFT[i].id, text: 'NFT #' + sendcustomNFT[i].item + name}));
+                      nftIds.append($('<option>', { value: sendcustomNFT[i].id, text: 'NFT #' + sendcustomNFT[i].item + ' • ' + sendcustomNFT[i].type + name}));
                     }
                     return;
                 } else {
