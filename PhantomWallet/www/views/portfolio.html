@@ -213,14 +213,23 @@ $(document).ready(function() {
 
   if (arrayNFTFormatted != '') {
 
-    $.post('https://www.22series.com/api/store/nft?ids=' + arrayNFTFormatted,
-        function (returnedDataTX) {
-          dataNFT = JSON.parse(returnedDataTX)
+    $.ajax({
+        xhrFields: {
+            withCredentials: !1
+        },
+        cache: !1,
+        crossDomain: !0,
+        type: 'POST',
+        dataType: 'json',
+        data: JSON.stringify({ids: arrayNFTFormatted}),
+        // final url pricing
+        url: 'https://www.22series.com/api/store/nft',
+        success: function(returnedDataTX) {
+          dataNFT = returnedDataTX;
           let byThis = 'item';
           let compare = (k, kk) => dataNFT[kk][byThis] - dataNFT[k][byThis];
           dataNFT = Object.keys(dataNFT).sort(compare).reduce((a, d) => ({ ...a, ...{ [d]: dataNFT[d] } }), {});
           Object.keys(dataNFT).forEach(key => {
-            console.log(dataNFT[key].item)
             if (dataNFT[key].item_info) {
               if (dataNFT[key].item_info.name_english) {
                 name = (dataNFT[key].item_info.name_english).replace('<br/>', ' • ');
@@ -241,7 +250,7 @@ $(document).ready(function() {
             side: 'right',
             plugins: ['sideTip', 'scrollableTip']
           });
-        })
+        }})
 
     } else {
       // init tooltipster i
