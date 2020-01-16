@@ -20,7 +20,7 @@
           <thead>
               <tr>
                   <th class="col-6">ASSET NAME</th>
-                  <th class="col-6">CHAIN NAME</th>
+                  <th class="col-6" style="display:none">CHAIN NAME</th>
                   <th class="col-3">ASSET QUANTITY</th>
                   <th class="col-3" id="currency-header">VALUE</th>
               </tr>
@@ -61,7 +61,7 @@
                       {{/if}}
                     {{/if}}
                   {{/if}}
-                  <td class="col-6">{{ChainName}}</td>
+                  <td class="col-6" style="display:none">{{ChainName}}</td>
                   <td class="col-3" id="{{Symbol}}-amount">{{AmountFormated}}</td>
                   {{#if Symbol == 'SOUL'}}
                     <td class="col-3" id="{{Symbol}}-price">{{CurrencySymbol}}{{PriceFormated}}</td>
@@ -83,7 +83,7 @@
               <tr class="token-shadow">
                 <td class="col-6"></td>
                 <td class="col-6"></td>
-                <td class="col-3"></td>
+                <td class="col-3" style="display:none"></td>
                 <td class="col-3"><span id="totalportfolio"></span><br><span style="color:grey;font-size:.7em;display:block;" id="totalportfoliosats"></span></td>
               </tr>
           </tfoot>

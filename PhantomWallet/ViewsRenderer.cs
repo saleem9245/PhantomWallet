@@ -211,6 +211,8 @@ namespace Phantom.Wallet
 
             TemplateEngine.Server.Post("/sendrawtxNFT", RouteSendRawTxNFT);
 
+            TemplateEngine.Server.Post("/sendrawtxcustomNFT", RouteSendRawTxCustomNFT);
+
             TemplateEngine.Server.Get("/error", RouteError);
 
             TemplateEngine.Server.Get("/waiting/{txhash}", RouteWaitingTx);
@@ -496,6 +498,33 @@ namespace Phantom.Wallet
             string result;
 
             result = AccountController.TransferTokensNFT(keyPair, addressTo, chainName, symbol, amount, payload).Result;
+
+            ResetSessionSendFields(request);
+
+            if (!SendUtils.IsTxHashValid(result))
+            {
+                PushError(request, result);
+                Log.Information("No valid result");
+                return "";
+            }
+
+            return result;
+        }
+
+        private object RouteSendRawTxCustomNFT(HTTPRequest request)
+        {
+
+            var addressTo = request.GetVariable("dest");
+            var chainName = request.GetVariable("chain");
+            var symbol = request.GetVariable("token");
+            var amount = request.GetVariable("amount");
+            var payload = request.GetVariable("payload");
+            var donation = bool.Parse(request.GetVariable("donation"));
+
+            var keyPair = GetLoginKey(request);
+            string result;
+
+            result = AccountController.TransferTokensCustomNFT(keyPair, addressTo, chainName, symbol, amount, payload, donation).Result;
 
             ResetSessionSendFields(request);
 

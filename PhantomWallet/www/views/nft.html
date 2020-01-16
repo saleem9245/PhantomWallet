@@ -14,12 +14,13 @@
               </div>
             </div>
             <div class="col-md-6 center container-prize" style="margin-top:-5em;">
-              <h3>Current Prize Pool<i class="tooltip fas fa-info-circle" style="margin-left:1em;width:1em;" title="10% of all sales goes towards prize pool of the first 22 Series championship!"></i></h3>
+              <h3>Prize Pool<i class="tooltip fas fa-info-circle" style="margin-left:1em;width:1em;" title="10% of all sales goes towards prize pool of the first 22 Series championship!"></i></h3>
               <div class="prizepool" id="prizepool">$XXX,XXX USD</div>
               <div class="referral-nft">If you refer someone, you both get 11% of their purchase!<i class="tooltip fas fa-info-circle" style="margin-left:1em;width:1em;" data-tooltip-content="#tooltip_referral"></i></div>
+              <div style=""><input id="cosmicaddfee" type="checkbox" checked><span style="font-size:.8em;color:#3faedd;">Check this box to enter the bi-monthly lottery to win a custom NFT car for 1 SOUL!</span><br></div>
             </div>
             <div class="col-md-12 center">
-              <h3 id="nftdetailslist-title" style="margin-top:-1.5em;">Current NFTs available to buy </h3>
+              <h3 id="nftdetailslist-title" style="margin: -1em auto 0;">NFTs available to buy </h3>
               <div id="nft-category" style="margin-bottom: 1em;padding:.5em;padding-left: 4em;padding-right: 4em;">
                 <div class="category" id="game-access" onclick="filterCategory(this.id)">Game Access</div>
                 <div class="category" id="vehicle-parts" onclick="filterCategory(this.id)">Vehicle Parts</div>
@@ -561,11 +562,21 @@ function confirmSale(nameNFT, priceNFT, payloadNFT) {
   }
 
   $('#sendSpinner').show();
+  var selectfee = document.getElementById('cosmicaddfee').checked;
+  if (selectfee == true) {
+    feeDescText = '</strong> and enter the bi-monthly lottery to win a custom NFT car for <strong>1 SOUL</strong>!'
+    customURL = '/sendrawtxcustomNFT'
+    isDonation = true;
+  } else {
+    feeDescText = '</strong>.'
+    customURL = '/sendrawtxNFT'
+    isDonation = false;
+  }
   contentBootbox = 'You are going to buy <strong>'
       + nameNFT
       + '</strong> for <strong>'
       + numberWithCommas(parseFloat(priceNFT))
-      + " " + currencySelected + ".</strong><br><br>"
+      + " " + currencySelected + feeDescText + "</strong><br><br>"
       + customAction
       + " Someone referred you? Enter their Phantasma address below.<br>You will both get 11% of the purchase back in GOATI tokens.<br><br>"
       + '<input type="text" class="form-control" name="referral">';
@@ -593,9 +604,9 @@ function confirmSale(nameNFT, priceNFT, payloadNFT) {
             payloadFormatted = JSON.stringify({"ref":referredBy, "item":parseFloat(payloadNFT)})
           }
 
-          $.post('/sendrawtxNFT',
+          $.post(customURL,
               {
-                  token: currencySelected, amount: parseFloat(priceNFT), dest: addressNFT, chain: 'main' , destChain: 'main', payload: payloadFormatted
+                  token: currencySelected, amount: parseFloat(priceNFT), dest: addressNFT, chain: 'main' , destChain: 'main', payload: payloadFormatted, donation: isDonation
               },
               function (returnedData) {
                   setTimeout(function(){ $('#sendSpinner').hide(); }, 3000);
