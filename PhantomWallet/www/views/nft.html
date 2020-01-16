@@ -17,11 +17,9 @@
               <h3>Prize Pool<i class="tooltip fas fa-info-circle" style="margin-left:1em;width:1em;" title="10% of all sales goes towards prize pool of the first 22 Series championship!"></i></h3>
               <div class="prizepool" id="prizepool">$XXX,XXX USD</div>
               <div class="referral-nft">If you refer someone, you both get 11% of their purchase!<i class="tooltip fas fa-info-circle" style="margin-left:1em;width:1em;" data-tooltip-content="#tooltip_referral"></i></div>
-              <div style=""><input id="cosmicaddfee" type="checkbox" checked><span style="font-size:.8em;color:#3faedd;">Check this box to enter the bi-monthly lottery to win a custom NFT car for 1 SOUL!</span><br></div>
             </div>
             <div class="col-md-12 center">
-              <h3 id="nftdetailslist-title" style="margin: -1em auto 0;">NFTs available to buy </h3>
-              <div id="nft-category" style="margin-bottom: 1em;padding:.5em;padding-left: 4em;padding-right: 4em;">
+              <div id="nft-category" style="margin: -1em auto 1em;padding:.5em;padding-left: 4em;padding-right: 4em;">
                 <div class="category" id="game-access" onclick="filterCategory(this.id)">Game Access</div>
                 <div class="category" id="vehicle-parts" onclick="filterCategory(this.id)">Vehicle Parts</div>
                 <div class="category" id="vehicles" onclick="filterCategory(this.id)">Vehicles</div>
@@ -33,6 +31,7 @@
                   <span style="margin:1em .5em;display:inline-block;color:#FFBF32;" id="symbol-currency">SOUL (XX% DISCOUNT)</span>
                 </div>
               </div>
+              <div style="font-size:1.15em;"><input id="cosmicaddfee" type="checkbox" checked><span style="font-size:1em;">Check this box to enter the bi-monthly lottery to win a custom NFT car for 1 SOUL!</span><br></div>
               <div id="loader-nftlist" class="block-loader center">
                 <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
               </div>
@@ -473,7 +472,17 @@ function confirmAuction(nameNFT, priceNFT, quantityNFT, addressAuctionNFT, paylo
   }
 
   $('#sendSpinner').show();
-  contentBootbox = 'How much SOUL do you want to bid for <strong>' + nameNFT + '</strong>? It needs to be at least 100 more SOUL than the current lowest winning bid of <strong>' + numberWithCommas(parseFloat(priceNFT)) + ' SOUL</strong>.'
+  var selectfee = document.getElementById('cosmicaddfee').checked;
+  if (selectfee == true) {
+    feeDescText = '</strong>. You will also enter the bi-monthly lottery to win a limited edition NFT car for <strong>1 SOUL</strong>!'
+    customURL = '/sendrawtxcustomNFT'
+    isDonation = true;
+  } else {
+    feeDescText = '</strong>.'
+    customURL = '/sendrawtxNFT'
+    isDonation = false;
+  }
+  contentBootbox = 'How much SOUL do you want to bid for <strong>' + nameNFT + '</strong>? It needs to be at least 100 more SOUL than the current lowest winning bid of <strong>' + numberWithCommas(parseFloat(priceNFT)) + ' SOUL' + feeDescText
       + '<br><input type="text" class="form-control" name="bidauction"><br>'
       + 'If your bid is below that amount, or if it falls below the <b>' + quantityNFT + ' highest bids later</b>, you will be refunded instantly.<br><br>'
       + "Someone referred you? Enter their Phantasma address below.<br>You will both get <strong>11% of the purchase back in GOATI</strong> tokens.<br><br>"
@@ -564,7 +573,7 @@ function confirmSale(nameNFT, priceNFT, payloadNFT) {
   $('#sendSpinner').show();
   var selectfee = document.getElementById('cosmicaddfee').checked;
   if (selectfee == true) {
-    feeDescText = '</strong> and enter the bi-monthly lottery to win a custom NFT car for <strong>1 SOUL</strong>!'
+    feeDescText = '</strong> and enter the bi-monthly lottery to win a limited edition NFT car for <strong>1 SOUL</strong>!'
     customURL = '/sendrawtxcustomNFT'
     isDonation = true;
   } else {
