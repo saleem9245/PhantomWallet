@@ -92,7 +92,7 @@ namespace Phantom.Wallet.Models
         public string AmountOrId;
     }
 
-    public struct ErrorResult
+    public struct ErrorRes
     {
         public string error;
     }

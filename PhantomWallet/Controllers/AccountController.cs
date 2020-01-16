@@ -506,12 +506,12 @@ namespace Phantom.Wallet.Controllers
             catch (RpcResponseException rpcEx)
             {
                 Log.Error($"RPC Exception occurred: {rpcEx.RpcError.Message}");
-                return new ErrorResult { error = rpcEx.RpcError.Message };
+                return new ErrorRes { error = rpcEx.RpcError.Message };
             }
             catch (Exception ex)
             {
                 Log.Error($"Exception occurred: {ex.Message}");
-                return new ErrorResult { error = ex.Message };
+                return new ErrorRes { error = ex.Message };
             }
         }
 
@@ -538,12 +538,12 @@ namespace Phantom.Wallet.Controllers
             catch (RpcResponseException rpcEx)
             {
                 Log.Error($"RPC Exception occurred: {rpcEx.RpcError.Message}");
-                return new ErrorResult { error = rpcEx.RpcError.Message };
+                return new ErrorRes { error = rpcEx.RpcError.Message };
             }
             catch (Exception ex)
             {
                 Log.Error($"Exception occurred: {ex.Message}");
-                return new ErrorResult { error = ex.Message };
+                return new ErrorRes { error = ex.Message };
             }
         }
 
@@ -568,12 +568,12 @@ namespace Phantom.Wallet.Controllers
             catch (RpcResponseException rpcEx)
             {
                 Log.Error($"RPC Exception occurred: {rpcEx.RpcError.Message}");
-                return new ErrorResult { error = rpcEx.RpcError.Message };
+                return new ErrorRes { error = rpcEx.RpcError.Message };
             }
             catch (Exception ex)
             {
                 Log.Error($"Exception occurred: {ex.Message}");
-                return new ErrorResult { error = ex.Message };
+                return new ErrorRes { error = ex.Message };
             }
         }
 
@@ -604,12 +604,12 @@ namespace Phantom.Wallet.Controllers
             catch (RpcResponseException rpcEx)
             {
                 Log.Error($"RPC Exception occurred: {rpcEx.RpcError.Message}");
-                return new ErrorResult { error = rpcEx.RpcError.Message };
+                return new ErrorRes { error = rpcEx.RpcError.Message };
             }
             catch (Exception ex)
             {
                 Log.Error($"Exception occurred: {ex.Message}");
-                return new ErrorResult { error = ex.Message };
+                return new ErrorRes { error = ex.Message };
             }
         }
 
@@ -636,12 +636,12 @@ namespace Phantom.Wallet.Controllers
             catch (RpcResponseException rpcEx)
             {
                 Log.Error($"RPC Exception occurred: {rpcEx.RpcError.Message}");
-                return new ErrorResult { error = rpcEx.RpcError.Message };
+                return new ErrorRes { error = rpcEx.RpcError.Message };
             }
             catch (Exception ex)
             {
                 Log.Error($"Exception occurred: {ex.Message}");
-                return new ErrorResult { error = ex.Message };
+                return new ErrorRes { error = ex.Message };
             }
         }
 
@@ -668,12 +668,12 @@ namespace Phantom.Wallet.Controllers
             catch (RpcResponseException rpcEx)
             {
                 Log.Error($"RPC Exception occurred: {rpcEx.RpcError.Message}");
-                return new ErrorResult { error = rpcEx.RpcError.Message };
+                return new ErrorRes { error = rpcEx.RpcError.Message };
             }
             catch (Exception ex)
             {
                 Log.Error($"Exception occurred: {ex.Message}");
-                return new ErrorResult { error = ex.Message };
+                return new ErrorRes { error = ex.Message };
             }
         }
 
@@ -704,12 +704,12 @@ namespace Phantom.Wallet.Controllers
             catch (RpcResponseException rpcEx)
             {
                 Log.Error($"RPC Exception occurred: {rpcEx.RpcError.Message}");
-                return new ErrorResult { error = rpcEx.RpcError.Message };
+                return new ErrorRes { error = rpcEx.RpcError.Message };
             }
             catch (Exception ex)
             {
                 Log.Error($"Exception occurred: {ex.Message}");
-                return new ErrorResult { error = ex.Message };
+                return new ErrorRes { error = ex.Message };
             }
         }
 
@@ -738,12 +738,12 @@ namespace Phantom.Wallet.Controllers
           catch (RpcResponseException rpcEx)
           {
               Log.Error($"RPC Exception occurred: {rpcEx.RpcError.Message}");
-              return new ErrorResult { error = rpcEx.RpcError.Message };
+              return new ErrorRes { error = rpcEx.RpcError.Message };
           }
           catch (Exception ex)
           {
               Log.Error($"Exception occurred: {ex.Message}");
-              return new ErrorResult { error = ex.Message };
+              return new ErrorRes { error = ex.Message };
           }
         }
 

@@ -564,7 +564,7 @@ namespace Phantom.Wallet
             request.session.SetStruct<ErrorContext>("error", new ErrorContext { ErrorCode = "", ErrorDescription = $"{txHash} is still not confirmed." });
             var result = AccountController.GetTxConfirmations(txHash).Result;
 
-            if (result.GetType() == typeof(ErrorResult))
+            if (result.GetType() == typeof(ErrorRes))
             {
                 return JsonConvert.SerializeObject(result, Formatting.Indented);
             }
@@ -622,7 +622,7 @@ namespace Phantom.Wallet
             request.session.SetStruct<ErrorContext>("error", new ErrorContext { ErrorCode = "", ErrorDescription = $"{txHash} is still not confirmed." });
             var result = AccountController.GetTxConfirmations(txHash).Result;
 
-            if (result.GetType() == typeof(ErrorResult))
+            if (result.GetType() == typeof(ErrorRes))
             {
                 return JsonConvert.SerializeObject(result, Formatting.Indented);
             }
@@ -665,7 +665,7 @@ namespace Phantom.Wallet
                             keyPair, chain, contract, method, paramList.ToArray()
                             ).Result;
 
-                    if (result.GetType() == typeof(ErrorResult))
+                    if (result.GetType() == typeof(ErrorRes))
                     {
                         return JsonConvert.SerializeObject(result, Formatting.Indented);
                     }
@@ -699,7 +699,7 @@ namespace Phantom.Wallet
                 InvalidateCache(keyPair.Address);
                 var result = AccountController.CosmicFixed(keyPair).Result;
 
-                if (result.GetType() == typeof(ErrorResult))
+                if (result.GetType() == typeof(ErrorRes))
                 {
                     return JsonConvert.SerializeObject(result, Formatting.Indented);
                 }
@@ -743,7 +743,7 @@ namespace Phantom.Wallet
                             keyPair, chain, contract, method, paramList.ToArray()
                             ).Result;
 
-                    if (result.GetType() == typeof(ErrorResult))
+                    if (result.GetType() == typeof(ErrorRes))
                     {
                         return JsonConvert.SerializeObject(result, Formatting.Indented);
                     }
@@ -785,7 +785,7 @@ namespace Phantom.Wallet
                         keyPair, stakeAmount
                         ).Result;
 
-                if (result.GetType() == typeof(ErrorResult))
+                if (result.GetType() == typeof(ErrorRes))
                 {
                     return JsonConvert.SerializeObject(result, Formatting.Indented);
                 }
@@ -949,7 +949,7 @@ namespace Phantom.Wallet
               InvalidateCache(keyPair.Address);
               var result = AccountController.RegisterName(keyPair, name).Result;
 
-              if (result.GetType() == typeof(ErrorResult))
+              if (result.GetType() == typeof(ErrorRes))
               {
                   return JsonConvert.SerializeObject(result, Formatting.Indented);
               }
