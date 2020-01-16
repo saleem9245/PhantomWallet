@@ -364,7 +364,7 @@ namespace Phantom.Wallet.Controllers
                       Log.Information("Transfer to " + addressTo);
                       script = ScriptUtils.BeginScript()
                           .AllowGas(keyPair.Address, Address.Null, MinimumFee, 800)
-                          .TransferTokens(symbol, keyPair.Address, addressTo, bigIntAmount)
+                          .TransferNFT(symbol, keyPair.Address, addressTo, bigIntAmount)
                           .SpendGas(keyPair.Address)
                           .EndScript();
                   }
