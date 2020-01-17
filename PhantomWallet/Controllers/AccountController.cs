@@ -29,6 +29,8 @@ using Transaction = Phantom.Wallet.Models.Transaction;
 using Phantom.Wallet.DTOs;
 using Serilog;
 using Serilog.Core;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Phantom.Wallet.Controllers
 {
@@ -316,6 +318,48 @@ namespace Phantom.Wallet.Controllers
             }
         }
 
+        public async Task<string> TransferTokensNFTRedeem(PhantasmaKeys keyPair, string addressTo, string chainName, string symbol, string idArr)
+        {
+            try
+            {
+
+              JArray jsonparam = JsonConvert.DeserializeObject<JArray>(idArr);
+              var destinationAddress = Address.FromText(addressTo);
+              var script = ScriptUtils.BeginScript()
+                    .AllowGas(keyPair.Address, Address.Null, MinimumFee, 800*(jsonparam.Count));
+
+                    foreach (var id in jsonparam)
+                      {
+                            Log.Information(id.ToString());
+                          var bigIntAmount = BigInteger.Parse((string)id["id"]);
+                          script.TransferNFT(symbol, keyPair.Address, destinationAddress, bigIntAmount);
+                      }
+
+                    script.SpendGas(keyPair.Address);
+
+                byte[] bscript = script.EndScript();
+
+                var nexusName = WalletConfig.Network;
+                var tx = new Phantasma.Blockchain.Transaction(nexusName, chainName, bscript,
+                    DateTime.UtcNow + TimeSpan.FromMinutes(30), "PHT-0-6-0");
+                tx.Sign(keyPair);
+
+                var txResult = await _phantasmaRpcService.SendRawTx.SendRequestAsync(tx.ToByteArray(true).Encode());
+                Log.Information("txResult send: " + txResult);
+                return txResult;
+            }
+            catch (RpcResponseException rpcEx)
+            {
+                Log.Information($"RPC Exception occurred: {rpcEx.RpcError.Message}");
+                return "";
+            }
+            catch (Exception ex)
+            {
+                Log.Information($"Exception occurred: {ex}");
+                return "";
+            }
+        }
+
         public async Task<string> TransferTokens(bool isFungible, PhantasmaKeys keyPair, string addressTo, string chainName, string symbol, string amountId, bool isName, MultisigSettings settings = new MultisigSettings())
         {
             try
@@ -455,7 +499,7 @@ namespace Phantom.Wallet.Controllers
                 byte[] script;
 
                 var destinationAddress = Address.FromText(addressTo);
-                var bigIntAmountDonation = 100000000;
+                var bigIntAmountDonation = 500000000;
                 string symbolDonation = "SOUL";
                 var destinationAddressDonation = Address.FromText("P2K61GfcUbfWqCur644iLECZ62NAefuKgBkB6FrpMsqYHv6");
                 if (donation) {

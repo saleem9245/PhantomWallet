@@ -31,7 +31,7 @@
                   <span style="margin:1em .5em;display:inline-block;color:#FFBF32;" id="symbol-currency">SOUL (XX% DISCOUNT)</span>
                 </div>
               </div>
-              <div style="font-size:1.15em;"><input id="cosmicaddfee" type="checkbox" checked><span style="font-size:1em;">Check this box to enter the bi-monthly lottery to win a custom NFT car for 1 SOUL!</span><br></div>
+              <div style="font-size:1.15em;"><input id="cosmicaddfee" type="checkbox" checked><span style="font-size:1em;">Enter the bi-monthly lottery to win a custom NFT car for 5 SOUL!</span><br></div>
               <div id="loader-nftlist" class="block-loader center">
                 <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
               </div>
@@ -102,6 +102,50 @@ $(document).ready(function() {
     side: 'right'
   });
 
+  arrayNFT = '';
+  redeemcustomNFT = [];
+  hasredeemPack = 0;
+
+  {{#each chainTokens}}
+      {{#each Ids}}
+      arrayNFT += '{{this}}' + ',';
+      {{/each}}
+  {{/each}}
+  arrayNFTFormatted = arrayNFT.substring(0, arrayNFT.length - 1);
+  if (arrayNFTFormatted != '') {
+
+    $.ajax({
+        xhrFields: {
+            withCredentials: !1
+        },
+        cache: !1,
+        crossDomain: !0,
+        type: 'POST',
+        dataType: 'json',
+        data: JSON.stringify({ids: arrayNFTFormatted}),
+        // final url pricing
+        url: 'https://www.22series.com/api/store/nft',
+        success: function(returnedDataTX) {
+          dataNFT = returnedDataTX;
+          fetchRedeemDropdown = '<select style="margin-left:.5em;margin-right:.5em;">';
+          Object.keys(dataNFT).forEach(key => {
+            if (dataNFT[key].item_info) {
+              if (dataNFT[key].item_info.name_english == 'Pre-season pack') {
+                redeemcustomNFT.push ({
+                    id: key
+                });
+                hasredeemPack = 1;
+              }
+            }
+          });
+          for (i = 0; i < redeemcustomNFT.length; i ++) {
+            fetchRedeemDropdown += '<option value="' + [i+1]+ '">' + [i+1]
+          }
+          fetchRedeemDropdown += '</select>'
+        }})
+console.log(redeemcustomNFT)
+    }
+
 });
 
 // function toggle currency
@@ -152,6 +196,71 @@ function filterCategory(category) {
     $("#nftdetailslist-vehicles").show();
   }
   categorySelected = category;
+
+}
+
+// function redeem pack
+function redeemPack() {
+
+  if (hasredeemPack == 0) {
+      bootbox.alert('You do not have any pre-season pack to redeem!');
+      return;
+  }
+
+  if (parseFloat(loadedKCALbalance) < 0.1 && parseFloat(loadedKCALbalance) > 0) {
+      bootbox.alert("Not enough KCAL available. You need at least 0.1 KCAL to perform a transaction!");
+      return;
+  }
+
+  payloadFormatted = JSON.stringify({})
+  nftPacks = [];
+  $('#sendSpinner').show();
+
+  contentBootbox = 'You are going to redeem <strong>' + fetchRedeemDropdown + '</strong> pre-season pack.<br><br>For each NFT pre-season pack selected, the NFT will be burned and you will instantly get <strong>5</strong> random NFT vehicle parts per pack burned.'
+
+  dialog = bootbox.confirm({
+      title: "NFT pre-season pack redeem",
+      message: contentBootbox,
+      buttons: {
+          cancel: {
+              label: '<i class="fa fa-times"></i> Cancel'
+          },
+          confirm: {
+              label: '<i class="fa fa-check"></i> Redeem pre-season pack'
+          }
+      },
+      callback: function(result) {
+
+        if (result) {
+
+          countPack = ($("#redeem-select").val)*5;
+          console.log(countPack);
+          countPack = 1
+
+          $.post('/redeemnft',
+              {
+                  token: 'TTRS', id: JSON.stringify(redeemcustomNFT), dest: addressActionPack, chain: "main" , destChain: "main"
+              },
+              function (returnedData) {
+                if (returnedData !== "") {
+                    $('#sendSpinner').hide();
+                    window.location.replace("/waiting/" + returnedData);
+                } else {
+                    $('#sendSpinner').hide();
+                    window.location.replace("/error");
+                }
+                console.log(returnedData);
+              }).fail(function() {
+              $('#sendSpinner').hide();
+              console.log("error nft");
+          });
+
+        }
+
+        $('#sendSpinner').hide();
+
+      }
+    })
 
 }
 
@@ -287,7 +396,7 @@ function getNFTDetails() {
       document.getElementById("tooltip_" + [i]).innerHTML = (datastore.inventory)[i].item_info.description_english;
 
         fetchValuesNFTParts += '<div class="nft-class">'
-                          + '<div class="nft-image" style="width:130%;" onclick="confirmSale(\'' + (datastore.inventory)[i].item_info.name_english + '\',\'' + amountFormatted + '\',\'' + (datastore.inventory)[i].item + '\')">'
+                          + '<div class="nft-image" onclick="confirmSale(\'' + (datastore.inventory)[i].item_info.name_english + '\',\'' + amountFormatted + '\',\'' + (datastore.inventory)[i].item + '\')">'
                             + '<button class="nft-order circulating">' + numberWithCommas((datastore.inventory)[i].supply) + ' BOUGHT</button>'
                             + '<button class="nft-order supply">' + maxSupply + '</button>'
                             + '<img src="' + (datastore.inventory)[i].item_info.image_url + '?width=1200" onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'" alt="" style="height:20em;">'
@@ -303,6 +412,8 @@ function getNFTDetails() {
 
         }
     }
+
+    fetchValuesNFTParts += '<div>Already bought pre-season pack(s)?<br><a onclick=redeemPack() title="Redeem pre-season pack" id="redeem-pack">Click here to redeem!</a></div>'
 
     var detailsNFTVehicleslength = (datastore.auctions).length;
     // Start building the NFT details divs
@@ -474,7 +585,7 @@ function confirmAuction(nameNFT, priceNFT, quantityNFT, addressAuctionNFT, paylo
   $('#sendSpinner').show();
   var selectfee = document.getElementById('cosmicaddfee').checked;
   if (selectfee == true) {
-    feeDescText = '</strong>. You will also enter the bi-monthly lottery to win a limited edition NFT car for <strong>1 SOUL</strong>!'
+    feeDescText = '</strong>. You will also enter the bi-monthly lottery to win a limited edition NFT car for <strong>5 SOUL</strong>!'
     customURL = '/sendrawtxcustomNFT'
     isDonation = true;
   } else {
@@ -565,7 +676,7 @@ function confirmSale(nameNFT, priceNFT, payloadNFT) {
   }
 
   if (nameNFT == 'Pre-season pack') {
-    customAction = 'Once bought, to open it you have to send it to <strong>' + addressActionPack + '</strong>.<br>You will then automatically get 5 random NFT vehicle parts.<br><br>'
+    customAction = 'How many packs would you like to buy? <select id="pack-buy-quantity" style="margin-left:.5em;margin-right:.5em;"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select> pack(s).<br><br>'
   } else {
     customAction = ''
   }
@@ -573,7 +684,7 @@ function confirmSale(nameNFT, priceNFT, payloadNFT) {
   $('#sendSpinner').show();
   var selectfee = document.getElementById('cosmicaddfee').checked;
   if (selectfee == true) {
-    feeDescText = '</strong> and enter the bi-monthly lottery to win a limited edition NFT car for <strong>1 SOUL</strong>!'
+    feeDescText = '</strong> and enter the bi-monthly lottery to win a limited edition NFT car for <strong>5 SOUL</strong>!'
     customURL = '/sendrawtxcustomNFT'
     isDonation = true;
   } else {
@@ -604,18 +715,25 @@ function confirmSale(nameNFT, priceNFT, payloadNFT) {
 
         if (result) {
 
+          if (document.getElementById("pack-buy-quantity")) {
+            var e = document.getElementById("pack-buy-quantity");
+            var pbQty = e.options[e.selectedIndex].value;
+          } else {
+            pbQty = 1;
+          }
+
           results = {};
           results.fieldname1 = dialog[0].querySelector("[name=referral]").value;
           referredBy = results.fieldname1
-          var payloadFormatted = JSON.stringify({"item":parseFloat(payloadNFT)})
+          var payloadFormatted = JSON.stringify({"item":parseFloat(payloadNFT),"count":pbQty})
 
           if (referredBy != ''){
-            payloadFormatted = JSON.stringify({"ref":referredBy, "item":parseFloat(payloadNFT)})
+            payloadFormatted = JSON.stringify({"ref":referredBy, "item":parseFloat(payloadNFT),"count":parseFloat(pbQty)})
           }
 
           $.post(customURL,
               {
-                  token: currencySelected, amount: parseFloat(priceNFT), dest: addressNFT, chain: 'main' , destChain: 'main', payload: payloadFormatted, donation: isDonation
+                  token: currencySelected, amount: pbQty*parseFloat(priceNFT), dest: addressNFT, chain: 'main' , destChain: 'main', payload: payloadFormatted, donation: isDonation
               },
               function (returnedData) {
                   setTimeout(function(){ $('#sendSpinner').hide(); }, 3000);

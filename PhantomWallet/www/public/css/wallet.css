@@ -352,6 +352,10 @@ body {
     color: white;
 }
 
+#redeem-pack:hover {
+    cursor: pointer;
+}
+
 ul.nav.nav-pills {
     text-align: left;
     display: inline-block;

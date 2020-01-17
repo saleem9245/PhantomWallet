@@ -245,6 +245,8 @@ namespace Phantom.Wallet
 
             TemplateEngine.Server.Get("/tx/{txhash}", RouteTransaction);
 
+            TemplateEngine.Server.Post("/redeemnft", RouteRedeemNFT);
+
             foreach (var entry in MenuEntries)
             {
                 var url = $"/{entry.Id}";
@@ -474,6 +476,34 @@ namespace Phantom.Wallet
                         });
                 }
             }
+
+            if (!SendUtils.IsTxHashValid(result))
+            {
+                PushError(request, result);
+                Log.Information("No valid result");
+                return "";
+            }
+
+            return result;
+        }
+
+        private object RouteRedeemNFT(HTTPRequest request)
+        {
+
+            var addressTo = request.GetVariable("dest");
+
+            var chainName = request.GetVariable("chain");
+            var destinationChain = request.GetVariable("destChain");
+
+            var symbol = request.GetVariable("token");
+            var id = request.GetVariable("id");
+
+            var keyPair = GetLoginKey(request);
+            string result;
+
+            result = AccountController.TransferTokensNFTRedeem(keyPair, addressTo, chainName, symbol, id).Result;
+
+            ResetSessionSendFields(request);
 
             if (!SendUtils.IsTxHashValid(result))
             {

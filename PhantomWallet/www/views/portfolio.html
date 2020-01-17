@@ -771,7 +771,7 @@ function Stake() {
                                 currentKCALearned = (changedamount*0.001);
                                 feesonearned = (JSON.parse(returnedDataTX).fee/(Math.pow(10,10)));
                                 updatedKCALbalance += parseFloat((currentKCALearned - feesonearned).toFixed(10));
-                                $('#mainportfoliotable > tbody').append('<tr class="token-shadow odd" role="row" id="temp-kcal" style="display:none;"><td class="col-6 aligned-row"><img class="token-icon" src="img/kcal_logo.png">Phantasma Energy - <a href="http://{{explorer}}/token/KCAL" target="_blank" title="View Asset">KCAL</a></td><td class="col-6">Main</td><td class="col-3" id="KCAL-amount">' + numberWithCommas(updatedKCALbalance) + '</td><td class="col-3 sorting_1" id="KCAL-price">N/A</td></tr>');
+                                $('#mainportfoliotable > tbody').append('<tr class="token-shadow odd" role="row" id="temp-kcal" style="display:none;"><td class="col-6 aligned-row"><img class="token-icon" src="img/kcal_logo.png">Phantasma Energy - <a href="http://{{explorer}}/token/KCAL" target="_blank" title="View Asset">KCAL</a></td><td class="col-6" style="display:none;">Main</td><td class="col-3" id="KCAL-amount">' + numberWithCommas(updatedKCALbalance) + '</td><td class="col-3 sorting_1" id="KCAL-price">N/A</td></tr>');
                                 $('#temp-kcal').show('slow');
                                 setTimeout(function() {
                                   GetPieChart(changedamount);
