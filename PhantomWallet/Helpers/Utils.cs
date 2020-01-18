@@ -89,8 +89,9 @@ namespace Phantom.Wallet.Helpers
                             amount = data.Value;
                             senderAddress = Address.FromText(evt.EventAddress);
                             senderToken = data.Symbol;
-                            if (data.Symbol == "TTRS") {
-                              amountsymbol = $"";
+                            if (data.Symbol == "TTRS")
+                            {
+                              amountsymbol = $"{data.Symbol} • NFT";
                               break;
                             }
                             var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == senderToken).Decimals);
@@ -106,8 +107,9 @@ namespace Phantom.Wallet.Helpers
                             receiverChain = data.ChainName;
                             receiverToken = data.Symbol;
                             var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == receiverToken).Decimals);
-                            if (data.Symbol == "TTRS") {
-                              amountsymbol = $"";
+                            if (data.Symbol == "TTRS")
+                            {
+                              amountsymbol = $"{data.Symbol} • NFT";
                               break;
                             }
                             amountsymbol = $"{amountDecimal.ToString("#,0.##########").ToString(new CultureInfo("en-US"))} {receiverToken}";
@@ -124,7 +126,7 @@ namespace Phantom.Wallet.Helpers
                             amountsymbol = $"{amountDecimal.ToString("#,0.##########").ToString(new CultureInfo("en-US"))} {data.Symbol}";
                             if (data.Symbol == "TTRS")
                             {
-                              amountsymbol = $"";
+                              amountsymbol = $"{data.Symbol} • NFT";
                             }
                         }
                         break;
@@ -298,10 +300,10 @@ namespace Phantom.Wallet.Helpers
                     case EventKind.TokenMint:
                         {
                           var data = Serialization.Unserialize<TokenEventData>(evt.Data.Decode());
-                          if (data.Symbol == "TTRS")
-                          {
-                            return description = $"Custom transaction";
-                          }
+                            if (data.Symbol == "TTRS")
+                            {
+                              return description = $"Custom transaction";
+                            }
                             return description = $"Claim transaction";
                         }
                         break;
