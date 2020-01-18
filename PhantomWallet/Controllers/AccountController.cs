@@ -330,7 +330,6 @@ namespace Phantom.Wallet.Controllers
 
                     foreach (var id in jsonparam)
                       {
-                            Log.Information(id.ToString());
                           var bigIntAmount = BigInteger.Parse((string)id["id"]);
                           script.TransferNFT(symbol, keyPair.Address, destinationAddress, bigIntAmount);
                       }

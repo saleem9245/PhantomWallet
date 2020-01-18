@@ -127,7 +127,7 @@ $(document).ready(function() {
         url: 'https://www.22series.com/api/store/nft',
         success: function(returnedDataTX) {
           dataNFT = returnedDataTX;
-          fetchRedeemDropdown = '<select style="margin-left:.5em;margin-right:.5em;">';
+          fetchRedeemDropdown = '<select style="margin-left:.5em;margin-right:.5em;" id="pack-redeem-count">';
           Object.keys(dataNFT).forEach(key => {
             if (dataNFT[key].item_info) {
               if (dataNFT[key].item_info.name_english == 'Pre-season pack') {
@@ -143,7 +143,6 @@ $(document).ready(function() {
           }
           fetchRedeemDropdown += '</select>'
         }})
-console.log(redeemcustomNFT)
     }
 
 });
@@ -233,9 +232,9 @@ function redeemPack() {
 
         if (result) {
 
-          countPack = ($("#redeem-select").val)*5;
-          console.log(countPack);
-          countPack = 1
+          var e = document.getElementById("pack-redeem-count");
+          countPack = e.options[e.selectedIndex].value;
+          redeemcustomNFT.length = countPack;
 
           $.post('/redeemnft',
               {
