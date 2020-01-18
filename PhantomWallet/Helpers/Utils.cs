@@ -75,6 +75,11 @@ namespace Phantom.Wallet.Helpers
                             amount = data.Value;
                             receiverAddress = Address.FromText(evt.EventAddress);
                             receiverChain = data.ChainName;
+                            if (data.Symbol == "TTRS")
+                            {
+                              amountsymbol = $"{data.Symbol} • NFT";
+                              break;
+                            }
                             var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.Symbol).Decimals);
                             if (data.Symbol != "KCAL" && data.Symbol != "NEO" && data.Symbol != "GAS")
                             {
