@@ -228,12 +228,28 @@ $(document).ready(function() {
               if (dataNFT[key].item_info.name_english) {
                 name = (dataNFT[key].item_info.name_english).replace('<br/>', ' • ');
               } else {
-                name = dataNFT[key].item_info.name_english
+                name = 'goati server error';
+              }
+              if (dataNFT[key].item_info.display_type_english) {
+                type = dataNFT[key].item_info.display_type_english
+              } else {
+                type = 'goati server error';
+              }
+              if (dataNFT[key].img) {
+                img = dataNFT[key].img
+              } else {
+                img = '/img/nft_notfound.png';
+              }
+              if (dataNFT[key].item) {
+                item = dataNFT[key].item
+              } else {
+                item = 'goati server error';
               }
             } else {
               name = 'goati server error';
             }
-            tooltipData += '<div style="width:6em;display:inline-block;text-align:center;margin-right:1em;"><img style="height:50px;margin-bottom:.5em;" src="' + dataNFT[key].img + '?width=256" onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'"></div>NFT #' + dataNFT[key].item + ' • ' + dataNFT[key].item_info.display_type_english + ' • ' + name + '<br>'
+
+            tooltipData += '<div style="width:6em;display:inline-block;text-align:center;margin-right:1em;"><img style="height:50px;margin-bottom:.5em;" src="' + img + '?width=256" onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'"></div>NFT #' + item + ' • ' + type + ' • ' + name + '<br>'
           });
           document.getElementById("tooltip_nft").innerHTML = tooltipData;
 
