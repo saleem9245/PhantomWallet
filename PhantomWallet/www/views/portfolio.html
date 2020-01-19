@@ -890,7 +890,7 @@ function Unstake() {
       title: "Unstaking confirmation",
       message: "Unstake <strong>" +
           numberWithCommas(toFixed((changedamount))) +
-          " SOUL?</strong><br>You will be lose the ability to claim " + toFixed((changedamount)*0.002) + " KCAL per day." + customunstakeall,
+          " SOUL?</strong><br>This will decrease the amount of KCAL you can claim per day by " + toFixed((changedamount)*0.002) + " KCAL." + customunstakeall,
       buttons: {
           cancel: {
               label: '<i class="fa fa-times"></i> Cancel'
