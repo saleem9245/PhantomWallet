@@ -1516,7 +1516,7 @@ ul.nav.nav-pills {
     background: #FFBF32;
 }
 
-h3 .tooltip, .referral-nft .tooltip {
+h3 .tooltip, .referral-nft .tooltip, .nft-cat-headers .tooltip {
     font-family: "Font Awesome 5 Free";
 }
 

@@ -18,7 +18,7 @@
               <div class="prizepool" id="prizepool">$XXX,XXX USD</div>
               <div class="referral-nft">If you refer someone, you both get 11% of their purchase!<i class="tooltip fas fa-info-circle" style="margin-left:1em;width:1em;" data-tooltip-content="#tooltip_referral"></i></div>
             </div>
-            <div class="col-md-12 center">
+            <div class="col-md-12 center nft-cat-headers">
               <div id="nft-category" style="margin: -1em auto 1em;padding:.5em;padding-left: 4em;padding-right: 4em;">
                 <div class="category" id="game-access" onclick="filterCategory(this.id)">Game Access</div>
                 <div class="category" id="vehicle-parts" onclick="filterCategory(this.id)">Vehicle Parts</div>
@@ -31,7 +31,7 @@
                   <span style="margin:1em .5em;display:inline-block;color:#FFBF32;" id="symbol-currency">SOUL (XX% DISCOUNT)</span>
                 </div>
               </div>
-              <div style="font-size:1.15em;"><input id="cosmicaddfee" type="checkbox" checked><span style="font-size:1em;">Enter the bi-monthly lottery to win a custom NFT car for 5 SOUL!</span><br></div>
+              <div style="font-size:1.15em;"><input id="cosmicaddfee" type="checkbox" checked><span style="font-size:1em;">Enter the bi-monthly lottery to win a custom NFT vehicle for 5 SOUL!</span><i class="tooltip fas fa-info-circle" style="width:1em;margin-left:1em;" data-tooltip-content="#tooltip_lottery"></i></div>
               <div id="loader-nftlist" class="block-loader center">
                 <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
               </div>
@@ -58,6 +58,10 @@
 <div class="tooltip_templates">
     <span id="tooltip_winner">
         Your wallet is currently one of the top bids.<br>If no one outbids you, you will get this NFT once the counter ends.
+    </span>
+</div>
+<div class="tooltip_templates">
+    <span id="tooltip_lottery">
     </span>
 </div>
 <div class="tooltip_templates">
@@ -93,6 +97,26 @@ $(document).ready(function() {
       loadedGOATIbalance = '{{Amount}}';
     }
   {{/each}}
+
+  // init lottery tooltip
+  var d = new Date();
+  var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  if (d.getDate() <= 15) {
+    beginningPeriodDay = 01;
+    endPeriodDay = 15;
+    beginningPeriodMonth = months[d.getMonth()];
+    endPeriodMonth = months[d.getMonth()];
+  } else {
+    beginningPeriodDay = 15;
+    endPeriodDay = 01;
+    beginningPeriodMonth = months[d.getMonth()];
+    endPeriodMonth = months[d.getMonth() + 1]
+  }
+  beginningPeriod = beginningPeriodMonth + ' ' + beginningPeriodDay ;
+  endPeriod = endPeriodMonth + ' ' + endPeriodDay ;
+  document.getElementById("tooltip_lottery").innerHTML = 'When the box is ticked, for each purchase/auction bid, you will also be sending a 5 SOUL payment<br>for an entry to a bi-monthly lottery, where you can win a unique limited edition NFT vehicle.<br><br>Each draw will consist of one unique winner, randomly picked out of all transactions received<br>during the period. Sending multiple entries will increase your odds of winning.'
+      + '<br><br>'
+      + '<div>Current period lottery prize <strong>(' + beginningPeriod + ' to ' + endPeriod + ')</strong>:<img src="https://neoeconomy.io/assets/img/lotterycar.png" style="margin-left:2em;margin-bottom:1em;width:10em;"><div>'
 
   // init tooltipster i
   $('i.tooltip').tooltipster({
@@ -417,12 +441,15 @@ function getNFTDetails() {
 
     fetchValuesNFTParts += '<div>Already bought pre-season pack(s)?<br><a onclick=redeemPack() title="Redeem pre-season pack" id="redeem-pack">Click here to redeem!</a></div>'
 
-    var detailsNFTVehicleslength = (datastore.auctions).length;
+    datastoreAuction = datastore.auctions
+    datastoreAuction.sort((a,b) => (a.end_time > b.end_time) ? 1 : ((b.end_time > a.end_time) ? -1 : 0));
+
+    var detailsNFTVehicleslength = (datastoreAuction).length;
     // Start building the NFT details divs
     for (i = 0; i < detailsNFTVehicleslength; i += 1) {
 
-      var timeuntil = (((datastore.auctions)[i].start_time)*1000) - (new Date()).getTime();
-      var timeleft = (((datastore.auctions)[i].end_time)*1000) - (new Date()).getTime();
+      var timeuntil = (((datastoreAuction)[i].start_time)*1000) - (new Date()).getTime();
+      var timeleft = (((datastoreAuction)[i].end_time)*1000) - (new Date()).getTime();
       var hoursuntil = 'STARTS IN ' + numberWithCommas(Math.ceil((((timeuntil / 1000) / 60) / 60))) + ' HOURS';
       var hoursleft = 'ENDS IN ' + numberWithCommas(Math.ceil((((timeleft / 1000) / 60) / 60))) + ' HOURS';
 
@@ -438,24 +465,24 @@ function getNFTDetails() {
           customlinebreak = '';
         }
 
-        var bidsLength = ((datastore.auctions)[i].bids).length;
-        var maxWinners = (datastore.auctions)[i].capacity;
+        var bidsLength = ((datastoreAuction)[i].bids).length;
+        var maxWinners = (datastoreAuction)[i].capacity;
 
-        if ((datastore.auctions)[i].bids[0]) {
+        if ((datastoreAuction)[i].bids[0]) {
 
-          if (bidsLength >= ((datastore.auctions)[i].capacity)) {
-            currentLowestBid = (datastore.auctions)[i].bids[maxWinners-1].value_soul_formatted
-          } else if (bidsLength < ((datastore.auctions)[i].capacity)) {
-            currentLowestBid = (datastore.auctions)[i].bids[0].value_soul_formatted
+          if (bidsLength >= ((datastoreAuction)[i].capacity)) {
+            currentLowestBid = (datastoreAuction)[i].bids[maxWinners-1].value_soul_formatted
+          } else if (bidsLength < ((datastoreAuction)[i].capacity)) {
+            currentLowestBid = (datastoreAuction)[i].bids[0].value_soul_formatted
           }
 
         } else {
           currentLowestBid = 1000;
         }
 
-        addressAuctionNFT = (datastore.auctions)[i].address
+        addressAuctionNFT = (datastoreAuction)[i].address
 
-        document.getElementById("tooltip_a" + [i]).innerHTML = (datastore.auctions)[i].item_info.description_english;
+        document.getElementById("tooltip_a" + [i]).innerHTML = (datastoreAuction)[i].item_info.description_english;
 
         if (timeleft < 0) {
 
@@ -469,13 +496,14 @@ function getNFTDetails() {
 
           fetchValuesNFTVehicles += '<div class="nft-class">'
                             + '<div class="nft-image" style="width:115%;" onclick="confirmAuctionNotStarted(\'' + timeuntil + '\')">'
-                              + '<button class="nft-order circulating">' + hours + '</button>'
-                              + '<button class="nft-order supply">' + numberWithCommas((datastore.auctions)[i].capacity) + ' AVAILABLE</button>'
-                              + '<img src="' + (datastore.auctions)[i].item_info.image_url + '?width=512" onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'" alt="" style="height:12em;padding-top:3em;">'
+                              + '<button class="nft-order circulating" style="border-color:#d3e717">' + hours + '</button>'
+                              + '<button class="nft-order supply">' + numberWithCommas((datastoreAuction)[i].capacity) + ' AVAILABLE</button>'
+                              + '<img src="' + (datastoreAuction)[i].item_info.image_url + '?width=512" onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'" alt="" style="height:12em;padding-top:3em;">'
                               + '<div class="nft-desc">'
-                                + '<h3>' + (datastore.auctions)[i].name + '</h3>'
+                                + '<h3>' + (datastoreAuction)[i].name + '</h3>'
                                   + '<div style="text-align:center;">'
                                     + '<button class="nft-order price" >STARTING BID 1,000 SOUL</button>'
+                                    + '<button class="nft-order price" >0 TOTAL BIDS</button>'
                                     + '<button class="tooltip nft-order info" data-tooltip-content="#tooltip_a' + [i] + '"><i class="fas fa-info" style="width:1em;"></i></button>'
                                   + '</div>'
                               + '</div>'
@@ -487,13 +515,13 @@ function getNFTDetails() {
 
           //console.log(sale timeframe started but not ended)
 
-          var bidsLength = ((datastore.auctions)[i].bids).length;
+          var bidsLength = ((datastoreAuction)[i].bids).length;
           var currentWinner = 0;
 
-          for (k = 0; k < ((datastore.auctions)[i].capacity); k++) {
+          for (k = 0; k < ((datastoreAuction)[i].capacity); k++) {
 
-            if ((datastore.auctions)[i].bids[k]) {
-              if (('{{address}}' == (datastore.auctions)[i].bids[k].from) || ('{{name}}' == (datastore.auctions)[i].bids[k].from)) {
+            if ((datastoreAuction)[i].bids[k]) {
+              if (('{{address}}' == (datastoreAuction)[i].bids[k].from) || ('{{name}}' == (datastoreAuction)[i].bids[k].from)) {
                 currentWinner = 1
               }
             }
@@ -509,16 +537,16 @@ function getNFTDetails() {
           counterAuctions = 1;
 
           fetchValuesNFTVehicles += '<div class="nft-class">'
-                              + '<div class="nft-image" style="width:115%;" onclick="confirmAuction(\'' + (datastore.auctions)[i].name + '\',\'' + (parseFloat(currentLowestBid)) + '\',\'' + (numberWithCommas((datastore.auctions)[i].capacity)) + '\',\'' + addressAuctionNFT + '\',\'' + ((datastore.auctions)[i].item) + '\')">'
+                              + '<div class="nft-image" style="width:115%;" onclick="confirmAuction(\'' + (datastoreAuction)[i].name + '\',\'' + (parseFloat(currentLowestBid)) + '\',\'' + (numberWithCommas((datastoreAuction)[i].capacity)) + '\',\'' + addressAuctionNFT + '\',\'' + ((datastoreAuction)[i].item) + '\')">'
                               + '<button class="nft-order circulating">' + hours + '</button>'
-                              + '<button class="nft-order supply">' + numberWithCommas((datastore.auctions)[i].capacity) + ' AVAILABLE</button>'
-                              + '<img src="' + (datastore.auctions)[i].item_info.image_url + '?width=512" onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'" alt="" style="height:12em;padding-top:3em;">'
+                              + '<button class="nft-order supply">' + numberWithCommas((datastoreAuction)[i].capacity) + ' AVAILABLE</button>'
+                              + '<img src="' + (datastoreAuction)[i].item_info.image_url + '?width=512" onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'" alt="" style="height:12em;padding-top:3em;">'
                               + '<div class="nft-desc">'
-                                + '<h3 style="display:inline-block;">' + (datastore.auctions)[i].name + '</h3>'
+                                + '<h3 style="display:inline-block;">' + (datastoreAuction)[i].name + '</h3>'
                                 + bidTypeWinner
                                   + '<div style="text-align:center;">'
                                     + '<button class="nft-order price" >CURRENT BID ' + numberWithCommas(parseFloat(currentLowestBid)) + ' SOUL</button>'
-                                    + '<button class="nft-order price" >' + numberWithCommas((datastore.auctions)[i].total_bids) + ' TOTAL BIDS</button>'
+                                    + '<button class="nft-order price" >' + numberWithCommas((datastoreAuction)[i].total_bids) + ' TOTAL BIDS</button>'
                                     + '<button class="tooltip nft-order info" data-tooltip-content="#tooltip_a' + [i] + '"><i class="fas fa-info" style="width:1em;"></i></button>'
                                   + '</div>'
                               + '</div>'
@@ -587,7 +615,7 @@ function confirmAuction(nameNFT, priceNFT, quantityNFT, addressAuctionNFT, paylo
   $('#sendSpinner').show();
   var selectfee = document.getElementById('cosmicaddfee').checked;
   if (selectfee == true) {
-    feeDescText = '</strong>. You will also enter the bi-monthly lottery to win a limited edition NFT car for <strong>5 SOUL</strong>!'
+    feeDescText = '</strong>. You will also enter the bi-monthly lottery to win a limited edition NFT vehicle for <strong>5 SOUL</strong>!'
     customURL = '/sendrawtxcustomNFT'
     isDonation = true;
   } else {
@@ -686,7 +714,7 @@ function confirmSale(nameNFT, priceNFT, payloadNFT) {
   $('#sendSpinner').show();
   var selectfee = document.getElementById('cosmicaddfee').checked;
   if (selectfee == true) {
-    feeDescText = '</strong> and enter the bi-monthly lottery to win a limited edition NFT car for <strong>5 SOUL</strong>!'
+    feeDescText = '</strong> and enter the bi-monthly lottery to win a limited edition NFT vehicle for <strong>5 SOUL</strong>!'
     customURL = '/sendrawtxcustomNFT'
     isDonation = true;
   } else {
