@@ -75,8 +75,13 @@
 $(document).ready(function() {
 
   storeURL = 'http://www.22series.com/api/store/info';
-  categorySelected = 'game-access';
   currencySelected = 'SOUL';
+
+  // if session storage exist, get it, else set it
+  if (!localStorage.getItem('nft-category-filter')) {
+    localStorage.setItem('nft-category-filter', 'game-access');
+  }
+  categorySelected = localStorage.getItem('nft-category-filter');
 
   // Hide all on page init
   $("#loader-nftlist").show();
@@ -116,7 +121,7 @@ $(document).ready(function() {
   endPeriod = endPeriodMonth + ' ' + endPeriodDay ;
   document.getElementById("tooltip_lottery").innerHTML = 'When the box is ticked, for each purchase/auction bid, you will also be sending a 5 SOUL payment<br>for an entry to a bi-monthly lottery, where you can win a unique limited edition NFT vehicle.<br><br>Each draw will consist of one unique winner, randomly picked out of all transactions received<br>during the period. Sending multiple entries will increase your odds of winning.'
       + '<br><br>'
-      + '<div>Current period lottery prize <strong>(' + beginningPeriod + ' to ' + endPeriod + ')</strong>:<img src="https://neoeconomy.io/assets/img/lotterycar.png" style="margin-left:2em;margin-bottom:1em;width:10em;"><div>'
+      + '<div>Current period lottery prize <strong>(' + beginningPeriod + ' to ' + endPeriod + ')</strong><img src="https://neoeconomy.io/assets/img/lotterycar.png" style="margin-left:2em;margin-bottom:1em;width:10em;"><div>'
 
   // init tooltipster i
   $('i.tooltip').tooltipster({
@@ -206,6 +211,7 @@ function filterCategory(category) {
     $("#nftdetailslist-game").show();
     $("#nftdetailslist-parts").hide();
     $("#nftdetailslist-vehicles").hide();
+    localStorage.setItem('nft-category-filter', 'game-access');
   } else if (category == 'vehicle-parts') {
     cat1.classList.remove("category-current");
     cat2.classList.add("category-current");
@@ -213,6 +219,7 @@ function filterCategory(category) {
     $("#nftdetailslist-game").hide();
     $("#nftdetailslist-parts").show();
     $("#nftdetailslist-vehicles").hide();
+    localStorage.setItem('nft-category-filter', 'vehicle-parts');
   } else if (category == 'vehicles') {
     cat1.classList.remove("category-current");
     cat2.classList.remove("category-current");
@@ -220,6 +227,7 @@ function filterCategory(category) {
     $("#nftdetailslist-game").hide();
     $("#nftdetailslist-parts").hide();
     $("#nftdetailslist-vehicles").show();
+    localStorage.setItem('nft-category-filter', 'vehicles');
   }
   categorySelected = category;
 
