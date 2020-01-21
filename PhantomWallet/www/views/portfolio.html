@@ -47,7 +47,7 @@
                             <td class="col-6 aligned-row"><img class="token-icon" src="img/neo_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
                             {{#else}}
                             {{#if Symbol == 'TTRS'}}
-                              <td class="col-6 aligned-row"><img class="token-icon" src="img/22rs_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a><i class="tooltip-nft fas fa-info-circle" style="margin-left:.5em;width:1em;" data-tooltip-content="#tooltip_nft"></i></td>
+                              <td class="col-6 aligned-row"><img class="token-icon" src="img/22rs_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a><i class="tooltip-nft fas fa-info-circle" style="margin-left:.5em;width:1em;display:none;" data-tooltip-content="#tooltip_nft" id="tooltip_nft_list"></i></td>
                               {{#else}}
                               {{#if Symbol == 'GOATI'}}
                                 <td class="col-6 aligned-row"><img class="token-icon" src="img/goati_logo.png" />{{Name}} - <a href="{{explorer}}/token/{{Symbol}}" target="_blank" title="View Asset">{{Symbol}}</a></td>
@@ -178,14 +178,28 @@ $(document).ready(function() {
 
   loadedKCALbalance = 0;
 
-  arrayNFT = ''
-  arrayNFTFormatted = ''
+  arrayNFT = '';
+  arrayNFTFormatted = '';
+  arrayNFTlength = 0;
   {{#each chainTokens}}
       {{#each Ids}}
-      arrayNFT += '{{this}}' + ',';
+      arrayNFTlength++
       {{/each}}
   {{/each}}
-  arrayNFTFormatted = arrayNFT.substring(0, arrayNFT.length - 1)
+  for (i = 0; i < (arrayNFTlength/100); i++) {
+    idList = 0;
+    window['arrayNFT' + i] = '';
+    {{#each chainTokens}}
+        {{#each Ids}}
+        idList++
+        if (idList/100 >= i && idList/100 < (i+1)) {
+            window['arrayNFT' + i] += '{{this}}' + ',';
+        }
+        {{/each}}
+    {{/each}}
+    window['arrayNFTFormatted' + i] = (window['arrayNFT' + i]).substring(0, (window['arrayNFT' + i]).length - 1)
+  }
+  console.log(window['arrayNFTFormatted0'])
 
   {{#each holdings}}
     if ('{{Symbol}}' == 'KCAL') {
@@ -205,67 +219,94 @@ $(document).ready(function() {
 
   tooltipData = '';
 
-  if (arrayNFTFormatted != '') {
+  if (arrayNFTlength > 0) {
 
-    $.ajax({
-        xhrFields: {
-            withCredentials: !1
-        },
-        cache: !1,
-        crossDomain: !0,
-        type: 'POST',
-        dataType: 'json',
-        data: JSON.stringify({ids: arrayNFTFormatted}),
-        // final url pricing
-        url: 'https://www.22series.com/api/store/nft',
-        success: function(returnedDataTX) {
-          dataNFT = returnedDataTX;
-          let byThis = 'item';
-          let compare = (k, kk) => dataNFT[kk][byThis] - dataNFT[k][byThis];
-          dataNFT = Object.keys(dataNFT).sort(compare).reduce((a, d) => ({ ...a, ...{ [d]: dataNFT[d] } }), {});
-          Object.keys(dataNFT).forEach(key => {
-            if (dataNFT[key].item_info) {
-              if (dataNFT[key].item_info.name_english) {
-                name = (dataNFT[key].item_info.name_english).replace('<br/>', ' • ');
-              } else {
-                name = 'goati server error';
-              }
-              if (dataNFT[key].item_info.display_type_english) {
-                type = dataNFT[key].item_info.display_type_english
-              } else {
-                type = 'goati server error';
-              }
-              if (dataNFT[key].img) {
-                img = dataNFT[key].img
-              } else {
-                img = '/img/nft_notfound.png';
-              }
-              if (dataNFT[key].item) {
-                item = dataNFT[key].item
-              } else {
-                item = 'goati server error';
-              }
-            } else {
-              name = '';
-              type = 'goati server error';
-              img = '';
-              item = 'XXX';
-            }
+    var arrayNFTFormattedResultTotal = [];
+    for (i = 0; i < (arrayNFTlength/100); i++) {
+        arrayNFTFormattedResultTotal.push(getNFTIds(window['arrayNFTFormatted' + i]));
+    }
+    Promise.all(arrayNFTFormattedResultTotal)
+    .then(data => {
 
-            tooltipData += '<div style="width:6em;display:inline-block;text-align:center;margin-right:1em;"><img style="height:50px;margin-bottom:.5em;" src="' + img + '?width=256" onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'"></div>NFT #' + item + ' • ' + type + ' • ' + name + '<br>'
-          });
-          document.getElementById("tooltip_nft").innerHTML = tooltipData;
+      dataNFT = data.reduce(function(result, current) {
+        return Object.assign(result, current);
+      }, {});
 
-          // init tooltipster i
-          $('i.tooltip-nft').tooltipster({
-            theme: 'tooltipster-noir',
-            contentCloning: true,
-            side: 'right',
-            plugins: ['sideTip', 'scrollableTip']
-          });
-        }})
+      let byThis = 'item';
+      let compare = (k, kk) => dataNFT[kk][byThis] - dataNFT[k][byThis];
+      dataNFT = Object.keys(dataNFT).sort(compare).reduce((a, d) => ({ ...a, ...{ [d]: dataNFT[d] } }), {});
+      Object.keys(dataNFT).forEach(key => {
+        if (dataNFT[key].item_info) {
+          if (dataNFT[key].item_info.name_english) {
+            name = (dataNFT[key].item_info.name_english).replace('<br/>', ' • ');
+          } else {
+            name = 'goati server error';
+          }
+          if (dataNFT[key].item_info.display_type_english) {
+            type = dataNFT[key].item_info.display_type_english
+          } else {
+            type = 'goati server error';
+          }
+          if (dataNFT[key].img) {
+            img = dataNFT[key].img
+          } else {
+            img = '/img/nft_notfound.png';
+          }
+          if (dataNFT[key].item) {
+            item = dataNFT[key].item
+          } else {
+            item = 'goati server error';
+          }
+        } else {
+          name = '';
+          type = 'goati server error';
+          img = '';
+          item = 'XXX';
+        }
+
+        tooltipData += '<div style="width:6em;display:inline-block;text-align:center;margin-right:1em;"><img style="height:50px;margin-bottom:.5em;" src="' + img + '?width=256" onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'"></div>NFT #' + item + ' • ' + type + ' • ' + name + '<br>'
+      });
+      document.getElementById("tooltip_nft").innerHTML = tooltipData;
+      $('#tooltip_nft_list').show('fast');
+
+      // init tooltipster i
+      $('i.tooltip-nft').tooltipster({
+        theme: 'tooltipster-noir',
+        contentCloning: true,
+        side: 'right',
+        plugins: ['sideTip', 'scrollableTip']
+      });
+
+    })
+
+    async function getNFTIds(arrayids) {
+
+      let myPromise = new Promise((resolve, reject) => {
+
+      $.ajax({
+          xhrFields: {
+              withCredentials: !1
+          },
+          cache: !1,
+          crossDomain: !0,
+          type: 'POST',
+          dataType: 'json',
+          data: JSON.stringify({ids: arrayids}),
+          url: 'https://www.22series.com/api/store/nft',
+          success: function(returnedDataTX) {
+            var dataNFT = returnedDataTX;
+            resolve(dataNFT);
+          }
+        })
+
+      });
+
+      let dataNFTdetail = await myPromise;
+      return dataNFTdetail;
 
     }
+
+  }
 
 });
 // Datatable initialization
