@@ -189,6 +189,8 @@ $(document).ready(function() {
       }
       fetchRedeemDropdown += '</select>'
 
+      $('#redeem-pack-container').show('fast');
+
     })
 
     async function getNFTIds(arrayids) {
@@ -490,7 +492,7 @@ function getNFTDetails() {
         }
     }
 
-    fetchValuesNFTParts += '<div>Already bought pre-season pack(s)?<br><a onclick=redeemPack() title="Redeem pre-season pack" id="redeem-pack">Click here to redeem!</a></div>'
+    fetchValuesNFTParts += '<div id="redeem-pack-container" style="display:none;">Already bought pre-season pack(s)?<br><a onclick=redeemPack() title="Redeem pre-season pack" id="redeem-pack">Click here to redeem!</a></div>'
 
     datastoreAuction = datastore.auctions
     datastoreAuction.sort((a,b) => (a.end_time > b.end_time) ? 1 : ((b.end_time > a.end_time) ? -1 : 0));
@@ -527,7 +529,7 @@ function getNFTDetails() {
           if (bidsLength >= ((datastoreAuction)[i].capacity)) {
             currentLowestBid = (datastoreAuction)[i].bids[maxWinners-1].value_soul_formatted
           } else if (bidsLength < ((datastoreAuction)[i].capacity)) {
-            currentLowestBid = (datastoreAuction)[i].bids[0].value_soul_formatted
+            currentLowestBid = 1000;
           }
 
         } else {
@@ -584,6 +586,13 @@ function getNFTDetails() {
               tooltipWinners = document.getElementById("tooltip_b" + [i]).innerHTML = (datastoreAuction)[i].item_info.description_english + '<br><br>'
               tooltipWinners += 'Current winning bids<br>'
               for (l = 0; l < ((datastoreAuction)[i].capacity); l++) {
+                    tooltipWinners +=  '#' + [l+1] + ' - ' + (datastoreAuction)[i].bids[l].value_soul_formatted + ' SOUL • ' + (datastoreAuction)[i].bids[l].from + '<br>'
+              }
+              document.getElementById("tooltip_b" + [i]).innerHTML = tooltipWinners;
+            } else if (bidsLength > 0) {
+              tooltipWinners = document.getElementById("tooltip_b" + [i]).innerHTML = (datastoreAuction)[i].item_info.description_english + '<br><br>'
+              tooltipWinners += 'Current winning bids<br>'
+              for (l = 0; l < bidsLength; l++) {
                     tooltipWinners +=  '#' + [l+1] + ' - ' + (datastoreAuction)[i].bids[l].value_soul_formatted + ' SOUL • ' + (datastoreAuction)[i].bids[l].from + '<br>'
               }
               document.getElementById("tooltip_b" + [i]).innerHTML = tooltipWinners;

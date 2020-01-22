@@ -499,6 +499,7 @@ namespace Phantom.Wallet
             var id = request.GetVariable("id");
 
             var keyPair = GetLoginKey(request);
+            InvalidateCache(keyPair.Address);
             string result;
 
             result = AccountController.TransferTokensNFTRedeem(keyPair, addressTo, chainName, symbol, id).Result;
