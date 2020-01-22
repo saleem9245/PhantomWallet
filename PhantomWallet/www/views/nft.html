@@ -68,6 +68,7 @@
     <span id="tooltip_0"></span><span id="tooltip_1"></span><span id="tooltip_2"></span><span id="tooltip_3"></span><span id="tooltip_4"></span><span id="tooltip_5"></span><span id="tooltip_6"></span><span id="tooltip_7"></span><span id="tooltip_8"></span><span id="tooltip_9"></span><span id="tooltip_10"></span>
     <span id="tooltip_111"></span><span id="tooltip_12"></span><span id="tooltip_13"></span><span id="tooltip_14"></span><span id="tooltip_15"></span><span id="tooltip_16"></span><span id="tooltip_17"></span><span id="tooltip_18"></span><span id="tooltip_19"></span><span id="tooltip_20"></span>
     <span id="tooltip_a0"></span><span id="tooltip_a1"></span><span id="tooltip_a2"></span><span id="tooltip_a3"></span><span id="tooltip_a4"></span><span id="tooltip_a5"></span><span id="tooltip_a6"></span>
+    <span id="tooltip_b0"></span><span id="tooltip_b1"></span><span id="tooltip_b2"></span><span id="tooltip_b3"></span><span id="tooltip_b4"></span><span id="tooltip_b5"></span><span id="tooltip_b6"></span>
 </div>
 
 <script>
@@ -131,51 +132,93 @@ $(document).ready(function() {
     side: 'right'
   });
 
-  arrayNFT = '';
   redeemcustomNFT = [];
   hasredeemPack = 0;
 
+  arrayNFT = '';
+  arrayNFTFormatted = '';
+  arrayNFTlength = 0;
   {{#each chainTokens}}
       {{#each Ids}}
-      arrayNFT += '{{this}}' + ',';
+      arrayNFTlength++
       {{/each}}
   {{/each}}
-  arrayNFTFormatted = arrayNFT.substring(0, arrayNFT.length - 1);
-  if (arrayNFTFormatted != '') {
+  for (i = 0; i < (arrayNFTlength/100); i++) {
+    idList = 0;
+    window['arrayNFT' + i] = '';
+    {{#each chainTokens}}
+        {{#each Ids}}
+        idList++
+        if (idList/100 >= i && idList/100 < (i+1)) {
+            window['arrayNFT' + i] += '{{this}}' + ',';
+        }
+        {{/each}}
+    {{/each}}
+    window['arrayNFTFormatted' + i] = (window['arrayNFT' + i]).substring(0, (window['arrayNFT' + i]).length - 1)
+  }
 
-    $.ajax({
-        xhrFields: {
-            withCredentials: !1
-        },
-        cache: !1,
-        crossDomain: !0,
-        type: 'POST',
-        dataType: 'json',
-        data: JSON.stringify({ids: arrayNFTFormatted}),
-        // final url pricing
-        url: 'https://www.22series.com/api/store/nft',
-        success: function(returnedDataTX) {
-          dataNFT = returnedDataTX;
-          fetchRedeemDropdown = '<select style="margin-left:.5em;margin-right:.5em;" id="pack-redeem-count">';
-          Object.keys(dataNFT).forEach(key => {
-            if (dataNFT[key].item_info) {
-              if (dataNFT[key].item_info.name_english == 'Pre-season pack') {
-                redeemcustomNFT.push ({
-                    id: key
-                });
-                hasredeemPack = 1;
-              }
-            }
-          });
-          for (i = 0; i < redeemcustomNFT.length; i ++) {
-            fetchRedeemDropdown += '<option value="' + [i+1]+ '">' + [i+1]
-              if (i == 9) {
-                break;
-              }
-          }
-          fetchRedeemDropdown += '</select>'
-        }})
+  if (arrayNFTlength > 0) {
+
+    var arrayNFTFormattedResultTotal = [];
+    for (i = 0; i < (arrayNFTlength/100); i++) {
+        arrayNFTFormattedResultTotal.push(getNFTIds(window['arrayNFTFormatted' + i]));
     }
+    Promise.all(arrayNFTFormattedResultTotal)
+    .then(data => {
+
+      dataNFT = data.reduce(function(result, current) {
+        return Object.assign(result, current);
+      }, {});
+
+      fetchRedeemDropdown = '<select style="margin-left:.5em;margin-right:.5em;" id="pack-redeem-count">';
+      Object.keys(dataNFT).forEach(key => {
+        if (dataNFT[key].item_info) {
+          if (dataNFT[key].item_info.name_english == 'Pre-season pack') {
+            redeemcustomNFT.push ({
+                id: key
+            });
+            hasredeemPack = 1;
+          }
+        }
+      });
+      for (i = 0; i < redeemcustomNFT.length; i ++) {
+        fetchRedeemDropdown += '<option value="' + [i+1]+ '">' + [i+1]
+          if (i == 9) {
+            break;
+          }
+      }
+      fetchRedeemDropdown += '</select>'
+
+    })
+
+    async function getNFTIds(arrayids) {
+
+      let myPromise = new Promise((resolve, reject) => {
+
+      $.ajax({
+          xhrFields: {
+              withCredentials: !1
+          },
+          cache: !1,
+          crossDomain: !0,
+          type: 'POST',
+          dataType: 'json',
+          data: JSON.stringify({ids: arrayids}),
+          url: 'https://www.22series.com/api/store/nft',
+          success: function(returnedDataTX) {
+            var dataNFT = returnedDataTX;
+            resolve(dataNFT);
+          }
+        })
+
+      });
+
+      let dataNFTdetail = await myPromise;
+      return dataNFTdetail;
+
+    }
+
+  }
 
 });
 
@@ -460,6 +503,9 @@ function getNFTDetails() {
       var timeleft = (((datastoreAuction)[i].end_time)*1000) - (new Date()).getTime();
       var hoursuntil = 'STARTS IN ' + numberWithCommas(Math.ceil((((timeuntil / 1000) / 60) / 60))) + ' HOURS';
       var hoursleft = 'ENDS IN ' + numberWithCommas(Math.ceil((((timeleft / 1000) / 60) / 60))) + ' HOURS';
+      winnerBid1 = '';
+      winnerBid2 = '';
+      winnerBid3 = '';
 
         if (timeuntil >= 0) {
           hours = hoursuntil
@@ -467,7 +513,7 @@ function getNFTDetails() {
           hours = hoursleft
         }
 
-        if (i == 2) {
+        if (counterAuctions == 2) {
           customlinebreak = '<br>';
         } else {
           customlinebreak = '';
@@ -500,7 +546,7 @@ function getNFTDetails() {
 
           //console.log(sale timeframe planned but not started)
 
-          counterAuctions = 1;
+          counterAuctions++;
 
           fetchValuesNFTVehicles += '<div class="nft-class">'
                             + '<div class="nft-image" style="width:115%;" onclick="confirmAuctionNotStarted(\'' + timeuntil + '\')">'
@@ -534,6 +580,17 @@ function getNFTDetails() {
               }
             }
 
+            if (bidsLength >= ((datastoreAuction)[i].capacity)) {
+              tooltipWinners = document.getElementById("tooltip_b" + [i]).innerHTML = (datastoreAuction)[i].item_info.description_english + '<br><br>'
+              tooltipWinners += 'Current winning bids<br>'
+              for (l = 0; l < ((datastoreAuction)[i].capacity); l++) {
+                    tooltipWinners +=  '#' + [l+1] + ' - ' + (datastoreAuction)[i].bids[l].value_soul_formatted + ' SOUL • ' + (datastoreAuction)[i].bids[l].from + '<br>'
+              }
+              document.getElementById("tooltip_b" + [i]).innerHTML = tooltipWinners;
+            } else {
+              document.getElementById("tooltip_b" + [i]).innerHTML = (datastoreAuction)[i].item_info.description_english;
+            }
+
           }
 
           if (currentWinner == 0) {
@@ -542,7 +599,7 @@ function getNFTDetails() {
             bidTypeWinner = '<button class="tooltip nft-order info winner" data-tooltip-content="#tooltip_winner"><i class="fas fa-trophy" style="width:1em;"></i></button>'
           }
 
-          counterAuctions = 1;
+          counterAuctions++;
 
           fetchValuesNFTVehicles += '<div class="nft-class">'
                               + '<div class="nft-image" style="width:115%;" onclick="confirmAuction(\'' + (datastoreAuction)[i].name + '\',\'' + (parseFloat(currentLowestBid)) + '\',\'' + (numberWithCommas((datastoreAuction)[i].capacity)) + '\',\'' + addressAuctionNFT + '\',\'' + ((datastoreAuction)[i].item) + '\')">'
@@ -555,7 +612,7 @@ function getNFTDetails() {
                                   + '<div style="text-align:center;">'
                                     + '<button class="nft-order price" >CURRENT BID ' + numberWithCommas(parseFloat(currentLowestBid)) + ' SOUL</button>'
                                     + '<button class="nft-order price" >' + numberWithCommas((datastoreAuction)[i].total_bids) + ' TOTAL BIDS</button>'
-                                    + '<button class="tooltip nft-order info" data-tooltip-content="#tooltip_a' + [i] + '"><i class="fas fa-info" style="width:1em;"></i></button>'
+                                    + '<button class="tooltip nft-order info" data-tooltip-content="#tooltip_b' + [i] + '"><i class="fas fa-info" style="width:1em;"></i></button>'
                                   + '</div>'
                               + '</div>'
                             + '</div>'

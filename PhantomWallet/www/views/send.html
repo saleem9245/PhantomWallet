@@ -197,47 +197,89 @@
             }
         });
 
-        arrayNFT = ''
         sendcustomNFT = []
+        arrayNFT = '';
+        arrayNFTFormatted = '';
+        arrayNFTlength = 0;
         {{#each chainTokens}}
             {{#each Ids}}
-            arrayNFT += '{{this}}' + ',';
+            arrayNFTlength++
             {{/each}}
         {{/each}}
-        arrayNFTFormatted = arrayNFT.substring(0, arrayNFT.length - 1)
+        for (i = 0; i < (arrayNFTlength/100); i++) {
+          idList = 0;
+          window['arrayNFT' + i] = '';
+          {{#each chainTokens}}
+              {{#each Ids}}
+              idList++
+              if (idList/100 >= i && idList/100 < (i+1)) {
+                  window['arrayNFT' + i] += '{{this}}' + ',';
+              }
+              {{/each}}
+          {{/each}}
+          window['arrayNFTFormatted' + i] = (window['arrayNFT' + i]).substring(0, (window['arrayNFT' + i]).length - 1)
+        }
 
-        if (arrayNFTFormatted != '') {
+        if (arrayNFTlength > 0) {
 
-          $.ajax({
-              xhrFields: {
-                  withCredentials: !1
-              },
-              cache: !1,
-              crossDomain: !0,
-              type: 'POST',
-              dataType: 'json',
-              data: JSON.stringify({ids: arrayNFTFormatted}),
-              // final url pricing
-              url: 'https://www.22series.com/api/store/nft',
-              success: function(returnedDataTX) {
-                dataNFT = returnedDataTX;
-                Object.keys(dataNFT).forEach(key => {
-                  if (dataNFT[key].item_info) {
-                    name = dataNFT[key].item_info.name_english
-                  } else {
-                    name = 'goati server error';
-                  }
-                  sendcustomNFT.push({
-                      id: key,
-                      item: dataNFT[key].item,
-                      type: dataNFT[key].item_info.display_type_english,
-                      name: ' • ' + name
-                  });
-                  sendcustomNFT.sort(function(a, b) {
-                    return b.item- a.item;
-                  })
-                });
-              }})
+          var arrayNFTFormattedResultTotal = [];
+          for (i = 0; i < (arrayNFTlength/100); i++) {
+              arrayNFTFormattedResultTotal.push(getNFTIds(window['arrayNFTFormatted' + i]));
+          }
+          Promise.all(arrayNFTFormattedResultTotal)
+          .then(data => {
+
+            dataNFT = data.reduce(function(result, current) {
+              return Object.assign(result, current);
+            }, {});
+
+            Object.keys(dataNFT).forEach(key => {
+              if (dataNFT[key].item_info) {
+                name = dataNFT[key].item_info.name_english
+                type = dataNFT[key].item_info.display_type_english
+              } else {
+                name = 'goati server error';
+                type = 'goati server error';
+              }
+              sendcustomNFT.push({
+                  id: key,
+                  item: dataNFT[key].item,
+                  type: type,
+                  name: ' • ' + name
+              });
+              sendcustomNFT.sort(function(a, b) {
+                return b.item- a.item;
+              })
+            });
+
+          })
+
+          async function getNFTIds(arrayids) {
+
+            let myPromise = new Promise((resolve, reject) => {
+
+            $.ajax({
+                xhrFields: {
+                    withCredentials: !1
+                },
+                cache: !1,
+                crossDomain: !0,
+                type: 'POST',
+                dataType: 'json',
+                data: JSON.stringify({ids: arrayids}),
+                url: 'https://www.22series.com/api/store/nft',
+                success: function(returnedDataTX) {
+                  var dataNFT = returnedDataTX;
+                  resolve(dataNFT);
+                }
+              })
+
+            });
+
+            let dataNFTdetail = await myPromise;
+            return dataNFTdetail;
+
+          }
 
         }
 
@@ -408,7 +450,6 @@
 
                     sendcustomNFTlength = sendcustomNFT.length
                     for (i = 0; i < sendcustomNFTlength; i++) {
-                      console.log(sendcustomNFT[i])
                       if (sendcustomNFT[i].name) {
                         name = (sendcustomNFT[i].name).replace('<br/>', ' • ');
                       } else {
