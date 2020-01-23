@@ -52,7 +52,7 @@
 
 <div class="tooltip_templates">
     <span id="tooltip_referral">
-        Simply give them your public Phantasma address which they'll have to input before buying NFT.<br><br>Rewards paid out in GOATI token, valued at $0.10.<br><br>Example: you refer someone who buys 1000 SOUL worth, you both get 11% in GOATI, which you can use to buy other NFTs.
+        Simply give them your public Phantasma address which they'll have to input before buying NFT.<br><br>Rewards paid out in GOATI token, valued at $0.10.<br><br>Example: you refer someone who buys an item 500 GOATI worth, you both get 11% in GOATI (55 GOATI), which you can use to buy other NFTs.
     </span>
 </div>
 <div class="tooltip_templates">
@@ -65,10 +65,9 @@
     </span>
 </div>
 <div class="tooltip_templates">
-    <span id="tooltip_0"></span><span id="tooltip_1"></span><span id="tooltip_2"></span><span id="tooltip_3"></span><span id="tooltip_4"></span><span id="tooltip_5"></span><span id="tooltip_6"></span><span id="tooltip_7"></span><span id="tooltip_8"></span><span id="tooltip_9"></span><span id="tooltip_10"></span>
-    <span id="tooltip_111"></span><span id="tooltip_12"></span><span id="tooltip_13"></span><span id="tooltip_14"></span><span id="tooltip_15"></span><span id="tooltip_16"></span><span id="tooltip_17"></span><span id="tooltip_18"></span><span id="tooltip_19"></span><span id="tooltip_20"></span>
-    <span id="tooltip_a0"></span><span id="tooltip_a1"></span><span id="tooltip_a2"></span><span id="tooltip_a3"></span><span id="tooltip_a4"></span><span id="tooltip_a5"></span><span id="tooltip_a6"></span><span id="tooltip_a7"></span><span id="tooltip_a8"></span><span id="tooltip_a9"></span><span id="tooltip_a10"></span>
-    <span id="tooltip_b0"></span><span id="tooltip_b1"></span><span id="tooltip_b2"></span><span id="tooltip_b3"></span><span id="tooltip_b4"></span><span id="tooltip_b5"></span><span id="tooltip_b6"></span><span id="tooltip_b7"></span><span id="tooltip_b8"></span><span id="tooltip_b9"></span><span id="tooltip_b10"></span>
+    <div id="tooltip_"></div>
+    <div id="tooltip_a"></div>
+    <div id="tooltip_b"></div>
 </div>
 
 <script>
@@ -421,6 +420,12 @@ function getNFTDetails() {
     counterAuctions = 0;
 
     var detailsNFTGamelength = (datastore.inventory).length;
+
+    // Start building the tooltip first
+    for (i = 0; i < detailsNFTGamelength; i += 1) {
+      document.getElementById("tooltip_").innerHTML += '<span id="tooltip_' + i + '"></span>';
+    }
+
     // Start building the NFT details divs
     for (i = 0; i < detailsNFTGamelength; i += 1) {
       if (((datastore.inventory)[i].item_info.name_english) == 'Pit Pass' || ((datastore.inventory)[i].item_info.name_english) == 'NFT Pre Season Game Pack') {
@@ -498,6 +503,13 @@ function getNFTDetails() {
     datastoreAuction.sort((a,b) => (a.end_time > b.end_time) ? 1 : ((b.end_time > a.end_time) ? -1 : 0));
 
     var detailsNFTVehicleslength = (datastoreAuction).length;
+
+    // Start building the tooltip first
+    for (i = 0; i < detailsNFTVehicleslength; i += 1) {
+      document.getElementById("tooltip_a").innerHTML += '<span id="tooltip_a' + i + '"></span>';
+      document.getElementById("tooltip_b").innerHTML += '<span id="tooltip_b' + i + '"></span>';
+    }
+
     // Start building the NFT details divs
     for (i = 0; i < detailsNFTVehicleslength; i += 1) {
 
@@ -700,7 +712,7 @@ function confirmAuction(nameNFT, priceNFT, quantityNFT, addressAuctionNFT, paylo
   contentBootbox = 'How much SOUL do you want to bid for <strong>' + nameNFT + '</strong>? It needs to be at least 100 more SOUL than the current lowest winning bid of <strong>' + numberWithCommas(parseFloat(priceNFT)) + ' SOUL' + feeDescText
       + '<br><input type="text" class="form-control" name="bidauction"><br>'
       + 'If your bid is below that amount, or if it falls below the <b>' + quantityNFT + ' highest bids later</b>, you will be refunded instantly.<br><br>'
-      + "Someone referred you? Enter their Phantasma address below.<br>You will both get <strong>11% of the purchase back in GOATI</strong> tokens.<br><br>"
+      + "Someone referred you? Enter their Phantasma address below.<br>You will both get <strong>11% of the purchase back in GOATI (based on GOATI item price)</strong> tokens.<br><br>"
       + '<input type="text" class="form-control" name="referral">';
 
   dialog = bootbox.confirm({
@@ -802,7 +814,7 @@ function confirmSale(nameNFT, priceNFT, payloadNFT) {
       + numberWithCommas(parseFloat(priceNFT))
       + " " + currencySelected + feeDescText + "</strong><br><br>"
       + customAction
-      + " Someone referred you? Enter their Phantasma address below.<br>You will both get 11% of the purchase back in GOATI tokens.<br><br>"
+      + " Someone referred you? Enter their Phantasma address below.<br>You will both get 11% of the purchase back in GOATI tokens (based on GOATI item price).<br><br>"
       + '<input type="text" class="form-control" name="referral">';
   dialog = bootbox.confirm({
       title: "NFT buy confirmation",
