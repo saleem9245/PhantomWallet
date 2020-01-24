@@ -228,7 +228,6 @@ function toggleCurrency() {
 
   if(document.getElementById("symbol-currency").innerHTML == 'GOATI')
   {
-    document.getElementById("symbol-currency").innerHTML = 'SOUL';
     currencySelected = 'SOUL';
     document.getElementById("symbol-currency").innerHTML = discountSoul;
   }
@@ -256,6 +255,7 @@ function filterCategory(category) {
     $("#nftdetailslist-parts").hide();
     $("#nftdetailslist-vehicles").hide();
     localStorage.setItem('nft-category-filter', 'game-access');
+    document.getElementById('cb5').removeAttribute("disabled", "true");
   } else if (category == 'vehicle-parts') {
     cat1.classList.remove("category-current");
     cat2.classList.add("category-current");
@@ -264,6 +264,7 @@ function filterCategory(category) {
     $("#nftdetailslist-parts").show();
     $("#nftdetailslist-vehicles").hide();
     localStorage.setItem('nft-category-filter', 'vehicle-parts');
+    document.getElementById('cb5').removeAttribute("disabled", "true");
   } else if (category == 'vehicles') {
     cat1.classList.remove("category-current");
     cat2.classList.remove("category-current");
@@ -272,6 +273,13 @@ function filterCategory(category) {
     $("#nftdetailslist-parts").hide();
     $("#nftdetailslist-vehicles").show();
     localStorage.setItem('nft-category-filter', 'vehicles');
+    document.getElementById('cb5').setAttribute("disabled", "true");
+    if (document.getElementById("cb5").checked == 0)
+    {
+      currencySelected = 'SOUL';
+      document.getElementById("symbol-currency").innerHTML = discountSoul;
+      document.getElementById("cb5").checked = true;
+    }
   }
   categorySelected = category;
 
@@ -710,9 +718,9 @@ function confirmAuction(nameNFT, priceNFT, quantityNFT, addressAuctionNFT, paylo
     isDonation = false;
   }
   contentBootbox = 'How much SOUL do you want to bid for <strong>' + nameNFT + '</strong>? It needs to be at least 100 more SOUL than the current lowest winning bid of <strong>' + numberWithCommas(parseFloat(priceNFT)) + ' SOUL' + feeDescText
-      + '<br><input type="text" class="form-control" name="bidauction"><br>'
+      + '<br><input type="text" class="form-control" name="bidauction" id="bidauction"><br>'
       + 'If your bid is below that amount, or if it falls below the <b>' + quantityNFT + ' highest bids later</b>, you will be refunded instantly.<br><br>'
-      + "Someone referred you? Enter their Phantasma address below.<br>You will both get <strong>11% of the purchase back in GOATI (based on GOATI item price)</strong> tokens.<br><br>"
+      + "Someone referred you? Enter their Phantasma address below.<br>You will both get <strong>11% of the purchase back in GOATI (based on GOATI item price)</strong>.<br><br>"
       + '<input type="text" class="form-control" name="referral">';
 
   dialog = bootbox.confirm({
@@ -735,6 +743,14 @@ function confirmAuction(nameNFT, priceNFT, quantityNFT, addressAuctionNFT, paylo
           referredBy = results.fieldname1
           results.fieldname2 = dialog[0].querySelector("[name=bidauction]").value;
           bidAuction = results.fieldname2
+          if (bidAuction < 1000) {
+                bootbox.alert('Bid too low! You need to bid at least 1,000 ' + currencySelected);
+                return;
+          }
+          if (bidAuction < (parseFloat(priceNFT) + 100)) {
+                bootbox.alert('Bid too low! You need to bid at least ' + numberWithCommas(parseFloat(priceNFT) + 100) + ' ' + currencySelected);
+                return;
+          }
           var payloadFormatted = JSON.stringify({"item":parseFloat(payloadNFT)})
 
           if (referredBy != ''){
@@ -769,6 +785,13 @@ function confirmAuction(nameNFT, priceNFT, quantityNFT, addressAuctionNFT, paylo
 
 // Confirm sale
 function confirmSale(nameNFT, priceNFT, payloadNFT) {
+
+  var d = new Date();
+
+  if ((nameNFT == 'NFT Pre Season Game Pack') && (d.getMonth() < 2)) {
+        //bootbox.alert("This NFT will only be available starting from March 01st!");
+        //return;
+  }
 
   if (currencySelected == 'SOUL') {
 
