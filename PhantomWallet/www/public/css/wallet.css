@@ -242,6 +242,13 @@
   }
 }
 
+@media screen and (min-width: 900px) {
+  #nft-id-group {
+    width: 200%;
+    margin-left: -50%;
+  }
+}
+
 @media screen and (min-width: 1281px) and (max-width: 1700px) {
 
   .nav-pills li {
@@ -1283,8 +1290,12 @@ ul.nav.nav-pills {
     margin: 0 auto;
 }
 
-.button:focus, select:focus, th:focus, .nft-order:focus {
+.button:focus, select:focus, th:focus, .nft-order:focus, #select-id_msdd:focus {
     outline: none;
+}
+
+#select-id_msdd {
+    width: initial !important;
 }
 
 .nft-class {
@@ -1471,6 +1482,21 @@ ul.nav.nav-pills {
 }
 
 .tooltip_templates { display: none; }
+
+._msddli_ img, #select-id_title img {
+  width: 64px;
+  margin-right: 1em;
+}
+
+._msddli_ {
+  text-align: left;
+}
+
+#select-id_child ul {
+  list-style: none;
+  background-color: #333;
+  margin-top: 16em;
+}
 
 .category {
   display:inline-block;

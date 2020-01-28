@@ -244,6 +244,7 @@
               sendcustomNFT.push({
                   id: key,
                   item: dataNFT[key].item,
+                  image: dataNFT[key].item_info.image_url,
                   type: type,
                   name: ' • ' + name
               });
@@ -455,8 +456,9 @@
                       } else {
                         name = sendcustomNFT[i].name
                       }
-                      nftIds.append($('<option>', { value: sendcustomNFT[i].id, text: 'NFT #' + sendcustomNFT[i].item + ' • ' + sendcustomNFT[i].type + name}));
+                      nftIds.append($('<option>', { value: sendcustomNFT[i].id, "data-image": sendcustomNFT[i].image, text: 'NFT #' + sendcustomNFT[i].item + ' • ' + sendcustomNFT[i].type + name}));
                     }
+                    $("#select-id").msDropDown();
                     return;
                 } else {
                     var existingText = $('#select-token-form option:selected').text();
