@@ -764,8 +764,8 @@ function confirmAuction(nameNFT, priceNFT, quantityNFT, addressAuctionNFT, paylo
           referredBy = results.fieldname1
           results.fieldname2 = dialog[0].querySelector("[name=bidauction]").value;
           bidAuction = results.fieldname2
-          if (bidAuction < 1000) {
-                bootbox.alert('Bid too low! You need to bid at least 1,000 ' + currencySelected);
+          if (bidAuction < 1100) {
+                bootbox.alert('Bid too low! You need to bid at least 1,100 ' + currencySelected);
                 return;
           }
           if (bidAuction < (parseFloat(priceNFT) + 100)) {
