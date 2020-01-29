@@ -531,8 +531,16 @@ function getNFTDetails() {
 
       var timeuntil = (((datastoreAuction)[i].start_time)*1000) - (new Date()).getTime();
       var timeleft = (((datastoreAuction)[i].end_time)*1000) - (new Date()).getTime();
-      var hoursuntil = 'STARTS IN ' + numberWithCommas(Math.ceil((((timeuntil / 1000) / 60) / 60))) + ' HOURS';
-      var hoursleft = 'ENDS IN ' + numberWithCommas(Math.ceil((((timeleft / 1000) / 60) / 60))) + ' HOURS';
+      if (((((timeuntil / 1000) / 60) / 60) < 1) && ((((timeuntil / 1000) / 60) / 60) > 0)) {
+        var hoursuntil = 'STARTS IN ' + numberWithCommas(Math.ceil((((timeuntil / 1000) / 60)))) + ' MINUTES';
+      } else {
+        var hoursuntil = 'STARTS IN ' + numberWithCommas(Math.ceil((((timeuntil / 1000) / 60) / 60))) + ' HOURS';
+      }
+      if (((((timeleft / 1000) / 60) / 60) < 1) && ((((timeleft / 1000) / 60) / 60) > 0)) {
+        var hoursleft = 'ENDS IN ' + numberWithCommas(Math.ceil((((timeleft / 1000) / 60)))) + ' MINUTES';
+      } else {
+        var hoursleft = 'ENDS IN ' + numberWithCommas(Math.ceil((((timeleft / 1000) / 60) / 60))) + ' HOURS';
+      }
       winnerBid1 = '';
       winnerBid2 = '';
       winnerBid3 = '';
@@ -696,7 +704,11 @@ function getNFTDetails() {
 // Confirm date auction
 function confirmAuctionNotStarted(timeleft) {
 
-  bootbox.alert('Auction has not started yet.<br>You need to wait ' + numberWithCommas(Math.ceil((((timeleft / 1000) / 60) / 60))) + ' more hours to bid on this NFT!');
+  if (((((timeleft / 1000) / 60) / 60) < 1) && ((((timeleft / 1000) / 60) / 60) > 0)) {
+    bootbox.alert('Auction has not started yet.<br>You need to wait ' + numberWithCommas(Math.ceil((((timeleft / 1000) / 60)))) + ' more minutes to bid on this NFT!');
+  } else {
+    bootbox.alert('Auction has not started yet.<br>You need to wait ' + numberWithCommas(Math.ceil((((timeleft / 1000) / 60) / 60))) + ' more hours to bid on this NFT!');
+  }
   return;
 
 }
@@ -725,6 +737,7 @@ function confirmAuction(nameNFT, priceNFT, quantityNFT, addressAuctionNFT, paylo
     customURL = '/sendrawtxNFT'
     isDonation = false;
   }
+
   contentBootbox = 'How much SOUL do you want to bid for <strong>' + nameNFT + '</strong>? It needs to be at least 100 more SOUL than the current lowest winning bid of <strong>' + numberWithCommas(parseFloat(priceNFT)) + ' SOUL' + feeDescText
       + '<br><input type="text" class="form-control" name="bidauction" id="bidauction"><br>'
       + 'If your bid falls below the <b>' + quantityNFT + ' highest bids</b> later, you will be refunded instantly.<br><br>'
@@ -767,7 +780,7 @@ function confirmAuction(nameNFT, priceNFT, quantityNFT, addressAuctionNFT, paylo
 
           $.post(customURL,
               {
-                  token: currencySelected, amount: parseFloat(bidAuction), dest: addressAuctionNFT, chain: 'main' , destChain: 'main', payload: payloadFormatted
+                  token: currencySelected, amount: parseFloat(bidAuction), dest: addressAuctionNFT, chain: 'main' , destChain: 'main', payload: payloadFormatted, donation: isDonation
               },
               function (returnedData) {
                   setTimeout(function(){ $('#sendSpinner').hide(); }, 3000);
@@ -839,6 +852,7 @@ function confirmSale(nameNFT, priceNFT, payloadNFT) {
     customURL = '/sendrawtxNFT'
     isDonation = false;
   }
+
   contentBootbox = 'You are going to buy <strong>'
       + nameNFT
       + '</strong> for <strong>'
