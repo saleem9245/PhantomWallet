@@ -742,11 +742,19 @@ function confirmAuction(nameNFT, priceNFT, quantityNFT, addressAuctionNFT, paylo
     isDonation = false;
   }
 
-  contentBootbox = 'How much SOUL do you want to bid for <strong>' + nameNFT + '</strong>? It needs to be at least 100 more SOUL than the current lowest winning bid of <strong>' + numberWithCommas(parseFloat(priceNFT)) + ' SOUL' + feeDescText
-      + '<br><input type="text" class="form-control" name="bidauction" id="bidauction"><br>'
-      + 'If your bid falls below the <b>' + quantityNFT + ' highest bids</b> later, you will be refunded instantly.<br><br>'
-      + "Someone referred you? Enter their Phantasma address below.<br>You will both get <strong>11% of the purchase back in GOATI (based on GOATI item price)</strong>.<br><br>"
-      + '<input type="text" class="form-control" name="referral">';
+  if (priceNFT == 1000) {
+    contentBootbox = 'How much SOUL do you want to bid for <strong>' + nameNFT + '</strong>? It needs to be at least <strong>1,000 SOUL' + feeDescText
+        + '<br><input type="text" class="form-control" name="bidauction" id="bidauction"><br>'
+        + 'If your bid falls below the <b>' + quantityNFT + ' highest bids</b> later, you will be refunded instantly.<br><br>'
+        + "Someone referred you? Enter their Phantasma address below.<br>You will both get <strong>11% of the purchase back in GOATI (based on GOATI item price)</strong>.<br><br>"
+        + '<input type="text" class="form-control" name="referral">';
+  } else {
+    contentBootbox = 'How much SOUL do you want to bid for <strong>' + nameNFT + '</strong>? It needs to be at least 100 more SOUL than the current lowest winning bid of <strong>' + numberWithCommas(parseFloat(priceNFT)) + ' SOUL' + feeDescText
+        + '<br><input type="text" class="form-control" name="bidauction" id="bidauction"><br>'
+        + 'If your bid falls below the <b>' + quantityNFT + ' highest bids</b> later, you will be refunded instantly.<br><br>'
+        + "Someone referred you? Enter their Phantasma address below.<br>You will both get <strong>11% of the purchase back in GOATI (based on GOATI item price)</strong>.<br><br>"
+        + '<input type="text" class="form-control" name="referral">';
+  }
 
   dialog = bootbox.confirm({
       title: "NFT auction bid confirmation",
