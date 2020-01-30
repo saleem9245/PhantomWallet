@@ -609,6 +609,7 @@ function getNFTDetails() {
 
           var bidsLength = ((datastoreAuction)[i].bids).length;
           var currentWinner = 0;
+          datastoreAuctionBid = ''
 
           for (k = 0; k < ((datastoreAuction)[i].capacity); k++) {
 
@@ -618,18 +619,21 @@ function getNFTDetails() {
               }
             }
 
+            datastoreAuctionBid = (datastoreAuction)[i].bids
+            datastoreAuctionBid.sort((a,b) => (a.value_soul_formatted < b.value_soul_formatted) ? 1 : ((b.value_soul_formatted < a.value_soul_formatted) ? -1 : 0));
+
             if (bidsLength >= ((datastoreAuction)[i].capacity)) {
               tooltipWinners = document.getElementById("tooltip_b" + [i]).innerHTML = (datastoreAuction)[i].item_info.description_english + '<br><br>'
               tooltipWinners += 'Current winning bids<br>'
               for (l = 0; l < ((datastoreAuction)[i].capacity); l++) {
-                    tooltipWinners +=  '#' + [l+1] + ' - ' + (datastoreAuction)[i].bids[l].value_soul_formatted + ' SOUL • ' + (datastoreAuction)[i].bids[l].from + '<br>'
+                    tooltipWinners +=  '#' + [l+1] + ' - ' + datastoreAuctionBid[l].value_soul_formatted + ' SOUL • ' + datastoreAuctionBid[l].from + '<br>'
               }
               document.getElementById("tooltip_b" + [i]).innerHTML = tooltipWinners;
             } else if (bidsLength > 0) {
               tooltipWinners = document.getElementById("tooltip_b" + [i]).innerHTML = (datastoreAuction)[i].item_info.description_english + '<br><br>'
               tooltipWinners += 'Current winning bids<br>'
               for (l = 0; l < bidsLength; l++) {
-                    tooltipWinners +=  '#' + [l+1] + ' - ' + (datastoreAuction)[i].bids[l].value_soul_formatted + ' SOUL • ' + (datastoreAuction)[i].bids[l].from + '<br>'
+                    tooltipWinners +=  '#' + [l+1] + ' - ' + datastoreAuctionBid[l].value_soul_formatted + ' SOUL • ' + datastoreAuctionBid[l].from + '<br>'
               }
               document.getElementById("tooltip_b" + [i]).innerHTML = tooltipWinners;
             } else {
@@ -764,11 +768,11 @@ function confirmAuction(nameNFT, priceNFT, quantityNFT, addressAuctionNFT, paylo
           referredBy = results.fieldname1
           results.fieldname2 = dialog[0].querySelector("[name=bidauction]").value;
           bidAuction = results.fieldname2
-          if (bidAuction < 1100) {
-                bootbox.alert('Bid too low! You need to bid at least 1,100 ' + currencySelected);
+          if (bidAuction < 1000) {
+                bootbox.alert('Bid too low! You need to bid at least 1,000 ' + currencySelected);
                 return;
           }
-          if (bidAuction < (parseFloat(priceNFT) + 100)) {
+          if ((bidAuction < (parseFloat(priceNFT) + 100)) && priceNFT != 1000) {
                 bootbox.alert('Bid too low! You need to bid at least ' + numberWithCommas(parseFloat(priceNFT) + 100) + ' ' + currencySelected);
                 return;
           }
