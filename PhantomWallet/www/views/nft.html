@@ -1,4 +1,4 @@
-<h3 class="tab-title">NFT Sales</h3>
+<h3 class="tab-title" id="main-nft-tab">NFT Sales</h3>
 
 <div class="row setup-content nft" id="nft">
     <div class="col-xs-12">
@@ -9,7 +9,7 @@
             </div>
             <div class="col-md-6 center">
               <div style="margin-top:-5em;width: 225%;margin-left: -65% !important;" class="container-clock">
-                <h3>Sale Ends in</h3>
+                <h3 id="countdown-title"></h3>
                 <div class="custom-clock"></div>
               </div>
             </div>
@@ -73,6 +73,9 @@
 <script>
 
 $(document).ready(function() {
+
+  $("#nft").hide();
+  $("#no-nft").show();
 
   storeURL = 'http://www.22series.com/api/store/info';
   currencySelected = 'SOUL';
@@ -157,6 +160,47 @@ $(document).ready(function() {
   }
 
   getRedeemPack()
+
+  var clicks = 0;
+  var timer, timeout = 300;
+  var now = new Date();
+  multiClick = function(e) {
+    $.get(storeURL,
+
+      function (data) {
+            getNFTDetails()
+            setInterval(function() {
+              getNFTDetails()
+              getRedeemPack()
+            }, 60000);
+            var diff = (JSON.parse(data).end_timestamp) - (now.getTime()/1000);
+            document.getElementById("countdown-title").innerHTML = 'Sale ending in';
+            var clock = $('.custom-clock').FlipClock(diff,{
+              clockFace: 'DailyCounter',
+              countdown: true
+            });
+            if (document.getElementById("cb5").checked == 1)
+            {
+              document.getElementById("symbol-currency").innerHTML = 'SOUL (' + Math.ceil((1-((JSON.parse(data).soul_usd_value_market)/(JSON.parse(data).soul_usd_value_store)))*100) + '% DISCOUNT)';
+            }
+            $("#nft").show();
+            $("#no-nft").hide();
+
+      }).then(function() {
+
+      })
+  }
+
+  // multi click timer
+  document.getElementById("main-nft-tab").addEventListener('click', function(e) {
+    clearTimeout(timer);
+    clicks++;
+    var evt = e;
+    timer = setTimeout(function() {
+      if(clicks==5) multiClick(evt);
+      clicks = 0;
+    }, timeout);
+  });
 
 });
 
@@ -366,32 +410,45 @@ function initStore() {
 
     function (data) {
 
-      if (now.getTime() <= ((JSON.parse(data).end_timestamp) * 1000)) {
-        // init page on load
-        getNFTDetails()
+      if (1581638400 - (now.getTime()/1000) > 0) {
 
-        // init refresh every minute
-        setInterval(function() {
-          getNFTDetails()
-          getRedeemPack()
-        }, 60000);
-
-        // init counter
-        var diff = (JSON.parse(data).end_timestamp) - (now.getTime()/1000);
-        var clock = $('.custom-clock').FlipClock(diff,{
-          clockFace: 'DailyCounter',
-          countdown: true
-        });
-
-        // init store discount
-        if (document.getElementById("cb5").checked == 1)
-        {
-          document.getElementById("symbol-currency").innerHTML = 'SOUL (' + Math.ceil((1-((JSON.parse(data).soul_usd_value_market)/(JSON.parse(data).soul_usd_value_store)))*100) + '% DISCOUNT)';
-        }
-
-      } else {
         $("#nft").hide();
         $("#no-nft").show();
+
+      } else {
+
+        if (now.getTime() <= ((JSON.parse(data).end_timestamp) * 1000)) {
+          // init page on load
+          getNFTDetails()
+
+          // init refresh every minute
+          setInterval(function() {
+            getNFTDetails()
+            getRedeemPack()
+          }, 60000);
+
+          // init counter
+          var diff = (JSON.parse(data).end_timestamp) - (now.getTime()/1000);
+          document.getElementById("countdown-title").innerHTML = 'Sale ending in';
+          var clock = $('.custom-clock').FlipClock(diff,{
+            clockFace: 'DailyCounter',
+            countdown: true
+          });
+
+          // init store discount
+          if (document.getElementById("cb5").checked == 1)
+          {
+            document.getElementById("symbol-currency").innerHTML = 'SOUL (' + Math.ceil((1-((JSON.parse(data).soul_usd_value_market)/(JSON.parse(data).soul_usd_value_store)))*100) + '% DISCOUNT)';
+          }
+
+          $("#nft").show();
+          $("#no-nft").hide();
+
+        } else {
+          $("#nft").hide();
+          $("#no-nft").show();
+        }
+
       }
 
     }).then(function() {
@@ -618,15 +675,13 @@ function getNFTDetails() {
                 currentWinner = 1
               }
             }
-
             datastoreAuctionBid = (datastoreAuction)[i].bids
             datastoreAuctionBid.sort((a,b) => (a.value_soul_formatted < b.value_soul_formatted) ? 1 : ((b.value_soul_formatted < a.value_soul_formatted) ? -1 : 0));
-
             if (bidsLength >= ((datastoreAuction)[i].capacity)) {
               tooltipWinners = document.getElementById("tooltip_b" + [i]).innerHTML = (datastoreAuction)[i].item_info.description_english + '<br><br>'
               tooltipWinners += 'Current winning bids<br>'
               for (l = 0; l < ((datastoreAuction)[i].capacity); l++) {
-                    tooltipWinners +=  '#' + [l+1] + ' - ' + datastoreAuctionBid[l].value_soul_formatted + ' SOUL • ' + datastoreAuctionBid[l].from + '<br>'
+                  tooltipWinners +=  '#' + [l+1] + ' - ' + datastoreAuctionBid[l].value_soul_formatted + ' SOUL • ' + datastoreAuctionBid[l].from + '<br>'
               }
               document.getElementById("tooltip_b" + [i]).innerHTML = tooltipWinners;
             } else if (bidsLength > 0) {
