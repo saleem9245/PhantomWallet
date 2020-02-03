@@ -573,7 +573,7 @@ function getNFTDetails() {
     fetchValuesNFTParts += '<div id="redeem-pack-container" style="display:none;">Already bought pre-season pack(s)?<br><a onclick=redeemPack() title="Redeem pre-season pack" id="redeem-pack">Click here to redeem!</a></div>'
 
     datastoreAuction = datastore.auctions
-    datastoreAuction.sort((a,b) => (a.end_time > b.end_time) ? 1 : ((b.end_time > a.end_time) ? -1 : 0));
+    datastoreAuction.sort((a,b) => (a.start_time > b.start_time) ? 1 : ((b.start_time > a.start_time) ? -1 : 0));
 
     var detailsNFTVehicleslength = (datastoreAuction).length;
 
@@ -608,7 +608,7 @@ function getNFTDetails() {
           hours = hoursleft
         }
 
-        if (counterAuctions == 2) {
+        if (counterAuctions == 2 || counterAuctions == 5 || counterAuctions == 8) {
           customlinebreak = '<br>';
         } else {
           customlinebreak = '';
