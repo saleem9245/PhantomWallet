@@ -1353,8 +1353,12 @@ ul.nav.nav-pills {
 }
 
 .nft-class .nft-desc {
-  background-color: rgba(255,255,255,.13);
+  background-color: #f3f3f3;;
   height: 6em;
+}
+
+.dark-mode .nft-class .nft-desc {
+  background-color: rgba(255,255,255,.13);
 }
 
 .nft-class .nft-desc h3 {
@@ -1413,7 +1417,6 @@ ul.nav.nav-pills {
   border-width: 3px;
   padding: .5em 1em;
   border-color: #333;
-  font-size: .93em;
 }
 
 .nft-order.info.winner {
@@ -1544,6 +1547,10 @@ ul.nav.nav-pills {
 }
 
 h3 .tooltip, .referral-nft .tooltip, .nft-cat-headers .tooltip {
+    /*font-family: "Font Awesome 5 Free";*/
+}
+
+.container-prize i, .referral-nft i, .nft-cat-headers i {
     font-family: "Font Awesome 5 Free";
 }
 
