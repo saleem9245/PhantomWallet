@@ -14,7 +14,7 @@
               </div>
             </div>
             <div class="col-md-6 center container-prize" style="margin-top:-5em;">
-              <h3>Prize Pool<i class="tooltip fas fa-info-circle" style="margin-left:1em;width:1em;" title="10% of all sales goes towards prize pool of the first 22 Series championship!"></i></h3>
+              <h3>Prize Pool<i class="tooltip fas fa-info-circle" style="margin-left:1em;width:1em;" title="10% of all sales goes towards the prize pool of the first 22 Series championship!"></i></h3>
               <div class="prizepool" id="prizepool">$XXX,XXX USD</div>
               <div class="referral-nft">If you refer someone, you both get 11% of their purchase!<i class="tooltip fas fa-info-circle" style="margin-left:1em;width:1em;" data-tooltip-content="#tooltip_referral"></i></div>
             </div>
@@ -52,7 +52,7 @@
 
 <div class="tooltip_templates">
     <span id="tooltip_referral">
-        Simply give them your public Phantasma address which they'll have to input before buying NFT.<br><br>Rewards paid out in GOATI token, valued at $0.10.<br><br>Example: you refer someone who buys an item 500 GOATI worth, you both get 11% in GOATI (55 GOATI), which you can use to buy other NFTs.
+        Simply give them your public Phantasma address which they'll have to input before buying NFTs.<br><br>Rewards paid out in GOATi tokens, valued at $0.10.<br><br>Example: you refer someone who buys an item worth 500 GOATi, you both get 11% in GOATi (55 GOATi), which you can use to buy other NFTs.
     </span>
 </div>
 <div class="tooltip_templates">
@@ -124,7 +124,7 @@ $(document).ready(function() {
   endPeriod = endPeriodMonth + ' ' + endPeriodDay ;
   document.getElementById("tooltip_lottery").innerHTML = 'When the box is ticked, for each purchase/auction bid, you will also be sending a 5 SOUL payment<br>for an entry to a bi-monthly lottery, where you can win a unique limited edition NFT vehicle.<br><br>Each draw will consist of one unique winner, randomly picked out of all transactions received<br>during the period. Sending multiple entries will increase your odds of winning.'
       + '<br><br>'
-      + '<div>Current period lottery prize <strong>(' + beginningPeriod + ' to ' + endPeriod + ')</strong><img src="https://neoeconomy.io/assets/img/lotterycar.png" style="margin-left:2em;margin-bottom:1em;width:10em;"><div>'
+      + '<div>Lottery prize for the current period <strong>(' + beginningPeriod + ' to ' + endPeriod + ')</strong><img src="https://neoeconomy.io/assets/img/lotterycar.png" style="margin-left:2em;margin-bottom:1em;width:10em;"><div>'
 
   // init tooltipster i
   $('i.tooltip').tooltipster({
@@ -354,7 +354,7 @@ function redeemPack() {
   nftPacks = [];
   $('#sendSpinner').show();
 
-  contentBootbox = 'You are going to redeem <strong>' + fetchRedeemDropdown + '</strong> pre-season pack.<br><br>For each NFT pre-season pack selected, the NFT will be burned and you will instantly get <strong>5</strong> random NFT vehicle parts per pack burned.'
+  contentBootbox = 'You are going to redeem <strong>' + fetchRedeemDropdown + '</strong> pre-season pack(s).<br><br>For each NFT pre-season pack selected, the NFT will be burned and you will instantly get <strong>5</strong> random NFT vehicle parts per pack burned.<br>Each pack burned also gives you a chance to discover a limited edition vehicle NFT.'
 
   dialog = bootbox.confirm({
       title: "NFT pre-season pack redeem",
@@ -778,6 +778,8 @@ function confirmAuctionNotStarted(timeleft) {
 // Confirm auction
 function confirmAuction(nameNFT, priceNFT, quantityNFT, addressAuctionNFT, payloadNFT) {
 
+  var selectfee = document.getElementById('cosmicaddfee').checked;
+
   if (selectfee == true) {
 
     if (parseFloat(loadedSOULbalance) < (parseFloat(priceNFT) + 5)) {
@@ -814,13 +816,13 @@ function confirmAuction(nameNFT, priceNFT, quantityNFT, addressAuctionNFT, paylo
     contentBootbox = 'How much SOUL do you want to bid for <strong>' + nameNFT + '</strong>? It needs to be at least <strong>1,000 SOUL' + feeDescText
         + '<br><input type="text" class="form-control" name="bidauction" id="bidauction"><br>'
         + 'If your bid falls below the <b>' + quantityNFT + ' highest bids</b> later, you will be refunded instantly.<br><br>'
-        + "Someone referred you? Enter their Phantasma address below.<br>You will both get <strong>11% of the purchase back in GOATI (based on GOATI item price)</strong>.<br><br>"
+        + "Someone referred you? Enter their Phantasma address below.<br>You will both get <strong>11% of the purchase back in GOATi (based on GOATi item price)</strong>.<br><br>"
         + '<input type="text" class="form-control" name="referral">';
   } else {
     contentBootbox = 'How much SOUL do you want to bid for <strong>' + nameNFT + '</strong>? It needs to be at least 100 more SOUL than the current lowest winning bid of <strong>' + numberWithCommas(parseFloat(priceNFT)) + ' SOUL' + feeDescText
         + '<br><input type="text" class="form-control" name="bidauction" id="bidauction"><br>'
         + 'If your bid falls below the <b>' + quantityNFT + ' highest bids</b> later, you will be refunded instantly.<br><br>'
-        + "Someone referred you? Enter their Phantasma address below.<br>You will both get <strong>11% of the purchase back in GOATI (based on GOATI item price)</strong>.<br><br>"
+        + "Someone referred you? Enter their Phantasma address below.<br>You will both get <strong>11% of the purchase back in GOATi (based on GOATi item price)</strong>.<br><br>"
         + '<input type="text" class="form-control" name="referral">';
   }
 
@@ -909,7 +911,7 @@ function confirmSale(nameNFT, priceNFT, payloadNFT) {
       } else {
 
         if (parseFloat(loadedGOATIbalance) < parseFloat(priceNFT)) {
-              bootbox.alert('Not enough GOATI available. You need ' + numberWithCommas(parseFloat(priceNFT) - parseFloat(loadedGOATIbalance)) + ' more GOATI to buy this NFT!');
+              bootbox.alert('Not enough GOATi available. You need ' + numberWithCommas(parseFloat(priceNFT) - parseFloat(loadedGOATIbalance)) + ' more GOATi to buy this NFT!');
               return;
         }
 
@@ -918,7 +920,7 @@ function confirmSale(nameNFT, priceNFT, payloadNFT) {
     } else {
 
       if (parseFloat(loadedGOATIbalance) < parseFloat(priceNFT)) {
-            bootbox.alert('Not enough GOATI available. You need ' + numberWithCommas(parseFloat(priceNFT) - parseFloat(loadedGOATIbalance)) + ' more GOATI to buy this NFT!');
+            bootbox.alert('Not enough GOATi available. You need ' + numberWithCommas(parseFloat(priceNFT) - parseFloat(loadedGOATIbalance)) + ' more GOATi to buy this NFT!');
             return;
       }
 
@@ -954,7 +956,7 @@ function confirmSale(nameNFT, priceNFT, payloadNFT) {
       + numberWithCommas(parseFloat(priceNFT))
       + " " + currencySelected + feeDescText + "</strong><br><br>"
       + customAction
-      + " Someone referred you? Enter their Phantasma address below.<br>You will both get 11% of the purchase back in GOATI tokens (based on GOATI item price).<br><br>"
+      + " Someone referred you? Enter their Phantasma address below.<br>You will both get 11% of the purchase back in GOATi tokens (based on GOATi item price).<br><br>"
       + '<input type="text" class="form-control" name="referral">';
   dialog = bootbox.confirm({
       title: "NFT buy confirmation",
