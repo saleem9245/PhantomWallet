@@ -166,9 +166,6 @@ function getChains() {
        function (returnedData) {
          //console.log(returnedData)
          if (returnedData == 'null') {
-             //$('#historynewaccount').hide();
-             //$('#portfolionewaccount').hide();
-             console.log('in')
              if (document.getElementById("historynewaccount")) {
                document.getElementById("historynewaccount").innerHTML = 'RPC Connection Error. Try again later.';
              }
