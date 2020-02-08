@@ -763,6 +763,8 @@ function getNFTDetails() {
 // Confirm date auction
 function confirmAuctionNotStarted(timeleft) {
 
+  var selectfee = document.getElementById('cosmicaddfee').checked;
+
   if (((((timeleft / 1000) / 60) / 60) < 1) && ((((timeleft / 1000) / 60) / 60) > 0)) {
     bootbox.alert('Auction has not started yet.<br>You need to wait ' + numberWithCommas(Math.ceil((((timeleft / 1000) / 60)))) + ' more minutes to bid on this NFT!');
   } else {
@@ -775,9 +777,20 @@ function confirmAuctionNotStarted(timeleft) {
 // Confirm auction
 function confirmAuction(nameNFT, priceNFT, quantityNFT, addressAuctionNFT, payloadNFT) {
 
-  if (parseFloat(loadedSOULbalance) < parseFloat(priceNFT)) {
-        bootbox.alert('Not enough SOUL available. You need ' + numberWithCommas(parseFloat(priceNFT) - parseFloat(loadedSOULbalance)) + ' more SOUL to buy this NFT!');
-        return;
+  if (selectfee == true) {
+
+    if (parseFloat(loadedSOULbalance) < (parseFloat(priceNFT) + 5) {
+          bootbox.alert('Not enough SOUL available. You need ' + numberWithCommas((parseFloat(priceNFT) + 5) - parseFloat(loadedSOULbalance)) + ' more SOUL to buy this NFT!');
+          return;
+    }
+
+  } else {
+
+    if (parseFloat(loadedSOULbalance) < parseFloat(priceNFT)) {
+          bootbox.alert('Not enough SOUL available. You need ' + numberWithCommas(parseFloat(priceNFT) - parseFloat(loadedSOULbalance)) + ' more SOUL to buy this NFT!');
+          return;
+    }
+
   }
 
   if (parseFloat(loadedKCALbalance) < 0.1 && parseFloat(loadedKCALbalance) > 0) {
@@ -786,7 +799,6 @@ function confirmAuction(nameNFT, priceNFT, quantityNFT, addressAuctionNFT, paylo
   }
 
   $('#sendSpinner').show();
-  var selectfee = document.getElementById('cosmicaddfee').checked;
   if (selectfee == true) {
     feeDescText = '</strong>. You will also enter the bi-monthly lottery to win a limited edition NFT vehicle for <strong>5 SOUL</strong>!'
     customURL = '/sendrawtxcustomNFT'
@@ -875,11 +887,7 @@ function confirmAuction(nameNFT, priceNFT, quantityNFT, addressAuctionNFT, paylo
 function confirmSale(nameNFT, priceNFT, payloadNFT) {
 
   var d = new Date();
-
-  if ((nameNFT == 'NFT Pre Season Game Pack') && (d.getMonth() < 2)) {
-        //bootbox.alert("This NFT will only be available starting from March 01st!");
-        //return;
-  }
+  var selectfee = document.getElementById('cosmicaddfee').checked;
 
   if (currencySelected == 'SOUL') {
 
@@ -890,9 +898,29 @@ function confirmSale(nameNFT, priceNFT, payloadNFT) {
 
   } else if (currencySelected == 'GOATI') {
 
-    if (parseFloat(loadedGOATIbalance) < parseFloat(priceNFT)) {
-          bootbox.alert('Not enough GOATI available. You need ' + numberWithCommas(parseFloat(priceNFT) - parseFloat(loadedGOATIbalance)) + ' more GOATI to buy this NFT!');
-          return;
+    if (selectfee == true) {
+
+      if (parseFloat(loadedSOULbalance) < 5) {
+
+        bootbox.alert('Not enough SOUL available. You need 5 SOUL if you wish to participate in the lottery!');
+        return;
+
+      } else {
+
+        if (parseFloat(loadedGOATIbalance) < parseFloat(priceNFT)) {
+              bootbox.alert('Not enough GOATI available. You need ' + numberWithCommas(parseFloat(priceNFT) - parseFloat(loadedGOATIbalance)) + ' more GOATI to buy this NFT!');
+              return;
+        }
+
+      }
+
+    } else {
+
+      if (parseFloat(loadedGOATIbalance) < parseFloat(priceNFT)) {
+            bootbox.alert('Not enough GOATI available. You need ' + numberWithCommas(parseFloat(priceNFT) - parseFloat(loadedGOATIbalance)) + ' more GOATI to buy this NFT!');
+            return;
+      }
+
     }
 
   }
@@ -909,7 +937,6 @@ function confirmSale(nameNFT, priceNFT, payloadNFT) {
   }
 
   $('#sendSpinner').show();
-  var selectfee = document.getElementById('cosmicaddfee').checked;
   if (selectfee == true) {
     feeDescText = '</strong> and enter the bi-monthly lottery to win a limited edition NFT vehicle for <strong>5 SOUL</strong>!'
     customURL = '/sendrawtxcustomNFT'
