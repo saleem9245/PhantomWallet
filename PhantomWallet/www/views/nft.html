@@ -779,7 +779,7 @@ function confirmAuction(nameNFT, priceNFT, quantityNFT, addressAuctionNFT, paylo
 
   if (selectfee == true) {
 
-    if (parseFloat(loadedSOULbalance) < (parseFloat(priceNFT) + 5) {
+    if (parseFloat(loadedSOULbalance) < (parseFloat(priceNFT) + 5)) {
           bootbox.alert('Not enough SOUL available. You need ' + numberWithCommas((parseFloat(priceNFT) + 5) - parseFloat(loadedSOULbalance)) + ' more SOUL to buy this NFT!');
           return;
     }
