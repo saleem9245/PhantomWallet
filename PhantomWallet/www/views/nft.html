@@ -183,6 +183,7 @@ $(document).ready(function() {
             {
               document.getElementById("symbol-currency").innerHTML = 'SOUL (' + Math.ceil((1-((JSON.parse(data).soul_usd_value_market)/(JSON.parse(data).soul_usd_value_store)))*100) + '% DISCOUNT)';
             }
+            getRedeemPack()
             $("#nft").show();
             $("#no-nft").hide();
 
