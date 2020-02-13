@@ -231,9 +231,12 @@ $(document).ready(function() {
         return Object.assign(result, current);
       }, {});
 
-      let byThis = 'item';
-      let compare = (k, kk) => dataNFT[kk][byThis] - dataNFT[k][byThis];
-      dataNFT = Object.keys(dataNFT).sort(compare).reduce((a, d) => ({ ...a, ...{ [d]: dataNFT[d] } }), {});
+      //let byThis = 'item';
+      //let compare = (k, kk) => dataNFT[kk][byThis] - dataNFT[k][byThis];
+      //dataNFT = Object.keys(dataNFT).sort(compare).reduce((a, d) => ({ ...a, ...{ [d]: dataNFT[d] } }), {});
+
+      dataNFT = Object.values(dataNFT).sort((a, b) => b.item - a.item);
+
       Object.keys(dataNFT).forEach(key => {
         if (dataNFT[key].item_info) {
           if (dataNFT[key].item_info.name_english) {
