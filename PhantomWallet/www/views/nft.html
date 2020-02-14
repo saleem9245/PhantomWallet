@@ -783,14 +783,14 @@ function confirmAuction(nameNFT, priceNFT, quantityNFT, addressAuctionNFT, paylo
   if (selectfee == true) {
 
     if (parseFloat(loadedSOULbalance) < (parseFloat(priceNFT) + 5)) {
-          bootbox.alert('Not enough SOUL available. You need ' + numberWithCommas((parseFloat(priceNFT) + 5) - parseFloat(loadedSOULbalance)) + ' more SOUL to buy this NFT!');
+          bootbox.alert('Not enough SOUL available. You need ' + numberWithCommas((parseFloat(priceNFT) + 5) - parseFloat(loadedSOULbalance)) + ' more SOUL to bid on this NFT!');
           return;
     }
 
   } else {
 
     if (parseFloat(loadedSOULbalance) < parseFloat(priceNFT)) {
-          bootbox.alert('Not enough SOUL available. You need ' + numberWithCommas(parseFloat(priceNFT) - parseFloat(loadedSOULbalance)) + ' more SOUL to buy this NFT!');
+          bootbox.alert('Not enough SOUL available. You need ' + numberWithCommas(parseFloat(priceNFT) - parseFloat(loadedSOULbalance)) + ' more SOUL to buy bid on NFT!');
           return;
     }
 
