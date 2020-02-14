@@ -151,6 +151,7 @@ $(document).ready(function() {
     var pathname = window.location.pathname;
     // on all pages except login and create, getChains every 5 min and getPricing every minute
     if (pathname != '/login' && pathname != '/create') {
+      getChains();
       setInterval(function() {
         getChains();
       }, 300000);
