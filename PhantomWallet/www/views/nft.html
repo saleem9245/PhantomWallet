@@ -234,7 +234,8 @@ function getRedeemPack() {
       });
       for (i = 0; i < redeemcustomNFT.length; i ++) {
         fetchRedeemDropdown += '<option value="' + [i+1]+ '">' + [i+1]
-          if (i == 9) {
+          //if (i == 9) {
+          if (i == 4) {
             break;
           }
       }
@@ -609,7 +610,7 @@ function getNFTDetails() {
           hours = hoursleft
         }
 
-        if (counterAuctions == 2 || counterAuctions == 5 || counterAuctions == 8) {
+        if (counterAuctions == 2 || counterAuctions == 5 || counterAuctions == 8 || counterAuctions == 11 || counterAuctions == 14 || counterAuctions == 17 || counterAuctions == 20 || counterAuctions == 23 || counterAuctions == 26) {
           customlinebreak = '<br>';
         } else {
           customlinebreak = '';
@@ -934,7 +935,8 @@ function confirmSale(nameNFT, priceNFT, payloadNFT) {
   }
 
   if (nameNFT == 'Pre-season pack') {
-    customAction = 'How many packs would you like to buy? <select id="pack-buy-quantity" style="margin-left:.5em;margin-right:.5em;"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select> pack(s).<br><br>'
+    //customAction = 'How many packs would you like to buy? <select id="pack-buy-quantity" style="margin-left:.5em;margin-right:.5em;"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select> pack(s).<br><br>'
+    customAction = 'How many packs would you like to buy? <select id="pack-buy-quantity" style="margin-left:.5em;margin-right:.5em;"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select> pack(s).<br><br>'
   } else {
     customAction = ''
   }
