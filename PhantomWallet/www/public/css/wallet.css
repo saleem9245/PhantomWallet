@@ -359,6 +359,10 @@ body {
     color: white;
 }
 
+#redeem-pack-container {
+  font-size: 1.25em;
+}
+
 #redeem-pack:hover {
     cursor: pointer;
 }
@@ -1498,8 +1502,13 @@ ul.nav.nav-pills {
 
 #select-id_child ul {
   list-style: none;
-  background-color: #333;
   margin-top: 16em;
+  background-color: rgb(248, 248, 248);
+  width: 120%;
+}
+
+.dark-mode #select-id_child ul {
+  background-color: #333;
 }
 
 .category {
