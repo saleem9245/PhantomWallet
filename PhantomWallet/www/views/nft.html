@@ -593,12 +593,20 @@ function getNFTDetails() {
       if (((((timeuntil / 1000) / 60) / 60) < 1) && ((((timeuntil / 1000) / 60) / 60) > 0)) {
         var hoursuntil = 'STARTS IN ' + numberWithCommas(Math.ceil((((timeuntil / 1000) / 60)))) + ' MINUTES';
       } else {
-        var hoursuntil = 'STARTS IN ' + numberWithCommas(Math.ceil((((timeuntil / 1000) / 60) / 60))) + ' HOURS';
+        if ((((timeuntil / 1000) / 60) / 60) > 96) {
+          var hoursuntil = 'STARTS IN ' + numberWithCommas(Math.ceil((((timeuntil / 1000) / 60) / 60 / 24))) + ' DAYS';
+        } else {
+          var hoursuntil = 'STARTS IN ' + numberWithCommas(Math.ceil((((timeuntil / 1000) / 60) / 60))) + ' HOURS';
+        }
       }
       if (((((timeleft / 1000) / 60) / 60) < 1) && ((((timeleft / 1000) / 60) / 60) > 0)) {
         var hoursleft = 'ENDS IN ' + numberWithCommas(Math.ceil((((timeleft / 1000) / 60)))) + ' MINUTES';
       } else {
-        var hoursleft = 'ENDS IN ' + numberWithCommas(Math.ceil((((timeleft / 1000) / 60) / 60))) + ' HOURS';
+        if ((((timeleft / 1000) / 60) / 60) > 96) {
+          var hoursleft = 'ENDS IN ' + numberWithCommas(Math.ceil((((timeleft / 1000) / 60) / 60 / 24))) + ' DAYS';
+        } else {
+          var hoursleft = 'ENDS IN ' + numberWithCommas(Math.ceil((((timeleft / 1000) / 60) / 60))) + ' HOURS';
+        }
       }
       winnerBid1 = '';
       winnerBid2 = '';
