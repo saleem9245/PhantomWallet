@@ -235,10 +235,8 @@ $(document).ready(function() {
       let compare = (k, kk) => dataNFT[kk][byThis] - dataNFT[k][byThis];
 
       preSorteddataNFT = Object.keys(dataNFT).sort(compare);
-      sorteddataNFT = []
 
       for (i = 0; i < preSorteddataNFT.length; i++) {
-        sorteddataNFT.push(dataNFT[preSorteddataNFT[i]])
 
         if (dataNFT[preSorteddataNFT[i]].item_info) {
           if (dataNFT[preSorteddataNFT[i]].item_info.name_english) {
