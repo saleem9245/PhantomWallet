@@ -231,31 +231,33 @@ $(document).ready(function() {
         return Object.assign(result, current);
       }, {});
 
-      //let byThis = 'item';
-      //let compare = (k, kk) => dataNFT[kk][byThis] - dataNFT[k][byThis];
-      //dataNFT = Object.keys(dataNFT).sort(compare).reduce((a, d) => ({ ...a, ...{ [d]: dataNFT[d] } }), {});
+      let byThis = 'item';
+      let compare = (k, kk) => dataNFT[kk][byThis] - dataNFT[k][byThis];
 
-      dataNFT = Object.values(dataNFT).sort((a, b) => b.item - a.item);
+      preSorteddataNFT = Object.keys(dataNFT).sort(compare);
+      sorteddataNFT = []
 
-      Object.keys(dataNFT).forEach(key => {
-        if (dataNFT[key].item_info) {
-          if (dataNFT[key].item_info.name_english) {
-            name = (dataNFT[key].item_info.name_english).replace('<br/>', ' • ');
+      for (i = 0; i < preSorteddataNFT.length; i++) {
+        sorteddataNFT.push(dataNFT[preSorteddataNFT[i]])
+
+        if (dataNFT[preSorteddataNFT[i]].item_info) {
+          if (dataNFT[preSorteddataNFT[i]].item_info.name_english) {
+            name = (dataNFT[preSorteddataNFT[i]].item_info.name_english).replace('<br/>', ' • ');
           } else {
             name = 'goati server error';
           }
-          if (dataNFT[key].item_info.display_type_english) {
-            type = dataNFT[key].item_info.display_type_english
+          if (dataNFT[preSorteddataNFT[i]].item_info.display_type_english) {
+            type = dataNFT[preSorteddataNFT[i]].item_info.display_type_english
           } else {
             type = 'goati server error';
           }
-          if (dataNFT[key].img) {
-            img = dataNFT[key].img
+          if (dataNFT[preSorteddataNFT[i]].img) {
+            img = dataNFT[preSorteddataNFT[i]].img
           } else {
             img = '/img/nft_notfound.png';
           }
-          if (dataNFT[key].item) {
-            item = dataNFT[key].item
+          if (dataNFT[preSorteddataNFT[i]].item) {
+            item = dataNFT[preSorteddataNFT[i]].item
           } else {
             item = 'goati server error';
           }
@@ -266,8 +268,10 @@ $(document).ready(function() {
           item = 'XXX';
         }
 
-        tooltipData += '<div style="width:7em;display:inline-block;text-align:center;margin-right:3em;"><div style="text-align:center;"><img style="height:70px;margin-bottom:.5em;" src="' + img + '?width=256" onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'"></div></div>NFT #' + item + ' • ' + type + ' • ' + name + '<br>'
-      });
+        tooltipData += '<div style="width:7em;display:inline-block;text-align:center;margin-right:3em;"><div style="text-align:center;"><img style="height:70px;margin-bottom:.5em;" src="' + img + '?width=256" onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'"></div></div><a href="https://22series.com/part_info?id=' + preSorteddataNFT[i] + '" target="_blank">NFT #' + item + ' • ' + type + ' • ' + name + '</a><br>'
+
+      }
+
       document.getElementById("tooltip_nft").innerHTML = tooltipData;
       $('#tooltip_nft_list').show('fast');
 
@@ -276,7 +280,8 @@ $(document).ready(function() {
         theme: 'tooltipster-noir',
         contentCloning: true,
         side: 'right',
-        plugins: ['sideTip', 'scrollableTip']
+        plugins: ['sideTip', 'scrollableTip'],
+        interactive: true
       });
 
     })
