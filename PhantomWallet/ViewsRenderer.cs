@@ -161,7 +161,7 @@ namespace Phantom.Wallet
             context["menu"] = MenuEntries;
             context["networks"] = Networks;
             context["explorer"] = config != null ? config.ExplorerUrl : "https://explorer.phantasma.io";
-            context["rpcurl"] = config != null ? config.RpcUrl : "http://207.148.17.86:7071/rpc";
+            context["rpcurl"] = config != null ? config.RpcUrl : "http://207.246.126.126:7077/rpc";
 
             if (HasLogin(request))
             {
