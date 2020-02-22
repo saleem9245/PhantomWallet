@@ -51,7 +51,7 @@ cp third-party/start.bat bin/PhantomWallet-win/
 #third-party/warp-packer_$platform --arch windows-x64 --input_dir PhantomCli/bin/Release/netcoreapp2.0/win-x64/publish/ --exec PhantomCli.exe --output bin/PhantomWallet-win/PhantomCli.exe
 
 # zip
-zip -r bin/release/PhantomWallet-0-7-1-linux.zip bin/PhantomWallet-linux
-zip -r bin/release/PhantomWallet-0-7-1-windows.zip bin/PhantomWallet-win
-zip -r bin/release/PhantomWallet-0-7-1-osx.zip bin/PhantomWallet-osx
+zip -r bin/release/PhantomWallet-0-7-2-linux.zip bin/PhantomWallet-linux
+zip -r bin/release/PhantomWallet-0-7-2-windows.zip bin/PhantomWallet-win
+zip -r bin/release/PhantomWallet-0-7-2-osx.zip bin/PhantomWallet-osx
 

@@ -198,8 +198,12 @@
         customrestport = customrestport.slice(0,-8) + '7078';
         $.get(customrestport + '/api/getPlatforms',
             function (returnedDataPlatforms) {
-              //console.log(returnedDataPlatforms[0].interop[0].external)
-              dstaddress = returnedDataPlatforms[0].interop[0].external;
+              //console.log(returnedDataPlatforms)
+              if ((typeof returnedDataPlatforms) == 'string') {
+                dstaddress = JSON.parse(returnedDataPlatforms)[0].interop[0].external;
+              } else {
+                dstaddress = returnedDataPlatforms[0].interop[0].external;
+              }
               document.getElementById("currentplatformaddress").innerHTML = dstaddress;
               document.getElementById("padcurrentplatformaddress").addEventListener('click', function(){ Clipboard.copy(dstaddress, 'Address');}, false);
               $("#loader-interopaddress").hide();
@@ -270,6 +274,9 @@
           },
             function (returnedDataPending) {
               //console.log(returnedDataPending)
+              if ((typeof returnedDataPending) == 'string') {
+                returnedDataPending = JSON.parse(returnedDataPending);
+              } 
               var alength = (returnedDataPending.balances).length,
                   i = 0;
               for (i; i < alength; i += 1) {
