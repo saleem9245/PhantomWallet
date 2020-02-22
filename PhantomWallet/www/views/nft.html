@@ -699,7 +699,7 @@ function getNFTDetails() {
               }
             }
             datastoreAuctionBid = (datastoreAuction)[i].bids
-            datastoreAuctionBid.sort((a,b) => (a.value_soul_formatted > b.value_soul_formatted) ? 1 : ((b.value_soul_formatted > a.value_soul_formatted) ? -1 : 0));
+            //datastoreAuctionBid.sort((a,b) => (a.value_soul_formatted > b.value_soul_formatted) ? 1 : ((b.value_soul_formatted > a.value_soul_formatted) ? -1 : 0));
             if (bidsLength >= ((datastoreAuction)[i].capacity)) {
               tooltipWinners = document.getElementById("tooltip_b" + [i]).innerHTML = (datastoreAuction)[i].item_info.description_english + '<br><br>'
               tooltipWinners += 'Current winning bids<br>'
