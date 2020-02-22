@@ -3,37 +3,6 @@
 <div class="settings">
   <div class="wrapper-settings" style="margin-top:0;">
     <div class="settings-row">
-      <div class="settings-row-icon"><i class="fas fa-cog"></i></div>
-      <span class="settings-row-name">NETWORK</span>
-      <div class="settings-row-item">
-        <select id="selectnetwork" class="bootstrap-select" style="text-transform: capitalize;">
-            {{#each networks}}
-            <option value="{{Name}}" {{#if IsEnabled}} {{#else}} disabled {{/if}}>{{Name}}</option>
-            {{/each}}
-        </select>
-      </div>
-    </div>
-    <div class="settings-row">
-      <div class="settings-row-icon"><i class="fas fa-globe"></i></div>
-      <span class="settings-row-name">RPC URL</span>
-      <div class="settings-row-item">
-        <input type="text" class="form-control" id="rpcurl" readonly>
-      </div>
-      <div class="settings-row-item">
-        <button type="button" id="rpc-url-update" class="button" onclick="updateRPC()">SAVE</button>
-      </div>
-    </div>
-    <div class="settings-row">
-      <div class="settings-row-icon"><i class="fas fa-globe"></i></div>
-      <span class="settings-row-name">EXPLORER URL</span>
-      <div class="settings-row-item">
-        <input type="text" class="form-control" id="explurl" readonly>
-      </div>
-      <div class="settings-row-item">
-        <button type="button" id="explorer-url-update" class="button" onclick="updateExplorer()">SAVE</button>
-      </div>
-    </div>
-    <div class="settings-row">
       <div class="settings-row-icon"><i class="fas fa-dollar-sign"></i></div>
       <span class="settings-row-name">CURRENCY</span>
       <div class="settings-row-item">
@@ -55,8 +24,52 @@
         <label class="tgl-btn" for="cb4"></label>
       </div>
     </div>
+    <div class="settings-row">
+      <div class="settings-row-icon"><i class="fas fa-cog"></i></div>
+      <span class="settings-row-name">NETWORK</span>
+      <div class="settings-row-item">
+        <select id="selectnetwork" class="bootstrap-select" style="text-transform: capitalize;">
+            {{#each networks}}
+            <option value="{{Name}}" {{#if IsEnabled}} {{#else}} disabled {{/if}}>{{Name}}</option>
+            {{/each}}
+        </select>
+      </div>
+    </div>
+    <div class="settings-row">
+      <div class="settings-row-icon"><i class="fas fa-globe"></i></div>
+      <span class="settings-row-name">EXPLORER URL</span>
+      <div class="settings-row-item">
+        <input type="text" class="form-control" id="explurl">
+      </div>
+      <div class="settings-row-item">
+        <button type="button" id="explorer-url-update" class="button" onclick="updateExplorer()">SAVE</button>
+      </div>
+    </div>
+    <div class="settings-row">
+      <div class="settings-row-icon"><i class="fas fa-check-circle"></i></div>
+      <span class="settings-row-name">RPC NODE SELECTION</span>
+      <div style="display:flex;">
+        <span id="manual-text" style="display:inline-block;">MANUAL</span>
+        <input class="tgl tgl-flat" id="cb5" type="checkbox" onclick="toggleRPCMode()">
+        <label style="display:inline-block;margin-left:1em;margin-right:1em;" class="tgl-btn" for="cb5"></label>
+        <span id="auto-text" class="highlighted" style="display:inline-block;">AUTOMATIC</span>
+      </div>
+    </div>
+    <div class="settings-row">
+      <div class="settings-row-icon"><i class="fas fa-server"></i></div>
+      <span class="settings-row-name">RPC NODE URL</span>
+      <div class="settings-row-item">
+        <input type="text" class="form-control" id="rpcurl">
+        <i style="display:inline-block;margin-right:.5em;" id="refresh-rpc" class="fas fa-sync fa-sync-rpc" onclick="getRPCList()"></i>
+        <select id="rpcdropdown" class="bootstrap-select">
+        </select>
+      </div>
+      <div class="settings-row-item">
+        <button type="button" id="rpc-url-update" class="button" onclick="updateRPC()">SAVE</button>
+      </div>
+    </div>
   </div>
-  <div style="margin: 2em auto;width:750px;display:none;">
+  <div style="margin: 2em auto;width:750px;display:none">
     <div class="center" style="border:0;padding:1em;font-size: 1.2em;">
       <div style="display: flex;justify-content: center;">
         <span style="display: inline-block;">Show Advanced Settings</span>
@@ -103,6 +116,8 @@
 $(document).ready(function() {
 
   getSettings();
+  initialRPCcall = true;
+  getRPCList();
 
 });
 
@@ -122,6 +137,17 @@ function getSettings() {
          g.value = JSON.parse(returnedData).rpc_url;
          var h = document.getElementById("explurl");
          h.value = JSON.parse(returnedData).explorer_url;
+         var j = document.getElementById("cb5");
+         if (JSON.parse(returnedData).rpc_mode == 'manual') {
+           j.checked = false;
+           $('#manual-text').toggleClass('highlighted');
+           $('#auto-text').toggleClass('highlighted');
+           $('#rpcurl').show();
+           $('#rpcdropdown').hide();
+           $('#refresh-rpc').hide();
+         } else {
+           j.checked = true;
+         }
          function setSelectedIndex(s, v) {
           for ( var i = 0; i < s.options.length; i++ ) {
               if ( s.options[i].text == v ) {
@@ -145,16 +171,27 @@ function getSettings() {
     var e = document.getElementById("selectnetwork");
     var network = e.options[e.selectedIndex].value;
     var g = document.getElementById("rpcurl");
+    var gAuto = document.getElementById("rpcdropdown");
     var url = g.value;
+    var urlAuto = gAuto.options[gAuto.selectedIndex].value;
     var h = document.getElementById("explurl");
     var expl = h.value;
     var f = document.getElementById("selectcurrency");
     var currency = f.options[f.selectedIndex].value;
     var selecttheme = document.getElementById('cb4').checked;
-    if (selecttheme = true) {
-      config = {network: network, currency: currency, theme: 'dark', rpc_url: url, explorer_url: expl}
+    var rpcmode = document.getElementById('cb5').checked;
+    if (selecttheme == true) {
+      if (rpcmode == true) {
+        config = {network: network, currency: currency, theme: 'dark', rpc_url: urlAuto, explorer_url: expl, rpc_mode: 'automatic'}
+      } else {
+        config = {network: network, currency: currency, theme: 'dark', rpc_url: url, explorer_url: expl, rpc_mode: 'manual'}
+      }
     } else {
-      config = {network: network, currency: currency, theme: 'light', rpc_url: url, explorer_url: expl}
+      if (rpcmode == true) {
+        config = {network: network, currency: currency, theme: 'light', rpc_url: urlAuto, explorer_url: expl, rpc_mode: 'automatic'}
+      } else {
+        config = {network: network, currency: currency, theme: 'light', rpc_url: url, explorer_url: expl, rpc_mode: 'manual'}
+      }
     }
     // post new config
     $.post('/config',
@@ -175,16 +212,27 @@ function getSettings() {
        var e = document.getElementById("selectnetwork");
        var network = e.options[e.selectedIndex].value;
        var g = document.getElementById("rpcurl");
+       var gAuto = document.getElementById("rpcdropdown");
        var url = g.value;
+       var urlAuto = gAuto.options[gAuto.selectedIndex].value;
        var h = document.getElementById("explurl");
        var expl = h.value;
        var f = document.getElementById("selectcurrency");
        var currency = f.options[f.selectedIndex].value;
        var selecttheme = document.getElementById('cb4').checked;
-       if (selecttheme = true) {
-         config = {network: network, currency: currency, theme: 'dark', rpc_url: url, explorer_url: expl}
+       var rpcmode = document.getElementById('cb5').checked;
+       if (selecttheme == true) {
+         if (rpcmode == true) {
+           config = {network: network, currency: currency, theme: 'dark', rpc_url: urlAuto, explorer_url: expl, rpc_mode: 'automatic'}
+         } else {
+           config = {network: network, currency: currency, theme: 'dark', rpc_url: url, explorer_url: expl, rpc_mode: 'manual'}
+         }
        } else {
-         config = {network: network, currency: currency, theme: 'light', rpc_url: url, explorer_url: expl}
+         if (rpcmode == true) {
+           config = {network: network, currency: currency, theme: 'light', rpc_url: urlAuto, explorer_url: expl, rpc_mode: 'automatic'}
+         } else {
+           config = {network: network, currency: currency, theme: 'light', rpc_url: url, explorer_url: expl, rpc_mode: 'manual'}
+         }
        }
        // post new config
        $.post('/config',
@@ -206,16 +254,27 @@ function getSettings() {
      var e = document.getElementById("selectnetwork");
      var network = e.options[e.selectedIndex].value;
      var g = document.getElementById("rpcurl");
+     var gAuto = document.getElementById("rpcdropdown");
      var url = g.value;
+     var urlAuto = gAuto.options[gAuto.selectedIndex].value;
      var h = document.getElementById("explurl");
      var expl = h.value;
      var f = document.getElementById("selectcurrency");
      var currency = f.options[f.selectedIndex].value;
      var selecttheme = document.getElementById('cb4').checked;
-     if (selecttheme = true) {
-       config = {network: network, currency: currency, theme: 'dark', rpc_url: url, explorer_url: expl}
+     var rpcmode = document.getElementById('cb5').checked;
+     if (selecttheme == true) {
+       if (rpcmode == true) {
+         config = {network: network, currency: currency, theme: 'dark', rpc_url: urlAuto, explorer_url: expl, rpc_mode: 'automatic'}
+       } else {
+         config = {network: network, currency: currency, theme: 'dark', rpc_url: url, explorer_url: expl, rpc_mode: 'manual'}
+       }
      } else {
-       config = {network: network, currency: currency, theme: 'light', rpc_url: url, explorer_url: expl}
+       if (rpcmode == true) {
+         config = {network: network, currency: currency, theme: 'light', rpc_url: urlAuto, explorer_url: expl, rpc_mode: 'automatic'}
+       } else {
+         config = {network: network, currency: currency, theme: 'light', rpc_url: url, explorer_url: expl, rpc_mode: 'manual'}
+       }
      }
      // post new config
      $.post('/config',
@@ -254,17 +313,29 @@ function getSettings() {
      var e = document.getElementById("selectnetwork");
      var network = e.options[e.selectedIndex].value;
      var g = document.getElementById("rpcurl");
+     var gAuto = document.getElementById("rpcdropdown");
      var url = g.value;
+     var urlAuto = gAuto.options[gAuto.selectedIndex].value;
      var h = document.getElementById("explurl");
      var expl = h.value;
      var f = document.getElementById("selectcurrency");
      var currency = f.options[f.selectedIndex].value;
      var selecttheme = document.getElementById('cb4').checked;
-     if (selecttheme = true) {
-       config = {network: network, currency: currency, theme: 'dark', rpc_url: url, explorer_url: expl}
+     var rpcmode = document.getElementById('cb5').checked;
+     if (selecttheme == true) {
+       if (rpcmode == true) {
+         config = {network: network, currency: currency, theme: 'dark', rpc_url: urlAuto, explorer_url: expl, rpc_mode: 'automatic'}
+       } else {
+         config = {network: network, currency: currency, theme: 'dark', rpc_url: url, explorer_url: expl, rpc_mode: 'manual'}
+       }
      } else {
-       config = {network: network, currency: currency, theme: 'light', rpc_url: url, explorer_url: expl}
+       if (rpcmode == true) {
+         config = {network: network, currency: currency, theme: 'light', rpc_url: urlAuto, explorer_url: expl, rpc_mode: 'automatic'}
+       } else {
+         config = {network: network, currency: currency, theme: 'light', rpc_url: url, explorer_url: expl, rpc_mode: 'manual'}
+       }
      }
+     console.log(config)
      // set session storage currency
      localStorage.setItem('currency', currency);
      // get price based on the new currency
@@ -290,12 +361,19 @@ function getSettings() {
       var e = document.getElementById("selectnetwork");
       var network = e.options[e.selectedIndex].value;
       var g = document.getElementById("rpcurl");
+      var gAuto = document.getElementById("rpcdropdown");
       var url = g.value;
+      var urlAuto = gAuto.options[gAuto.selectedIndex].value;
       var h = document.getElementById("explurl");
       var expl = h.value;
       var f = document.getElementById("selectcurrency");
       var currency = f.options[f.selectedIndex].value;
-      config = {network: network, currency: currency, theme: 'dark', rpc_url: url, explorer_url: expl}
+      var rpcmode = document.getElementById('cb5').checked;
+      if (rpcmode == true) {
+        config = {network: network, currency: currency, theme: 'dark', rpc_url: urlAuto, explorer_url: expl, rpc_mode: 'automatic'}
+      } else {
+        config = {network: network, currency: currency, theme: 'dark', rpc_url: url, explorer_url: expl, rpc_mode: 'manual'}
+      }
       // post new config
       $.post('/config',
         {
@@ -317,7 +395,74 @@ function getSettings() {
       var expl = h.value;
       var f = document.getElementById("selectcurrency");
       var currency = f.options[f.selectedIndex].value;
-      config = {network: network, currency: currency, theme: 'light', rpc_url: url, explorer_url: expl}
+      var rpcmode = document.getElementById('cb5').checked;
+      if (rpcmode == true) {
+        config = {network: network, currency: currency, theme: 'light', rpc_url: url, explorer_url: expl, rpc_mode: 'automatic'}
+      } else {
+        config = {network: network, currency: currency, theme: 'light', rpc_url: url, explorer_url: expl, rpc_mode: 'manual'}
+      }
+      // post new config
+      $.post('/config',
+        {
+            mode: 'set',
+            config: JSON.stringify(config)
+        },
+        function (returnedData) {
+
+        }).fail(function(e) {
+           console.log(e);
+        });
+    }
+  })
+
+  // On rpc mode change event
+  const selectrpcmode = document.getElementById('cb5');
+  selectrpcmode.addEventListener('change', (event) => {
+    // if input already checked
+    if (event.target.checked) {
+      var e = document.getElementById("selectnetwork");
+      var network = e.options[e.selectedIndex].value;
+      var g = document.getElementById("rpcurl");
+      var gAuto = document.getElementById("rpcdropdown");
+      var url = g.value;
+      var urlAuto = gAuto.options[gAuto.selectedIndex].value;
+      var h = document.getElementById("explurl");
+      var expl = h.value;
+      var f = document.getElementById("selectcurrency");
+      var currency = f.options[f.selectedIndex].value;
+      var selecttheme = document.getElementById('cb4').checked;
+      if (selecttheme == true) {
+        config = {network: network, currency: currency, theme: 'dark', rpc_url: urlAuto, explorer_url: expl, rpc_mode: 'automatic'}
+      } else {
+        config = {network: network, currency: currency, theme: 'light', rpc_url: urlAuto, explorer_url: expl, rpc_mode: 'automatic'}
+      }
+      // post new config
+      $.post('/config',
+        {
+            mode: 'set',
+            config: JSON.stringify(config)
+        },
+        function (returnedData) {
+
+        }).fail(function(e) {
+           console.log(e);
+        });
+    } else {
+      // if input not already checked
+      var e = document.getElementById("selectnetwork");
+      var network = e.options[e.selectedIndex].value;
+      var g = document.getElementById("rpcurl");
+      var url = g.value;
+      var h = document.getElementById("explurl");
+      var expl = h.value;
+      var f = document.getElementById("selectcurrency");
+      var currency = f.options[f.selectedIndex].value;
+      var selecttheme = document.getElementById('cb4').checked;
+      if (selecttheme == true) {
+        config = {network: network, currency: currency, theme: 'dark', rpc_url: urlAuto, explorer_url: expl, rpc_mode: 'manual'}
+      } else {
+        config = {network: network, currency: currency, theme: 'light', rpc_url: urlAuto, explorer_url: expl, rpc_mode: 'manual'}
+      }
       // post new config
       $.post('/config',
         {

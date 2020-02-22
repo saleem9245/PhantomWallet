@@ -19,6 +19,11 @@
               <div class="referral-nft">If you refer someone, you both get 11% of their purchase!<i class="tooltip fas fa-info-circle" style="margin-left:1em;width:1em;" data-tooltip-content="#tooltip_referral"></i></div>
             </div>
             <div class="col-md-12 center nft-cat-headers">
+              <div id="current-balances">
+                <div id="current-balance-desc" style="display:inline-block;margin-right:1em;">Available</div>
+                <div id="current-balance-soul" style="display:inline-block;"><img src="img/soul_logo.png" alt="SOUL" title="Available Balance" style="margin-right:1em;width:2.5em;">XXX SOUL</div>
+                <div id="current-balance-goati" style="display:inline-block;margin-left:1em;"><img src="img/goati_logo.png" alt="GOATI" title="Available Balance" style="margin-right:1em;width:2.5em;">XXX GOATI</div>
+              </div>
               <div id="nft-category" style="margin: -1em auto 1em;padding:.5em;padding-left: 4em;padding-right: 4em;">
                 <div class="category" id="game-access" onclick="filterCategory(this.id)">Game Access</div>
                 <div class="category" id="vehicle-parts" onclick="filterCategory(this.id)">Vehicle Parts</div>
@@ -100,11 +105,19 @@ $(document).ready(function() {
     }
     if ('{{Symbol}}' == 'SOUL') {
       loadedSOULbalance = '{{Amount}}';
+      document.getElementById("current-balance-soul").innerHTML = '<img src="img/soul_logo.png" alt="SOUL" title="Available Balance" style="margin-right:1em;width:2.5em;">' + numberWithCommas(loadedSOULbalance) + ' SOUL';
     }
     if ('{{Symbol}}' == 'GOATI') {
       loadedGOATIbalance = '{{Amount}}';
+      document.getElementById("current-balance-goati").innerHTML = '<img src="img/goati_logo.png" alt="GOATI" title="Available Balance" style="margin-right:1em;width:2.5em;">' + numberWithCommas(loadedGOATIbalance) + ' GOATI';
     }
   {{/each}}
+  if (loadedSOULbalance == 0) {
+      document.getElementById("current-balance-soul").innerHTML = '<img src="img/soul_logo.png" alt="SOUL" title="Available Balance" style="margin-right:1em;width:2.5em;">N/A';
+  }
+  if (loadedGOATIbalance == 0) {
+      document.getElementById("current-balance-goati").innerHTML = '<img src="img/goati_logo.png" alt="GOATI" title="Available Balance" style="margin-right:1em;width:2.5em;">N/A';
+  }
 
   // init lottery tooltip
   var d = new Date();
@@ -123,8 +136,8 @@ $(document).ready(function() {
   beginningPeriod = beginningPeriodMonth + ' ' + beginningPeriodDay ;
   endPeriod = endPeriodMonth + ' ' + endPeriodDay ;
   document.getElementById("tooltip_lottery").innerHTML = 'When the box is ticked, for each purchase/auction bid, you will also be sending a 5 SOUL payment<br>for an entry to a bi-monthly lottery, where you can win a unique limited edition NFT vehicle.<br><br>Each draw will consist of one unique winner, randomly picked out of all transactions received<br>during the period. Sending multiple entries will increase your odds of winning.'
-      + '<br><br>'
-      + '<div>Lottery prize for the current period <strong>(' + beginningPeriod + ' to ' + endPeriod + ')</strong><img src="https://neoeconomy.io/assets/img/lotterycar.png" style="margin-left:2em;margin-bottom:1em;width:10em;"><div>'
+      + '<br><br>Lottery prize for the current period <strong>(' + beginningPeriod + ' to ' + endPeriod + ')'
+      + '<br><br><a href="https://www.22series.com/part_info?id=16777229" target="_blank">NEO Economy Car</a></strong><img src="https://neoeconomy.io/assets/img/lotterycar.png" style="margin-left:5em;width:20em;"><div>'
 
   // init tooltipster i
   $('i.tooltip').tooltipster({
@@ -686,19 +699,19 @@ function getNFTDetails() {
               }
             }
             datastoreAuctionBid = (datastoreAuction)[i].bids
-            datastoreAuctionBid.sort((a,b) => (a.value_soul_formatted < b.value_soul_formatted) ? 1 : ((b.value_soul_formatted < a.value_soul_formatted) ? -1 : 0));
+            datastoreAuctionBid.sort((a,b) => (a.value_soul_formatted > b.value_soul_formatted) ? 1 : ((b.value_soul_formatted > a.value_soul_formatted) ? -1 : 0));
             if (bidsLength >= ((datastoreAuction)[i].capacity)) {
               tooltipWinners = document.getElementById("tooltip_b" + [i]).innerHTML = (datastoreAuction)[i].item_info.description_english + '<br><br>'
               tooltipWinners += 'Current winning bids<br>'
               for (l = 0; l < ((datastoreAuction)[i].capacity); l++) {
-                  tooltipWinners +=  '#' + [l+1] + ' - ' + datastoreAuctionBid[l].value_soul_formatted + ' SOUL • ' + datastoreAuctionBid[l].from + '<br>'
+                  tooltipWinners +=  '#' + [l+1] + ' - ' + numberWithCommas(datastoreAuctionBid[l].value_soul_formatted) + ' SOUL • ' + datastoreAuctionBid[l].from + '<br>'
               }
               document.getElementById("tooltip_b" + [i]).innerHTML = tooltipWinners;
             } else if (bidsLength > 0) {
               tooltipWinners = document.getElementById("tooltip_b" + [i]).innerHTML = (datastoreAuction)[i].item_info.description_english + '<br><br>'
               tooltipWinners += 'Current winning bids<br>'
               for (l = 0; l < bidsLength; l++) {
-                    tooltipWinners +=  '#' + [l+1] + ' - ' + datastoreAuctionBid[l].value_soul_formatted + ' SOUL • ' + datastoreAuctionBid[l].from + '<br>'
+                  tooltipWinners +=  '#' + [l+1] + ' - ' + numberWithCommas(datastoreAuctionBid[l].value_soul_formatted) + ' SOUL • ' + datastoreAuctionBid[l].from + '<br>'
               }
               document.getElementById("tooltip_b" + [i]).innerHTML = tooltipWinners;
             } else {

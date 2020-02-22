@@ -268,6 +268,97 @@ function toggleNightMode() {
   }
 }
 
+// function toggle rpc mode
+function toggleRPCMode() {
+
+  $('#manual-text').toggleClass('highlighted');
+  $('#auto-text').toggleClass('highlighted');
+
+  if (document.getElementById("cb5").checked == true) {
+    $('#rpcurl').hide();
+    $('#rpcdropdown').show();
+    $('#refresh-rpc').show();
+  } else {
+    $('#rpcurl').show();
+    $('#rpcdropdown').hide();
+    $('#refresh-rpc').hide();
+  }
+
+}
+
+// function ping rpc
+function ping(host, pong) {
+
+  var started = new Date().getTime();
+
+  var http = new XMLHttpRequest();
+
+  http.open("GET", host + '/rpc', /*async*/true);
+  http.onreadystatechange = function() {
+    if (http.readyState == 4) {
+      var ended = new Date().getTime();
+
+      var milliseconds = ended - started;
+
+      if (pong != null) {
+        pong(milliseconds);
+      }
+    }
+  };
+  try {
+    http.send(null);
+  } catch(exception) {
+    // this is expected
+  }
+
+}
+
+// function get rpc list
+function getRPCList() {
+
+  fetchRPCList = '';
+  $('#rpcurl').hide();
+  $('#rpcdropdown').find('option').remove();
+
+  $.get('https://soul.neoeconomy.io/getpeers.json?_=' + new Date().getTime(),
+
+    function (data) {
+
+        //console.log(data)
+
+        for ( var i = 0; i < data.length; i++ ) {
+
+          $('#rpcdropdown').append($('<option>', {value: data[i].url + '/rpc', text: data[i].location + ' • '+ data[i].url + '/rpc'}));
+          console.log(ping(data[i].url, function(m){ console.log("It took "+m+" miliseconds.") }))
+
+        }
+
+        if (initialRPCcall == true) {
+          // randomize selection on initial load
+          const select  = document.getElementById('rpcdropdown');
+          const options = select.children;
+          const random  = Math.floor(Math.random() * options.length);
+          select.value = options[random].value;
+          initialRPCcall = false;
+        } else {
+          // randomize selection on other loads
+          const select  = document.getElementById('rpcdropdown');
+          const options = select.children;
+          const random  = Math.floor(Math.random() * options.length);
+          select.value = options[random].value;
+        }
+
+    }).fail(function() {
+
+    })
+
+    $(".fa-sync-rpc").addClass("fa-spin");
+    setTimeout(function() {
+      $(".fa-sync-rpc").removeClass("fa-spin");
+    }, 1000);
+
+}
+
 // function toggle on/off cosmic/chain swap
 function toggleSwap() {
   $("#wrapper-swap-confirm").fadeTo(1, 0);

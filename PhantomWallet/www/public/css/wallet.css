@@ -19,6 +19,16 @@
 }
 
 /* On small screens, set height to 'auto' for the grid */
+@media screen and (max-width: 1800px) {
+  .wrapper-settings {
+      width: 95% !important;
+  }
+  .settings-row-icon {
+    width: 7% !important;
+  }
+}
+
+/* On small screens, set height to 'auto' for the grid */
 @media screen and (max-width: 767px) {
     .row.content {
         height: auto;
@@ -222,6 +232,14 @@
   #nft-category {
     font-size: 1.5vh !important;
   }
+  .custom-clock.flip-clock-wrapper {
+    zoom: 0.7;
+    -moz-transform: scale(0.7);
+  }
+  #current-balances {
+    margin-top: -1em;
+    margin-bottom: 1em;
+  }
 }
 
 @media screen and (max-width: 1500px) {
@@ -345,6 +363,10 @@ body {
 
 .fa-sync:before, .swap .fa-random:before {
     color: #337ab7;
+}
+
+.fa-sync-rpc:hover {
+    cursor: pointer;
 }
 
 .wallet-title {
@@ -1452,6 +1474,11 @@ ul.nav.nav-pills {
   font-family: Rubik;
 }
 
+#current-balances {
+  margin-top: -2em;
+  margin-bottom: 2em;
+}
+
 .dark-mode .flip-clock-divider .flip-clock-label {
   color: #fff;
 }
@@ -1491,7 +1518,7 @@ ul.nav.nav-pills {
 
 .tooltip_templates { display: none; }
 
-#tooltip_nft a {
+#tooltip_nft a, #tooltip_lottery a {
   color: white;
 }
 

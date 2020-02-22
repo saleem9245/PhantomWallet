@@ -21,6 +21,9 @@ namespace Phantom.Wallet.DTOs
         [JsonProperty("explorer_url")]
         public string ExplorerUrl { get; set; } = "https://explorer.phantasma.io";
 
+        [JsonProperty("rpc_mode")]
+        public string RpcMode { get; set; } = "automatic";
+
         public static WalletConfigDto FromJson(string json) => JsonConvert.DeserializeObject<WalletConfigDto>(json, JsonUtils.Settings);
         public string ToJson() => JsonConvert.SerializeObject(this, JsonUtils.Settings);
     }
