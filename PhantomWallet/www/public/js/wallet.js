@@ -161,7 +161,7 @@ $(document).ready(function() {
     }
 });
 
-// function getChains every 2 sec to get current blockheight
+// function getChains every 5 min to get current blockheight
 function getChains() {
    $.get('/chains',
        function (returnedData) {
@@ -287,7 +287,7 @@ function toggleRPCMode() {
 }
 
 // function ping rpc
-function ping(host, pong) {
+function ping(host, location, order, pong) {
 
   var started = new Date().getTime();
 
@@ -301,7 +301,8 @@ function ping(host, pong) {
       var milliseconds = ended - started;
 
       if (pong != null) {
-        pong(milliseconds);
+
+        pong(milliseconds, host, order, location);
       }
     }
   };
@@ -328,11 +329,35 @@ function getRPCList() {
 
         for ( var i = 0; i < data.length; i++ ) {
 
-          $('#rpcdropdown').append($('<option>', {value: data[i].url + '/rpc', text: data[i].location + ' • '+ data[i].url + '/rpc'}));
-          console.log(ping(data[i].url, function(m){ console.log("It took "+m+" miliseconds.") }))
+          ping(data[i].url, data[i].location, [i], function(m, n, p, o){
+
+            $('#rpcdropdown').append($('<option>', {value: n + '/rpc', text: o + ' • ' + m + ' msec • ' + n + '/rpc'}));
+
+            if (p == (data.length - 1)) {
+
+              if (initialRPCcall == true) {
+                // randomize selection on initial load
+                const select  = document.getElementById('rpcdropdown');
+                const options = select.children;
+                const random  = Math.floor(Math.random() * options.length);
+                select.value = options[random].value;
+                initialRPCcall = false;
+              } else {
+                // randomize selection on other loads
+                const select  = document.getElementById('rpcdropdown');
+                const options = select.children;
+                const random  = Math.floor(Math.random() * options.length);
+                select.value = options[random].value;
+              }
+
+            }
+
+          })
+          //$('#rpcdropdown').append($('<option>', {value: data[i].url + '/rpc', text: data[i].location + ' • '+ data[i].url + '/rpc'}));
+
 
         }
-
+/*
         if (initialRPCcall == true) {
           // randomize selection on initial load
           const select  = document.getElementById('rpcdropdown');
@@ -341,13 +366,14 @@ function getRPCList() {
           select.value = options[random].value;
           initialRPCcall = false;
         } else {
+          console.log('random')
           // randomize selection on other loads
           const select  = document.getElementById('rpcdropdown');
           const options = select.children;
           const random  = Math.floor(Math.random() * options.length);
           select.value = options[random].value;
         }
-
+*/
     }).fail(function() {
 
     })

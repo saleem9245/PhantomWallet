@@ -135,7 +135,7 @@ namespace Phantom.Wallet
                 LastUpdated = currentTime,
                 Holdings = AccountController.GetAccountHoldings(address.Text).Result,
                 Tokens = AccountController.GetAccountTokens(address.Text).Result.ToArray(),
-                Transactions = AccountController.GetAccountTransactions(address.Text).Result,
+                //Transactions = AccountController.GetAccountTransactions(address.Text).Result,
             };
 
             _accountCaches[address] = cache;
@@ -179,8 +179,8 @@ namespace Phantom.Wallet
                 var entry = MenuEntries.FirstOrDefault(e => e.Id == "history");
                 //entry.Count = cache.Transactions.Length;
 
-                context["transactions"] = cache.Transactions;
-                //context["transactions"] = AccountController.GetAccountTransactions(keyPair.Address.Text).Result;
+                //context["transactions"] = cache.Transactions;
+                context["transactions"] = AccountController.GetAccountTransactions(keyPair.Address.Text).Result;
                 context["holdings"] = AccountController.GetAccountHoldings(keyPair.Address.Text).Result;
                 context["chainTokens"] = AccountController.PrepareSendHoldings();
 
