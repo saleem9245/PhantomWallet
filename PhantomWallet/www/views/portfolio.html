@@ -244,6 +244,11 @@ $(document).ready(function() {
           } else {
             name = 'goati server error';
           }
+          if (dataNFT[preSorteddataNFT[i]].mint) {
+            mint = dataNFT[preSorteddataNFT[i]].mint;
+          } else {
+            mint = 'goati server error';
+          }
           if (dataNFT[preSorteddataNFT[i]].item_info.display_type_english) {
             type = dataNFT[preSorteddataNFT[i]].item_info.display_type_english
           } else {
@@ -266,7 +271,7 @@ $(document).ready(function() {
           item = 'XXX';
         }
 
-        tooltipData += '<div style="width:7em;display:inline-block;text-align:center;margin-right:3em;"><div style="text-align:center;"><img style="height:70px;margin-bottom:.5em;" src="' + img + '?width=256" onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'"></div></div><a href="https://22series.com/part_info?id=' + preSorteddataNFT[i] + '" target="_blank">NFT #' + item + ' • ' + type + ' • ' + name + '</a><br>'
+        tooltipData += '<div style="width:7em;display:inline-block;text-align:center;margin-right:3em;"><div style="text-align:center;"><img style="height:70px;margin-bottom:.5em;" src="' + img + '?width=256" onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'"></div></div><a href="https://22series.com/part_info?id=' + preSorteddataNFT[i] + '" target="_blank">NFT #' + item + ' • Mint #' + mint + ' • ' + type + ' • ' + name + '</a><br>'
 
       }
 

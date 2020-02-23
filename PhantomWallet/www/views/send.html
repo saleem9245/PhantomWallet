@@ -241,10 +241,16 @@
                 name = 'goati server error';
                 type = 'goati server error';
               }
+              if (dataNFT[key].img) {
+                img = dataNFT[key].img
+              } else {
+                img = '/img/nft_notfound.png';
+              }
               sendcustomNFT.push({
                   id: key,
                   item: dataNFT[key].item,
-                  image: dataNFT[key].item_info.image_url,
+                  mint: dataNFT[key].mint,
+                  image: img,
                   type: type,
                   name: ' • ' + name
               });
@@ -456,7 +462,7 @@
                       } else {
                         name = sendcustomNFT[i].name
                       }
-                      nftIds.append($('<option>', { value: sendcustomNFT[i].id, "data-image": sendcustomNFT[i].image, text: 'NFT #' + sendcustomNFT[i].item + ' • ' + sendcustomNFT[i].type + name}));
+                      nftIds.append($('<option>', { value: sendcustomNFT[i].id, "data-image": sendcustomNFT[i].image, text: 'NFT #' + sendcustomNFT[i].item + ' • Mint #' + sendcustomNFT[i].mint + ' • ' + sendcustomNFT[i].type + name}));
                     }
                     $("#select-id").msDropDown();
                     return;
