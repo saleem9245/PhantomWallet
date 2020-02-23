@@ -159,6 +159,27 @@ $(document).ready(function() {
         getPricing();
       }, 60000);
     }
+    // on login page check for latest version
+    if (pathname == '/login') {
+
+      $.get('https://soul.neoeconomy.io/getlatest.json?_=' + new Date().getTime(),
+
+        function (data) {
+
+            //console.log(data)
+
+            if (document.getElementById("version")) {
+              if (document.getElementById("version").innerHTML != data[0].latest) {
+                console.log('allgood')
+                document.getElementById("new-version").innerHTML = '<strong>Phantom Wallet new version available!</strong><br>You should update your version to benefit from all the latest features & fixes.<br>Head over here: <a href="https://github.com/merl111/PhantomWallet/releases/tag/v' + data[0].latest + '" target="_blank">Phantom Wallet v' + data[0].latest + '</a>'
+                $("#new-version").show();
+              }
+            }
+
+          }
+
+        )
+    }
 });
 
 // function getChains every 5 min to get current blockheight
@@ -293,9 +314,9 @@ function ping(host, location, order, pong) {
 
   var http = new XMLHttpRequest();
 
-  http.open("GET", host + '/rpc', /*async*/true);
+  http.open("GET", host + '/rpc', true);
   http.onreadystatechange = function() {
-    if (http.readyState == 4) {
+    if (http.readyState == 4 && http.status == 200) {
       var ended = new Date().getTime();
 
       var milliseconds = ended - started;
@@ -333,47 +354,10 @@ function getRPCList() {
 
             $('#rpcdropdown').append($('<option>', {value: n + '/rpc', text: o + ' • ' + m + ' msec • ' + n + '/rpc'}));
 
-            if (p == (data.length - 1)) {
-
-              if (initialRPCcall == true) {
-                // randomize selection on initial load
-                const select  = document.getElementById('rpcdropdown');
-                const options = select.children;
-                const random  = Math.floor(Math.random() * options.length);
-                select.value = options[random].value;
-                initialRPCcall = false;
-              } else {
-                // randomize selection on other loads
-                const select  = document.getElementById('rpcdropdown');
-                const options = select.children;
-                const random  = Math.floor(Math.random() * options.length);
-                select.value = options[random].value;
-              }
-
-            }
-
           })
-          //$('#rpcdropdown').append($('<option>', {value: data[i].url + '/rpc', text: data[i].location + ' • '+ data[i].url + '/rpc'}));
-
 
         }
-/*
-        if (initialRPCcall == true) {
-          // randomize selection on initial load
-          const select  = document.getElementById('rpcdropdown');
-          const options = select.children;
-          const random  = Math.floor(Math.random() * options.length);
-          select.value = options[random].value;
-          initialRPCcall = false;
-        } else {
-          console.log('random')
-          // randomize selection on other loads
-          const select  = document.getElementById('rpcdropdown');
-          const options = select.children;
-          const random  = Math.floor(Math.random() * options.length);
-          select.value = options[random].value;
-        }
-*/
+
     }).fail(function() {
 
     })
