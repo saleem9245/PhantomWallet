@@ -167,13 +167,13 @@ $(document).ready(function() {
   initTables();
 
   var pathname = window.location.pathname;
-  // on all pages except login and create, get all three smart contract call every 1 minute
+  // on all pages except login and create, get all three smart contract call every 5 minute
   if (pathname != '/login' && pathname != '/create') {
     setInterval(function() {
       getUnclaimed();
       getStake();
       GetSoulmastersDetails();
-    }, 60000);
+    }, 300000);
   }
 
   loadedKCALbalance = 0;
