@@ -276,7 +276,7 @@
               //console.log(returnedDataPending)
               if ((typeof returnedDataPending) == 'string') {
                 returnedDataPending = JSON.parse(returnedDataPending);
-              } 
+              }
               var alength = (returnedDataPending.balances).length,
                   i = 0;
               for (i; i < alength; i += 1) {
@@ -583,6 +583,9 @@
         },
           function (returnedDataPending) {
             //console.log(returnedDataPending)
+            if ((typeof returnedDataPending) == 'string') {
+              returnedDataPending = JSON.parse(returnedDataPending);
+            }
             noSwaps = true;
             $('#sendSpinner').hide();
             if (returnedDataPending.length == 0) {
@@ -603,6 +606,9 @@
                       },
                       function (returnedDataSettle) {
                         //console.log(returnedDataSettle)
+                        if ((typeof returnedDataSettle) == 'string') {
+                          returnedDataSettle = JSON.parse(returnedDataSettle);
+                        }
                         if (((returnedDataSettle).error) != undefined) {
                           // If .error defined, returns the custom error message
                           $('#wrapper-pendingswap-confirm').fadeTo("fast", 0, function() {
@@ -760,6 +766,9 @@
                                          },
                                          function (returnedDataSettle) {
                                            //console.log(returnedDataSettle)
+                                           if ((typeof returnedDataSettle) == 'string') {
+                                             returnedDataSettle = JSON.parse(returnedDataSettle);
+                                           }
                                            if (((returnedDataSettle).error) != undefined) {
                                              // If .error defined, returns the custom error message
                                              $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
@@ -799,6 +808,9 @@
                                          },
                                          function (returnedDataSettle) {
                                            //console.log(returnedDataSettle)
+                                           if ((typeof returnedDataSettle) == 'string') {
+                                             returnedDataSettle = JSON.parse(returnedDataSettle);
+                                           }
                                            if (((returnedDataSettle).error) != undefined) {
                                              // If .error defined, returns the custom error message
                                              $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
@@ -899,6 +911,9 @@
              },
                function (returnedDataPending) {
                  //console.log(returnedDataPending)
+                 if ((typeof returnedDataPending) == 'string') {
+                   returnedDataPending = JSON.parse(returnedDataPending);
+                 }
                  for ( var i = 0; i < returnedDataPending.length; i++ ) {
                      if (returnedDataPending[i].destinationHash == 'pending' && returnedDataPending[i].sourceChain == 'neo') {
 
