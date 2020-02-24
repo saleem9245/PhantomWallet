@@ -79,8 +79,6 @@
 
 $(document).ready(function() {
 
-  $("#nft").hide();
-  $("#no-nft").show();
 
   storeURL = 'http://www.22series.com/api/store/info';
   currencySelected = 'SOUL';
@@ -254,6 +252,7 @@ function getRedeemPack() {
       }
       fetchRedeemDropdown += '</select>'
 
+      document.getElementById("redeem-pack").innerHTML = redeemcustomNFT.length + ' packs available. Click here to redeem!'
       $('#redeem-pack-container').show();
 
     })
@@ -436,11 +435,11 @@ function initStore() {
           // init page on load
           getNFTDetails()
 
-          // init refresh every minute
+          // init refresh every 5 minutes
           setInterval(function() {
             getNFTDetails()
             getRedeemPack()
-          }, 60000);
+          }, 3000000);
 
           // init counter
           var diff = (JSON.parse(data).end_timestamp) - (now.getTime()/1000);
@@ -466,8 +465,9 @@ function initStore() {
 
       }
 
-    }).then(function() {
-
+    }).fail(function() {
+      $("#nft").hide();
+      $("#no-nft").show();
     })
 
 }
@@ -585,7 +585,7 @@ function getNFTDetails() {
         }
     }
 
-    fetchValuesNFTParts += '<div id="redeem-pack-container" style="display:none;">Already bought pre-season pack(s)?<br><a onclick=redeemPack() title="Redeem pre-season pack" id="redeem-pack">Click here to redeem!</a></div>'
+    fetchValuesNFTParts += '<div id="redeem-pack-container" style="display:none;">Already bought pre-season pack(s)?<br><a onclick=redeemPack() title="Redeem pre-season pack" id="redeem-pack"></a></div>'
 
     datastoreAuction = datastore.auctions
     datastoreAuction.sort((a,b) => (a.start_time > b.start_time) ? 1 : ((b.start_time > a.start_time) ? -1 : 0));
