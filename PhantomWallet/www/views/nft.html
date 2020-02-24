@@ -1,6 +1,7 @@
 <h3 class="tab-title" id="main-nft-tab">NFT Sales</h3>
 
 <div class="row setup-content nft" id="nft">
+  <div id="sendSpinner" class="loading">Loading&#8230;</div>
     <div class="col-xs-12">
         <div class="col-md-12">
 
@@ -79,6 +80,7 @@
 
 $(document).ready(function() {
 
+  $('#sendSpinner').hide();
 
   storeURL = 'http://www.22series.com/api/store/info';
   currencySelected = 'SOUL';
@@ -252,8 +254,13 @@ function getRedeemPack() {
       }
       fetchRedeemDropdown += '</select>'
 
-      document.getElementById("redeem-pack").innerHTML = redeemcustomNFT.length + ' packs available. Click here to redeem!'
-      $('#redeem-pack-container').show();
+      if (redeemcustomNFT.length != 0) {
+        document.getElementById("redeem-pack").innerHTML = redeemcustomNFT.length + ' packs available. Click here to redeem!'
+        $('#redeem-pack-container').show();
+      } else {
+        document.getElementById("redeem-pack").innerHTML = 'No pack available to redeem.'
+        $('#redeem-pack-container').show();
+      }
 
     })
 
@@ -303,6 +310,7 @@ function toggleCurrency() {
   }
 
   getNFTDetails()
+  getRedeemPack()
 
 }
 
@@ -394,10 +402,10 @@ function redeemPack() {
               },
               function (returnedData) {
                 if (returnedData !== "") {
-                    $('#sendSpinner').hide();
+                    //$('#sendSpinner').hide();
                     window.location.replace("/waiting/" + returnedData);
                 } else {
-                    $('#sendSpinner').hide();
+                    //$('#sendSpinner').hide();
                     window.location.replace("/error");
                 }
                 console.log(returnedData);
@@ -406,9 +414,9 @@ function redeemPack() {
               console.log("error nft");
           });
 
+        } else {
+          $('#sendSpinner').hide();
         }
-
-        $('#sendSpinner').hide();
 
       }
     })
@@ -887,7 +895,7 @@ function confirmAuction(nameNFT, priceNFT, quantityNFT, addressAuctionNFT, paylo
                   token: currencySelected, amount: parseFloat(bidAuction), dest: addressAuctionNFT, chain: 'main' , destChain: 'main', payload: payloadFormatted, donation: isDonation
               },
               function (returnedData) {
-                  setTimeout(function(){ $('#sendSpinner').hide(); }, 3000);
+                  //setTimeout(function(){ $('#sendSpinner').hide(); }, 3000);
                   if (returnedData !== "") {
                       window.location.replace("/waiting/" + returnedData);
                   } else {
@@ -899,9 +907,10 @@ function confirmAuction(nameNFT, priceNFT, quantityNFT, addressAuctionNFT, paylo
               console.log("error nft");
           });
 
+        } else {
+          $('#sendSpinner').hide();
         }
 
-        $('#sendSpinner').hide();
 
       }
     })
@@ -1016,7 +1025,7 @@ function confirmSale(nameNFT, priceNFT, payloadNFT) {
                   token: currencySelected, amount: pbQty*parseFloat(priceNFT), dest: addressNFT, chain: 'main' , destChain: 'main', payload: payloadFormatted, donation: isDonation
               },
               function (returnedData) {
-                  setTimeout(function(){ $('#sendSpinner').hide(); }, 3000);
+                  //setTimeout(function(){ $('#sendSpinner').hide(); }, 3000);
                   if (returnedData !== "") {
                       window.location.replace("/waiting/" + returnedData);
                   } else {
@@ -1028,9 +1037,10 @@ function confirmSale(nameNFT, priceNFT, payloadNFT) {
               console.log("error nft");
           });
 
+        } else {
+            $('#sendSpinner').hide();
         }
 
-        $('#sendSpinner').hide();
 
       }
     })
