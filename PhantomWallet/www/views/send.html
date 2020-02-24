@@ -378,10 +378,10 @@
                             },
                             function (returnedData) {
                                 if (returnedData !== "") {
-                                    $('#sendSpinner').hide();
+                                    //$('#sendSpinner').hide();
                                     window.location.replace("/waiting/" + returnedData);
                                 } else {
-                                    $('#sendSpinner').hide();
+                                    //$('#sendSpinner').hide();
                                     window.location.replace("/error");
                                 }
                                 console.log(returnedData);
@@ -396,10 +396,10 @@
                             },
                             function (returnedData) {
                               if (returnedData !== "") {
-                                  $('#sendSpinner').hide();
+                                  //$('#sendSpinner').hide();
                                   window.location.replace("/waiting/" + returnedData);
                               } else {
-                                  $('#sendSpinner').hide();
+                                  //$('#sendSpinner').hide();
                                   window.location.replace("/error");
                               }
                               console.log(returnedData);
