@@ -128,6 +128,9 @@ $(document).ready(function() {
         return el.address == '{{address}}';
       });
 
+      //const unique = [...new Set(data.map(item => item.address))];
+      //console.log(unique)
+
       // init lottery tooltip
       var d = new Date();
       var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -145,7 +148,7 @@ $(document).ready(function() {
       beginningPeriod = beginningPeriodMonth + ' ' + beginningPeriodDay ;
       endPeriod = endPeriodMonth + ' ' + endPeriodDay ;
       document.getElementById("tooltip_lottery").innerHTML = 'When the box is ticked, for each purchase/auction bid, you will also be sending a 5 SOUL payment<br>for an entry to a bi-monthly lottery, where you can win a unique limited edition NFT vehicle.<br><br>Each draw will consist of one unique winner, randomly picked out of all transactions received<br>during the period. Sending multiple entries will increase your odds of winning.'
-          + '<br><br>You currently have <strong>' + numberWithCommas(ticketsEntries.length) + ' tickets</strong> out of <strong>' + numberWithCommas(data.length) + ' total tickets</strong> (' + ((ticketsEntries.length/data.length)*100).toFixed(2) + '% chance)<br>Lottery tickets count updated twice per day.<br><br>Current lottery period <strong>(' + beginningPeriod + ' to ' + endPeriod + ')'
+          + '<br><br>You currently have <strong>' + numberWithCommas(ticketsEntries.length) + ' tickets</strong> out of <strong>' + numberWithCommas(data.length) + ' total tickets</strong> (' + ((ticketsEntries.length/data.length)*100).toFixed(2) + '% chance).<br>Lottery tickets count updated twice per day.<br><br>Current lottery period <strong>(' + beginningPeriod + ' to ' + endPeriod + ')'
           + '<br><br><a href="https://www.22series.com/part_info?id=16777229" target="_blank">NEO Economy Car</a></strong><img src="https://neoeconomy.io/assets/img/lotterycar.png" style="margin-left:5em;width:20em;"><div>'
 
       if (ticketsEntries.length > 0) {
