@@ -470,9 +470,8 @@ namespace Phantom.Wallet.Helpers
             return path;
         }
 
-        public static decimal GetCoinRate(string ticker, string symbol)
+        public static decimal GetCoinRate(string ticker, string currrency)
         {
-            //Log.Information("ticker " + symbol);
             string json;
             string baseticker;
             switch (ticker)
@@ -494,8 +493,8 @@ namespace Phantom.Wallet.Helpers
                     break;
             }
 
-            var url = $"https://api.coingecko.com/api/v3/simple/price?ids={baseticker}&vs_currencies={symbol}";
-            //Log.Information("ticker " + ticker);
+            var url = $"https://api.coingecko.com/api/v3/simple/price?ids={baseticker}&vs_currencies={currrency}";
+
             try
             {
                 using (var httpClient = new HttpClient())
@@ -503,13 +502,25 @@ namespace Phantom.Wallet.Helpers
                   json = httpClient.GetStringAsync(new Uri(url)).Result;
                 }
                 var root = JSONReader.ReadFromString(json);
+                Log.Information("ticker " + ticker);
 
-                root = root[ticker];
+                // hack for kcal price 1/5 soul & goati .10
+                if (ticker == "KCAL")
+                {
+                  root = root["phantasma"];
+                  var price = root.GetDecimal(currrency.ToLower())/5;
+                  return price;
+                }
+                else if (ticker == "GOATI") {
+                  var price = 0.10m;
+                  return price;
+                }
+                else {
+                  root = root[baseticker];
+                  var price = root.GetDecimal(currrency.ToLower());
+                  return price;
+                }
 
-                var price = root.GetDecimal(symbol.ToLower());
-                //Log.Information("ticker " + ticker);
-                //Log.Information("price " + price);
-                return price;
             }
             catch (Exception ex)
             {
