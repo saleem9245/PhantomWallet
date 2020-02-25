@@ -37,7 +37,7 @@
                   <span style="margin:1em .5em;display:inline-block;color:#FFBF32;" id="symbol-currency">SOUL (XX% DISCOUNT)</span>
                 </div>
               </div>
-              <div style="font-size:1.15em;"><input id="cosmicaddfee" type="checkbox" checked><span style="font-size:1em;">Enter the bi-monthly lottery to win a custom NFT vehicle for 5 SOUL!</span><i class="tooltip fas fa-info-circle" style="width:1em;margin-left:1em;" data-tooltip-content="#tooltip_lottery"></i></div>
+              <div style="font-size:1.15em;"><input id="cosmicaddfee" type="checkbox" checked><span style="font-size:1em;">Enter the bi-monthly lottery to win a custom NFT vehicle for 5 SOUL!</span><span id="lottery-odds"></span><i class="tooltip fas fa-info-circle" style="width:1em;margin-left:1em;" data-tooltip-content="#tooltip_lottery"></i></div>
               <div id="loader-nftlist" class="block-loader center">
                 <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
               </div>
@@ -119,33 +119,51 @@ $(document).ready(function() {
       document.getElementById("current-balance-goati").innerHTML = '<img src="img/goati_logo.png" alt="GOATI" title="Available Balance" style="margin-right:1em;width:2.5em;">N/A';
   }
 
-  // init lottery tooltip
-  var d = new Date();
-  var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-  if (d.getDate() <= 15) {
-    beginningPeriodDay = 01;
-    endPeriodDay = 15;
-    beginningPeriodMonth = months[d.getMonth()];
-    endPeriodMonth = months[d.getMonth()];
-  } else {
-    beginningPeriodDay = 15;
-    endPeriodDay = 01;
-    beginningPeriodMonth = months[d.getMonth()];
-    endPeriodMonth = months[d.getMonth() + 1]
-  }
-  beginningPeriod = beginningPeriodMonth + ' ' + beginningPeriodDay ;
-  endPeriod = endPeriodMonth + ' ' + endPeriodDay ;
-  document.getElementById("tooltip_lottery").innerHTML = 'When the box is ticked, for each purchase/auction bid, you will also be sending a 5 SOUL payment<br>for an entry to a bi-monthly lottery, where you can win a unique limited edition NFT vehicle.<br><br>Each draw will consist of one unique winner, randomly picked out of all transactions received<br>during the period. Sending multiple entries will increase your odds of winning.'
-      + '<br><br>Lottery prize for the current period <strong>(' + beginningPeriod + ' to ' + endPeriod + ')'
-      + '<br><br><a href="https://www.22series.com/part_info?id=16777229" target="_blank">NEO Economy Car</a></strong><img src="https://neoeconomy.io/assets/img/lotterycar.png" style="margin-left:5em;width:20em;"><div>'
 
-  // init tooltipster i
-  $('i.tooltip').tooltipster({
-    theme: 'tooltipster-noir',
-    contentCloning: true,
-    interactive: true,
-    side: 'right'
-  });
+  $.get('https://neoeconomy.io/json/lotteryphantom.json',
+
+    function (data) {
+
+      ticketsEntries = data.filter(function (el) {
+        return el.address == '{{address}}';
+      });
+
+      // init lottery tooltip
+      var d = new Date();
+      var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      if (d.getDate() <= 15) {
+        beginningPeriodDay = 01;
+        endPeriodDay = 15;
+        beginningPeriodMonth = months[d.getMonth()];
+        endPeriodMonth = months[d.getMonth()];
+      } else {
+        beginningPeriodDay = 15;
+        endPeriodDay = 01;
+        beginningPeriodMonth = months[d.getMonth()];
+        endPeriodMonth = months[d.getMonth() + 1]
+      }
+      beginningPeriod = beginningPeriodMonth + ' ' + beginningPeriodDay ;
+      endPeriod = endPeriodMonth + ' ' + endPeriodDay ;
+      document.getElementById("tooltip_lottery").innerHTML = 'When the box is ticked, for each purchase/auction bid, you will also be sending a 5 SOUL payment<br>for an entry to a bi-monthly lottery, where you can win a unique limited edition NFT vehicle.<br><br>Each draw will consist of one unique winner, randomly picked out of all transactions received<br>during the period. Sending multiple entries will increase your odds of winning.'
+          + '<br><br>You currently have <strong>' + numberWithCommas(ticketsEntries.length) + ' tickets</strong> out of <strong>' + numberWithCommas(data.length) + ' total tickets</strong> (' + ((ticketsEntries.length/data.length)*100).toFixed(2) + '% chance)<br>Lottery tickets count updated twice per day.<br><br>Current lottery period <strong>(' + beginningPeriod + ' to ' + endPeriod + ')'
+          + '<br><br><a href="https://www.22series.com/part_info?id=16777229" target="_blank">NEO Economy Car</a></strong><img src="https://neoeconomy.io/assets/img/lotterycar.png" style="margin-left:5em;width:20em;"><div>'
+
+      if (ticketsEntries.length > 0) {
+          document.getElementById("lottery-odds").innerHTML = 'Your current odds: ' + ((ticketsEntries.length/data.length)*100).toFixed(2) + '%'
+      }
+
+      // init tooltipster i
+      $('i.tooltip').tooltipster({
+        theme: 'tooltipster-noir',
+        contentCloning: true,
+        interactive: true,
+        side: 'right'
+      });
+
+
+    }
+  )
+
 
   redeemcustomNFT = [];
   hasredeemPack = 0;

@@ -1522,6 +1522,11 @@ ul.nav.nav-pills {
   color: white;
 }
 
+#lottery-odds {
+  margin-left: 1em;
+  border-bottom: 1px solid #8a6d3b;
+}
+
 ._msddli_ img, #select-id_title img {
   width: 64px;
   margin-right: 1em;
