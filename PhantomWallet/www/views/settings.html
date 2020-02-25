@@ -78,35 +78,6 @@
           <label class="tgl-btn" for="check-advanced"></label>
         </div>
       </div>
-      <div id="toggle-advanced" style="-webkit-animation: fadeIn 1s;animation: fadeIn 1s;display:none;">
-        <div class="alert alert-warning" style="overflow: auto;margin-top:1em;margin-bottom:1em;">
-            This setting allows to convert this wallet to a multisignature wallet.<br>
-            This is for advanced users and should only be done with <strong> extreme precaution</strong>!
-        </div>
-        <div id="multisig-on">
-        </div>
-        <div id="multisig-off" style="width: 600px;margin: 0 auto;">
-          <span style="float:left;">
-            Number of addresses managing this multisignature wallet:
-          </span>
-          <select id="multisig-qty" class="bootstrap-select" style="float: right;width: 70px;text-align-last: center;">
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-          </select>
-          <br><br>
-          <div id="multisig-sign-wrapper" style="display:none;">
-            <span style="float:left;">
-              Number of signatures required for withdrawals:
-            </span>
-            <select id="multisig-sign" class="bootstrap-select" style="float: right;width: 70px;text-align-last: center;">
-            </select>
-          </div>
-          <div id="address-input">
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </div>
@@ -475,85 +446,5 @@ function getSettings() {
         });
     }
   })
-
-  // Toggle on/off advanced settings
-  const selectadvanced = document.getElementById('check-advanced');
-  selectadvanced.addEventListener('change', (event) => {
-    if (event.target.checked) {
-      // Temp multisig disabled
-      document.getElementById("toggle-advanced").innerHTML = '<h4 style="margin-top:2em;">Not available yet, coming soon!</h4>'
-      $("#toggle-advanced").fadeIn();
-    } else {
-      $("#toggle-advanced").fadeOut();
-    }
-  })
-
-  // Multisignature dropdown on change event
-  $("#multisig-qty").change(function () {
-
-    $("#multisig-sign-wrapper").hide();
-    // start with number of addresses required
-    var e = document.getElementById("multisig-qty");
-    var eselected = e .options[e .selectedIndex].value;
-    var multisigqty = [];
-    // start building the future dropdown for signature count based on qty
-    for (i = 0; i < e.options.length;i++) {
-      // build array up to signature count <= number of addresses
-      if (e.options[i].value <= eselected) {
-        multisigqty.push(e.options[i].value)
-      }
-    }
-
-    var f = document.getElementById("multisig-sign");
-    f.innerHTML = "";
-    // loop over the number of addresses
-    for (i = 0; i < multisigqty.length; i++) {
-      var opt = multisigqty[i];
-      // for each number of address picked, fill the dropdown
-      f.innerHTML += "<option value=\"" + opt + "\">" + opt + "</option>";
-    }
-
-    fetchValueInputs = '';
-    var e = document.getElementById("multisig-qty");
-    var quantity = e.options[e.selectedIndex].value,
-        i = 0;
-    // build the div/input based on the number of addresses
-    for (i; i < quantity; i += 1) {
-      fetchValueInputs += 'Address ' + [i+1] + '<div><input id="addressinput-' + [i+1] + '" type="text" class="form-control " placeholder="Enter address ' + [i+1] + '"></div>'
-    }
-    // add the confirm button
-    fetchValueInputs += '<button id="confirmrun-' + [i] + '" style="font-size:.9em;margin-top:2em;" type="button" required class="button" onclick="confirmRun(this.id)">CONVERT TO<br>MULTISIGNATURE WALLET</button>'
-
-    document.getElementById("address-input").innerHTML = fetchValueInputs;
-    $("#multisig-sign-wrapper").show();
-
-   });
-
-// confirm conversion to multisig
-function confirmRun(quantity) {
-
-  if (1 == 1) {
-      bootbox.alert("Functionality coming soon!");
-      return;
-  }
-
-  var e = document.getElementById("multisig-qty");
-  qty = e.options[e.selectedIndex].value;
-  max = document.getElementById("multisig-max").value;
-  var g = document.getElementById("multisig-sign");
-  sign = g.options[g.selectedIndex].value;
-  quantity = quantity.substr(11);
-
-  var i = 0;
-  var params = [];
-  // start building the params to be sent
-  for (i; i < quantity; i += 1) {
-    paramsaddress = ((document.getElementById('addressinput-' + [i+1])).value)
-    params[i] = { address: paramsaddress, order: i+1, minsignature: sign, maxwithoutsignature: max }
-  }
-  // todo actual multisig params to send
-  console.log(params)
-
-}
 
 </script>
