@@ -379,7 +379,7 @@ function getAuctions() {
 
         // filter by start date
         mergedAuctionsFinal.sort((a,b) => (a.startDate < b.startDate) ? 1 : ((b.startDate < a.startDate) ? -1 : 0));
-console.log(mergedAuctionsFinal)
+
         lenAuctions = (mergedAuctionsFinal).length;
 
         mergedAuctionsFinalNotExpired = mergedAuctionsFinal.filter(function (el) {
@@ -388,7 +388,7 @@ console.log(mergedAuctionsFinal)
 
         // filter by start date
         mergedAuctionsFinalNotExpired.sort((a,b) => (a.startDate < b.startDate) ? 1 : ((b.startDate < a.startDate) ? -1 : 0));
-console.log(mergedAuctionsFinalNotExpired)
+
         auctionsDetailsAPINFT = mergedAuctionsFinal;
 
         // Start building the tooltip
