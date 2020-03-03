@@ -57,11 +57,19 @@
                     {{#each menu}}
                     {{#if Enabled}}
                     {{#if IsSelected}}
+                    {{#if Id == 'settings'}}
+                    <li style="display:none;" class="menu-item-highlight">
+                        <a href="/{{Id}}" style="color: #17B0E7; display: block; width: 100%;">
+                            <i class="fas {{Icon}} menu-icon"></i>{{Caption}}
+                        </a>
+                    </li>
+                    {{#else}}
                     <li class="menu-item-highlight">
                         <a href="/{{Id}}" style="color: #17B0E7; display: block; width: 100%;">
                             <i class="fas {{Icon}} menu-icon"></i>{{Caption}}
                         </a>
                     </li>
+                    {{/if}}
                     {{#else}}
                     {{#if Id == 'settings'}}
                     <li style="display:none;">
