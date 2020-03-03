@@ -1450,6 +1450,10 @@ ul.nav.nav-pills {
   border-color: #FFBF32;
 }
 
+#sorting-order {
+  font-size: 1.3em;
+}
+
 #sorting-order:hover {
   color: #FFBF31;
   cursor: pointer;
