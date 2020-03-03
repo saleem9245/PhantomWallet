@@ -232,7 +232,7 @@ namespace Phantom.Wallet.Controllers
                     .SpendGas(keyPair.Address)
                     .EndScript();
 
-                var settleTx = new Phantasma.Blockchain.Transaction(nexusName, destinationChainName, settleTxScript, DateTime.UtcNow + TimeSpan.FromMinutes(30), "PHT-0-7-6");
+                var settleTx = new Phantasma.Blockchain.Transaction(nexusName, destinationChainName, settleTxScript, DateTime.UtcNow + TimeSpan.FromMinutes(30), "PHT-0-7-9");
                 settleTx.Sign(keyPair);
 
                 var settleResult =
@@ -281,7 +281,7 @@ namespace Phantom.Wallet.Controllers
 
                 var nexusName = WalletConfig.Network;
 
-                var tx = new Phantasma.Blockchain.Transaction(nexusName, chainName, script, DateTime.UtcNow + TimeSpan.FromMinutes(30), "PHT-0-7-6");
+                var tx = new Phantasma.Blockchain.Transaction(nexusName, chainName, script, DateTime.UtcNow + TimeSpan.FromMinutes(30), "PHT-0-7-9");
                 tx.Sign(keyPair);
 
                 var txResult = await _phantasmaRpcService.SendRawTx.SendRequestAsync(tx.ToByteArray(true).Encode());
@@ -340,7 +340,7 @@ namespace Phantom.Wallet.Controllers
 
                 var nexusName = WalletConfig.Network;
                 var tx = new Phantasma.Blockchain.Transaction(nexusName, chainName, bscript,
-                    DateTime.UtcNow + TimeSpan.FromMinutes(30), "PHT-0-7-6");
+                    DateTime.UtcNow + TimeSpan.FromMinutes(30), "PHT-0-7-9");
                 tx.Sign(keyPair);
 
                 var txResult = await _phantasmaRpcService.SendRawTx.SendRequestAsync(tx.ToByteArray(true).Encode());
@@ -426,7 +426,7 @@ namespace Phantom.Wallet.Controllers
 
                 var nexusName = WalletConfig.Network;
                 var tx = new Phantasma.Blockchain.Transaction(nexusName, chainName, script,
-                    DateTime.UtcNow + TimeSpan.FromMinutes(30), "PHT-0-7-6");
+                    DateTime.UtcNow + TimeSpan.FromMinutes(30), "PHT-0-7-9");
                 tx.Sign(keyPair);
 
                 // from here on we need PhantasmaRelay to proceed with a multisig TX
@@ -571,7 +571,7 @@ namespace Phantom.Wallet.Controllers
                        .EndScript();
 
                 var nexusName = WalletConfig.Network;
-                var tx = new Phantasma.Blockchain.Transaction(nexusName, "main", script, DateTime.UtcNow + TimeSpan.FromMinutes(30), "PHT-0-7-6");
+                var tx = new Phantasma.Blockchain.Transaction(nexusName, "main", script, DateTime.UtcNow + TimeSpan.FromMinutes(30), "PHT-0-7-9");
 
                 tx.Sign(keyPair);
 
@@ -601,7 +601,7 @@ namespace Phantom.Wallet.Controllers
                        .EndScript();
 
                 var nexusName = WalletConfig.Network;
-                var tx = new Phantasma.Blockchain.Transaction(nexusName, "main", script, DateTime.UtcNow + TimeSpan.FromMinutes(30), "PHT-0-7-6");
+                var tx = new Phantasma.Blockchain.Transaction(nexusName, "main", script, DateTime.UtcNow + TimeSpan.FromMinutes(30), "PHT-0-7-9");
 
                 tx.Sign(keyPair);
 
@@ -636,7 +636,7 @@ namespace Phantom.Wallet.Controllers
                     .EndScript();
 
                 var nexusName = WalletConfig.Network;
-                var tx = new Phantasma.Blockchain.Transaction(nexusName, "main", script, DateTime.UtcNow + TimeSpan.FromMinutes(30), "PHT-0-7-6");
+                var tx = new Phantasma.Blockchain.Transaction(nexusName, "main", script, DateTime.UtcNow + TimeSpan.FromMinutes(30), "PHT-0-7-9");
 
                 tx.Sign(neoKeys);
 
@@ -668,7 +668,7 @@ namespace Phantom.Wallet.Controllers
                        .EndScript();
 
                 var nexusName = WalletConfig.Network;
-                var tx = new Phantasma.Blockchain.Transaction(nexusName, chain, script, DateTime.UtcNow + TimeSpan.FromMinutes(30), "PHT-0-7-6");
+                var tx = new Phantasma.Blockchain.Transaction(nexusName, chain, script, DateTime.UtcNow + TimeSpan.FromMinutes(30), "PHT-0-7-9");
 
                 tx.Sign(keyPair);
 
@@ -700,7 +700,7 @@ namespace Phantom.Wallet.Controllers
                 .EndScript();
 
                 var nexusName = WalletConfig.Network;
-                var tx = new Phantasma.Blockchain.Transaction(nexusName, "main", script, DateTime.UtcNow + TimeSpan.FromMinutes(30), "PHT-0-7-6");
+                var tx = new Phantasma.Blockchain.Transaction(nexusName, "main", script, DateTime.UtcNow + TimeSpan.FromMinutes(30), "PHT-0-7-9");
 
                 tx.Sign(keyPair);
 
@@ -736,7 +736,51 @@ namespace Phantom.Wallet.Controllers
                        .EndScript();
 
                 var nexusName = WalletConfig.Network;
-                var tx = new Phantasma.Blockchain.Transaction(nexusName, chain, script, DateTime.UtcNow + TimeSpan.FromMinutes(30), "PHT-0-7-6");
+                var tx = new Phantasma.Blockchain.Transaction(nexusName, chain, script, DateTime.UtcNow + TimeSpan.FromMinutes(30), "PHT-0-7-9");
+
+                tx.Sign(keyPair);
+
+                var txResult = await _phantasmaRpcService.SendRawTx.SendRequestAsync(tx.ToByteArray(true).Encode());
+                Log.Information("txResult: " + txResult);
+                return txResult;
+            }
+            catch (RpcResponseException rpcEx)
+            {
+                Log.Error($"RPC Exception occurred: {rpcEx.RpcError.Message}");
+                return new ErrorRes { error = rpcEx.RpcError.Message };
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Exception occurred: {ex.Message}");
+                return new ErrorRes { error = ex.Message };
+            }
+        }
+
+        public async Task<object> MarketBuyCustom(
+                PhantasmaKeys keyPair, string chain, string contract, string method, object[] paramArray, string feeamount, string feesymbol)
+        {
+            try
+            {
+                var bigIntAmount = UnitConversion.ToBigInteger(decimal.Parse(feeamount), GetTokenDecimals(feesymbol));
+
+                var destinationAddress = Address.FromText("P2KLzxq8cUi47URLZZYcLs54WPVYnknrHWVryUUUqhuhq5K");
+
+                var script = (bigIntAmount == 0)
+                    ? ScriptUtils.BeginScript()
+                           .AllowGas(keyPair.Address, Address.Null, MinimumFee, 800)
+                           .CallContract(contract, method, paramArray)
+                           .SpendGas(keyPair.Address)
+                           .EndScript()
+
+                    : ScriptUtils.BeginScript()
+                           .AllowGas(keyPair.Address, Address.Null, MinimumFee, 800)
+                           .CallContract(contract, method, paramArray)
+                           .TransferTokens(feesymbol, keyPair.Address, destinationAddress, bigIntAmount)
+                           .SpendGas(keyPair.Address)
+                           .EndScript();
+
+                var nexusName = WalletConfig.Network;
+                var tx = new Phantasma.Blockchain.Transaction(nexusName, chain, script, DateTime.UtcNow + TimeSpan.FromMinutes(30), "PHT-0-7-9");
 
                 tx.Sign(keyPair);
 
@@ -770,7 +814,7 @@ namespace Phantom.Wallet.Controllers
                   .EndScript();
 
             var nexusName = WalletConfig.Network;
-            var stakeTx = new Phantasma.Blockchain.Transaction(nexusName, "main", script, DateTime.UtcNow + TimeSpan.FromMinutes(30), "PHT-0-7-6");
+            var stakeTx = new Phantasma.Blockchain.Transaction(nexusName, "main", script, DateTime.UtcNow + TimeSpan.FromMinutes(30), "PHT-0-7-9");
 
             stakeTx.Sign(keyPair);
 

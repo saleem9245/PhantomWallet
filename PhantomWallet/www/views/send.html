@@ -237,9 +237,11 @@
               if (dataNFT[key].item_info) {
                 name = dataNFT[key].item_info.name_english
                 type = dataNFT[key].item_info.display_type_english
+                rarity = formatRarity(dataNFT[key].item_info.rarity)
               } else {
                 name = 'goati server error';
                 type = 'goati server error';
+                rarity = 'goati server error';
               }
               if (dataNFT[key].img) {
                 img = dataNFT[key].img
@@ -252,7 +254,7 @@
                   mint: dataNFT[key].mint,
                   image: img,
                   type: type,
-                  name: ' • ' + name
+                  name: name
               });
               sendcustomNFT.sort(function(a, b) {
                 return b.item- a.item;
@@ -462,7 +464,7 @@
                       } else {
                         name = sendcustomNFT[i].name
                       }
-                      nftIds.append($('<option>', { value: sendcustomNFT[i].id, "data-image": sendcustomNFT[i].image, text: 'NFT #' + sendcustomNFT[i].item + ' • Mint #' + sendcustomNFT[i].mint + ' • ' + sendcustomNFT[i].type + name}));
+                      nftIds.append($('<option>', { value: sendcustomNFT[i].id, "data-image": sendcustomNFT[i].image, text: name + ' • Mint #' + sendcustomNFT[i].mint + ' • ' + sendcustomNFT[i].type + ' • ' + rarity}));
                     }
                     $("#select-id").msDropDown();
                     return;
@@ -478,6 +480,22 @@
             }
 		    {{/each}}
 		}
+
+    // function format rarity
+    function formatRarity(rarity) {
+
+      switch(rarity)
+      {
+        case 1: return 'Consumer';
+        case 2: return 'Industrial';
+        case 3: return 'Professional';
+        case 4: return 'Custom';
+        case 5: return 'Collector';
+        case 6: return 'Unique';
+        default: return 'Unknown';
+      }
+
+    }
 
 </script>
 {{#else}}

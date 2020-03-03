@@ -16,6 +16,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.0/moment.min.js" integrity="sha256-Mwee5t+bD35zhwF9nGFf7szo0kMlILdBFdSK5xPQaTI=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/datatables.net@1.10.19/js/jquery.dataTables.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flipclock/0.7.8/flipclock.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
     <script src="https://code.highcharts.com/stock/highstock.js"></script>
     <script src="../js/jquery.dd.min.js"></script>
     <script src="../js/tooltipster.bundle.min.js"></script>
@@ -62,6 +63,13 @@
                         </a>
                     </li>
                     {{#else}}
+                    {{#if Id == 'settings'}}
+                    <li style="display:none;">
+                        <a href="/{{Id}}" style="display: block; width: 100%;">
+                            <i class="fas {{Icon}} menu-icon"></i>{{Caption}}
+                        </a>
+                    </li>
+                    {{#else}}
                     <li>
                         <a href="/{{Id}}" style="display: block; width: 100%;">
                             <i class="fas {{Icon}} menu-icon"></i>{{Caption}}
@@ -69,11 +77,12 @@
                     </li>
                     {{/if}}
                     {{/if}}
+                    {{/if}}
                     {{/each}}
                 </ul>
                 <div class="center"><div class="blockheight" id="blockheightparent">LAST BLOCK</div><div class="blockheight" id="blockheight" style="margin-left:.5em;"></div></div>
                 <div class="center" style="margin-top:-1em;"><div class="blockheight" id="soulpriceparent" style="font-size: 1em;">SOUL/USD</div><div class="blockheight" id="soulprice" style="margin-left:.5em;font-size: 1em;;"></div></div>
-                <div class="version" style="margin-top:-.3em;">version 0.7.6</div>
+                <div class="center"><div class="version" style="margin-top:-.3em;display:inline-block;">version 0.7.9</div><i id="settings-page" onclick="location.href='/settings';" class="fas fa-cog menu-icon" style="display: inline-block;margin-left: .5em;font-size: 1.3em;"></i></div>
             </div>
             <div class="col-md-10 col-sm-8">
                 <div class="well">{{#body}}</div>

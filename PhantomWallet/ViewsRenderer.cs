@@ -237,6 +237,8 @@ namespace Phantom.Wallet
 
             TemplateEngine.Server.Post("/cosmiccustom", RouteCosmicCustom);
 
+            TemplateEngine.Server.Post("/marketbuycustom", RouteMarketBuyCustom);
+
             TemplateEngine.Server.Get("/chains", RouteChains);
 
             TemplateEngine.Server.Get("/platforms", RoutePlatforms);
@@ -797,6 +799,58 @@ namespace Phantom.Wallet
             return null;
         }
 
+        private object RouteMarketBuyCustom(HTTPRequest request)
+        {
+            var chain = request.GetVariable("chain");
+            var contract = request.GetVariable("contract");
+            var method = request.GetVariable("method");
+            var param = request.GetVariable("params");
+            var feeamount = request.GetVariable("feeamount");
+            var feesymbol = request.GetVariable("feesymbol");
+            var context = InitContext(request);
+
+            if (param == null)
+            {
+                PushError(request, "Parameters cannot be null!");
+                return null;
+            }
+
+            List<object> paramList = SendUtils.BuildParamList(param);
+
+            if (context["holdings"] is Holding[] balance)
+            {
+                var kcalBalance = balance.SingleOrDefault(b => b.Symbol == "KCAL" && b.Chain == chain);
+                if (kcalBalance.Amount > 0.1m)
+                {
+                    var keyPair = GetLoginKey(request);
+                    InvalidateCache(keyPair.Address);
+                    var result = AccountController.MarketBuyCustom(
+                            keyPair, chain, contract, method, paramList.ToArray(), feeamount, feesymbol
+                            ).Result;
+
+                    if (result.GetType() == typeof(ErrorRes))
+                    {
+                        return JsonConvert.SerializeObject(result, Formatting.Indented);
+                    }
+
+                    var contractTx = (string)result;
+
+                    if (SendUtils.IsTxHashValid(contractTx))
+                    {
+                        request.session.SetString("confirmedHash", contractTx);
+                        return contractTx;
+                    }
+
+                    PushError(request, contractTx);
+                }
+                else
+                {
+                    PushError(request, "You need a small drop of KCAL to call a contract.");
+                }
+            }
+            return null;
+        }
+
         private object RouteStake(HTTPRequest request)
         {
             var stakeAmount = request.GetVariable("stakeAmount");
@@ -1043,6 +1097,7 @@ namespace Phantom.Wallet
         {
             new MenuEntry(){ Id = "portfolio", Icon = "fa-wallet", Caption = "Portfolio", Enabled = true, IsSelected = true},
             new MenuEntry(){ Id = "nft", Icon = "fa-certificate", Caption = "NFT Sales", Enabled = true, IsSelected = false},
+            new MenuEntry(){ Id = "marketplace", Icon = "fa-comment-dollar", Caption = "Marketplace", Enabled = true, IsSelected = false},
             new MenuEntry(){ Id = "send", Icon = "fa-paper-plane", Caption = "Send", Enabled = true, IsSelected = false},
             new MenuEntry(){ Id = "receive", Icon = "fa-qrcode", Caption = "Receive", Enabled = true, IsSelected = false},
             new MenuEntry(){ Id = "swap", Icon = "fa-random", Caption = "Swap", Enabled = true, IsSelected = false},

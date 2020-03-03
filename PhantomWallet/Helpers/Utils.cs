@@ -61,6 +61,11 @@ namespace Phantom.Wallet.Helpers
                           amount = data.Value;
                           receiverAddress = Address.FromText(evt.EventAddress);
                           receiverChain = data.ChainName;
+                          if (data.Symbol == "TTRS")
+                          {
+                            amountsymbol = $"{data.Symbol} • NFT";
+                            break;
+                          }
                           var amountDecimal = UnitConversion.ToDecimal(amount, phantasmaTokens.Single(p => p.Symbol == data.Symbol).Decimals);
                           if (data.Symbol != "KCAL" && data.Symbol != "NEO" && data.Symbol != "GAS")
                           {
@@ -502,7 +507,6 @@ namespace Phantom.Wallet.Helpers
                   json = httpClient.GetStringAsync(new Uri(url)).Result;
                 }
                 var root = JSONReader.ReadFromString(json);
-                Log.Information("ticker " + ticker);
 
                 // hack for kcal price 1/5 soul & goati .10
                 if (ticker == "KCAL")

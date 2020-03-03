@@ -283,7 +283,7 @@ $(document).ready(function() {
           item = 'XXX';
         }
 
-        tooltipData += '<div style="width:7em;display:inline-block;text-align:center;margin-right:3em;"><div style="text-align:center;"><img style="height:70px;margin-bottom:.5em;" src="' + img + '?width=256" onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'"></div></div><a href="https://22series.com/part_info?id=' + preSorteddataNFT[i] + '" target="_blank">NFT #' + item + ' • Mint #' + mint + rarity + ' • '+ type + ' • ' + name + '</a><br>'
+        tooltipData += '<div style="width:7em;display:inline-block;text-align:center;margin-right:3em;"><div style="text-align:center;"><img style="height:70px;margin-bottom:.5em;" src="' + img + '?width=256" onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'"></div></div><a href="https://22series.com/part_info?id=' + preSorteddataNFT[i] + '" target="_blank">' + name + ' • Mint #' + mint + ' • ' + type + rarity + '</a><br>'
 
       }
 
@@ -430,7 +430,10 @@ function cosmicSwapFixed() {
                               window.location.replace("/error");
                             }
                         } else {
-                          window.location.replace("/waiting/" + returnedData);
+                          //window.location.replace("/waiting/" + returnedData);
+                          setTimeout(function() {
+                            window.location.replace("/portfolio");
+                          }, 2000);
                         }
                   })
             }
@@ -1362,7 +1365,7 @@ function getPortfolioChart(timeframe) {
   ).then(function() {
     // loop over holdings to build url pricing
     {{#each holdings}}
-    
+
       if ('{{Symbol}}' == 'SOUL') {
         amountsoulcombined = {{Amount}} + stakesFormatted
       }

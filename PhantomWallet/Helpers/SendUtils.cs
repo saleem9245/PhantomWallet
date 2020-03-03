@@ -161,6 +161,8 @@ namespace Phantom.Wallet.Helpers
                     object result = null;
                     Console.WriteLine($"Object[name: {name} type: {type} input: {input} info: {info} ]");
 
+                    DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
                     switch (type)
                     {
                         case "Object":
@@ -179,9 +181,14 @@ namespace Phantom.Wallet.Helpers
                         case "Timestamp":
                             DateTime date = DateTime.ParseExact(input, "MM/dd/yyyy HH:mm:ss",
                                     System.Globalization.CultureInfo.InvariantCulture);
-                            DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
                             var ticks = (uint)(date.ToUniversalTime() - unixEpoch).TotalSeconds;
                             result = new Timestamp(ticks);
+                            break;
+                        case "TimestampEpoch":
+                            DateTime dtDateTime = new DateTime(1970,1,1,0,0,0,0,DateTimeKind.Utc);
+                            dtDateTime = dtDateTime.AddMilliseconds( Convert.ToDouble(input) ).ToLocalTime();
+                            var ticksEpoch = (uint)(dtDateTime.ToUniversalTime() - unixEpoch).TotalSeconds;
+                            result = new Timestamp(ticksEpoch);
                             break;
                         case "Bool":
                             result = bool.Parse(input);
