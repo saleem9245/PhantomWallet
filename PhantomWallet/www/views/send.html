@@ -46,7 +46,10 @@
                     </div>
                     <div class="form-group" id="amountGroup">
                         <h4 class="control-label send-label">Step 3) Enter amount</h4>
-                        <input onfocusin="saveToken()" class="form-control parameters-input" maxlength="100" type="number" required="required" placeholder="Enter amount" id="amount" />
+                        <div>
+                          <input onfocusin="saveToken()" class="form-control parameters-input" maxlength="100" type="number" required="required" placeholder="Enter amount" id="amount" />
+                          <button class="btn-primary btn-lg button" type="button" id="button-max" onClick="getMax()">MAX</button>
+                        </div>
                     </div>
                     <div class="form-group" id="nft-id-group" hidden>
                         <h4 class="control-label send-label">Step 3) Select NFT</h4>
@@ -495,6 +498,10 @@
         default: return 'Unknown';
       }
 
+    }
+
+    function getMax() {
+      $("#amount").val(max_amount);
     }
 
 </script>
