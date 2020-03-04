@@ -1323,6 +1323,25 @@ ul.nav.nav-pills {
     font-size: 1.2em;
 }
 
+#amount {
+    display: inline-block;
+    width: 75%;
+    float: left;
+}
+
+#button-max {
+    display: inline-block;
+    width: 15%;
+    float: right;
+    margin-top: 0;
+    margin-bottom: 2em;
+    border-radius: 0;
+    margin-left: 0;
+    font-size: 1em;
+    padding: 1.3em;
+    margin-right: 0;
+}
+
 .swap select {
     margin-bottom: 1em;
     width: 25em;
@@ -1365,10 +1384,109 @@ ul.nav.nav-pills {
     font-size: 1.2em;
 }
 
+.percent-slider {
+    text-align: center;
+    position: relative;
+    font-size: 1em;
+    color: #AAAAAA;
+    height: 4rem;
+}
+
+.percent-slider .slider {
+    width: 95%;
+    position: absolute;
+    left: 1.75%;
+    top: 0.3rem;
+    -webkit-appearance: none;
+    height: 5px;
+    cursor: pointer;
+}
+
+.percent-slider .button-container.zero {
+    left: 1.5%;
+}
+
+.percent-slider .button-container.quarter {
+    left: 24%;
+}
+
+.percent-slider .button-container.half {
+    left: 46.5%;
+}
+
+.percent-slider .button-container.three-quarter {
+    left: 69.5%;
+}
+
+.percent-slider .button-container.max {
+    left: 91.5%;
+}
+
+.percent-slider .button-container {
+    display: flex;
+    cursor: pointer;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    pointer-events: none;
+}
+
+.percent-slider .button-container .circle-container {
+    height: 1rem;
+    width: 1.5rem;
+    margin-bottom: 0.5rem;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+
+.percent-slider .button-container .button-label {
+    pointer-events: auto;
+    color: #999;
+}
+
+.percent-slider .button-container .submit-btn-small {
+    margin: 0;
+    border-radius: 1rem;
+    height: 0.5rem;
+    width: 0.5rem;
+    border: 0.25rem #E9E9E9 solid;
+}
+
+.percent-slider .button-container .submit-btn-small {
+    height: 1.5rem;
+    width: 1.5rem;
+    border: none;
+}
+
+.submit-btn, .submit-btn-small {
+    background: #efefef;
+}
+
+.zero.active .submit-btn-small, .quarter.active .submit-btn-small, .half.active .submit-btn-small, .three-quarter.active .submit-btn-small, .max.active .submit-btn-small {
+    background: #17B0E7;
+}
+
+.zero.active .button-label, .quarter.active .button-label, .half.active .button-label, .three-quarter.active .button-label, .max.active .button-label {
+    color: #333;
+}
+
+.dark-mode .zero.active .button-label, .dark-mode .quarter.active .button-label, .dark-mode .half.active .button-label, .dark-mode .three-quarter.active .button-label, .dark-mode .max.active .button-label {
+    color: white;
+}
+
 #select-id {
     display: block;
     margin: 0 2em;
     margin-bottom: 2em;
+}
+
+#select-id_child .checkbox {
+    width: 1em;
+    display: inline-block;
+    margin: 0;
+    height: 1em;
+    margin-right: 1em;
 }
 
 #select-nft {
@@ -1389,7 +1507,7 @@ ul.nav.nav-pills {
     margin: 0 auto;
 }
 
-.button:focus, select:focus, th:focus, .nft-order:focus, #select-id_msdd:focus, #select-nft_msdd:focus, .searchbar:focus {
+.button:focus, select:focus, th:focus, .nft-order:focus, #select-id_msdd:focus, #select-nft_msdd:focus, .searchbar:focus, input[type="range"]:focus {
     outline: none;
 }
 
