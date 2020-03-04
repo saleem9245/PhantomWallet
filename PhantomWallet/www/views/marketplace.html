@@ -404,7 +404,7 @@ function getAuctions() {
         arrayNFTFormat = '';
         arrayNFTlength = 0;
 
-        for (i = 0; i < ((lenAuctions)/100); i++) {
+        for (i = 0; i <= ((lenAuctions)/100); i++) {
           idList = 0;
           window['arrayNFT' + i] = '';
 
@@ -423,7 +423,7 @@ function getAuctions() {
         if (lenAuctions > 0) {
 
           var arrayNFTFormatResultTotal = [];
-          for (i = 0; i < ((lenAuctions)/100); i++) {
+          for (i = 0; i <= ((lenAuctions)/100); i++) {
               arrayNFTFormatResultTotal.push(getNFTIds(window['arrayNFTFormat' + i]));
           }
           Promise.all(arrayNFTFormatResultTotal)
@@ -457,10 +457,12 @@ function getAuctions() {
                   type: type,
                   name: ' • ' + name
               });
-              auctionsDetails22RSNFTArray.sort(function(a, b) {
-                return b.item- a.item;
-              })
+
             });
+
+            auctionsDetails22RSNFTArray.sort(function(a, b) {
+              return b.item- a.item;
+            })
 
             refreshAuctions();
 
@@ -512,7 +514,7 @@ function getAuctions() {
 
             function (data) {
 
-              //console.log(JSON.parse(data))
+              //console.log(data)
 
               if ((typeof data) == 'string') {
                 var dataPage = JSON.parse(data).result;
@@ -567,6 +569,11 @@ function refreshAuctions() {
 
       // hide ended auctions except for self auction
       if ((((auctionsDetailsAPINFT[i].endDate)*1000) - (new Date()).getTime() < 0) && auctionsDetailsAPINFT[i].creatorAddress != '{{address}}') {
+        continue;
+      }
+
+      // catch all bogus auction count
+      if (!singleDetailsAPINFT[0]) {
         continue;
       }
 
