@@ -41,7 +41,7 @@
                   <div class="category sort" id="sort-rarity" data-sort="rarityFilter" onclick="sortCategory(this.id)"><i class="tooltip fas fa-gem" data-tooltip-content="#tooltip_rarity"></i>Rarity</div>
                 </div>
               </div>
-              <div style="display:inline-block;margin-left:1em;" id="sorting-order-container">
+              <div style="display:inline-block;display:none;margin-left:1em;" id="sorting-order-container">
                 <i id="sorting-order" onclick="sortCategory(this.id)" class="fas fa-2x fa-sort-numeric-down"></i>
               </div>
             </div>
@@ -107,8 +107,8 @@ $(document).ready(function() {
   // set session storage and filter on load
   localStorage.setItem('marketplace-category-filter', 'filter-all-items');
   filterSelected = localStorage.getItem('marketplace-category-filter');
-  localStorage.setItem('marketplace-category-sort', 'sort-price');
-  selectedMainSort = localStorage.getItem('marketplace-category-sort');
+  //localStorage.setItem('marketplace-category-sort', 'sort-price');
+  //selectedMainSort = localStorage.getItem('marketplace-category-sort');
 
   // pre init filtering
   selectedMainFilter = localStorage.getItem('marketplace-category-filter');
@@ -197,9 +197,11 @@ $(document).ready(function() {
         if (dataNFT[key].item_info) {
           name = dataNFT[key].item_info.name_english
           type = dataNFT[key].item_info.display_type_english
+          rarity = dataNFT[key].item_info.rarity
         } else {
           name = 'goati server error';
           type = 'goati server error';
+          rarity = 'goati server error';
         }
         if (dataNFT[key].img) {
           img = dataNFT[key].img
@@ -220,7 +222,7 @@ $(document).ready(function() {
             id: key,
             item: dataNFT[key].item,
             mint: dataNFT[key].mint,
-            rarity: dataNFT[key].item_info.rarity,
+            rarity: rarity,
             mint_date: mintDateFormatted,
             image: img,
             type: type,
@@ -327,6 +329,7 @@ function filterCategory(category) {
 // On click sorting
 function sortCategory(category) {
 
+  $("#sorting-order-container").show();
   var cat1 = document.getElementById("sort-price");
   var cat2 = document.getElementById("sort-mint-number");
   var cat3 = document.getElementById("sort-rarity");
@@ -657,18 +660,18 @@ function refreshAuctions() {
 
           // tooltip construct
           tooltipAuction = ''
-                      + '• Item: <strong>' + name + '</strong><br><br>'
-                      + '• Price: <strong>' + price + ' ' + quoteSymbol + '</strong><br><br>'
-                      + '• Current owner: <strong><a class="raw-link" href="https://www.22series.com/inventory?#' + creatorAddress + '" target="_blank">' + addressFormated + '</a></strong><br><br>'
-                      + '• Type: <strong>' + type + '</strong><br><br>'
-                      + '• Description: <strong>' + description + '</strong><br><br>'
-                      + '• Sale ends in: <strong>' + hoursleftRaw + '</strong><br><br>'
-                      + '• Mint number: <strong>#' + mintNumber + '</strong><br><br>'
-                      + '• Mint date: <strong>' + mintDateFormatted + '</strong><br><br>'
-                      + '• Rarity: <strong>' + rarity + '</strong><br><br>'
-                      + '• Season: <strong>' + season + '</strong><br><br>'
-                      + '• Mint limit: <strong>' + mintLimit + '</strong><br><br>'
-                      + '• Details: <strong><a class="raw-link" href="https://www.22series.com/part_info?id=' + tokenID + '" target="_blank">See the complete details</a></strong><br><br>';
+                      + '• <strong>Item: </strong>' + name + '<br><br>'
+                      + '• <strong>Price: </strong>' + price + ' ' + quoteSymbol + '<br><br>'
+                      + '• <strong>Current owner: </strong><a class="raw-link" href="https://www.22series.com/inventory?#' + creatorAddress + '" target="_blank">' + addressFormated + '</a><br><br>'
+                      + '• <strong>Type: </strong>' + type + '<br><br>'
+                      + '• <strong>Description: </strong>' + description + '<br><br>'
+                      + '• <strong>Sale ends in: </strong>' + hoursleftRaw + '<br><br>'
+                      + '• <strong>Mint number: </strong>#' + mintNumber + '<br><br>'
+                      + '• <strong>Mint date: </strong>' + mintDateFormatted + '<br><br>'
+                      + '• <strong>Rarity: </strong>' + rarity + '<br><br>'
+                      + '• <strong>Season: </strong>' + season + '<br><br>'
+                      + '• <strong>Mint limit: </strong>' + mintLimit + '<br><br>'
+                      + '• <strong>Details: </strong><a class="raw-link" href="https://www.22series.com/part_info?id=' + tokenID + '" target="_blank">See the complete details</a><br><br>';
 
           document.getElementById("tooltip_" + [i]).innerHTML = tooltipAuction;
 
@@ -776,7 +779,6 @@ function refreshAuctions() {
     if (initialLoad == 0) {
       var cat1 = document.getElementById("filter-all-items");
       cat1.classList.add("category-current");
-      localStorage.setItem('marketplace-category-filter', 'filter-all-items');
       localStorage.setItem('marketplace-category-filter', 'filter-all-items');
       selectedMainFilter = localStorage.getItem('marketplace-category-filter');
       initialLoad = 1;
@@ -921,6 +923,7 @@ function confirmBuyNFT(quoteSymbol, idNFT, priceNFT, nameNFT, mintNFT, mindDateN
     descText = 'You are going to cancel the sale of <strong>'
     titleText = 'NFT cancel sale confirmation'
     buttonCancelText = 'Cancel NFT sale'
+    actionText = ' and currently in sale for ';
     buyerFee = 0;
     finalFee = 0;
     feeText = ''
@@ -928,6 +931,7 @@ function confirmBuyNFT(quoteSymbol, idNFT, priceNFT, nameNFT, mintNFT, mindDateN
     descText = 'You are going to buy <strong>'
     titleText = 'NFT buy confirmation'
     buttonCancelText = 'Buy NFT'
+    actionText = ' for ';
     buyerFee = 0.02;
     if (roundDown((priceNFT*buyerFee),2) < 0.10) {
       finalFee = 0.1
@@ -940,7 +944,7 @@ function confirmBuyNFT(quoteSymbol, idNFT, priceNFT, nameNFT, mintNFT, mindDateN
 
   contentBootbox = descText
       + nameNFT + '</strong> • Mint <strong>#' + mintNFT + '</strong> • Minted on <strong>' + mindDateNFT
-      + '</strong> for <strong>'
+      + '</strong> ' + actionText + ' <strong>'
       + numberWithCommas(parseFloat(priceNFT))
       + ' ' + quoteSymbol + ' </strong>' + feeText;
   dialog = bootbox.confirm({

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Rubik');
+
 
 .nav > li > a {
     padding: 15px;
@@ -394,7 +394,7 @@ html {
 }
 
 body {
-    font-family: "Rubik";
+    font-family: 'Rubik', sans-serif;
     background-image: url('../img/background.png');
     background-repeat: no-repeat;
     background-color: white;
@@ -439,7 +439,7 @@ body {
 
 .wallet-subtitle {
     font-size: 1.8em;
-    font-weight: 600;
+    font-weight: 700;
     color: white;
 }
 
@@ -622,7 +622,7 @@ ul.nav.nav-pills {
 .tab-title {
     font-size: 25px;
     padding-bottom: 20px;
-    font-family: "Rubik";
+    font-family: 'Rubik', sans-serif;
     color: #7C95AB;
     margin-top: 0;
 }
@@ -630,7 +630,7 @@ ul.nav.nav-pills {
 .send-label {
     font-size: 2em;
     padding-bottom: 20px;
-    font-family: "Rubik";
+    font-family: 'Rubik', sans-serif;
 }
 
 .table-responsive {
@@ -1487,7 +1487,7 @@ ul.nav.nav-pills {
     margin: 0;
     height: 1em;
     margin-right: 1em;
-    margin-left: 1em;
+    margin-left: -2em;
 }
 
 #select-nft {
@@ -1721,7 +1721,7 @@ ul.nav.nav-pills {
   transition: background .25s ease-in-out,color .25s ease-in-out;
   display: inline-block;
   font-size: .8em;
-  font-weight: 600;
+  font-weight: 500;
   border-color: #17B0E7;
   border-width: 2px;
 }
@@ -1795,7 +1795,7 @@ ul.nav.nav-pills {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: 800;
-  font-family: Rubik;
+  font-family: 'Rubik', sans-serif;
 }
 
 #current-balances {
@@ -1889,6 +1889,10 @@ ul.nav.nav-pills {
     text-align: left;
 }
 
+li.enabled._msddli_ input.checkbox {
+    cursor: pointer;
+}
+
 #select-id_child ul {
     list-style: none;
     margin-top: 16em;
@@ -1896,7 +1900,7 @@ ul.nav.nav-pills {
     width: 125%;
     margin-left: -15%;
     padding-top: 1em;
-    padding-left: 1em;
+    padding-left: 4em;
 }
 
 .dark-mode #select-id_child ul, .dark-mode #select-nft_child ul {
@@ -1917,6 +1921,17 @@ ul.nav.nav-pills {
     line-height: 2.5em;
     flex: 1;
     flex-basis: 20%;
+    opacity: 1;
+}
+
+#marketplace #sell-nft {
+    border: 2px solid #333!important;
+    color: #fff;
+}
+
+.dark-mode #marketplace #sell-nft {
+    border: 2px solid white !important;
+    color: #333;
 }
 
 #marketplace #nft-category {
