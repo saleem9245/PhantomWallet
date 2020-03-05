@@ -537,7 +537,7 @@
 
                         $.post('/sendrawtx',
                             {
-                                fungible: 'False', token: symbol, id: nftId, dest: addressTo.value, chain: selected_chain , destChain: selectedDestinationChain, isName: isName
+                                fungible: 'False', token: symbol, id: nftId[0], dest: addressTo.value, chain: selected_chain , destChain: selectedDestinationChain, isName: isName
                             },
                             function (returnedData) {
                               if (returnedData !== "") {
