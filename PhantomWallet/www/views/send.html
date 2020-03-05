@@ -92,8 +92,9 @@
                     </div>
                     <div class="form-group" id="nft-id-group" hidden>
                         <h4 class="control-label send-label">Step 3) Select NFT</h4>
-                        <select id="select-id"></select>
+                        <select id="select-id" multiple></select>
                     </div>
+                    <div class="col-md-12" style="margin:1em auto;" id="multiple-nft-selected"><span style="font-style:italic"> Note: a single NFT is selected.</span></div>
                     <button class="btn-primary prevBtn btn-lg button" type="button">PREVIOUS</button>
                     <button class="btn-primary nextBtn btn-lg button" type="button" id="amount-next">NEXT</button>
                 </div>
@@ -442,7 +443,13 @@
         if (isFungible) {
           descNFTConfirm = '';
         } else {
-          descNFTConfirm = ' - ' + $("#select-id option:selected").text();
+          descNFTConfirm = ' ' + $("#select-id option:selected").text();
+          var oHandler = $('#select-id').msDropDown();
+          if (oHandler[0].selectedOptions.length > 1) {
+            bulkTransfer = true;
+          } else {
+            bulkTransfer = false;
+          }
         }
 
         $('#sendSpinner').show();
@@ -473,6 +480,7 @@
                     var amount = document.getElementById("amount");
                     var addressTo = document.getElementById("destination");
                     if (isFungible) {
+
                         $.post('/sendrawtx',
                             {
                                 fungible: 'True', token: symbol, amount: amount.value, dest: addressTo.value, chain: selected_chain , destChain: selectedDestinationChain, isName: isName
@@ -490,7 +498,42 @@
                             $('#sendSpinner').hide();
                             console.log("error");
                             });
+
                     } else {
+
+                      if (bulkTransfer) {
+
+                        nftIdArr = []
+
+                        var oHandler = $('#select-id').msDropDown();
+                        for (i = 0; i < (oHandler[0].selectedOptions.length); i++) {
+                          nftIdArr.push ({
+                              id: oHandler[0].selectedOptions[i].value
+                          });
+                        }
+
+
+                        $.post('/sendmultiplenft',
+                            {
+                                token: symbol, id: JSON.stringify(nftIdArr), dest: addressTo.value, chain: selected_chain , destChain: selectedDestinationChain, isName: isName
+                            },
+                            function (returnedData) {
+                              if (returnedData !== "") {
+                                  //$('#sendSpinner').hide();
+                                  window.location.replace("/waiting/" + returnedData);
+                              } else {
+                                  //$('#sendSpinner').hide();
+                                  window.location.replace("/error");
+                              }
+                              console.log(returnedData);
+                            }).fail(function() {
+                            $('#sendSpinner').hide();
+                            console.log("error nft");
+                        });
+
+
+                      } else {
+
                         $.post('/sendrawtx',
                             {
                                 fungible: 'False', token: symbol, id: nftId, dest: addressTo.value, chain: selected_chain , destChain: selectedDestinationChain, isName: isName
@@ -508,6 +551,9 @@
                             $('#sendSpinner').hide();
                             console.log("error nft");
                         });
+
+                      }
+
                     }
 
                 } else {
@@ -557,6 +603,7 @@
             if ('{{Symbol}}' === selected_symbol && selected_chain === '{{ChainName}}') {
                 max_amount = numberWithCommas('{{Amount}}');
                 if ('{{Fungible}}' === 'False') {
+                    $("#multiple-nft-selected").show();
                     isFungible = false;
                     $('#amountGroup').hide();
                     $('#nft-id-group').show();
@@ -572,11 +619,32 @@
                       } else {
                         name = sendcustomNFT[i].name
                       }
-                      nftIds.append($('<option>', { value: sendcustomNFT[i].id, "data-image": sendcustomNFT[i].image, text: name + ' • Mint #' + sendcustomNFT[i].mint + ' • ' + sendcustomNFT[i].type + ' • ' + rarity}));
+                      if (i == 0) {
+                          nftIds.append($('<option>', { value: sendcustomNFT[i].id, "selected": "selected", "data-image": sendcustomNFT[i].image, text: ' • ' + name + ' | Mint #' + sendcustomNFT[i].mint + ' | ' + sendcustomNFT[i].type + ' | ' + rarity}));
+                      } else {
+                          nftIds.append($('<option>', { value: sendcustomNFT[i].id, "data-image": sendcustomNFT[i].image, text: ' • ' + name + ' | Mint #' + sendcustomNFT[i].mint + ' | ' + sendcustomNFT[i].type + ' | ' + rarity}));
+                      }
                     }
-                    $("#select-id").msDropDown();
+                    $("#select-id").msDropDown({enableCheckbox:true});
+
+                    // Handle dropdown close and trigger text NFT count
+                    var observer = new MutationObserver(function(mutations) {
+                      var oHandler = $('#select-id').msDropDown();
+                      if (oHandler[0].selectedOptions.length > 1) {
+                        document.getElementById("multiple-nft-selected").innerHTML = '<span style="font-style:italic"> Note: a total of ' + oHandler[0].selectedOptions.length + ' NFT are selected.</span>';
+                      } else {
+                        document.getElementById("multiple-nft-selected").innerHTML = '<span style="font-style:italic"> Note: a single NFT is selected.</span>';
+                      }
+
+                    });
+                    var target = document.querySelector('#select-id_child');
+                    observer.observe(target, {
+                      attributes: true
+                    });
+
                     return;
                 } else {
+                    $("#multiple-nft-selected").hide();
                     var existingText = $('#select-token-form option:selected').text();
                     if (!existingText.includes(max_amount)) {
                         $('#select-token-form option:selected').text(existingText + " - " + max_amount);
@@ -584,6 +652,7 @@
                     $('#amountGroup').show();
                     $('#nft-id-group').hide();
                     isFungible = true;
+
                 }
             }
 		    {{/each}}

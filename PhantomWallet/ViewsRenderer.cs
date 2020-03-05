@@ -249,6 +249,8 @@ namespace Phantom.Wallet
 
             TemplateEngine.Server.Post("/redeemnft", RouteRedeemNFT);
 
+            TemplateEngine.Server.Post("/sendmultiplenft", RouteSendMultipleNFT);
+
             foreach (var entry in MenuEntries)
             {
                 var url = $"/{entry.Id}";
@@ -505,6 +507,37 @@ namespace Phantom.Wallet
             string result;
 
             result = AccountController.TransferTokensNFTRedeem(keyPair, addressTo, chainName, symbol, id).Result;
+
+            ResetSessionSendFields(request);
+
+            if (!SendUtils.IsTxHashValid(result))
+            {
+                PushError(request, result);
+                Log.Information("No valid result");
+                return "";
+            }
+
+            return result;
+        }
+
+        private object RouteSendMultipleNFT(HTTPRequest request)
+        {
+
+            var addressTo = request.GetVariable("dest");
+
+            var chainName = request.GetVariable("chain");
+            var destinationChain = request.GetVariable("destChain");
+
+            var symbol = request.GetVariable("token");
+            var id = request.GetVariable("id");
+
+            var isName = bool.Parse(request.GetVariable("isName"));
+
+            var keyPair = GetLoginKey(request);
+            InvalidateCache(keyPair.Address);
+            string result;
+
+            result = AccountController.TransferMultipleNFT(keyPair, addressTo, chainName, symbol, id, isName).Result;
 
             ResetSessionSendFields(request);
 

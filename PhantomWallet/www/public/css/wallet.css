@@ -1487,6 +1487,7 @@ ul.nav.nav-pills {
     margin: 0;
     height: 1em;
     margin-right: 1em;
+    margin-left: 1em;
 }
 
 #select-nft {
@@ -1527,6 +1528,26 @@ ul.nav.nav-pills {
 
 #select-id_msdd:hover, #select-nft_msdd:hover {
     cursor: pointer;
+}
+
+#select-id_msdd ._msddli_:hover {
+    background-color: #efefef;
+}
+
+.dark-mode #select-id_msdd ._msddli_:hover {
+    background-color: #999;
+}
+
+.ddTitleText {
+    padding: 2em;
+}
+
+.ddTitleText:hover {
+    background-color: #efefef;
+}
+
+.dark-mode .ddTitleText:hover {
+    background-color: #999;
 }
 
 .nft-class {

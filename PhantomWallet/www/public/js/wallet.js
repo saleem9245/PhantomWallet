@@ -170,7 +170,6 @@ $(document).ready(function() {
 
             if (document.getElementById("version")) {
               if (document.getElementById("version").innerHTML != data[0].latest) {
-                console.log('allgood')
                 document.getElementById("new-version").innerHTML = '<strong>Phantom Wallet new version available!</strong><br>You should update your version to benefit from all the latest features & fixes.<br>Head over here: <a href="https://github.com/merl111/PhantomWallet/releases/tag/v' + data[0].latest + '" target="_blank">Phantom Wallet v' + data[0].latest + '</a>'
                 $("#new-version").show();
               }
