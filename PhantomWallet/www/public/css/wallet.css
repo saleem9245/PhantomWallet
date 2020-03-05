@@ -431,6 +431,10 @@ body {
     cursor: pointer;
 }
 
+.fa-info-circle:hover {
+  cursor: pointer;
+}
+
 .wallet-title {
     font-size: 2em;
     font-weight: bold;
