@@ -14,7 +14,7 @@
             </div>
             <div class="col-md-6 center container-prize" style="margin-top:-6em;">
               <h3 style="margin-bottom:0;">Total Items</h3>
-              <div class="prizepool" id="prizepool">XXX NFTs</div>
+              <div class="prizepool" style="display:inline-block;" id="prizepool">XXX NFTs</div><i class="tooltip fas fa-info-circle" id="tooltip-stats-container" style="display:none;margin-left:1em;width:1em;vertical-align:super;" data-tooltip-content="#tooltip_stats"></i>
             </div>
             <div class="col-md-12 center nft-cat-headers" style="margin-top:-2em;">
               <div id="current-balances">
@@ -41,7 +41,7 @@
                   <div class="category sort" id="sort-rarity" data-sort="rarityFilter" onclick="sortCategory(this.id)"><i class="tooltip fas fa-gem" data-tooltip-content="#tooltip_rarity"></i>Rarity</div>
                 </div>
               </div>
-              <div style="display:inline-block;display:none;margin-left:1em;" id="sorting-order-container">
+              <div style="display:inline-block;opacity:0;margin-left:1em;" id="sorting-order-container">
                 <i id="sorting-order" onclick="sortCategory(this.id)" class="fas fa-2x fa-sort-numeric-down"></i>
               </div>
             </div>
@@ -69,7 +69,7 @@
 
 <div class="tooltip_templates">
     <span id="tooltip_fees">
-        Placing an item to sell incurs 0 fees (except the KCAL transaction fee).<br>Cancelling an item sale incurs 0 fees (except the KCAL transaction fee). To cancel, simply click on it.<br>Buying an item costs the price listed plus 2% fees, paid in the item's quote currency (rounded down, and with a minimum of 0.10).<br>Example 1: you're <u>selling</u> one Phantasma car for 10,000 SOUL, you will get 10,000 SOUL.<br>Example 2: you're <u>buying</u> one Phantasma car for 10,000 SOUL, you pay 10,000 SOUL plus a fee of 200 SOUL to get the item.
+        Placing an item to sell incurs 0 fees (except the KCAL transaction fee).<br>Cancelling an item sale incurs 0 fees (except the KCAL transaction fee). To cancel, simply click on the item to cancel and comfirm.<br>Buying an item costs the price listed plus 2% fees, paid in the item's quote currency (rounded down, and with a minimum of 0.1).<br>Example 1: you're <u>selling</u> one Phantasma car for 10,000 SOUL, you will get 10,000 SOUL.<br>Example 2: you're <u>buying</u> one Phantasma car for 10,000 SOUL, you pay 10,000 SOUL plus a fee of 200 SOUL to get the item.
     </span>
 </div>
 
@@ -81,6 +81,11 @@
 
 <div class="tooltip_templates">
     <div id="tooltip_"></div>
+</div>
+
+<div class="tooltip_templates">
+    <span id="tooltip_stats">
+    </span>
 </div>
 
 <script>
@@ -120,7 +125,7 @@ $(document).ready(function() {
   getAuctions();
 
   // init tooltipster i
-  $('i.tooltip').tooltipster({
+  $('.referral-nft i.tooltip').tooltipster({
     theme: 'tooltipster-noir',
     contentCloning: true,
     interactive: true,
@@ -329,7 +334,7 @@ function filterCategory(category) {
 // On click sorting
 function sortCategory(category) {
 
-  $("#sorting-order-container").show();
+  $("#sorting-order-container").fadeTo("fast", 1);
   var cat1 = document.getElementById("sort-price");
   var cat2 = document.getElementById("sort-mint-number");
   var cat3 = document.getElementById("sort-rarity");
@@ -360,6 +365,271 @@ function sortCategory(category) {
   selectedMainSort = category;
   // launch refresh auctions once sorting has been selected
   refreshAuctions();
+
+}
+
+function getStats() {
+
+  $.get('https://neoeconomy.io/json/marketplacetransactions.json',
+
+    function (data) {
+
+      //console.log(data)
+
+      var now = new Date();
+
+      totalUniqueUsers = [...new Set(data.map(item => item.address))].length;
+      totalUsers = data.length;
+
+      totalItems = mergedAuctionsFinal.length
+      totalItemsOnSale = mergedAuctionsFinalNotExpired.length
+      totalItemsExpired = (mergedAuctionsFinal.length) - (mergedAuctionsFinalNotExpired.length)
+
+      currentDay = (now.getTime())/1000;
+      startingDay = data[0].time;
+      daysElapsed = (currentDay - startingDay) / 60 / 60 / 24;
+      txPerDay = (totalUsers/daysElapsed).toFixed(2);
+
+      totalUsersLastDay = 0
+      totalUsersBeforeLastDay = 0
+      tempUsersArray = []
+      tempUsersBeforeArray = []
+      for (var i = 0; i < totalUsers; i++) {
+        if (data[i].time > (currentDay - 86400)) {
+          totalUsersLastDay++
+          tempUsersArray.push({
+              time: data[i].time,
+              hash: data[i].hash,
+              address: data[i].address
+          });
+        }
+        if ((data[i].time > (currentDay - (86400*2))) && (data[i].time < (currentDay - (86400)))) {
+          totalUsersBeforeLastDay++
+          tempUsersBeforeArray.push({
+              time: data[i].time,
+              hash: data[i].hash,
+              address: data[i].address
+          });
+        }
+      }
+      totalUniqueUsersLastDay = [...new Set(tempUsersArray.map(item => item.address))].length;
+      totalUniqueUsersBeforeLastDay = [...new Set(tempUsersBeforeArray.map(item => item.address))].length;
+
+      if ((((totalUsersLastDay/totalUsersBeforeLastDay) * 100).toFixed(2) - 100) > 0) {
+        totalUsersLastDayChange = '+' + (((totalUsersLastDay/totalUsersBeforeLastDay) * 100).toFixed(2) - 100).toFixed(2) + '%';
+      } else {
+        totalUsersLastDayChange = (((totalUsersLastDay/totalUsersBeforeLastDay) * 100).toFixed(2) - 100).toFixed(2) + '%';
+      }
+
+      if ((((totalUniqueUsersLastDay/totalUniqueUsersBeforeLastDay) * 100).toFixed(2) - 100) > 0) {
+        totalUniqueUsersLastDayChange = '+' + (((totalUniqueUsersLastDay/totalUniqueUsersBeforeLastDay) * 100).toFixed(2) - 100).toFixed(2) + '%';
+      } else {
+        totalUniqueUsersLastDayChange = (((totalUniqueUsersLastDay/totalUniqueUsersBeforeLastDay) * 100).toFixed(2) - 100).toFixed(2) + '%';
+      }
+
+      if ((((totalUsersLastDay/totalUsersBeforeLastDay) * 100).toFixed(2) - 100) > 0) {
+        totalUsersLastDayChangeClass = '#3e8700'
+      } else if ((((totalUsersLastDay/totalUsersBeforeLastDay) * 100).toFixed(2) - 100) == 0.00) {
+        totalUsersLastDayChangeClass = 'blue'
+      } else {
+        totalUsersLastDayChangeClass = 'red'
+      }
+
+      if ((((totalUniqueUsersLastDay/totalUniqueUsersBeforeLastDay) * 100).toFixed(2) - 100) > 0) {
+        totalUniqueUsersLastDayChangeClass = '#3e8700'
+      } else if ((((totalUniqueUsersLastDay/totalUniqueUsersBeforeLastDay) * 100).toFixed(2) - 100) == 0.00) {
+        totalUniqueUsersLastDayChangeClass = 'blue'
+      } else {
+        totalUniqueUsersLastDayChangeClass = 'red'
+      }
+
+      dataTooltipStats = ''
+        + '<div class="center" style="font-size:.9;margin-top:1em;">'
+        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span style="color:#ccc;">TOTAL ITEMS</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalItems) + '<span></span></span></div>'
+        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span style="color:#ccc;">ITEMS ON SALE</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalItemsOnSale) + '<span></span></span></div>'
+        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span style="color:#ccc;">ITEMS EXPIRED</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalItemsExpired) + '<span></span></span></div><br>'
+        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span style="color:#ccc;">TOTAL SALES</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalUsers) + '<span></span></span></div>'
+        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span style="color:#ccc;">TOTAL UNIQUE USERS</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalUniqueUsers) + '<span></span></span></div>'
+        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span style="color:#ccc;">SALES PER DAY</span><br><span style="font-size: 1.5em;">' + numberWithCommas(txPerDay) + '<span></span></span></div><br>'
+        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span style="color:#ccc;">24H SALES</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalUsersLastDay) + ' <span style="font-size:.8em;color:' + totalUsersLastDayChangeClass + '">' + totalUsersLastDayChange + '</span><span></span></span></div>'
+        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span style="color:#ccc;">24H UNIQUE USERS</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalUniqueUsersLastDay) + ' <span style="font-size:.8em;color:' + totalUniqueUsersLastDayChangeClass + '">' + totalUniqueUsersLastDayChange + '</span><span></span></span></div><br>'
+        + '<div style="margin-bottom:1em;display:inline-block;"><div id="container-tx-historical" style="height: 320px;width: 400px;z-index:999; margin: 0 auto"></div></div>'
+        + '</div>';
+
+      document.getElementById("tooltip_stats").innerHTML = dataTooltipStats;
+
+      $('#tooltip-stats-container').show('fast');
+
+      $.getJSON('https://neoeconomy.io/json/marketplacetransactionsdaily.json', function(data) {
+
+          var ohlc = [],
+              ohlc2 = [],
+              dataLength = data.length,
+              i = 0,
+              amountTotal = 0;
+          for (i; i < dataLength; i += 1) {
+              ohlc.push([
+                  data[i].time * 1000,
+                  parseFloat(data[i].amount),
+              ]);
+              amountTotal += parseFloat(data[i].amount)
+              ohlc2.push([
+                  data[i].time * 1000,
+                  amountTotal
+              ]);
+          }
+
+          Highcharts.setOptions({
+              lang: {
+                  rangeSelectorZoom: ''
+              }
+          });
+
+          Highcharts.stockChart('container-tx-historical', {
+              title: {
+                  text: 'Historical Marketplace Transactions',
+                  style: {
+                      fontFamily: 'Rubik',
+                      color: "#fff"
+                  }
+              },
+              chart: {
+                  backgroundColor: 'transparent',
+                  style: {
+                      fontFamily: 'Rubik',
+                      color: "#fff"
+                  }
+              },
+              xAxis: {
+                type: 'datetime',
+                labels: {
+                  formatter: function() {
+                    return Highcharts.dateFormat('%d %b %Y', this.value);
+                  },
+                  style: {
+                      fontFamily: 'Rubik',
+                      color: "#fff"
+                  }
+                }
+              },
+              yAxis: [{
+                  gridLineWidth: 0,
+                  minorGridLineWidth: 0,
+                  labels: {
+                      formatter: function() {
+                          return this.axis.defaultLabelFormatter.call(this);
+                      },
+                      style: {
+                          fontFamily: 'Rubik',
+                          color: "#fff"
+                      }
+                  },
+                  min: 0,
+                  opposite: false
+              },{
+                  labels: {
+                      formatter: function() {
+                          return this.axis.defaultLabelFormatter.call(this);
+                      },
+                      style: {
+                          fontFamily: 'Rubik',
+                          color: "#fff",
+                      }
+                  },
+                  opposite: true,
+                  min: 0,
+                  gridLineWidth: 0,
+                  minorGridLineWidth: 0
+              }],
+              navigator: {
+                  enabled: false
+              },
+              scrollbar: {
+                  enabled: false
+              },
+              rangeSelector: {
+                  selected: 0,
+                  enabled: false
+              },
+              legend: {
+                  enabled: true,
+                  itemStyle: {
+                    fontFamily: 'Rubik',
+                    color: "#fff",
+                    fontWeight: "Light"
+                  }
+              },
+              credits: {
+                  enabled: false
+              },
+              exporting: {
+                  enabled: false
+              },
+              plotOptions: {
+                  area: {
+                      marker: {
+                          radius: 4
+                      },
+                      lineWidth: 3,
+                      states: {
+                          hover: {
+                              lineWidth: 1
+                          }
+                      },
+                      threshold: null
+                  }
+              },
+              tooltip: {
+                  shared: true,
+                  split: false,
+                  formatter: function() {
+                      var s = Highcharts.dateFormat('%A, %b %d, %Y - %H:%M', new Date(this.x));
+                      $.each(this.points, function(i, point) {
+                          s += '<br/><span style="color:' + point.color + '">\u25CF</span> ' + point.series.name + ' <b>' + Highcharts.numberFormat(point.y, 0, '.', ',') + '</b>';
+                      });
+                      return s;
+                  }
+              },
+              series: [{
+                  type: 'area',
+                  name: 'Daily Transactions',
+                  data: ohlc,
+                  color: '#17B0E7',
+                  fillColor: {
+                      linearGradient: {
+                          x1: 1,
+                          y1: 1,
+                          x2: 1,
+                          y2: 1
+                      },
+                      stops: [
+                          [0, '#fff'],
+                          [1, '#fff']
+                      ]
+                  }
+              },{
+                  type: 'area',
+                  name: 'Total Transactions',
+                  yAxis: 1,
+                  data: ohlc2,
+                  color: '#FFBF32',
+                  fillOpacity: 0
+              }]
+          });
+
+          // init tooltipster i after highcharts loaded
+          $('i#tooltip-stats-container').tooltipster({
+            theme: 'tooltipster-noir',
+            contentCloning: true,
+            interactive: true,
+            side: 'bottom'
+          });
+
+      });
+
+    }
+  )
+
 
 }
 
@@ -396,6 +666,9 @@ function getAuctions() {
         mergedAuctionsFinalNotExpired.sort((a,b) => (a.startDate < b.startDate) ? 1 : ((b.startDate < a.startDate) ? -1 : 0));
 
         auctionsDetailsAPINFT = mergedAuctionsFinal;
+
+        // start marketplace stats
+        getStats();
 
         // Start building the tooltip
         for (i = 0; i < lenAuctions; i += 1) {
