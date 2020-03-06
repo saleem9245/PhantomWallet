@@ -199,10 +199,10 @@ $(document).ready(function() {
         return Object.assign(result, current);
       }, {});
 
-      // temp map to array
-      dataNFT = $.map(dataNFT, function(value, index) { return [value]; });
+      // temp map to array & add id to array
+      dataNFT = $.map(dataNFT, function(value, index) { value.id = index; return value; });
 
-      // double sort
+      // double sort item & mint
       dataNFT.sort(function (a, b) {
 
         if (a.item > b.item) return 1;
@@ -213,45 +213,48 @@ $(document).ready(function() {
 
       });
 
-      Object.keys(dataNFT).forEach(key => {
-        if (dataNFT[key].item_info) {
-          name = dataNFT[key].item_info.name_english
-          type = dataNFT[key].item_info.display_type_english
-          rarity = dataNFT[key].item_info.rarity
-        } else {
-          name = 'goati server error';
-          type = 'goati server error';
-          rarity = 'goati server error';
-        }
-        if (dataNFT[key].img) {
-          img = dataNFT[key].img
+      // pre sort by item high first
+      let byThis = 'item';
+      let compare = (k, kk) => dataNFT[kk][byThis] - dataNFT[k][byThis];
+      preSorteddataNFT = Object.keys(dataNFT).sort(compare);
+
+      for (i = 0; i < preSorteddataNFT.length; i++) {
+
+        rarity = '';
+        mint = '';
+        mintdate = '';
+        id = '';
+        type = '';
+        item = '';
+        img = '';
+        mintDateFormatted = '';
+        name = 'goati server error';
+
+        if (dataNFT[preSorteddataNFT[i]].img) {
+          img = dataNFT[preSorteddataNFT[i]].img
         } else {
           img = '/img/nft_notfound.png';
         }
-        if (dataNFT[key].timestamp) {
-          mint_date = dataNFT[key].timestamp
+        if (dataNFT[preSorteddataNFT[i]].timestamp) {
+          mint_date = dataNFT[preSorteddataNFT[i]].timestamp
           var date = new Date(mint_date * 1000);
           var year = date.getFullYear();
           var month = ("0" + (date.getMonth() + 1)).slice(-2)
           var day = ("0" + (date.getDate() + 1)).slice(-2)
           mintDateFormatted = year + "-" + month + "-" + day;
-        } else {
-          mint_date = '';
         }
         sellCustomNFT.push({
-            id: key,
-            item: dataNFT[key].item,
-            mint: dataNFT[key].mint,
-            rarity: rarity,
+            id: dataNFT[preSorteddataNFT[i]].id,
+            item: dataNFT[preSorteddataNFT[i]].item,
+            mint: dataNFT[preSorteddataNFT[i]].mint,
+            rarity: dataNFT[preSorteddataNFT[i]].item_info.rarity,
             mint_date: mintDateFormatted,
             image: img,
-            type: type,
-            name: name
+            type: dataNFT[preSorteddataNFT[i]].item_info.display_type_english,
+            name: dataNFT[preSorteddataNFT[i]].item_info.name_english
         });
-        sellCustomNFT.sort(function(a, b) {
-          return b.item- a.item;
-        })
-      });
+
+      };
 
       $("#sell-nft").fadeTo("slow", 1);
       $("#sell-nft-tooltip").fadeTo("slow", 1);
@@ -461,13 +464,13 @@ function getStats() {
       dataTooltipStats = ''
         + '<div class="center" style="font-size:.9;margin-top:1em;">'
         + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span style="color:#ccc;">TOTAL ITEMS</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalItems) + '<span></span></span></div>'
-        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span style="color:#ccc;">ITEMS ON SALE</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalItemsOnSale) + '<span></span></span></div>'
+        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span style="color:#ccc;">ITEMS AVAILABLE</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalItemsOnSale) + '<span></span></span></div>'
         + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span style="color:#ccc;">ITEMS EXPIRED</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalItemsExpired) + '<span></span></span></div><br>'
-        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span style="color:#ccc;">TOTAL SALES</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalUsers) + '<span></span></span></div>'
-        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span style="color:#ccc;">TOTAL UNIQUE USERS</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalUniqueUsers) + '<span></span></span></div>'
-        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span style="color:#ccc;">SALES PER DAY</span><br><span style="font-size: 1.5em;">' + numberWithCommas(txPerDay) + '<span></span></span></div><br>'
-        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span style="color:#ccc;">24H SALES</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalUsersLastDay) + ' <span style="font-size:.8em;color:' + totalUsersLastDayChangeClass + '">' + totalUsersLastDayChange + '</span><span></span></span></div>'
-        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span style="color:#ccc;">24H UNIQUE USERS</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalUniqueUsersLastDay) + ' <span style="font-size:.8em;color:' + totalUniqueUsersLastDayChangeClass + '">' + totalUniqueUsersLastDayChange + '</span><span></span></span></div><br>'
+        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span style="color:#ccc;">TOTAL TRANSACTIONS</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalUsers) + '<span></span></span></div>'
+        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span style="color:#ccc;">TOTAL USERS</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalUniqueUsers) + '<span></span></span></div>'
+        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span style="color:#ccc;">AVERAGE TX PER DAY</span><br><span style="font-size: 1.5em;">' + numberWithCommas(txPerDay) + '<span></span></span></div><br>'
+        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span style="color:#ccc;">24H TRANSACTIONS</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalUsersLastDay) + ' <span style="font-size:.8em;color:' + totalUsersLastDayChangeClass + '">' + totalUsersLastDayChange + '</span><span></span></span></div>'
+        + '<div style="display:inline-block;margin-bottom:1.5em;margin-left:1em;margin-right:1em;line-height: 1.2em;"><span style="color:#ccc;">24H USERS</span><br><span style="font-size: 1.5em;">' + numberWithCommas(totalUniqueUsersLastDay) + ' <span style="font-size:.8em;color:' + totalUniqueUsersLastDayChangeClass + '">' + totalUniqueUsersLastDayChange + '</span><span></span></span></div><br>'
         + '<div style="margin-bottom:1em;display:inline-block;"><div id="container-tx-historical" style="height: 320px;width: 400px;z-index:999; margin: 0 auto"></div></div>'
         + '</div>';
 
@@ -965,7 +968,7 @@ function refreshAuctions() {
 
           // auction contstruct
           fetchAuctions += '<li><div class="nft-class">'
-            + '<div class="nft-image" style="width:105%;" onclick="confirmBuyNFT(\'' + quoteSymbol + '\',\'' + tokenID + '\',\'' + priceRaw + '\',\'' + name + '\',\'' + mintNumber + '\',\'' + mintDateFormatted + '\',\'' + creatorAddress + '\')">'
+            + '<div class="nft-image" style="width:24em;" onclick="confirmBuyNFT(\'' + quoteSymbol + '\',\'' + tokenID + '\',\'' + priceRaw + '\',\'' + name + '\',\'' + mintNumber + '\',\'' + mintDateFormatted + '\',\'' + creatorAddress + '\')">'
             +   '<button class="nft-order circulating">' + hoursleft + '</button>'
             +   '<button class="nft-order supply priceFilter ' + cancelClass + '">' + priceFormatted + '</button>'
             +   '<img src="' + image + '?width=512" alt="" style="height:12em;padding-top:3em;">'
@@ -1002,7 +1005,7 @@ function refreshAuctions() {
 
     // fill total items container on initial load
     if (initialLoad == 0) {
-        document.getElementById("prizepool").innerHTML = mergedAuctionsFinalNotExpired.length + ' NFTs';
+        document.getElementById("prizepool").innerHTML = numberWithCommas(mergedAuctionsFinalNotExpired.length) + ' NFTs';
     }
 
     // start list js based on item-filter values

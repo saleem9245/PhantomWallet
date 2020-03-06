@@ -276,6 +276,9 @@
   #marketplace #nft-category {
     width: 100% !important;
   }
+  #marketplace .category {
+    padding: 4px 2px !important;
+  }
 }
 
 @media screen and (max-width: 1500px) {
@@ -1659,7 +1662,6 @@ ul.nav.nav-pills {
   -ms-transition: 0.5s;
   -moz-transition: 0.5s;
   -webkit-transition: 0.5s;
-  min-width: 22em;
 }
 
 .nft-class .nft-image {
@@ -1882,6 +1884,15 @@ ul.nav.nav-pills {
 #lottery-odds {
     margin-left: 1em;
     border-bottom: 1px solid #8a6d3b;
+}
+
+#select-id_msdd {
+  margin: 2em auto;
+}
+
+#select-id_title {
+  border: 2px solid #efefef;
+  border-radius: 2em;
 }
 
 ._msddli_ img, #select-id_title img, #select-nft_title img {

@@ -240,10 +240,10 @@ $(document).ready(function() {
         return Object.assign(result, current);
       }, {});
 
-      // temp map to array
-      dataNFT = $.map(dataNFT, function(value, index) { return [value]; });
+      // temp map to array & add id to array
+      dataNFT = $.map(dataNFT, function(value, index) { value.id = index; return value; });
 
-      // double sort
+      // double sort item & mint
       dataNFT.sort(function (a, b) {
 
       	if (a.item > b.item) return 1;
@@ -254,7 +254,7 @@ $(document).ready(function() {
 
       });
 
-      // get pre sorted keys
+      // pre sort by item high first
       let byThis = 'item';
       let compare = (k, kk) => dataNFT[kk][byThis] - dataNFT[k][byThis];
       preSorteddataNFT = Object.keys(dataNFT).sort(compare);
@@ -263,12 +263,18 @@ $(document).ready(function() {
 
         rarity = '';
         mint = '';
+        id = '';
+        type = '';
+        item = '';
+        img = '';
+        name = 'goati server error';
 
         if (dataNFT[preSorteddataNFT[i]].item_info) {
+          if (dataNFT[preSorteddataNFT[i]].id) {
+            id = dataNFT[preSorteddataNFT[i]].id;
+          }
           if (dataNFT[preSorteddataNFT[i]].item_info.name_english) {
             name = (dataNFT[preSorteddataNFT[i]].item_info.name_english).replace('<br/>', ' • ');
-          } else {
-            name = 'goati server error';
           }
           if (dataNFT[preSorteddataNFT[i]].mint) {
             mint = dataNFT[preSorteddataNFT[i]].mint;
@@ -278,8 +284,6 @@ $(document).ready(function() {
           }
           if (dataNFT[preSorteddataNFT[i]].item_info.display_type_english) {
             type = dataNFT[preSorteddataNFT[i]].item_info.display_type_english
-          } else {
-            type = 'goati server error';
           }
           if (dataNFT[preSorteddataNFT[i]].img) {
             img = dataNFT[preSorteddataNFT[i]].img
@@ -288,17 +292,10 @@ $(document).ready(function() {
           }
           if (dataNFT[preSorteddataNFT[i]].item) {
             item = dataNFT[preSorteddataNFT[i]].item
-          } else {
-            item = 'goati server error';
           }
-        } else {
-          name = '';
-          type = 'goati server error';
-          img = '';
-          item = 'XXX';
         }
 
-        tooltipData += '<div style="width:7em;display:inline-block;text-align:center;margin-right:3em;"><div style="text-align:center;"><img style="height:70px;margin-bottom:.5em;" src="' + img + '?width=256" onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'"></div></div><a href="https://22series.com/part_info?id=' + preSorteddataNFT[i] + '" target="_blank">' + name + ' • Mint #' + mint + ' • ' + type + rarity + '</a><br>'
+        tooltipData += '<div style="width:7em;display:inline-block;text-align:center;margin-right:3em;"><div style="text-align:center;"><img style="height:70px;margin-bottom:.5em;" src="' + img + '?width=256" onerror="this.onerror=null;this.src=\'/img/nft_notfound.png\'"></div></div><a href="https://22series.com/part_info?id=' + id + '" target="_blank">' + name + ' • Mint #' + mint + ' • ' + type + rarity + '</a><br>'
 
       }
 

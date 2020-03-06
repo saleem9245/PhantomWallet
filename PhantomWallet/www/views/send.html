@@ -55,37 +55,37 @@
                             <input class="slider" type="range" min="0" max="1" step="0.01" value="1" style="background-image: -webkit-gradient(linear, 0% 0%, 100% 0%, color-stop(0.0, rgb(23,176,231)), color-stop(0.0, rgb(167, 160, 160)));margin:0;" id="slider-amount">
                             <div class="button-container zero active">
                               <div class="circle-container">
-                                <div class="submit-btn-small">
+                                <div class="submit-btn-small" onclick="updateSliderFixed(0)">
                                 </div>
                               </div>
-                              <div class="button-label">0%</div>
+                              <div class="button-label" onclick="updateSliderFixed(0)">0%</div>
                             </div>
                             <div class="button-container quarter">
                               <div class="circle-container">
-                                <div class="submit-btn-small">
+                                <div class="submit-btn-small" onclick="updateSliderFixed(0.25)">
                                 </div>
                               </div>
-                              <div class="button-label">25%</div>
+                              <div class="button-label" onclick="updateSliderFixed(0.25)">25%</div>
                             </div>
                             <div class="button-container half">
                               <div class="circle-container">
-                                <div class="submit-btn-small">
+                                <div class="submit-btn-small" onclick="updateSliderFixed(0.5)">
                                 </div>
                               </div>
-                              <div class="button-label">50%</div>
+                              <div class="button-label" onclick="updateSliderFixed(0.5)">50%</div>
                             </div>
                             <div class="button-container three-quarter">
                               <div class="circle-container">
-                                <div class="submit-btn-small"></div>
+                                <div class="submit-btn-small" onclick="updateSliderFixed(0.75)"></div>
                               </div>
-                              <div class="button-label">75%</div>
+                              <div class="button-label" onclick="updateSliderFixed(0.75)">75%</div>
                             </div>
                             <div class="button-container max">
                               <div class="circle-container">
-                                <div class="submit-btn-small">
+                                <div class="submit-btn-small" onclick="updateSliderFixed(1)">
                                 </div>
                               </div>
-                              <div class="button-label">100%</div>
+                              <div class="button-label" onclick="updateSliderFixed(1)">100%</div>
                             </div>
                           </div>
                         </div>
@@ -285,48 +285,54 @@
               return Object.assign(result, current);
             }, {});
 
-            // temp map to array
-            dataNFT = $.map(dataNFT, function(value, index) { return [value]; });
+            // temp map to array & add id to array
+            dataNFT = $.map(dataNFT, function(value, index) { value.id = index; return value; });
 
-            // double sort
+            // double sort item & mint
             dataNFT.sort(function (a, b) {
 
-              if (a.item > b.item) return 1;
-              if (a.item < b.item) return -1;
+            	if (a.item > b.item) return 1;
+            	if (a.item < b.item) return -1;
 
-              if (a.mint > b.mint) return 1;
-              if (a.mint < b.mint) return -1;
+            	if (a.mint > b.mint) return 1;
+            	if (a.mint < b.mint) return -1;
 
             });
 
-            Object.keys(dataNFT).forEach(key => {
-              if (dataNFT[key].item_info) {
-                name = dataNFT[key].item_info.name_english
-                type = dataNFT[key].item_info.display_type_english
-                rarity = formatRarity(dataNFT[key].item_info.rarity)
-              } else {
-                name = 'goati server error';
-                type = 'goati server error';
-                rarity = 'goati server error';
-              }
-              if (dataNFT[key].img) {
-                img = dataNFT[key].img
+            // pre sort by item high first
+            let byThis = 'item';
+            let compare = (k, kk) => dataNFT[kk][byThis] - dataNFT[k][byThis];
+            preSorteddataNFT = Object.keys(dataNFT).sort(compare);
+
+            for (i = 0; i < preSorteddataNFT.length; i++) {
+
+              rarity = '';
+              mint = '';
+              id = '';
+              type = '';
+              item = '';
+              img = '';
+              name = 'goati server error';
+
+              if (dataNFT[preSorteddataNFT[i]].img) {
+                img = dataNFT[preSorteddataNFT[i]].img
               } else {
                 img = '/img/nft_notfound.png';
               }
               sendcustomNFT.push({
-                  id: key,
-                  item: dataNFT[key].item,
-                  mint: dataNFT[key].mint,
+                  id: dataNFT[preSorteddataNFT[i]].id,
+                  item: dataNFT[preSorteddataNFT[i]].item,
+                  mint: dataNFT[preSorteddataNFT[i]].mint,
                   image: img,
-                  type: type,
-                  rarity: rarity,
-                  name: name
+                  type: dataNFT[preSorteddataNFT[i]].item_info.display_type_english,
+                  rarity: formatRarity(dataNFT[preSorteddataNFT[i]].item_info.rarity),
+                  name: dataNFT[preSorteddataNFT[i]].item_info.name_english
               });
-              sendcustomNFT.sort(function(a, b) {
-                return b.item- a.item;
-              })
-            });
+              //sendcustomNFT.sort(function(a, b) {
+              //  return b.item- a.item;
+              //})
+
+            };
 
           })
 
@@ -361,6 +367,13 @@
 
     });
 
+    function updateSliderFixed(value) {
+
+      $("#slider-amount").val(value);
+      updateSlider();
+
+    }
+
     function updateSlider() {
 
       if ($("#slider-amount").val() != 0) {
@@ -376,25 +389,25 @@
       }
       var backgroundImg = '-webkit-gradient(linear, 0% 0%, 100% 0%, color-stop(' + currentMultiplier + ', rgb(23,176,231)), color-stop(' + currentMultiplier + ', rgb(167, 160, 160)))';
       $("#slider-amount").css("background-image", backgroundImg);
-      if (currentMultiplier <= 0.25) {
+      if (currentMultiplier < 0.25) {
         $(".button-container.zero").addClass("active");
         $(".button-container.quarter").removeClass("active");
         $(".button-container.half").removeClass("active");
         $(".button-container.three-quarter").removeClass("active");
         $(".button-container.max").removeClass("active");
-      } else if (currentMultiplier > 0.25 && currentMultiplier <= 0.5) {
+      } else if (currentMultiplier >= 0.25 && currentMultiplier < 0.5) {
         $(".button-container.zero").addClass("active");
         $(".button-container.quarter").addClass("active");
         $(".button-container.half").removeClass("active");
         $(".button-container.three-quarter").removeClass("active");
         $(".button-container.max").removeClass("active");
-      } else if (currentMultiplier > 0.5 && currentMultiplier <= 0.75) {
+      } else if (currentMultiplier >= 0.5 && currentMultiplier < 0.75) {
         $(".button-container.zero").addClass("active");
         $(".button-container.quarter").addClass("active");
         $(".button-container.half").addClass("active");
         $(".button-container.three-quarter").removeClass("active");
         $(".button-container.max").removeClass("active");
-      } else if (currentMultiplier > 0.75 && currentMultiplier < 1) {
+      } else if (currentMultiplier >= 0.75 && currentMultiplier < 1) {
         $(".button-container.zero").addClass("active");
         $(".button-container.quarter").addClass("active");
         $(".button-container.half").addClass("active");
@@ -636,9 +649,9 @@
                         name = sendcustomNFT[i].name
                       }
                       if (i == 0) {
-                          nftIds.append($('<option>', { value: sendcustomNFT[i].id, "selected": "selected", "data-image": sendcustomNFT[i].image, text: ' • ' + name + ' | Mint #' + sendcustomNFT[i].mint + ' | ' + sendcustomNFT[i].type + ' | ' + rarity}));
+                          nftIds.append($('<option>', { value: sendcustomNFT[i].id, "selected": "selected", "data-image": sendcustomNFT[i].image, text: ' • ' + name + ' | Mint #' + sendcustomNFT[i].mint + ' | ' + sendcustomNFT[i].type + ' | ' + sendcustomNFT[i].rarity}));
                       } else {
-                          nftIds.append($('<option>', { value: sendcustomNFT[i].id, "data-image": sendcustomNFT[i].image, text: ' • ' + name + ' | Mint #' + sendcustomNFT[i].mint + ' | ' + sendcustomNFT[i].type + ' | ' + rarity}));
+                          nftIds.append($('<option>', { value: sendcustomNFT[i].id, "data-image": sendcustomNFT[i].image, text: ' • ' + name + ' | Mint #' + sendcustomNFT[i].mint + ' | ' + sendcustomNFT[i].type + ' | ' + sendcustomNFT[i].rarity}));
                       }
                     }
                     $("#select-id").msDropDown({enableCheckbox:true});
@@ -647,9 +660,11 @@
                     var observer = new MutationObserver(function(mutations) {
                       var oHandler = $('#select-id').msDropDown();
                       if (oHandler[0].selectedOptions.length > 1) {
-                        document.getElementById("multiple-nft-selected").innerHTML = '<span style="font-style:italic"> Note: a total of ' + oHandler[0].selectedOptions.length + ' NFT are selected.</span>';
+                        document.getElementById("multiple-nft-selected").innerHTML = '<span style="font-style:italic"><u>note</u>: a total of ' + oHandler[0].selectedOptions.length + ' NFTs are selected.</span>';
+                      } else if (oHandler[0].selectedOptions.length == 1) {
+                        document.getElementById("multiple-nft-selected").innerHTML = '<span style="font-style:italic"><u>note</u>: a single NFT is selected.</span>';
                       } else {
-                        document.getElementById("multiple-nft-selected").innerHTML = '<span style="font-style:italic"> Note: a single NFT is selected.</span>';
+                        document.getElementById("multiple-nft-selected").innerHTML = '<span style="font-style:italic"><u>note</u>: please select a NFT above.</span>';
                       }
 
                     });
