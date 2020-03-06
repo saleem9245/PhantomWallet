@@ -280,9 +280,24 @@
           Promise.all(arrayNFTFormattedResultTotal)
           .then(data => {
 
+            // reduce
             dataNFT = data.reduce(function(result, current) {
               return Object.assign(result, current);
             }, {});
+
+            // temp map to array
+            dataNFT = $.map(dataNFT, function(value, index) { return [value]; });
+
+            // double sort
+            dataNFT.sort(function (a, b) {
+
+              if (a.item > b.item) return 1;
+              if (a.item < b.item) return -1;
+
+              if (a.mint > b.mint) return 1;
+              if (a.mint < b.mint) return -1;
+
+            });
 
             Object.keys(dataNFT).forEach(key => {
               if (dataNFT[key].item_info) {
