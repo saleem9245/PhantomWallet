@@ -69,7 +69,7 @@
 
 <div class="tooltip_templates">
     <span id="tooltip_fees">
-        Placing an item to sell incurs 0 fees (except the KCAL transaction fee).<br>Cancelling an item sale incurs 0 fees (except the KCAL transaction fee). To cancel, simply click on the item to cancel and comfirm.<br>Buying an item costs the price listed plus 2% fees, paid in the item's quote currency (rounded down, and with a minimum of 0.1).<br>Example 1: you're <u>selling</u> one Phantasma car for 10,000 SOUL, you will get 10,000 SOUL.<br>Example 2: you're <u>buying</u> one Phantasma car for 10,000 SOUL, you pay 10,000 SOUL plus a fee of 200 SOUL to get the item.
+        Placing an item to sell incurs 0 fees (except the KCAL transaction fee).<br>Cancelling an item sale incurs 0 fees (except the KCAL transaction fee). To cancel, simply click on the item to cancel and confirm.<br>Buying an item costs the price listed plus 2% fees, paid in the item's quote currency (rounded down, and with a minimum of 0.1).<br>Example 1: you're <u>selling</u> one Phantasma car for 10,000 SOUL, you will get 10,000 SOUL.<br>Example 2: you're <u>buying</u> one Phantasma car for 10,000 SOUL, you pay 10,000 SOUL plus a fee of 200 SOUL to get the item.
     </span>
 </div>
 
@@ -1299,7 +1299,7 @@ function initiateSell() {
         return;
   }
 
-  fetchSellNFTDropdown = '<select style="margin-left:.5em;margin-right:.5em;" id="select-nft">';
+  fetchSellNFTDropdown = '<select style="margin: .5em auto;" id="select-nft">';
   fetchSellNFTDropdown += '<option value="">Select NFT to sell</option>'
   for (i = 0; i < sellCustomNFT.length; i ++) {
     fetchSellNFTDropdown += '<option value="' + sellCustomNFT[i].id + '" data-image="' + sellCustomNFT[i].image + '" class="filter-type filter-type-' + sellCustomNFT[i].type + ' filter-rarity filter-rarity-' + formatRarity(sellCustomNFT[i].rarity) + '">' + sellCustomNFT[i].name + ' • Mint #' + sellCustomNFT[i].mint + ' • Minted on ' + sellCustomNFT[i].mint_date + ' • ' + formatRarity(sellCustomNFT[i].rarity) + '</option>'
