@@ -125,7 +125,7 @@ $(document).ready(function() {
   getAuctions();
 
   // init tooltipster i
-  $('.referral-nft i.tooltip').tooltipster({
+  $('.referral-nft i.tooltip, i.tooltip').tooltipster({
     theme: 'tooltipster-noir',
     contentCloning: true,
     interactive: true,
@@ -836,7 +836,7 @@ function getAuctions() {
   })
 }
 
-// funcion refresh auctions
+// function refresh auctions
 function refreshAuctions() {
 
   fetchAuctions = '';
