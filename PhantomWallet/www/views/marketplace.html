@@ -923,7 +923,7 @@ function refreshAuctions() {
           var date = new Date(mintDate * 1000);
           var year = date.getFullYear();
           var month = ("0" + (date.getMonth() + 1)).slice(-2)
-          var day = ("0" + (date.getDate() + 1)).slice(-2)
+          var day = ("0" + (date.getDate())).slice(-2)
           mintDateFormatted = year + "-" + month + "-" + day;
           var timeleft = ((endDate)*1000) - (new Date()).getTime();
           if (((((timeleft / 1000) / 60) / 60) < 1) && ((((timeleft / 1000) / 60) / 60) > 0)) {
