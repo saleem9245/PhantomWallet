@@ -436,13 +436,21 @@ function getStats() {
       if ((((totalUsersLastDay/totalUsersBeforeLastDay) * 100).toFixed(2) - 100) > 0) {
         totalUsersLastDayChange = '+' + (((totalUsersLastDay/totalUsersBeforeLastDay) * 100).toFixed(2) - 100).toFixed(2) + '%';
       } else {
-        totalUsersLastDayChange = (((totalUsersLastDay/totalUsersBeforeLastDay) * 100).toFixed(2) - 100).toFixed(2) + '%';
+        if (totalUsersBeforeLastDay > 0) {
+          totalUsersLastDayChange = (((totalUsersLastDay/totalUsersBeforeLastDay) * 100).toFixed(2) - 100).toFixed(2) + '%';
+        } else {
+          totalUsersLastDayChange = '';
+        }
       }
 
       if ((((totalUniqueUsersLastDay/totalUniqueUsersBeforeLastDay) * 100).toFixed(2) - 100) > 0) {
         totalUniqueUsersLastDayChange = '+' + (((totalUniqueUsersLastDay/totalUniqueUsersBeforeLastDay) * 100).toFixed(2) - 100).toFixed(2) + '%';
       } else {
-        totalUniqueUsersLastDayChange = (((totalUniqueUsersLastDay/totalUniqueUsersBeforeLastDay) * 100).toFixed(2) - 100).toFixed(2) + '%';
+        if (totalUniqueUsersBeforeLastDay > 0) {
+          totalUniqueUsersLastDayChange = (((totalUniqueUsersLastDay/totalUniqueUsersBeforeLastDay) * 100).toFixed(2) - 100).toFixed(2) + '%';
+        } else {
+          totalUniqueUsersLastDayChange = '';
+        }
       }
 
       if ((((totalUsersLastDay/totalUsersBeforeLastDay) * 100).toFixed(2) - 100) > 0) {
