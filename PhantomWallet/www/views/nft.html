@@ -236,6 +236,24 @@ $(document).ready(function() {
     }, timeout);
   });
 
+  // Trigger next button on press enter
+  var input = document.getElementById("referral-input");
+  input.addEventListener("keyup", function(event) {
+      if (event.keyCode === 13) {
+          event.preventDefault();
+          document.getElementById("buy-confirm").click();
+      }
+  });
+
+  // Trigger next button on press enter
+  var input = document.getElementById("referral-input-auction");
+  input.addEventListener("keyup", function(event) {
+      if (event.keyCode === 13) {
+          event.preventDefault();
+          document.getElementById("auction-confirm").click();
+      }
+  });
+
 });
 
 // function redeem pack
@@ -251,6 +269,8 @@ function getRedeemPack() {
     }
     Promise.all(arrayNFTFormattedResultTotal)
     .then(data => {
+
+      console.log(data)
 
       dataNFT = data.reduce(function(result, current) {
         return Object.assign(result, current);
@@ -869,13 +889,13 @@ function confirmAuction(nameNFT, priceNFT, quantityNFT, addressAuctionNFT, paylo
         + '<br><input type="text" class="form-control" name="bidauction" id="bidauction"><br>'
         + 'If your bid falls below the <b>' + quantityNFT + ' highest bids</b> later, you will be refunded instantly.<br><br>'
         + "Someone referred you? Enter their Phantasma address below.<br>You will both get <strong>11% of the purchase back in GOATi (based on GOATi item price)</strong>.<br><br>"
-        + '<input type="text" class="form-control" name="referral">';
+        + '<input type="text" class="form-control" name="referral" id="referral-input-auction">';
   } else {
     contentBootbox = 'How much SOUL do you want to bid for <strong>' + nameNFT + '</strong>? It needs to be at least 100 more SOUL than the current lowest winning bid of <strong>' + numberWithCommas(parseFloat(priceNFT)) + ' SOUL' + feeDescText
         + '<br><input type="text" class="form-control" name="bidauction" id="bidauction"><br>'
         + 'If your bid falls below the <b>' + quantityNFT + ' highest bids</b> later, you will be refunded instantly.<br><br>'
         + "Someone referred you? Enter their Phantasma address below.<br>You will both get <strong>11% of the purchase back in GOATi (based on GOATi item price)</strong>.<br><br>"
-        + '<input type="text" class="form-control" name="referral">';
+        + '<input type="text" class="form-control" name="referral" id="referral-input-auction">';
   }
 
   dialog = bootbox.confirm({
@@ -883,10 +903,12 @@ function confirmAuction(nameNFT, priceNFT, quantityNFT, addressAuctionNFT, paylo
       message: contentBootbox,
       buttons: {
           cancel: {
-              label: '<i class="fa fa-times"></i> Cancel'
+              label: '<i class="fa fa-times"></i> Cancel',
+              className:'btn btn-default'
           },
           confirm: {
-              label: '<i class="fa fa-check"></i> Bid on NFT'
+              label: '<i class="fa fa-check"></i> Bid on NFT',
+              className:'btn btn-primary auction-confirm'
           }
       },
       callback: function(result) {
@@ -935,6 +957,8 @@ function confirmAuction(nameNFT, priceNFT, quantityNFT, addressAuctionNFT, paylo
 
 
       }
+    }).init(function() {
+      $(".auction-confirm").attr('id', 'auction-confirm');
     })
 
 }
@@ -1011,16 +1035,18 @@ function confirmSale(nameNFT, priceNFT, payloadNFT) {
       + " " + currencySelected + feeDescText + "</strong><br><br>"
       + customAction
       + " Someone referred you? Enter their Phantasma address below.<br>You will both get 11% of the purchase back in GOATi tokens (based on GOATi item price).<br><br>"
-      + '<input type="text" class="form-control" name="referral">';
+      + '<input type="text" class="form-control" name="referral" id="referral-input">';
   dialog = bootbox.confirm({
       title: "NFT buy confirmation",
       message: contentBootbox,
       buttons: {
           cancel: {
-              label: '<i class="fa fa-times"></i> Cancel'
+              label: '<i class="fa fa-times"></i> Cancel',
+              className:'btn btn-default'
           },
           confirm: {
-              label: '<i class="fa fa-check"></i> Buy NFT'
+              label: '<i class="fa fa-check"></i> Buy NFT',
+              className:'btn btn-primary buy-confirm'
           }
       },
       callback: function(result) {
@@ -1065,6 +1091,8 @@ function confirmSale(nameNFT, priceNFT, payloadNFT) {
 
 
       }
+    }).init(function() {
+      $(".buy-confirm").attr('id', 'buy-confirm');
     })
 
 }

@@ -297,6 +297,15 @@ $(document).ready(function() {
     $("#sell-nft-tooltip").fadeTo("slow", 1);
   }
 
+  // Trigger next button on press enter
+  var input = document.getElementById("sell-amount");
+  input.addEventListener("keyup", function(event) {
+      if (event.keyCode === 13) {
+          event.preventDefault();
+          document.getElementById("sell-confirm").click();
+      }
+  });
+
 });
 
 // On click filtering
@@ -1335,10 +1344,12 @@ function initiateSell() {
       message: contentBootbox,
       buttons: {
           cancel: {
-              label: '<i class="fa fa-times"></i> Cancel'
+              label: '<i class="fa fa-times"></i> Cancel',
+              className:'btn btn-default'
           },
           confirm: {
-              label: '<i class="fa fa-check"></i> Sell NFT'
+              label: '<i class="fa fa-check"></i> Sell NFT',
+              className:'btn btn-primary sell-confirm'
           }
       },
       callback: function(result) {
