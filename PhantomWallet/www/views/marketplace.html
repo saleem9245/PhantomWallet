@@ -297,15 +297,6 @@ $(document).ready(function() {
     $("#sell-nft-tooltip").fadeTo("slow", 1);
   }
 
-  // Trigger next button on press enter
-  var input = document.getElementById("sell-amount");
-  input.addEventListener("keyup", function(event) {
-      if (event.keyCode === 13) {
-          event.preventDefault();
-          document.getElementById("sell-confirm").click();
-      }
-  });
-
 });
 
 // On click filtering
@@ -1377,6 +1368,15 @@ function initiateSell() {
       }
 
     }).init(function() {
+
+      // Trigger next button on press enter
+      var input = document.getElementById("sell-amount");
+      input.addEventListener("keyup", function(event) {
+          if (event.keyCode === 13) {
+              event.preventDefault();
+              document.getElementById("sell-confirm").click();
+          }
+      });
 
       // On filter type change event
       $("#sell-type-filter").change(function () {

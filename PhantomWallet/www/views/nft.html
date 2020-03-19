@@ -236,24 +236,6 @@ $(document).ready(function() {
     }, timeout);
   });
 
-  // Trigger next button on press enter
-  var input = document.getElementById("referral-input");
-  input.addEventListener("keyup", function(event) {
-      if (event.keyCode === 13) {
-          event.preventDefault();
-          document.getElementById("buy-confirm").click();
-      }
-  });
-
-  // Trigger next button on press enter
-  var input = document.getElementById("referral-input-auction");
-  input.addEventListener("keyup", function(event) {
-      if (event.keyCode === 13) {
-          event.preventDefault();
-          document.getElementById("auction-confirm").click();
-      }
-  });
-
 });
 
 // function redeem pack
@@ -270,7 +252,7 @@ function getRedeemPack() {
     Promise.all(arrayNFTFormattedResultTotal)
     .then(data => {
 
-      console.log(data)
+      //console.log(data)
 
       dataNFT = data.reduce(function(result, current) {
         return Object.assign(result, current);
@@ -959,6 +941,14 @@ function confirmAuction(nameNFT, priceNFT, quantityNFT, addressAuctionNFT, paylo
       }
     }).init(function() {
       $(".auction-confirm").attr('id', 'auction-confirm');
+      // Trigger next button on press enter
+      var input = document.getElementById("referral-input-auction");
+      input.addEventListener("keyup", function(event) {
+          if (event.keyCode === 13) {
+              event.preventDefault();
+              document.getElementById("auction-confirm").click();
+          }
+      });
     })
 
 }
@@ -1093,6 +1083,14 @@ function confirmSale(nameNFT, priceNFT, payloadNFT) {
       }
     }).init(function() {
       $(".buy-confirm").attr('id', 'buy-confirm');
+      // Trigger next button on press enter
+      var input = document.getElementById("referral-input");
+      input.addEventListener("keyup", function(event) {
+          if (event.keyCode === 13) {
+              event.preventDefault();
+              document.getElementById("buy-confirm").click();
+          }
+      });
     })
 
 }
