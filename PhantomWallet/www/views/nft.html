@@ -192,8 +192,6 @@ $(document).ready(function() {
     window['arrayNFTFormatted' + i] = (window['arrayNFT' + i]).substring(0, (window['arrayNFT' + i]).length - 1)
   }
 
-  getRedeemPack()
-
   var clicks = 0;
   var timer, timeout = 300;
   var now = new Date();
@@ -279,11 +277,15 @@ function getRedeemPack() {
       fetchRedeemDropdown += '</select>'
 
       if (redeemcustomNFT.length != 0) {
-        document.getElementById("redeem-pack").innerHTML = redeemcustomNFT.length + ' packs available. Click here to redeem!'
-        $('#redeem-pack-container').show();
+        if (document.getElementById("redeem-pack")) {
+          document.getElementById("redeem-pack").innerHTML = redeemcustomNFT.length + ' packs available. Click here to redeem!'
+          $('#redeem-pack-container').show();
+        } else {}
       } else {
-        document.getElementById("redeem-pack").innerHTML = 'No pack available to redeem.'
-        $('#redeem-pack-container').show();
+        if (document.getElementById("redeem-pack")) {
+          document.getElementById("redeem-pack").innerHTML = 'No pack available to redeem.'
+          $('#redeem-pack-container').show();
+        } else {}
       }
 
     })
@@ -792,6 +794,7 @@ function getNFTDetails() {
       document.getElementById("nftdetailslist-game").innerHTML = fetchValuesNFTGame;
       document.getElementById("nftdetailslist-parts").innerHTML = fetchValuesNFTParts;
       document.getElementById("nftdetailslist-vehicles").innerHTML = fetchValuesNFTVehicles;
+      getRedeemPack();
     }
     $("#loader-nftlist").hide();
 
