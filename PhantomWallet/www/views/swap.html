@@ -718,6 +718,11 @@
           callback: function(result) {
 
             if (result) {
+
+              var countersettle = 0;
+              loopSettle();
+              function loopSettle() {
+
               $.post('/sendrawtx',
                   {
                       fungible: 'True', token: token, amount: amount, dest: target_address_neo, chain: 'main' , destChain: 'main', isName: isName
@@ -747,7 +752,6 @@
                                      $("#wrapper-swap-confirm").fadeTo("slow", 1);
                                    }
                                } else {
-
                                    if ((JSON.parse(returnedDataTX).error) != undefined) {
                                      // If .error defined, returns the custom error message
                                      $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
@@ -769,25 +773,29 @@
                                            if ((typeof returnedDataSettle) == 'string') {
                                              returnedDataSettle = JSON.parse(returnedDataSettle);
                                            }
-                                           if (((returnedDataSettle).error) != undefined) {
-                                             // If .error defined, returns the custom error message
-                                             $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
-                                                 document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction ' + ((returnedDataSettle).error);
-                                                 $("#wrapper-swap-confirm").fadeTo("slow", 1);
-                                             });
+                                          if (((returnedDataSettle).error) != undefined) {
+                                            if (((returnedDataSettle).error).startsWith('invalid transaction hash')) {
+                                                countersettle++;
+                                                if (countersettle <= 5){
+                                                  setTimeout(loopSettle, 2000);
+                                                } else {
+                                                  $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
+                                                      document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction ' + (returnedDataSettle).error;
+                                                      $("#wrapper-swap-confirm").fadeTo("slow", 1);
+                                                  });
+                                                }
+                                            } else {
+                                              // If .error defined, returns the custom error message
+                                              $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
+                                                  document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction ' + ((returnedDataSettle).error);
+                                                  $("#wrapper-swap-confirm").fadeTo("slow", 1);
+                                              });
+                                            }
                                            } else {
-                                             if (((returnedDataSettle).hash) == null) {
-                                               // If .error defined, returns the custom error message
-                                               $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
-                                                   document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful';
-                                                   $("#wrapper-swap-confirm").fadeTo("slow", 1);
-                                               });
-                                              } else {
-                                                $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
-                                                    document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedDataSettle + '" target="_blank" title="View Transaction">' + returnedDataSettle + '</a>';
-                                                    $("#wrapper-swap-confirm").fadeTo("slow", 1);
-                                                });
-                                              }
+                                              $('#wrapper-swap-confirm').fadeTo("fast", 0, function() {
+                                                 document.getElementById("wrapper-swap-confirm").innerHTML = 'Transaction successful: <a href="{{explorer}}/tx/' + returnedDataSettle + '" target="_blank" title="View Transaction">' + returnedDataSettle + '</a>';
+                                                 $("#wrapper-swap-confirm").fadeTo("slow", 1);
+                                              });
                                               setTimeout(function(){window.location.href = "/portfolio"}, 5000);
                                            }
                                        }).fail(function(e) {
@@ -868,6 +876,8 @@
                         $("#wrapper-swap-confirm").fadeTo("slow", 1);
                     });
                   })
+                }
+
               } else {
                 $('#sendSpinner').hide();
               }
