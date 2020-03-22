@@ -88,7 +88,7 @@
 
 }
 
-@media screen and (max-width: 1280px) {
+@media screen and (max-width: 1350px) {
 
   .nav-pills li {
       font-size: 1em !important;
@@ -226,6 +226,22 @@
   .container-prize, .container-sell {
     font-size: 1.5vh;
   }
+  .nft-cat-headers {
+    width: 110%;
+  }
+  .container-clock {
+    margin-bottom: 1em;
+    zoom: .95;
+  }
+  #nft .container-prize {
+    font-size: .7em;
+  }
+}
+
+@media screen and (max-width: 1350px) {
+  .media {
+    margin-top: -1em;
+  }
 }
 
 @media screen and (max-width: 1200px) {
@@ -244,7 +260,7 @@
 
 @media screen and (min-width: 1600px) and (max-width: 2000px) {
   .wrapper-filters, .wrapper-sorters {
-    font-size: .65em !important;
+    font-size: .55em !important;
   }
   .tooltip.fas.fa-gem {
       font-size: 1em;
@@ -259,16 +275,29 @@
     /*display: block !important;*/
     /*width: 100% !important;*/
     margin-left: 0 !important;
-    font-size: .7em !important;
+    font-size: .49em !important;
   }
   #marketplace #nft-category {
-    width: 90% !important;
+    /*width: 90% !important;*/
   }
   .tooltip.fas.fa-gem {
     font-size: 1em;
   }
   #sorting-order {
     font-size: 1em;
+  }
+  .container-sell, #nftdetailslist-title, .container-prize, .container-clock {
+    margin-top: 1em !important;
+  }
+  .container-prize h3 {
+    margin-top: 0;
+  }
+  .wrapper-filters {
+    width: 60% !important;
+    /*font-size: .45em !important;*/
+  }
+  .nft .container-prize {
+    margin-top: 1.4em !important;
   }
 }
 
@@ -277,15 +306,11 @@
     width: 100% !important;
   }
   #marketplace .category {
-    padding: 4px 2px !important;
+    /*padding: 4px 2px !important;*/
   }
 }
 
 @media screen and (max-width: 1500px) {
-  .wrapper-filters {
-    width: 60% !important;
-    /*font-size: .45em !important;*/
-  }
   .wrapper-sorters {
     width: 30% !important;
     /*font-size: .45em !important;*/
@@ -294,10 +319,7 @@
     font-size: .9em !important;
   }
   .container-clock, .container-prize {
-    margin-top: 0 !important;
-  }
-  .container-sell, #nftdetailslist-title {
-    margin-top: 1em !important;
+    /*margin-top: 0 !important;*/
   }
   .container-prize h3 {
     margin-top: 0;
@@ -312,12 +334,12 @@
 
 @media screen and (min-width: 1300px) and (max-width: 1500px) {
   .container-prize, .container-sell {
-    font-size: 1.75vh;
+    /*font-size: 1.75vh;*/
   }
 }
 
 @media screen and (min-width: 1500px) and (max-width: 2000px) {
-  .container-clock, .container-prize, .container-sell {
+  .container-clock, .nft .container-prize, {
     font-size: 1.5vh;
   }
   .wrapper-filters, .wrapper-sorters {
@@ -332,7 +354,7 @@
   }
 }
 
-@media screen and (min-width: 1281px) and (max-width: 1700px) {
+@media screen and (min-width: 1350px) and (max-width: 1700px) {
 
   .nav-pills li {
       font-size: 1em !important;
@@ -439,13 +461,13 @@ body {
 }
 
 .wallet-title {
-    font-size: 2em;
+    font-size: 1.6em;
     font-weight: bold;
     color: white;
 }
 
 .wallet-subtitle {
-    font-size: 1.8em;
+    font-size: 1.5em;
     font-weight: 700;
     color: white;
 }
@@ -1597,7 +1619,7 @@ ul.nav.nav-pills {
 }
 
 #sorting-order {
-  font-size: 1.3em;
+  font-size: 1em;
 }
 
 #sorting-order:hover {
@@ -1970,15 +1992,15 @@ li.enabled._msddli_ input.checkbox {
 }
 
 .wrapper-filters {
-    width: 44%;
+    width: 48%;
     display: inline-block;
-    font-size: .9em;
+    font-size: .82em;
 }
 
 .wrapper-sorters {
-    width: 25%;
+    width: 28%;
     display: inline-block;
-    font-size: .9em;
+    font-size: .82em;
 }
 
 .category {
