@@ -2108,11 +2108,11 @@ button.tooltip {
 }
 
 tbody tr:hover {
-    background-color: #17b0e7d9;
+    background-color: #17b0e7;
 }
 
 tbody tr:hover td {
-    background-color: #17b0e7d9;
+    background-color: #17b0e7;
     color: #fff;
 }
 
